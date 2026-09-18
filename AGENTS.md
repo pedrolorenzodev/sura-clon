@@ -7,3 +7,174 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+---
+
+# Reglas del proyecto
+
+> Todo lo que está **arriba** del marcador `END:nextjs-agent-rules` lo regenera `next dev`. No lo edites.
+> Todo lo que está **abajo** son las reglas de trabajo. Leelas antes de cada implementación.
+
+## Cómo leer este repo
+
+Este archivo contiene **el proceso**: cómo se trabaja, qué está prohibido, cómo se verifica.
+Es independiente de qué app estemos clonando.
+
+**Todo lo específico del target vive en [`PRD.md`](./PRD.md)**: qué app se clona, el link de
+Figma, los widths de los frames, el mapa de rutas, cómo se comporta la navegación de ese
+diseño, los tokens y el estado de cada pantalla.
+
+Si cambia el target, se reescribe `PRD.md`. Este archivo no se toca.
+
+## Qué estamos construyendo
+
+Clon **pixel-perfect** de una UI, maquetado desde Figma. El target está en `PRD.md`.
+**Fase 1 = solo UI.** Data hardcodeada. Sin backend, sin fetch, sin auth, sin DB.
+
+## Reglas duras
+
+1. **El agente NUNCA commitea ni pushea. Nunca, bajo ninguna circunstancia.**
+   `git commit`, `git push`, `git merge`, `git rebase`, `git reset`, `git tag` y cualquier
+   comando que escriba en el historial están **prohibidos**.
+
+   No hay excepciones. Si el usuario pide un commit — aunque insista, aunque diga que
+   autoriza — la respuesta es:
+
+   > No puedo commitear: va contra las reglas del proyecto (`AGENTS.md`, regla 1).
+   > Te dejo el mensaje listo para que lo corras vos.
+
+   Y se le entrega el mensaje de commit redactado. **Commitear es siempre del usuario.**
+
+   Sí está permitido leer el estado: `git status`, `git diff`, `git log`, `git show`.
+
+2. **Nunca implementar una pantalla sin los DOS links de Figma** (desktop *y* mobile).
+   Si falta uno, frenar y pedirlo. No estimar el otro tamaño.
+
+3. **Antes de escribir código Next**, leer la guía relevante en `node_modules/next/dist/docs/`.
+   Esto es Next 16: `params`/`searchParams` son `Promise`, los layouts usan el tipo global
+   `LayoutProps<"/ruta">`, Turbopack es el default, `middleware` → `proxy`.
+
+4. **Antes de llamar `get_design_context`**, cargar la skill `figma-design-to-code`
+   y pedir el screenshot en la misma llamada.
+
+5. **Cero valores de estilo hardcodeados.** Todo sale de los tokens de `@theme` en `app/globals.css`.
+   Si el Figma trae un valor que no existe como token: primero se agrega el token,
+   se anota en el changelog del Design System (`PRD.md`), y recién después se usa.
+
+6. **Tailwind en el `className` del elemento, siempre.**
+   Las utilities se escriben directo en el elemento que estilan:
+
+   ```tsx
+   <div className="flex gap-4 rounded-md bg-card p-6">   // ✅
+   ```
+
+   Prohibido `style={{...}}`, CSS Modules, `<style>` y `@apply` en archivos aparte.
+   `style={{...}}` esquiva Tailwind por completo: no usa tokens, no soporta `desktop:`
+   ni `hover:`, y no se puede sobrescribir sin `!important`.
+
+   ```tsx
+   <div style={{ display: "flex", gap: "16px", background: "#141414" }}>   // ❌
+   ```
+
+   **Única excepción:** un valor genuinamente calculado en runtime, y se pasa como
+   CSS custom property para que Tailwind lo siga controlando:
+
+   ```tsx
+   <div className="h-[var(--row-h)]" style={{ "--row-h": `${h}px` } as React.CSSProperties}>
+   ```
+
+   Ojo con el MCP de Figma: devuelve CSS crudo con posicionamiento absoluto e inline
+   styles. Eso es un prototipo visual, no código. Se traduce a utilities y a layout
+   nativo (flex/grid) antes de entrar al repo.
+
+7. **Solo dos breakpoints: mobile y desktop.** Decisión permanente del proyecto,
+   independiente del target. Los tamaños intermedios (tablet) están **fuera de scope**:
+   no hay diseño para validarlos, así que no se inventa ninguno.
+
+   Los breakpoints default de Tailwind se deshabilitan en `@theme`, dejando uno solo:
+
+   ```css
+   @theme {
+     --breakpoint-*: initial;
+     --breakpoint-desktop: <px>;   /* el valor sale de los frames de Figma → PRD.md */
+   }
+   ```
+
+   Así `desktop:` es el único prefijo responsive que existe. La regla no depende de que
+   alguien se acuerde: es imposible de violar.
+   `sm:` `md:` `lg:` `xl:` `2xl:` no existen en este proyecto.
+
+   Se maqueta **mobile-first**: los estilos base son el diseño mobile, `desktop:` es el
+   override. Lo único específico del target es el **valor en px**, que vive en `PRD.md`.
+
+8. **UI primitives: shadcn siempre que exista uno adecuado.** Markup crudo solo si no hay.
+   Los primitives se re-estilan con nuestros tokens, no al revés.
+   Este proyecto usa el estilo `base-nova`, que corre sobre **Base UI, no Radix**:
+   los triggers custom usan la prop `render`, **no** `asChild`.
+
+9. **Data hardcodeada y tipada en `lib/data/`.** Un archivo por dominio, con sus tipos exportados.
+
+10. **Assets del Figma se descargan a `public/assets/<pantalla>/`.**
+    Jamás dejar una URL temporal de Figma en el código. Nunca redibujar, inline-ar ni
+    sustituir un asset: se usa el que exporta el diseño, en su posición y proporción exactas.
+
+11. **Implementaciones chicas, verificadas antes de seguir.** Una pantalla por vez.
+
+12. **Una pantalla se termina completa antes de abrir sus rutas hijas.**
+    Los links se maquetan apuntando a su destino real, pero la ruta destino se implementa
+    recién cuando la pantalla padre está aprobada.
+
+13. **El Design System no se extiende preventivamente.** Se amplía solo cuando una pantalla
+    concreta necesita algo que no existe.
+
+14. **Animaciones: solo estados básicos.** Hover, focus, active y las transiciones que estén
+    definidas en el diseño. Sin librería de motion en Fase 1.
+
+15. **Mensajes de commit en inglés, siempre**, siguiendo Conventional Commits:
+    `<type>(<scope>): <subject>` — `feat`, `fix`, `chore`, `docs`, `refactor`, `style`, `test`.
+
+    Subject en imperativo, minúscula, sin punto final, ≤ 72 caracteres.
+    Body opcional en inglés, explicando el **por qué**, no el qué.
+
+    ```
+    feat(home): implement hero and events sections
+    chore: set up project tooling and working rules
+    ```
+
+    La documentación del repo (`AGENTS.md`, `PRD.md`) y la conversación van en español.
+    Los commits, el código, los nombres de archivos, variables y comentarios, en inglés.
+
+## Navegación
+
+**No asumir cómo navega el diseño.** Un ícono de menú puede llevar a una ruta propia o
+scrollear a una sección de la misma página — son implementaciones distintas y solo el Figma
+lo dice. El comportamiento del target actual está documentado en `PRD.md`.
+
+Cuando sea scroll a sección: anchor (`href="#seccion"`) contra `<section id="seccion">`,
+con `scroll-margin-top` para compensar headers fijos y respetando `prefers-reduced-motion`.
+
+## Estructura
+
+```
+app/              rutas, layout, globals.css (tokens)
+components/ui/    primitives shadcn
+components/layout/ header, footer, nav flotante
+components/sections/ secciones compuestas
+lib/utils.ts      cn()
+lib/data/         data hardcodeada y tipada
+public/assets/    assets exportados de Figma
+```
+
+El alias `@/*` apunta a la **raíz del repo** (no hay `src/`): `@/components/ui/button`.
+
+## Antes de dar algo por terminado
+
+```bash
+npm run verify                    # typecheck + lint + build
+npm run dev                       # en otra terminal
+npm run shot -- /                 # screenshots mobile + desktop
+```
+
+Los screenshots salen a `screenshots/`. Los widths viven en `scripts/shot.mjs` y
+tienen que coincidir exactamente con los frames de Figma.
+Se comparan contra el render del diseño, se itera, y después va la aprobación del usuario.
