@@ -2,129 +2,224 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* `dark:` queda atado a una clase, no a prefers-color-scheme. El diseño de SURA
+   es dark-only: no hay clase `.dark` en ningún lado, así que las utilities `dark:`
+   que traen los primitives de shadcn quedan inertes y hay un solo camino de render. */
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+/* `static` fuerza a emitir todos los tokens aunque no estén en uso: /styleguide los
+   lee en runtime con getComputedStyle y con el pruning default leería vacío. */
+@theme static {
+  /* ============================================================
+     BREAKPOINTS — un solo prefijo responsive: desktop:
+     Se maqueta mobile-first; `desktop:` es el override.
+     El valor es el ancho del frame de Figma (AGENTS regla 7).
+     ============================================================ */
+  --breakpoint-*: initial;
+  --breakpoint-desktop: 1440px;
+
+  /* ============================================================
+     TIPOGRAFÍA — tres familias.
+     display y techno son SUSTITUTOS LIBRES de fuentes comerciales:
+       Monument Extended  → Anybody      (wdth 120, wght 900)
+       KH Interference    → Martian Mono (wdth 75)
+     Los ejes se eligieron midiendo el ancho de tinta del render de
+     Figma: el título queda a +3% y el copy a +0.3%. Ver PRD § 6.
+     ============================================================ */
+  --font-display: var(--font-anybody), ui-sans-serif, system-ui, sans-serif;
+  --font-display--font-variation-settings: "wdth" 120, "wght" 900;
+
+  --font-techno: var(--font-martian-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-techno--font-variation-settings: "wdth" 75;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-martian-mono), ui-monospace, monospace;
+
+  /* --- Escala. La familia la pone el call site (font-display / font-techno /
+         font-sans); acá van tamaño, interlineado y tracking. --- */
+  --text-*: initial;
+
+  /* display — Anybody, siempre en mayúsculas */
+  --text-display: 64px;
+  --text-display--line-height: 64px;
+  --text-display-sm: 40px;
+  --text-display-sm--line-height: 40px;
+  --text-display-xs: 28px;
+  --text-display-xs--line-height: 28px;
+
+  /* techno — Martian Mono */
+  --text-title: 24px;
+  --text-title--line-height: 32px;
+  --text-card-title: 20px;
+  --text-card-title--line-height: 28px;
+  --text-link: 16px;
+  --text-link--line-height: 24px;
+  --text-cta: 14px;
+  --text-cta--line-height: 14px;
+  --text-note: 12px;
+  --text-note--line-height: 16px;
+  --text-note--letter-spacing: -0.02em;
+
+  /* sans — Inter */
+  /* No sale del diseño: lo exige `components/ui/button.tsx` (shadcn lo tiene
+     hardcodeado en su clase base). Se marca como tal en /styleguide. */
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+
+  --text-base: 16px;
+  --text-base--line-height: 24px;
+  --text-ui: 16px;
+  --text-ui--line-height: 20px;
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-2xs: 10px;
+  --text-2xs--line-height: 12px;
+  --text-3xs: 8px;
+  --text-3xs--line-height: 10px;
+
+  /* ============================================================
+     COLOR
+     Se resetea la paleta default de Tailwind: `bg-zinc-800` y
+     compañía dejan de compilar, así que un color fuera del DS
+     falla a la vista en vez de pasar desapercibido.
+     ============================================================ */
+  --color-*: initial;
+
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-inherit: inherit;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* --- Marca --- */
+  --color-brand: #a5e04a;
+  --color-brand-deep: #091900;
+  /* Verde del diseño ANTERIOR, al 20%. Sobrevive en los bordes de las cards de
+     Torneos: el rediseño quedó a medio aplicar. Se replica tal cual. */
+  --color-brand-faint: rgb(160 229 0 / 0.2);
+
+  /* --- Superficies --- */
+  --color-background: #0c0c0c;
+  --color-surface: #222222;
+  --color-surface-2: #303030;
+  --color-surface-3: #282828;
+  --color-overlay: rgb(34 34 34 / 0.9);
+
+  /* --- Bordes --- */
+  --color-border: #494949;
+  --color-border-muted: #a5a5a5;
+  --color-border-light: #dddddd;
+  --color-border-dim: #444444;
+
+  /* --- Texto --- */
+  --color-foreground: #ffffff;
+  --color-muted-foreground: #a5a5a5;
+  --color-subtle-foreground: #dddddd;
+
+  /* --- Familia dorada: premios, podio y medallas --- */
+  --color-gold: #ffa600;
+  --color-gold-deep: #714900;
+  --color-gold-bright: #fbbc04;
+
+  /* --- Alias de shadcn: los consumen button.tsx y cualquier primitive futuro --- */
+  --color-primary: var(--color-brand);
+  --color-primary-foreground: #0c0c0c;
+  --color-secondary: var(--color-surface-2);
+  --color-secondary-foreground: #ffffff;
+  --color-accent: var(--color-brand);
+  --color-accent-foreground: #0c0c0c;
+  --color-muted: var(--color-surface-2);
+  --color-card: var(--color-surface);
+  --color-card-foreground: #ffffff;
+  --color-popover: var(--color-surface);
+  --color-popover-foreground: #ffffff;
+  --color-input: var(--color-surface-2);
+  --color-ring: var(--color-brand);
+  /* Sin origen en el diseño: el Home no tiene estado de error. Marcado como tal
+     en /styleguide. */
+  --color-destructive: oklch(0.704 0.191 22.216);
+  --color-destructive-foreground: #ffffff;
+
+  /* ============================================================
+     RADIO
+     ============================================================ */
+  --radius-*: initial;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-pill: 30px;
+
+  /* ============================================================
+     SOMBRA — se suman a las de Tailwind, no las reemplazan.
+     ============================================================ */
+  --shadow-bar: 0 4px 12px rgb(13 10 44 / 0.06);
+  --shadow-badge: 0 2px 5px rgb(12 12 12 / 0.3);
+  --shadow-gold-glow: 0 0 8px rgb(251 188 4 / 0.35);
+  --drop-shadow-claim: 0 4px 15px rgb(0 0 0 / 0.3);
+  --drop-shadow-cta: 0 4px 2px rgb(0 0 0 / 0.25);
+
+  /* ============================================================
+     LAYOUT — la grilla del rediseño cierra exacta:
+     4 × 268 + 3 × 24 = 1144
+     ============================================================ */
+  --container-page: 1144px;
+  --spacing-gutter: 24px;
+  --spacing-gutter-desktop: 148px;
+  --spacing-nav-x: 40px;
+  --spacing-section-gap: 80px;
+  --spacing-title-gap: 16px;
 }
 
+/* ============================================================
+   GRADIENTES
+   Tailwind v4 no tiene namespace de gradientes, así que van como
+   custom properties + @utility: la clase sigue en el elemento y el
+   valor sigue saliendo de un token (AGENTS reglas 5 y 6).
+   ============================================================ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --gradient-gold-text: linear-gradient(
+    139deg,
+    #f9be08 9%,
+    #c89802 19%,
+    #ffde79 49%,
+    #ba8d00 73%,
+    #f9be08 100%
+  );
+  --gradient-podium-gold: linear-gradient(177deg, #ba8d31 8%, #c19438 39%, #895c00 89%);
+  --gradient-badge: linear-gradient(
+    -19deg,
+    rgb(40 40 40 / 0.6) 0%,
+    rgb(123 123 123 / 0.4) 49%,
+    rgb(40 40 40 / 0.8) 97%
+  );
+  --gradient-claim: linear-gradient(90deg, rgb(48 48 48 / 0.4) 0%, rgb(48 48 48 / 0.4) 100%),
+    linear-gradient(90deg, #091900 0%, #091900 100%);
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+@utility bg-gold-text {
+  background-image: var(--gradient-gold-text);
+}
+@utility bg-podium-gold {
+  background-image: var(--gradient-podium-gold);
+}
+@utility bg-badge {
+  background-image: var(--gradient-badge);
+}
+@utility bg-claim {
+  background-image: var(--gradient-claim);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
     @apply font-sans;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
