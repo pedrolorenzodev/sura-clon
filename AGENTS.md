@@ -202,6 +202,24 @@ Clon **pixel-perfect** de una UI, maquetado desde Figma. El target está en `PRD
     chore: set up project tooling and working rules
     ```
 
+    **El mensaje describe el cambio, no cómo se llegó a él.** El commit lo firma el
+    usuario (regla 1): un cuerpo que narra la investigación del agente queda ajeno en
+    un historial que no es suyo.
+
+    - **Sin primera persona ni narración del proceso.** Fuera `I checked`,
+      `was measured on the live app`, `turned out to be`.
+    - **Cuerpo de un solo párrafo, 3-4 líneas.** No una sección por decisión tomada.
+    - **Lo que ya está en `PRD.md` no se repite.** Las decisiones de diseño se
+      documentan ahí, que es donde se las va a buscar.
+
+    ```
+    feat(home): add the desktop floating section nav
+
+    Only the six items that have a section on the page, in the order design
+    asked for. Icons are masked so a single export covers both colour states.
+    The hover tooltip is not in the Figma and follows the live app instead.
+    ```
+
     La documentación del repo (`AGENTS.md`, `PRD.md`) y la conversación van en español.
     Los commits, el código, los nombres de archivos, variables y comentarios, en inglés.
 

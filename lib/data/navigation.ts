@@ -6,11 +6,15 @@ export type HomeSection = {
   /** Nombre accesible del link: el menú es solo íconos. */
   label: string;
   /**
-   * Clases del ícono: la máscara (el SVG exportado de Figma, definido como
-   * `@utility` en `globals.css`) y su tamaño nativo del diseño. El color no va
-   * acá: lo pone el componente según el estado.
+   * Clase de la máscara: el SVG exportado de Figma, definido como `@utility` en
+   * `globals.css`. El color lo pone el componente según el estado.
    */
-  iconClassName: string;
+  icon: string;
+  /**
+   * Tamaño nativo del export, que es el que usa el riel desktop. La barra
+   * mobile los unifica en 24, como su propio diseño.
+   */
+  iconSize: string;
 };
 
 /**
@@ -21,12 +25,12 @@ export type HomeSection = {
  * queda fuera hasta que exista la pantalla.
  */
 export const homeSections: HomeSection[] = [
-  { id: "home", label: "Home", iconClassName: "nav-icon-home size-6.5" },
-  { id: "torneos", label: "Torneos", iconClassName: "nav-icon-torneos size-6.5" },
-  { id: "leaderboard", label: "Leaderboard", iconClassName: "nav-icon-leaderboard size-6" },
-  { id: "misiones", label: "Misiones", iconClassName: "nav-icon-misiones size-4.5" },
-  { id: "sura-news", label: "Sura News", iconClassName: "nav-icon-news size-5" },
-  { id: "juegos", label: "Juegos", iconClassName: "nav-icon-juegos size-6" },
+  { id: "home", label: "Home", icon: "nav-icon-home", iconSize: "size-6.5" },
+  { id: "eventos", label: "Eventos", icon: "nav-icon-torneos", iconSize: "size-6.5" },
+  { id: "leaderboard", label: "Leaderboard", icon: "nav-icon-leaderboard", iconSize: "size-6" },
+  { id: "misiones", label: "Misiones", icon: "nav-icon-misiones", iconSize: "size-4.5" },
+  { id: "sura-news", label: "Sura News", icon: "nav-icon-news", iconSize: "size-5" },
+  { id: "juegos", label: "Juegos", icon: "nav-icon-juegos", iconSize: "size-6" },
 ];
 
 /** Sección activa al cargar la página. Después manda el click del usuario. */

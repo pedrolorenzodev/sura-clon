@@ -118,6 +118,9 @@
   --color-border-muted: #a5a5a5;
   --color-border-light: #dddddd;
   --color-border-dim: #444444;
+  /* Íconos de la bottom bar mobile: un gris azulado, no blanco. Los del riel
+     desktop sí son blancos — son dos sets distintos en el Figma. */
+  --color-nav-icon: #abb7c2;
 
   /* --- Texto --- */
   --color-foreground: #ffffff;
@@ -215,6 +218,15 @@
     rgb(123 123 123 / 0.4) 49%,
     rgb(40 40 40 / 0.8) 97%
   );
+  /* Borde de la bottom bar mobile: el Figma lo dibuja con un degradé vertical,
+     no con un color plano. Medido sobre el render: #494949 arriba → #2E2E2E
+     abajo, lineal. El stop inferior se resuelve con --color-surface-2 (#303030),
+     que queda a 2 niveles del medido — ver política de normalización, PRD § 6. */
+  --gradient-nav-border: linear-gradient(
+    180deg,
+    var(--color-border) 0%,
+    var(--color-surface-2) 100%
+  );
   --gradient-claim: linear-gradient(90deg, rgb(48 48 48 / 0.4) 0%, rgb(48 48 48 / 0.4) 100%),
     linear-gradient(90deg, #091900 0%, #091900 100%);
 }
@@ -234,6 +246,32 @@
 @utility bg-badge {
   background-image: var(--gradient-badge);
 }
+/* Borde con degradé: no existe `border-image` con radio, así que el anillo se
+   dibuja en un ::before enmascarado. Hace falta porque la barra es casi
+   transparente y un fondo en dos capas taparía el backdrop-blur. */
+@utility border-gradient-nav {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-nav-border);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
 @utility bg-claim {
   background-image: var(--gradient-claim);
 }
@@ -266,6 +304,32 @@
 }
 @utility nav-icon-juegos {
   mask: url("/assets/home/nav/juegos.svg") center / contain no-repeat;
+}
+
+/* ============================================================
+   PILL ACTIVO DEL MENÚ
+   Una sola capa que se DESPLAZA al ítem seleccionado en vez de
+   desaparecer y reaparecer. El paso es el tamaño de una celda
+   (100% de la capa, que mide lo mismo) más el gap de 2px.
+   `--nav-index` (y `--nav-count` en mobile) los pone el componente:
+   son los únicos valores que no se pueden saber en CSS.
+   ============================================================ */
+@utility nav-pill-y {
+  transform: translateY(calc(var(--nav-index) * (100% + var(--spacing) * 0.5)));
+}
+
+/* En mobile los ítems van pegados (`justify-between` sin gap, como el Figma),
+   así que el paso es una celda justa. */
+@utility nav-pill-x {
+  width: calc(100% / var(--nav-count));
+  transform: translateX(calc(var(--nav-index) * 100%));
+}
+
+/* El menú mobile va fijo abajo: sobre el gutter se suma el área segura del
+   dispositivo, si no en un iPhone queda debajo del home indicator. En el
+   navegador de escritorio `env()` vale 0 y no cambia nada. */
+@utility bottom-nav-safe {
+  bottom: calc(var(--spacing-gutter) + env(safe-area-inset-bottom));
 }
 
 @layer base {

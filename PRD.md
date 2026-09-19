@@ -134,7 +134,7 @@ La grilla del rediseño cierra exacta, sin asimetrías:
 | | Qué hay |
 |---|---|
 | **Desktop** | Nav superior (logo + saldo + perfil) **y** menú flotante vertical a la izquierda: 60 de ancho, a 44 px del borde, centrado vertical dentro del gutter (`col-izq`, 148 × 720, nodo `6008:26347`). El Figma trae 7 ítems; se maquetan **6** (ver abajo) |
-| **Mobile** | **Bottom bar flotante**: 375 × 80, radio 16, `backdrop-blur`, borde `#494949`, con 5 ítems y un botón circular verde de 70 px al centro (nodo `3567:88398`). No hay menú lateral ni hamburguesa |
+| **Mobile** | **Bottom bar del Figma** (`3567:92009`): 375 × 80, radio 16, borde `#494949`, `backdrop-blur`, `px-10` y sombra "Shadow 3". Con **nuestros ítems** (las 6 secciones) y el pill verde de desktop en vez de los destinos de app, ver abajo |
 
 **El header va fijo arriba y siempre visible**, sin tomar fondo al scrollear: queda sobre el
 hero con el fondo casi transparente del diseño. Decisión del usuario, 2026-09-18.
@@ -157,7 +157,7 @@ el del Figma. Lo pidió el usuario y manda sobre el orden del diseño.
 | # | Ítem | Ancla | Ícono (tamaño nativo del export) |
 |---|---|---|---|
 | 1 | Home | `#home` | 26 px — **seleccionado**, pill verde |
-| 2 | Torneos | `#torneos` | 26 px |
+| 2 | Eventos | `#eventos` | 26 px |
 | 3 | Leaderboard | `#leaderboard` | 24 px |
 | 4 | Misiones | `#misiones` | 18 px |
 | 5 | Sura News | `#sura-news` | 20 px |
@@ -206,6 +206,81 @@ como **preview del estado seleccionado** en lugar de ser un color decorativo. Se
 blanco lee como deshabilitado) y la familia dorada (reservada a premios, podio y medallas).
 
 El ítem activo **no** reacciona al hover: ya está en su estado final.
+
+### El menú mobile: la caja del Figma con nuestros ítems
+
+**Por qué abajo y no a un costado.** El hero mobile concentra todo su contenido en los dos
+tercios superiores: título de 28 px de borde a borde (y 215–300), copy y CTA (310–410) y el
+slider de juegos (440–475). Un riel vertical a la izquierda caería sobre el título; a la
+derecha taparía el rostro del personaje y, al scrollear, el asomo de la card siguiente en el
+carrusel de Eventos — que es justamente la señal de que hay más contenido. Abajo no pisa nada
+legible, y un riel de 60 px se comería el 15 % del ancho de una pantalla de 390 contra el 4 %
+que ocupa en desktop.
+
+**La caja se replica del Figma** (`3567:92009`), medida por medida:
+
+| Propiedad | Valor |
+|---|---|
+| Medidas | 375 × 80 (implementado como `px-2` + `w-full`: **374** en una pantalla de 390 — 1 px, dentro de la tolerancia de § 6 — y no desborda en pantallas más angostas, que el Figma no contempla) |
+| Radio | 16 (`--radius-2xl`) |
+| Borde | 1 px con **degradé vertical**: `#494949` arriba → `#2E2E2E` abajo (`--gradient-nav-border`) |
+| Padding | 10 horizontal, ítems centrados en los 80 de alto |
+| Fondo | `--color-nav-glass` + `backdrop-blur(10px)` |
+| Sombra | **`--shadow-bar`** — la "Shadow 3" del Figma, no la del menú desktop |
+| Ítems | `flex-1`, `justify-between`, **sin gap** → celdas de 58,67 px |
+
+**Lo nuestro son los ítems y el estado activo.** El Figma trae 5 destinos de app (Home,
+buscar, `+`, medallas, menú) y un botón circular verde de 70 px para Home que **sobresale** del
+borde superior. Por decisión del usuario (2026-09-18) ese botón queda afuera: todos los íconos
+van en su estado normal, y el activo se marca con el mismo pill verde que desktop, que se
+desplaza igual.
+
+**El tamaño del pill es lo único inventado**: el Figma no define un pill para mobile, define el
+círculo de 70 px que descartamos. Quedó en **48 × 48, radio 16** — conserva los ~11 px de aire
+alrededor del ícono que tiene el pill de desktop (46 × 42 sobre un ícono de 26) y toma el radio
+de la propia barra. Se compararon 44, 46 × 42 y 52 antes de elegir.
+
+**Los íconos de esta barra no son blancos.** El Figma los dibuja en **`#ABB7C2`**, un gris
+azulado (`--color-nav-icon`). Los del riel desktop sí son blancos: son dos sets distintos y
+cada uno respeta su propio diseño.
+
+**El tamaño, en cambio, no se unifica.** La barra del Figma pone todos sus íconos en 24 px,
+pero eso funciona porque están dibujados con el mismo padding interno. Los nuestros no: el
+export de Misiones pinta de borde a borde de su viewBox y el de Home deja 4 px de aire por
+lado. Medido en una caja de 24, la tinta queda en **24 × 24 para Misiones contra 18 × 18 para
+Home** — un 33 % más grande, y se nota a simple vista.
+
+Los tamaños nativos (26/26/24/18/20/24) son justamente los que **igualan la tinta**: ahí
+Misiones y Home pintan los dos 18 × 18. Por eso se respetan en las dos pantallas.
+
+El borde inferior usa `bottom-nav-safe`, que suma `env(safe-area-inset-bottom)` al gutter para
+no quedar debajo del home indicator en iOS.
+
+**Sin tooltip**: en touch no hay hover. Los íconos van solos, igual que en la bottom bar del
+Figma. Si hace falta que se lea el nombre, la alternativa es que el pill activo se expanda con
+el label — cambia el ancho por ítem, así que se consulta antes de hacerlo.
+
+El estado activo es **compartido** entre los dos menús (`components/layout/nav.tsx`): una sola
+fuente de verdad, no dos.
+
+### El pill activo se desplaza
+
+Decisión del usuario, 2026-09-18. **Es una desviación consciente de `AGENTS.md` regla 16**: el
+diseño no define ninguna animación. Lo que la regla sí protege queda intacto — no se instaló
+ninguna librería de motion, es una propiedad de CSS.
+
+En vez de un pill por ítem que aparece y desaparece, hay **una sola capa** que viaja al ítem
+seleccionado con `transform` (250 ms, `ease-in-out`). El paso es el tamaño de una celda más el
+gap, en porcentaje, así que funciona igual con las celdas fraccionarias de mobile
+(`nav-pill-y` / `nav-pill-x` en `globals.css`). El único dato que CSS no puede saber —
+el índice activo — entra como custom property (`--nav-index`), que es la excepción que habilita
+`AGENTS.md` regla 6.
+
+Con `prefers-reduced-motion: reduce` no hay transición: el pill salta. Verificado.
+
+> Se evaluó instalar una skill de animación: las de volumen son de **Framer Motion** y las de
+> CSS puro no llegan al umbral de calidad que la propia skill `find-skills` recomienda
+> (1K+ instalaciones). No se instaló ninguna.
 
 ### Mapa de rutas
 
@@ -290,6 +365,8 @@ public/assets/<pantalla>/   assets exportados de Figma
 | 2026-09-18 | Layout: `--container-page 1144px`, `--spacing-gutter(-desktop)`, `--spacing-nav-x`, `--spacing-section-gap`, `--spacing-title-gap` | Home | La grilla del rediseño cierra exacta (ver sección 4). |
 | 2026-09-18 | `--color-nav-glass`, `--shadow-nav`, `--blur-nav` | Menú flotante desktop | Fondo `rgba(255,255,255,0.01)` + `backdrop-blur(10px)` + sombra `0 0 8px rgba(39,82,108,0.3)`. La sombra es distinta de `--shadow-bar`; el blur va al namespace `--blur-*`, que no está reseteado. |
 | 2026-09-18 | `--color-tooltip: #1A1A1A` | Tooltip del menú flotante | Único token que **no sale del Figma**: el elemento solo existe en `app.suragaming.com`. El resto de sus valores ya eran tokens nuestros (`--color-border`, `--radius-xl`, `--shadow-nav`, `--text-sm`). |
+| 2026-09-19 | `--color-nav-icon: #ABB7C2` | Bottom bar mobile | Los íconos de esta barra no son blancos en el Figma. Los del riel desktop sí: son dos sets distintos. |
+| 2026-09-19 | `--gradient-nav-border` | Bottom bar mobile | El borde lleva degradé vertical, no color plano — el MCP lo devolvió aplanado a `#494949` y se detectó muestreando píxeles del render. El stop inferior medido (`#2E2E2E`) se resuelve con `--color-surface-2` (#303030), a 2 niveles: ver política de normalización. |
 | 2026-09-18 | `--spacing-header-desktop: 106px` | Menú flotante desktop | Alto real del header (medido sobre el render, coincide con el diseño). El menú arranca justo debajo y las secciones lo van a usar como `scroll-margin-top`. |
 
 ### Deuda de diseño abierta
@@ -300,7 +377,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Dos tipografías trial mezcladas** | En la misma fila de Torneos, 3 cards usan KH Interference y 1 usa TT Firs Neue. | Se unificó en KH (mayoritaria). Confirmar con diseño cuál es la definitiva. |
 | **Verde sin publicar** | `#A5E04A` no está como variable de Figma; sí están `Sura/Negro` y `Sura/Blanco`, que son del diseño viejo. | Pedir que se publique la variable del verde nuevo. |
 | **Verde legacy en los bordes** | Las cards de Torneos tienen borde `rgba(160, 229, 0, 0.2)` — el verde **viejo** al 20%, no el nuevo. | Probable resto del rediseño a medio hacer. Se replica tal cual (`--color-brand-faint`) y se consulta. |
-| **"Torneos" vs "EVENTOS"** | La misma sección tiene distinto nombre en desktop y en mobile. | Se respeta cada frame. Confirmar cuál queda. |
+| ~~**"Torneos" vs "EVENTOS"**~~ | La misma sección tenía distinto nombre en desktop y en mobile. | **Resuelto** (usuario, 2026-09-18): queda **"Eventos"** en los dos tamaños, y el ancla es `#eventos`. Cuando se maquete el bloque 4, el título de la sección también. |
 | **Diseño mobile incompleto** | Falta el 60% de las secciones (ver sección 5). | Pendiente de que lleguen los frames. |
 | **Íconos del menú en un solo estado** | El Figma exporta cada ícono del menú en un solo color: Home en negro (seleccionado) y los otros seis en blanco (default). | **Resuelto sin pedir assets**: el SVG se usa como máscara y el color lo ponen los tokens (ver Notas de implementación). Ya no hace falta la versión que falta. |
 | **Estados del menú flotante** | El componente del Figma solo define `Default` y `Selected`. No hay hover ni focus — y el sitio live tampoco cambia el color del ícono en hover (medido: se queda en `text-gray-300`). | **Resuelto por decisión propia** (usuario, 2026-09-18): tooltip con el nombre de la sección + tinte verde de marca en el ícono. Es lo único del bloque que no sale ni del Figma ni del live. Si diseño define un hover propio, esto se reemplaza. |
@@ -313,6 +390,11 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **`next/image` rompía el alfa** | El optimizador re-encodeaba los PNG a paleta y ensuciaba la transparencia: el ícono de fuego pasaba de 33×37 px de tinta a 35×48 y se veía recortado. | `images.unoptimized: true` en `next.config.ts`. Los assets ya vienen de Figma en su tamaño final; en un clon pixel-perfect la fidelidad manda sobre la optimización. |
 | **Exports opacos** | El export de un nodo hornea el fondo del padre. El PNG de las estrellitas salía 100% opaco con el verde del botón adentro y tapaba el cofre. | Para un asset que se superpone a otro se usa la **imagen original** del fill (que sí tiene alfa), no el export del nodo. |
 | **Un ícono, dos colores** | El menú flotante necesita cada ícono en blanco (default) y en `#0C0C0C` (sobre el pill verde), pero el Figma exporta uno solo de los dos por ícono. Pedir los 12 archivos era la salida obvia. | El SVG se usa como **`mask-image`** (`@utility nav-icon-*` en `globals.css`) y el color lo pone un token de fondo: `bg-foreground` en default, `bg-background` en el activo. Un solo export sirve para los dos estados. El asset no se toca: se referencia por URL igual que en un `<img>`, con la misma geometría — verificado midiendo los dos renders. Solo sirve para íconos de **un color**; si entra uno multicolor, ese vuelve a `<img>`. |
+| **El pill activo cambiaba de tamaño** | El Figma define el seleccionado como padding alrededor del ícono (`px-10 py-8` sobre 26 px = 46 × 42). Con íconos de 18, 20 y 24 px el pill salía más chico en cada ítem, y el diseño solo define el caso de Home. | Se fija el pill en **46 × 42** y el ícono se centra adentro. Reproduce exacto el caso que el Figma sí define y unifica el resto (§ 6, normalización, punto 4). |
+| **El ícono desaparecía en pleno viaje** | Si el ícono de destino se ponía negro al instante, quedaba negro sobre fondo negro hasta que el pill llegaba. | El cambio a negro espera al pill (`delay-150` + 75 ms); el que se apaga vuelve a blanco de inmediato. Mientras el pill pasa por encima de los íconos intermedios, quedan blancos sobre verde — legibles. |
+| **El color llegaba tarde en los saltos cortos** | Con `ease-out` el pill se posaba a los ~140 ms en un salto de una celda pero a los ~215 ms en uno de cinco: un solo timing de color no podía servir para los dos, y en los cortos se veía el ícono blanco sobre el pill verde. | Se cambió la curva a **`ease-in-out`** y la duración a 250 ms. Medido: al terminar el fade del color (225 ms) al pill le faltan **0,1 px** en un salto de una celda y **0,5 px** en uno de cinco — llega igual sin importar la distancia. La tolerancia es ±10 px, que es el juego del ícono de 26 dentro del pill de 46. |
+| **El MCP aplana los degradés** | `get_design_context` devolvió el borde de la bottom bar como `border-[#494949]` sólido. El diseño real tiene un degradé vertical y la barra "se sentía distinta". | Se muestrearon los píxeles del render del nodo (canvas + `getImageData`): borde superior `#484848`, inferior `#2E2E2E`, y los laterales idénticos entre sí a cada altura — o sea degradé vertical lineal. **Ante la duda sobre un color, medir el render, no leer el código del MCP.** Como no existe `border-image` con radio, el anillo se dibuja en un `::before` enmascarado (`border-gradient-nav`), que además no tapa el `backdrop-blur`. |
+| **Unificar el tamaño de caja desbalanceó los íconos** | La bottom bar del Figma usa todos sus íconos en 24 px, así que se unificaron los nuestros. El de Misiones quedó visiblemente más grande. | Los exports tienen **padding interno distinto**: medida la tinta con canvas, en una caja de 24 Misiones pinta 24 × 24 y Home 18 × 18. Los tamaños nativos existen para igualar la **tinta**, no la caja — con ellos los dos pintan 18 × 18. Se revirtió a nativos. **Antes de unificar cajas, medir la tinta.** |
 | **Assets con recorte interno** | El ícono de fuego es un sprite de 3072×2048 que el diseño clipea, y el logo de CS2 lleva un glow radial encima. Reproducir eso con porcentajes es frágil. | Se **exporta el nodo** desde Figma en vez de reproducir el recorte. Sigue siendo el asset del diseño, sin redibujarlo (regla 10). |
 
 ### Política de normalización de valores
@@ -401,7 +483,7 @@ Más:
 |---|---|---|---|
 | Setup (skills, PRD, reglas, shadcn, Playwright) | — | — | ✅ Listo |
 | Design System | — | — | 📦 Aprobado y commiteado |
-| Home | 🚧 | 🚧 | 🚧 En progreso — Header listo; menú flotante desktop esperando aprobación. Sigue la bottom bar mobile (bloque 3) |
+| Home | 🚧 | 🚧 | 🚧 En progreso — Header listo; menú de navegación (desktop + mobile) esperando aprobación. Sigue el Hero |
 
 **Leyenda:** ⏳ Pendiente · 🚧 En progreso · 👀 Esperando aprobación · ✅ Aprobada · 📦 Commiteada · 🚫 Bloqueada
 
@@ -415,7 +497,7 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | Home completo (fuente del DS) | Home | — | [`3628:74971`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-74971&m=dev) | [`3567:88242`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88242&m=dev) | ✅ Escaneado → Design System |
 | 1 · Header | Home | `components/layout/header*.tsx` | [`6008:26313`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26313&m=dev) | [`6008:23224`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-23224&m=dev) | 📦 Aprobado y commiteado |
 | 2 · Menú flotante (desktop) | Home | `components/layout/nav-desktop.tsx` | [`6008:26347`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26347&m=dev) (frame `col-izq`; el menú suelto es [`3628:75011`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75011&m=dev)) | — (no existe en mobile) | 👀 Esperando aprobación |
-| 3 · Bottom bar (mobile) | Home | `components/layout/` | — | [`3567:88398`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88398&m=dev) | ⏳ Pendiente |
+| 3 · Menú mobile | Home | `components/layout/nav-mobile.tsx` | — | [`3567:92009`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-92009&m=dev) (la caja; los ítems y el activo son nuestros). Contexto usado para ubicarlo: hero [`6008:23211`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-23211&m=dev) y su fondo [`6008:23122`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-23122&m=dev) | 👀 Esperando aprobación |
 | 4 · Drawer lateral | Home | `components/layout/` | — **falta** | — **falta** | 🚫 Sin frame |
 | 3 · Hero | Home | `components/sections/` | [`3628:75013`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75013&m=dev) | [`3567:88332`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88332&m=dev) | ⏳ Dos pases, mobile → desktop |
 | 4 · Torneos / Eventos | Home | `components/sections/` | [`3628:75027`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75027&m=dev) | [`3567:88246`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88246&m=dev) | ⏳ Los dos juntos |

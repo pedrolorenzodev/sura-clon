@@ -78,6 +78,7 @@ export const surfaceColors: TokenGroup = {
     { name: "--color-surface-3", utility: "bg-surface-3", usage: "Chip interno de los contadores" },
     { name: "--color-overlay", utility: "bg-overlay", usage: "Panel translúcido sobre imagen (Juegos)" },
     { name: "--color-nav-glass", utility: "bg-nav-glass", usage: "Menú flotante desktop — casi transparente, el efecto lo hace el blur" },
+    { name: "--color-nav-icon", utility: "bg-nav-icon", usage: "Íconos de la bottom bar mobile — gris azulado, no blanco como en desktop" },
     { name: "--color-tooltip", utility: "bg-tooltip", usage: "Tooltip del menú flotante — tomado del sitio live, no del Figma" },
     { name: "--color-border", utility: "bg-border", usage: "Bottom bar mobile" },
     { name: "--color-border-muted", utility: "bg-border-muted", usage: "Badges de Juegos" },
@@ -171,6 +172,7 @@ export const gradientTokens: Token[] = [
   { name: "--gradient-podium-gold", utility: "bg-podium-gold", usage: "Fondo del primer puesto del podio" },
   { name: "--gradient-badge", utility: "bg-badge", usage: "Fondo de los badges de Torneos" },
   { name: "--gradient-claim", utility: "bg-claim", usage: "Fondo del botón Reclamar" },
+  { name: "--gradient-nav-border", utility: "border-gradient-nav", usage: "Borde de la bottom bar mobile — el Figma lo dibuja con degradé vertical" },
 ];
 
 export const layoutTokens: Token[] = [
