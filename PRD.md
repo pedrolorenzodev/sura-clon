@@ -169,23 +169,19 @@ cuando exista la pantalla.
 Los ítems son solo íconos: el nombre accesible va en un `sr-only` y el activo lleva
 `aria-current`.
 
-**Estado activo:** arranca en Home y se mueve con el click, aunque todavía no haya secciones
-a donde scrollear. Eso hace que `nav-desktop.tsx` sea client component — es su única razón de
-serlo.
+**Estado activo:** arranca en Home y lo escriben el scroll y el click (ver Scroll-spy, abajo).
+Eso hace que `nav.tsx` sea client component — es su única razón de serlo.
 
-### Scroll-spy ⏳ Pendiente — plan cerrado, falta contenido para probarlo
+### Scroll-spy ✅ Implementado (2026-09-19)
 
-Que el pill siga a la sección donde está el usuario. **Se implementa cuando haya al menos dos
-secciones maquetadas**: hoy el Home es sólo el hero y no hay nada que observar.
+El pill sigue a la sección donde está el usuario. Vive en `lib/use-section-spy.ts` y lo
+consume `components/layout/nav.tsx`, que ya era el dueño del estado: lo único que cambió es
+**quién lo escribe**. Antes sólo el click, ahora también el scroll. La capa de animación no se
+tocó — el pill viaja con `--nav-index`, así que le da igual de dónde salga el índice.
 
-No hace falta nada nuevo. El estado activo ya vive en `components/layout/nav.tsx`, que ya es
-client component y ya lo comparten los dos menús; lo único que cambia es **quién lo escribe**.
-Hoy sólo el click, después también el scroll. La capa de animación no se toca: el pill viaja
-con `--nav-index`, así que le da igual de dónde salga el índice.
-
-**Cómo:** un `IntersectionObserver` sobre las `<section id>` de `homeSections`. Nada de
-listener de scroll — el observer sólo dispara cuando una sección cruza el umbral, así que no
-hay trabajo por píxel y no hay re-render de más.
+**Cómo:** un `IntersectionObserver` sobre las `<section id>` de `homeSections` que existen en
+el DOM. Nada de listener de scroll — el observer sólo dispara cuando una sección cruza el
+umbral, así que no hay trabajo por píxel ni re-render de más.
 
 ```
 rootMargin: "-106px 0px -70% 0px"   // el top es --spacing-header-desktop
@@ -194,25 +190,45 @@ rootMargin: "-106px 0px -70% 0px"   // el top es --spacing-header-desktop
 El inset de arriba descuenta el header fijo, para que una sección cuente como activa recién
 cuando lo pasa. El de abajo achica la zona de decisión a la franja superior del viewport, que
 es lo que evita que dos secciones estén activas a la vez. Gana la más alta de las que
-intersectan.
+intersectan. Verificado sobre una página artificialmente larga: con Eventos arrancando en 826,
+el relevo cae exactamente en `scrollY = 720` = 826 − 106, o sea cuando cruza la línea del
+header.
 
-**Cuatro cosas que hay que resolver sí o sí**, y que son la razón por la que esto no se
-improvisa en cinco minutos:
+El único valor del viewport es ese 106, que es el header de desktop; en mobile el header mide
+56 y la franja arranca 50px más abajo de lo estricto. No se duplicó el valor por breakpoint:
+la franja igual termina al 30% del viewport y la decisión no cambia.
 
-1. **El click pelea con el scroll.** Como el scroll es suave, al ir de Home a Juegos el
-   observer ve pasar las cuatro secciones del medio y el pill las recorre de a saltos. Se
-   arregla ignorando al observer mientras hay un scroll por click en curso: un `ref` que se
-   levanta en el click y se baja en `scrollend`, con un timeout de respaldo.
-2. **La última sección puede no llegar nunca a la franja de arriba** si la página termina
-   antes. El remedio de siempre: si el scroll está al fondo, gana el último ítem.
-3. **`prefers-reduced-motion`** ya está resuelto aguas abajo — el pill salta en vez de viajar.
-   El scroll-spy no agrega nada.
-4. **Sin JS el menú sigue funcionando**: los ítems son anclas de verdad, lo único que se pierde
-   es que el pill acompañe.
+**Cómo quedaron las cuatro cosas que había que resolver:**
 
-**Se lleva puesta una inconsistencia que hoy existe:** el logo del header también apunta a
-`#home` (bloque 1), así que scrollea al hero pero no mueve el pill. Con el scroll-spy el pill
-sigue al scroll venga de donde venga, y deja de hacer falta sincronizar el logo con el menú.
+1. **El click pelea con el scroll.** Resuelto como estaba planeado: un `ref` que se levanta en
+   el click y se baja en `scrollend`, con un timeout de respaldo de 700ms para los navegadores
+   que no lo tienen. Al bajarse, el observer **recalcula** en vez de quedarse con lo que dejó
+   el click, así que el estado siempre reconverge a la verdad.
+2. **La última sección puede no llegar nunca a la franja de arriba.** Pasa hoy: en desktop el
+   scroll máximo del Home son 279px y Eventos necesitaría 720 para cruzar el header. Se
+   resolvió **sin listener de scroll**, con un segundo observer sobre la última sección
+   (`threshold: [0.99, 1]`): es lo único que despierta al hook cerca del fondo, donde la franja
+   de arriba ya no recibe a nadie. Ahí gana la última.
+3. **`prefers-reduced-motion`** ya estaba resuelto aguas abajo. Verificado: el scroll es
+   instantáneo, `scrollend` llega enseguida y el pill salta.
+4. **Sin JS el menú sigue funcionando**: verificado con JavaScript deshabilitado, `/#eventos`
+   scrollea igual. Lo único que se pierde es que el pill acompañe.
+
+**Y dos que aparecieron al implementarlo:**
+
+5. **Los ítems que todavía no tienen sección** (Leaderboard, Misiones, Sura News, Juegos) **no
+   mueven el pill.** Decisión del usuario, 2026-09-19: ahora el pill significa una sola cosa
+   —dónde estás—, así que marcar un destino que no existe sería mentir. El ancla sigue siendo
+   un link de verdad y el hash se escribe; cuando la sección se maquete, el ítem funciona solo.
+6. **Si la página no scrollea, el spy no opina.** Hoy el Home mobile mide menos que su propio
+   viewport (390 × 844), así que clickear Eventos no scrollea nada y el observer devolvía el
+   pill a Home a los 700ms: un rebote. Con la página entera a la vista no hay nada que espiar,
+   así que el pill se queda donde lo dejó el click, que es el comportamiento que el menú tenía
+   antes del spy. Se destraba solo cuando lleguen las secciones mobile que faltan.
+
+**Se llevó puesta una inconsistencia que existía:** el logo del header también apunta a `#home`
+(bloque 1) y antes scrolleaba al hero sin mover el pill. Ahora el pill sigue al scroll venga de
+donde venga, y no hace falta sincronizar el logo con el menú.
 
 **Tooltip en hover.** No está en el Figma: existe solo en `app.suragaming.com` y se replicó
 midiendo el elemento real (decisión del usuario, 2026-09-18). Abre a la derecha del ítem, sin
@@ -386,6 +402,7 @@ components/
   sections/            secciones compuestas
 lib/
   utils.ts             cn()
+  use-section-spy.ts   scroll-spy del menú flotante
   data/                data hardcodeada y tipada
 public/assets/<pantalla>/   assets exportados de Figma
 ```
@@ -443,7 +460,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Copy de misión en cards de evento** | Las cuatro cards describen "Para completar esta misión, debes hacer clic en el botón de abajo…", que es texto de la sección Misiones. | Es placeholder, no un estado: se replica tal cual hasta que llegue el copy real. Lo mismo con la fecha de la primera card, que en mobile dice "Comienza en 1 hr 30 min" y en desktop "Nov 28, 8:00 PM" — se unificó con la de desktop. |
 | **Verde sin publicar** | `#A5E04A` no está como variable de Figma; sí están `Sura/Negro` y `Sura/Blanco`, que son del diseño viejo. | Pedir que se publique la variable del verde nuevo. |
 | **Verde legacy en los bordes** | El verde **viejo** `#A0E500` sobrevive en dos lugares: el borde de la miniatura activa del hero (a full) y el de las cards de Torneos (al 20%). | Probable resto del rediseño a medio hacer. Se replica tal cual — `--color-brand-legacy` y `--color-brand-faint` — y se consulta si tiene que pasar al verde nuevo. |
-| ~~**"Torneos" vs "EVENTOS"**~~ | La misma sección tenía distinto nombre en desktop y en mobile. | **Resuelto** (usuario, 2026-09-18): queda **"Eventos"** en los dos tamaños, y el ancla es `#eventos`. Cuando se maquete el bloque 4, el título de la sección también. |
+| ~~**"Torneos" vs "EVENTOS"**~~ | La misma sección tenía distinto nombre en desktop y en mobile. | **Resuelto** (usuario, 2026-09-18): queda **"Eventos"** en los dos tamaños, y el ancla es `#eventos`. Cuando se maquete el bloque 8, el título de la sección también. |
 | **Diseño mobile incompleto** | Falta el 60% de las secciones (ver sección 5). | Pendiente de que lleguen los frames. |
 | **Íconos del menú en un solo estado** | El Figma exporta cada ícono del menú en un solo color: Home en negro (seleccionado) y los otros seis en blanco (default). | **Resuelto sin pedir assets**: el SVG se usa como máscara y el color lo ponen los tokens (ver Notas de implementación). Ya no hace falta la versión que falta. |
 | **Arte del hero escalado 1.81×** | El asset mide 1440 × 811 y el diseño lo muestra a 2610 de ancho. Se ve blando, y el clon hereda esa blandura. | Pedir el arte a 2610px de ancho o más. |
@@ -592,15 +609,18 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 6 · Hero — contenido | Home | `components/sections/hero-content.tsx` | [`6008:26350`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26350&m=dev) | [`3567:88332`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88332&m=dev) · [`6008:23211`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-23211&m=dev) | 👀 Esperando aprobación |
 | 7 · Hero — slider de miniaturas | Home | `components/sections/hero-slider.tsx` + `hero-slide-context.tsx` | [`6008:26358`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26358&m=dev) | [`3567:88340`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88340&m=dev) | 👀 Esperando aprobación |
 | 8 · Eventos | Home | `components/sections/eventos.tsx`, `event-card.tsx`, `events-slider.tsx` | [`6008:26364`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26364&m=dev) | [`6009:35218`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6009-35218&m=dev) | 👀 Esperando aprobación. Reemplazan a `3628:75027` / `3567:88246`, que son copias idénticas del escaneo inicial. Las flechas salen del frame compuesto [`3628:74971`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-74971&m=dev) |
-| 5 · Leaderboard | Home | `components/sections/` | [`3628:75142`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75142&m=dev) | — **falta** | 🚫 Falta el frame mobile |
-| 6 · Medallas | Home | `components/sections/` | [`3628:75198`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75198&m=dev) | — **falta** | 🚫 Falta el frame mobile |
-| 7 · Misiones | Home | `components/sections/` | [`3628:75275`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75275&m=dev) | — **falta** | 🚫 Falta el frame mobile |
-| 8 · Sura News | Home | `components/sections/` | [`3628:75287`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75287&m=dev) | — **falta** | 🚫 Falta el frame mobile |
-| 9 · Juegos | Home | `components/sections/` | [`3628:75330`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75330&m=dev) | — **falta** | 🚫 Falta el frame mobile |
-| 10 · Footer | Home | `components/layout/` | [`3628:75356`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75356&m=dev) | — **falta** | 🚫 Falta el frame mobile |
+| 9 · Leaderboard | Home | `components/sections/` | [`3628:75142`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75142&m=dev) | — **falta** | 🚫 Falta el frame mobile |
+| 10 · Medallas | Home | `components/sections/` | [`3628:75198`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75198&m=dev) | — **falta** | 🚫 Falta el frame mobile |
+| 11 · Misiones | Home | `components/sections/` | [`3628:75275`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75275&m=dev) | — **falta** | 🚫 Falta el frame mobile |
+| 12 · Sura News | Home | `components/sections/` | [`3628:75287`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75287&m=dev) | — **falta** | 🚫 Falta el frame mobile |
+| 13 · Juegos | Home | `components/sections/` | [`3628:75330`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75330&m=dev) | — **falta** | 🚫 Falta el frame mobile |
+| 14 · Footer | Home | `components/layout/` | [`3628:75356`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75356&m=dev) | — **falta** | 🚫 Falta el frame mobile |
 
-> **Bloques 5 a 10 bloqueados**: el frame mobile que existe cubre sólo Hero + Eventos.
+> **Bloques 9 a 14 bloqueados**: el frame mobile que existe cubre sólo Hero + Eventos.
 > Por la regla 2, no se maquetan hasta tener su diseño mobile.
+>
+> La numeración es el orden en que se atacan, y es continua: si entra un bloque nuevo
+> en el medio, se renumeran los de abajo en vez de repetir un número.
 
 ---
 

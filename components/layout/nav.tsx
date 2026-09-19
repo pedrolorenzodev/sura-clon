@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
-
 import { NavDesktop } from "@/components/layout/nav-desktop";
 import { NavMobile } from "@/components/layout/nav-mobile";
-import { defaultActiveSectionId } from "@/lib/data/navigation";
+import { defaultActiveSectionId, homeSectionIds } from "@/lib/data/navigation";
+import { useSectionSpy } from "@/lib/use-section-spy";
 
 /**
  * Menú flotante de secciones del Home. Desktop y mobile son dos componentes
@@ -12,16 +11,17 @@ import { defaultActiveSectionId } from "@/lib/data/navigation";
  * comparten data, tokens y **estado**: el ítem activo vive acá para que no haya
  * dos fuentes de verdad.
  *
- * Es client component por eso: el activo cambia con el click, aunque todavía no
- * haya secciones a donde scrollear. El scroll-spy llega cuando existan.
+ * Es client component por eso: el activo lo escriben el click y el scroll
+ * (`useSectionSpy`), que además es lo que hace que el logo del header —que
+ * también apunta a `#home`— mueva el pill sin tener que sincronizar nada.
  */
 export function Nav() {
-  const [activeId, setActiveId] = useState(defaultActiveSectionId);
+  const { activeId, select } = useSectionSpy(homeSectionIds, defaultActiveSectionId);
 
   return (
     <>
-      <NavDesktop activeId={activeId} onSelect={setActiveId} />
-      <NavMobile activeId={activeId} onSelect={setActiveId} />
+      <NavDesktop activeId={activeId} onSelect={select} />
+      <NavMobile activeId={activeId} onSelect={select} />
     </>
   );
 }

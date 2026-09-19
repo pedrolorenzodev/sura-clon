@@ -33,5 +33,11 @@ export const homeSections: HomeSection[] = [
   { id: "juegos", label: "Juegos", icon: "nav-icon-juegos", iconSize: "size-6" },
 ];
 
-/** Sección activa al cargar la página. Después manda el click del usuario. */
+/** Sección activa al cargar la página. Después mandan el scroll y el click. */
 export const defaultActiveSectionId = "home";
+
+/**
+ * Sólo los ids, en el mismo orden. Constante de módulo para que el scroll-spy
+ * la reciba estable y no re-suscriba el observer en cada render.
+ */
+export const homeSectionIds = homeSections.map((section) => section.id);
