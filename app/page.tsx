@@ -3,6 +3,7 @@ import { Nav } from "@/components/layout/nav";
 import { Eventos } from "@/components/sections/eventos";
 import { Hero } from "@/components/sections/hero";
 import { Leaderboard } from "@/components/sections/leaderboard";
+import { Misiones } from "@/components/sections/misiones";
 
 /**
  * El `<main>` no lleva padding lateral: el hero es full-bleed y cada sección se
@@ -17,6 +18,7 @@ export default function Home() {
         <Hero />
         <Eventos />
         <Leaderboard />
+        <Misiones />
       </main>
     </>
   );

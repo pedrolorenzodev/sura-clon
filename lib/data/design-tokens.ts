@@ -121,6 +121,14 @@ export const podiumColors: TokenGroup = {
   ],
 };
 
+export const missionColors: TokenGroup = {
+  title: "Misiones",
+  description: "Badge del premio de una misión.",
+  tokens: [
+    { name: "--color-sp-foreground", utility: "text-sp-foreground", usage: "Número del premio, sobre el verde del badge" },
+  ],
+};
+
 export const medalColors: TokenGroup = {
   title: "Medallas",
   description: "Panel de la grilla y estado bloqueado.",
@@ -165,6 +173,7 @@ export const textTokens: TextToken[] = [
   { name: "--text-cta", utility: "text-cta", family: "font-techno", usage: "Botón del hero, desktop — 14/14, tracking 0.5px", specimen: "Comenzar ahora" },
   { name: "--text-cta-sm", utility: "text-cta-sm", family: "font-techno", usage: "Botón del hero, mobile — 12/14, tracking 0.5px", specimen: "Comenzar ahora" },
   { name: "--text-note", utility: "text-note", family: "font-techno", usage: "Copy de News, fechas, valores", specimen: "Nov 28, 8:00 PM" },
+  { name: "--text-reward", utility: "text-reward", family: "font-techno", usage: "Premio de una misión", specimen: "+120" },
   { name: "--text-sm", utility: "text-sm", family: "font-sans", usage: "Nombre de usuario en el header mobile", specimen: "RocketMan1989" },
   { name: "--text-copy", utility: "text-copy", family: "font-techno", usage: "Copy del hero desktop — 16/19, tracking 1px", specimen: "Unite a Sura, desbloqueá niveles" },
   { name: "--text-copy-sm", utility: "text-copy-sm", family: "font-techno", usage: "Copy del hero mobile — 12/14, tracking 1px", specimen: "Unite a Sura, desbloqueá niveles" },
@@ -195,12 +204,15 @@ export const shadowTokens: Token[] = [
   { name: "--drop-shadow-claim", utility: "drop-shadow-claim", usage: "Botón Reclamar" },
   { name: "--shadow-cta", utility: "shadow-cta", usage: "CTA del hero, desktop" },
   { name: "--shadow-cta-mobile", utility: "shadow-cta-mobile", usage: "CTA del hero, mobile — suma un glow verde" },
+  { name: "--shadow-mission-card", utility: "shadow-mission-card", usage: "Card de una misión" },
+  { name: "--shadow-sp-badge", utility: "shadow-sp-badge", usage: "Badge de premio de una misión" },
   { name: "--shadow-thumb", utility: "shadow-thumb", usage: "Miniaturas del slider del hero, desktop" },
   { name: "--shadow-thumb-mobile", utility: "shadow-thumb-mobile", usage: "Miniaturas del slider del hero, mobile — escala con la miniatura" },
 ];
 
 export const gradientTokens: Token[] = [
   { name: "--gradient-gold-text", utility: "bg-gold-text", usage: "Texto del premio (con bg-clip-text)" },
+  { name: "--gradient-sp-badge", utility: "bg-sp-badge", usage: "Fondo del badge de premio de una misión" },
   { name: "--gradient-medal-sheen", utility: "bg-medal-sheen", usage: "Brillo diagonal de una medalla obtenida — verde legacy" },
   { name: "--gradient-medal-sheen-locked", utility: "bg-medal-sheen-locked", usage: "Brillo de una medalla bloqueada" },
   { name: "--gradient-podium-gold", utility: "bg-podium-gold", usage: "Fondo del primer puesto del podio, desktop" },
@@ -250,6 +262,7 @@ export const layoutTokens: Token[] = [
   { name: "--spacing-event-surface", utility: "h-event-surface", usage: "Alto de la superficie de la card, desktop — el personaje se sale por arriba" },
   { name: "--spacing-event-surface-mobile", utility: "h-event-surface-mobile", usage: "Alto de la superficie de la card, mobile" },
   { name: "--spacing-section-gap-mobile", utility: "mt-section-gap-mobile", usage: "Separación entre secciones en mobile — no sale del diseño", offDesign: true },
+  { name: "--spacing-mission-card-mobile", utility: "w-mission-card-mobile", usage: "Ancho de la card de misión en el carrusel mobile" },
   { name: "--spacing-leaderboard-col", utility: "w-leaderboard-col", usage: "Ancho de la columna del Leaderboard (657 + 120 + 367 = 1144)" },
   { name: "--spacing-podium-card", utility: "h-podium-card", usage: "Alto de la card del podio desktop" },
   { name: "--spacing-leaderboard-row", utility: "h-leaderboard-row", usage: "Alto de la fila Leaderboard + Medallas" },

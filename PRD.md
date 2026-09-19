@@ -362,7 +362,10 @@ El frame mobile original mide **390 × 844: una sola pantalla**, no la página c
 status bar, header, Hero, la sección Eventos y la bottom bar. El **Leaderboard mobile llegó
 aparte** el 2026-09-19, como nodo suelto (`6011:77868`), y por eso no está en ese frame.
 
-**No hay diseño mobile de:** Misiones · Sura News · Juegos · Footer.
+**No hay diseño mobile de:** Juegos · Footer.
+
+> El frame mobile **creció**: al maquetar Misiones apareció completo hasta Sura News
+> (`6009:35214`, 390 × 2236). Misiones vive en `6015:78190` y Sura News en `6015:78134`.
 
 **Medallas es la excepción**: tampoco tiene frame mobile, pero el usuario pidió adaptarlo
 (2026-09-19) en vez de esperarlo — desvío consciente de la regla 2, acotado a ese bloque. La
@@ -457,6 +460,10 @@ public/assets/<pantalla>/   assets exportados de Figma
 | 2026-09-19 | `--spacing-event-card(-mobile)` 365/210 y `--spacing-event-surface(-mobile)` 291/167 | Eventos | El alto tokenizado es el de la **superficie redondeada**, no el del frame: el personaje se sale por arriba y no cuenta como caja. |
 | 2026-09-19 | `--gradient-event-scrim` y `--gradient-event-scrim-strong` | Eventos | Funden el arte de la card hacia abajo para que se lea el texto. La variante fuerte es la de la card de fondo claro. |
 | 2026-09-19 | `--hero-art-fade-duration: 320ms` | Slider del hero | El arte se funde al cambiar de juego. No corre en la carga inicial: el arte es el LCP y no se le pone un fade adelante. |
+| 2026-09-19 | `--text-reward` (14/14) | Misiones | Premio del badge. `--text-sm` es 14 pero con interlineado 20 y le sumaba 4px de alto al badge; `--text-cta`, que sí es 14/14, arrastra peso 500 y tracking que acá el diseño no pone. |
+| 2026-09-19 | `--color-sp-foreground` (#354619), `--gradient-sp-badge` | Misiones | Texto y fondo del badge de puntos: el verde de marca con un negro al 20% encima. |
+| 2026-09-19 | `--shadow-mission-card`, `--shadow-sp-badge` | Misiones | En Figma son `drop-shadow`, pero las dos cajas son opacas y con radio: van como `box-shadow`, que es la política desde el CTA del hero. |
+| 2026-09-19 | `--spacing-mission-card-mobile` (261px) | Misiones | Ancho de la card en el carrusel mobile. En desktop las cuatro se reparten los 1144 y no hace falta fijarlas. |
 | 2026-09-19 | `--color-surface-deep` (#191919), `--color-locked-foreground` (#5a5a5a), `--color-medal-veil` | Medallas | Panel de la grilla, label de una medalla bloqueada y el velo que la apaga. `--color-tooltip` está a 1 nivel del panel, pero es el fondo de otro componente: mismo criterio que `--color-thumb-dim`. La celda desbloqueada reusa `--color-background`, que es exactamente su #202020. |
 | 2026-09-19 | `--gradient-medal-sheen` y `-locked` | Medallas | Brillo diagonal del círculo. El verde es el **legacy** (#A0E500), el mismo que sobrevive en el borde de la miniatura activa del hero. El gris va al **0.28** y no al 0.4 que devolvió el MCP (ver notas de implementación). |
 | 2026-09-19 | **Plata y bronce**: `--color-silver(-deep/-bright)`, `--color-bronze(-deep)` | Leaderboard | Los otros dos puestos del podio, con la misma estructura de nombres que la dorada: `-bright` para el borde de la card y el anillo del avatar, `-deep` para el fondo del pill y el base para su borde. El fondo del pill del 3º es `#714900`, que ya era `--color-gold-deep`: se reusó. |
@@ -492,6 +499,10 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **El podio trae usuarios distintos en cada tamaño** | Desktop dice `DesenfrenadO_ / BretasNFT / SabooMafoo` con 7.015 / 6.890 / 6.755; mobile dice `KoibitoSura / Madness9891 / Gasstiel` con 999 / 888 / 800. Los avatares también difieren. | Se unificó en los de desktop (prioridad del proyecto, y el mismo criterio que la fecha de Eventos). Confirmar cuál es la data buena. |
 | **El título del Leaderboard mobile dice "eventos"** | Es un typo del frame (lo confirmó el usuario, 2026-09-19): repite el título de la sección de arriba. | Se maquetó **"Leaderboard"** en los dos tamaños. Corregir en el archivo. |
 | **Ícono vacío en el título mobile** | Al lado del título hay un frame de 16px llamado "Icon / info" **sin contenido**: no tiene ícono adentro ni en el render. | No se maquetó. Si tiene que existir, hace falta el asset (regla 10: no se redibuja). |
+| **La barra de progreso de Misiones es un error** | El frame mobile dibuja una barra de progreso en las tres cards y una card destacada en verde; el desktop no tiene ninguna de las dos. | Confirmado como error de diseño (usuario, 2026-09-19): se maquetó la card de desktop en los dos tamaños. Si el progreso tiene que existir, hace falta definirlo también en desktop. |
+| **Tercer título mobile con el texto de otra sección** | El frame mobile de Misiones vuelve a decir "eventos", igual que el de Leaderboard. | Se maquetó "Misiones". Van tres: conviene revisar los títulos de todos los frames mobile de una sola pasada. |
+| **Misiones distintas en cada frame** | Desktop trae cuatro misiones reales (Fortnite, Valorant, Assassin's Creed, Mario) y mobile repite "Conecta tu cuenta de X" tres veces. | Se unificó en las de desktop, mismo criterio que el podio. Confirmar cuál es la data buena. |
+| **La portada de Valorant es chica** | Mide 295 × 171 y la card la muestra a 236 de ancho: en pantallas retina se ve blanda. Las otras tres van sobradas (1080 a 3840). | Pedir el export grande. Es la misma familia de deuda que el peso de los assets, pero al revés. |
 
 ### Deuda técnica — se encara con el Home completo
 
@@ -542,6 +553,9 @@ resuelven de una sola pasada cuando el Home esté terminado, o más adelante.
 | **Las medallas doradas son dos sprites de 2 × 2** | Nueve celdas y sólo siete archivos: tres doradas salen del mismo PNG y una cuarta de otro, recortando un cuadrante distinto por celda. Las grises sí vienen sueltas. | Se replica el recorte con la ventana de siempre (`overflow-hidden` + imagen posicionada), con los porcentajes del Figma sin convertir. Pedir nueve exports habría sido cambiar el asset del diseño por otro. |
 | **El círculo de 86 vive en una caja de 82** | El Figma le pone `p-12` a la celda y un círculo de 86 en una caja de 82: sobresale 2px por lado. Copiado literal, eso obliga a un desborde que después hay que recortar. | Se usa `p-10` con el círculo al ancho completo: el render es idéntico —86 de círculo a 10px del borde, celda de 130— y todo lo de adentro puede ir en porcentajes, que es lo que hace que la misma celda funcione en mobile a 98. |
 | **La grilla de Medallas se cuelga del alto de la fila** | Repartir 335 entre 3 columnas da celdas de 106,33 y no de 106: el panel se iba a 439 contra una fila de 486 que ya estaba cerrada. | El panel toma el alto que le deja la fila (`flex-1`) y `grid-rows-3` reparte las tres filas en los 130 exactos. Los 0,33 de ancho quedan: son el redondeo simétrico del píxel que el Figma deja suelto a la derecha. |
+| **El interlineado del badge no se ve hasta que se mide** | El badge de puntos salía 4px más alto que el del Figma con todos los paddings correctos. | El texto: `--text-sm` trae interlineado 20 y el diseño le pone 14. Se agregó `--text-reward`. **Cuando una caja chica no cierra en alto y los paddings están bien, el sospechoso es el interlineado del token de texto.** |
+| **La card de misión queda 4px más baja que el Figma** | El diseño pone la descripción en 10/14 y el token más cercano, `--text-2xs`, es 10/12. | Se reusa el token, que es lo que manda la política de normalización (≤2px). Sobre dos líneas eso deja la card en 237,6 contra los 241,4 del Figma. Es una consecuencia conocida de la regla, no un error: nada se alinea contra el borde inferior de la card. |
+| **La franja sin diseño volvió a scrollear** | Entre 391 y ~860px la página se iba de costado: la columna fija de 657 del Leaderboard más el gap de 120 y el mínimo de Medallas suman 960. Apareció al revisar Misiones, pero venía del bloque 9. | `overflow-x-clip` en la `<section>`, igual que el hero. **Conviene medir `scrollWidth` contra `clientWidth` en 500 / 700 / 860 al cerrar cada bloque**: el desborde no se ve en los dos tamaños que sí tienen diseño. |
 
 ### Política de normalización de valores
 
@@ -574,7 +588,8 @@ Una pantalla se completa encadenando bloques. Ver `AGENTS.md` reglas 11 y 12.
    Cero URLs temporales de Figma en el código.
 4. Revisar qué componentes y tokens ya existen y **reusar**.
    Agregar primitives de shadcn solo si hacen falta.
-5. Si falta algún token: agregarlo al `@theme` y anotarlo en el changelog de arriba.
+5. Si falta algún token: agregarlo al `@theme`, **catalogarlo en `lib/data/design-tokens.ts`**
+   (si no, no aparece en `/styleguide`) y anotarlo en el changelog de arriba.
 6. **Decidir cómo se reparte desktop/mobile** (decisión del agente, ver `AGENTS.md` regla 12):
    los dos juntos · dos componentes separados · dos pases mobile→desktop.
    Se informa qué se eligió y por qué.
@@ -629,7 +644,7 @@ Más:
 |---|---|---|---|
 | Setup (skills, PRD, reglas, shadcn, Playwright) | — | — | ✅ Listo |
 | Design System | — | — | 📦 Aprobado y commiteado |
-| Home | 🚧 | 🚧 | 🚧 En progreso — Header, menú y hero commiteados; Eventos, Leaderboard y Medallas esperando aprobación. Lo que sigue, bloqueado por falta de frame mobile |
+| Home | 🚧 | 🚧 | 🚧 En progreso — Header, menú y hero commiteados; Eventos, Leaderboard, Medallas y Misiones esperando aprobación. Sigue Sura News; Juegos y Footer, bloqueados por falta de frame mobile |
 
 **Leyenda:** ⏳ Pendiente · 🚧 En progreso · 👀 Esperando aprobación · ✅ Aprobada · 📦 Commiteada · 🚫 Bloqueada
 
@@ -651,12 +666,12 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 8 · Eventos | Home | `components/sections/eventos.tsx`, `event-card.tsx`, `events-slider.tsx` | [`6008:26364`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26364&m=dev) | [`6009:35218`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6009-35218&m=dev) | 👀 Esperando aprobación. Reemplazan a `3628:75027` / `3567:88246`, que son copias idénticas del escaneo inicial. Las flechas salen del frame compuesto [`3628:74971`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-74971&m=dev) |
 | 9 · Leaderboard | Home | `components/sections/leaderboard*.tsx`, `section-header.tsx`, `value-pill.tsx` | [`6008:26479`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26479&m=dev) | [`6011:77868`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6011-77868&m=dev) | 👀 Esperando aprobación. Reemplazan a `3628:75142`, copia del escaneo inicial. El desktop es la **columna izquierda** de [`6008:26478`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26478&m=dev), que también contiene Medallas |
 | 10 · Medallas | Home | `components/sections/medallas.tsx`, `medal-card.tsx` | [`6008:26535`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26535&m=dev) | — **no existe**: el mobile se adapta del desktop (decisión del usuario, 2026-09-19) | 👀 Esperando aprobación. Comparte fila con el bloque 9 y entra en su misma `<section>` |
-| 11 · Misiones | Home | `components/sections/` | [`3628:75275`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75275&m=dev) | — **falta** | 🚫 Falta el frame mobile |
-| 12 · Sura News | Home | `components/sections/` | [`3628:75287`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75287&m=dev) | — **falta** | 🚫 Falta el frame mobile |
+| 11 · Misiones | Home | `components/sections/misiones.tsx`, `mission-card.tsx` | [`6008:26612`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26612&m=dev) | [`6015:78190`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6015-78190&m=dev) | 👀 Esperando aprobación. Salen del Home completo — desktop [`6008:26308`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26308&m=dev), mobile [`6009:35214`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6009-35214&m=dev) — y reemplazan a `3628:75275` |
+| 12 · Sura News | Home | `components/sections/` | [`3628:75287`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75287&m=dev) | [`6015:78134`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6015-78134&m=dev) | ⏳ Pendiente. El frame mobile apareció el 2026-09-19 dentro del Home completo |
 | 13 · Juegos | Home | `components/sections/` | [`3628:75330`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75330&m=dev) | — **falta** | 🚫 Falta el frame mobile |
 | 14 · Footer | Home | `components/layout/` | [`3628:75356`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75356&m=dev) | — **falta** | 🚫 Falta el frame mobile |
 
-> **Bloques 11 a 14 bloqueados**: el frame mobile que existe cubre sólo Hero + Eventos + Leaderboard.
+> **Bloques 13 y 14 bloqueados**: el frame mobile llega hasta Sura News; Juegos y Footer no están.
 > Por la regla 2, no se maquetan hasta tener su diseño mobile.
 >
 > La numeración es el orden en que se atacan, y es continua: si entra un bloque nuevo
