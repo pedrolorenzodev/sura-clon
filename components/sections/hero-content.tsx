@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 
+import { HeroSlider } from "@/components/sections/hero-slider";
 import { hero } from "@/lib/data/hero";
 
 /**
@@ -7,8 +8,7 @@ import { hero } from "@/lib/data/hero";
  *
  * El eje se da vuelta entre tamaños. En mobile es una columna y el slider va
  * debajo; en desktop es una fila y el slider vive en el gutter derecho, espejo
- * del menú flotante que ocupa el izquierdo. Por eso el mismo spacer pasa de
- * tener alto a tener ancho.
+ * del menú flotante que ocupa el izquierdo.
  *
  * El CTA va como elemento nativo y no con `components/ui/button.tsx`: el cva de
  * shadcn trae `text-sm`, `rounded-lg`, `border` y un `active:translate-y-px` que
@@ -41,23 +41,32 @@ export function HeroContent() {
           </p>
         </div>
 
-        {/* El `min-w` de desktop es deliberado: el botón del Figma mide 181
-            porque su nodo de texto tiene un ancho fijo de 141, mientras que en
-            mobile el mismo botón se ajusta al texto. Con la fuente sustituta
-            ajustarse da 157.6, así que se fija un punto intermedio en 168.
-            Ver deuda en PRD § 6. */}
+        {/* Los dos tamaños tienen el alto fijo y el ancho lo pone el texto,
+            que con la fuente sustituta no mide lo mismo que en el diseño.
+
+            En mobile el botón del Figma es 133 × 30 y el nuestro da 143.4 de
+            ancho: la tinta de Tektur mide 111.4 contra los 101 de KH
+            Interference. A 30 de alto el botón se veía chato, así que el alto
+            sube a 32, que es lo que conserva la proporción del diseño
+            (143.4 / (133/30) = 32.35).
+
+            En desktop el botón mide 181 porque su nodo de texto tiene un ancho
+            fijo de 141, mientras que en mobile se ajusta al texto. Ajustarse
+            daba 157.6, así que se fija un punto intermedio en 168.
+
+            Las dos decisiones son del usuario y están en la deuda, PRD § 6. */}
         <a
           href={hero.cta.href}
-          className="inline-flex items-center self-start rounded-pill bg-brand px-4 py-2 font-techno text-cta-sm text-black shadow-cta-mobile desktop:h-11.5 desktop:min-w-42 desktop:justify-center desktop:px-5 desktop:py-0 desktop:text-cta desktop:shadow-cta"
+          className="inline-flex h-8 items-center self-start rounded-pill bg-brand px-4 font-techno text-cta-sm text-black shadow-cta-mobile desktop:h-11.5 desktop:min-w-42 desktop:justify-center desktop:px-5 desktop:text-cta desktop:shadow-cta"
         >
           {hero.cta.label}
         </a>
       </div>
 
-      {/* Espacio del slider de miniaturas, que todavía no se implementa. Sin
-          reservarlo, en desktop la columna de texto pasaría de 927 a 1212 y el
-          título dejaría de romper en dos líneas. TODO: bloque 3c. */}
-      <div aria-hidden className="h-8 desktop:h-auto desktop:w-gutter-desktop desktop:shrink-0" />
+      {/* El slider ocupa el gutter derecho y por eso define el ancho de la
+          columna de texto: sin él, en desktop pasaría de 927 a 1212 y el título
+          dejaría de romper en dos líneas. */}
+      <HeroSlider />
     </div>
   );
 }

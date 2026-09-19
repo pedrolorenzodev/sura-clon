@@ -65,7 +65,8 @@ export const brandColors: TokenGroup = {
   tokens: [
     { name: "--color-brand", utility: "bg-brand", usage: "CTA, links, bordes activos, acentos" },
     { name: "--color-brand-deep", utility: "bg-brand-deep", usage: "Fondo del gradiente del botón Reclamar" },
-    { name: "--color-brand-faint", utility: "bg-brand-faint", usage: "Borde de las cards de Torneos — es el verde VIEJO al 20%" },
+    { name: "--color-brand-legacy", utility: "bg-brand-legacy", usage: "Borde de la miniatura activa del hero — es el verde VIEJO, a full" },
+    { name: "--color-brand-faint", utility: "bg-brand-faint", usage: "Borde de las cards de Torneos — el mismo verde viejo, al 20%" },
   ],
 };
 
@@ -80,6 +81,7 @@ export const surfaceColors: TokenGroup = {
     { name: "--color-nav-glass", utility: "bg-nav-glass", usage: "Menú flotante desktop — casi transparente, el efecto lo hace el blur" },
     { name: "--color-nav-icon", utility: "bg-nav-icon", usage: "Íconos de la bottom bar mobile — gris azulado, no blanco como en desktop" },
     { name: "--color-tooltip", utility: "bg-tooltip", usage: "Tooltip del menú flotante — tomado del sitio live, no del Figma" },
+    { name: "--color-thumb-dim", utility: "bg-thumb-dim", usage: "Fondo de las miniaturas no seleccionadas del hero, sólo en mobile" },
     { name: "--color-border", utility: "bg-border", usage: "Bottom bar mobile" },
     { name: "--color-border-muted", utility: "bg-border-muted", usage: "Badges de Juegos" },
     { name: "--color-border-light", utility: "bg-border-light", usage: "Badges de Torneos" },
@@ -169,6 +171,8 @@ export const shadowTokens: Token[] = [
   { name: "--drop-shadow-claim", utility: "drop-shadow-claim", usage: "Botón Reclamar" },
   { name: "--shadow-cta", utility: "shadow-cta", usage: "CTA del hero, desktop" },
   { name: "--shadow-cta-mobile", utility: "shadow-cta-mobile", usage: "CTA del hero, mobile — suma un glow verde" },
+  { name: "--shadow-thumb", utility: "shadow-thumb", usage: "Miniaturas del slider del hero, desktop" },
+  { name: "--shadow-thumb-mobile", utility: "shadow-thumb-mobile", usage: "Miniaturas del slider del hero, mobile — escala con la miniatura" },
 ];
 
 export const gradientTokens: Token[] = [
@@ -180,6 +184,17 @@ export const gradientTokens: Token[] = [
   { name: "--gradient-nav-border-desktop", utility: "border-gradient-nav-desktop", usage: "Borde del riel desktop — sólido arriba, se desvanece hacia abajo" },
   { name: "--gradient-hero-scrim", utility: "bg-hero-scrim", usage: "Scrim del hero desktop — funde el arte al fondo de página" },
   { name: "--gradient-hero-scrim-mobile", utility: "bg-hero-scrim-mobile", usage: "Scrim del hero mobile — cubre arriba y abajo" },
+];
+
+/**
+ * Movimiento. El diseño no define ninguna animación: el vocabulario lo fuimos
+ * armando nosotros y está justificado bloque por bloque en PRD § 5 y § 6.
+ */
+export const motionTokens: Token[] = [
+  { name: "--ease-reveal", utility: "ease-reveal", usage: "Curva de entrada del slider del hero — desacelera y no vuelve", offDesign: true },
+  { name: "--thumb-reveal-duration", utility: "thumb-reveal", usage: "Cuánto tarda en entrar una miniatura del slider", offDesign: true },
+  { name: "--thumb-reveal-stagger", utility: "thumb-reveal", usage: "Retraso de cada miniatura respecto de la anterior", offDesign: true },
+  { name: "--thumb-reveal-shift", utility: "thumb-reveal", usage: "Cuánto sube la miniatura al entrar", offDesign: true },
 ];
 
 export const layoutTokens: Token[] = [

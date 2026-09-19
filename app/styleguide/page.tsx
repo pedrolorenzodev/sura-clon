@@ -7,6 +7,7 @@ import {
   goldColors,
   gradientTokens,
   layoutTokens,
+  motionTokens,
   radiusTokens,
   semanticColors,
   shadowTokens,
@@ -226,6 +227,30 @@ export default function StyleguidePage() {
               <div className="flex flex-wrap items-baseline gap-3">
                 <code className="text-xs text-foreground">{token.name}</code>
                 <TokenValue name={token.name} />
+              </div>
+              <div className="flex flex-wrap items-baseline gap-3">
+                <code className="text-2xs text-brand">{token.utility}</code>
+                <span className="text-2xs text-muted-foreground">{token.usage}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section
+        title="Movimiento"
+        description="Ninguna sale del diseño: el Figma no define animaciones. Cada una está justificada en el PRD."
+      >
+        <ul className="flex flex-col gap-4">
+          {motionTokens.map((token) => (
+            <li
+              key={token.name}
+              className="flex flex-col gap-1 border-b border-border-dim pb-4"
+            >
+              <div className="flex flex-wrap items-baseline gap-3">
+                <code className="text-xs text-foreground">{token.name}</code>
+                <TokenValue name={token.name} />
+                <OffDesignTag />
               </div>
               <div className="flex flex-wrap items-baseline gap-3">
                 <code className="text-2xs text-brand">{token.utility}</code>

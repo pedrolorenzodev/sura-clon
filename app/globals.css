@@ -126,8 +126,11 @@
   /* --- Marca --- */
   --color-brand: #a5e04a;
   --color-brand-deep: #091900;
-  /* Verde del diseño ANTERIOR, al 20%. Sobrevive en los bordes de las cards de
-     Torneos: el rediseño quedó a medio aplicar. Se replica tal cual. */
+  /* Verde del diseño ANTERIOR. Sobrevive en dos lugares del rediseño, que quedó
+     a medio aplicar: el borde de la miniatura activa del hero (a full) y el de
+     las cards de Torneos (al 20%). Se replica tal cual, medido sobre el render:
+     el borde de la miniatura da 160,229,0 exacto. */
+  --color-brand-legacy: #a0e500;
   --color-brand-faint: rgb(160 229 0 / 0.2);
 
   /* --- Superficies --- */
@@ -145,6 +148,12 @@
   /* Tooltip del menú flotante. No sale del Figma: es el valor del elemento real
      en app.suragaming.com, la única referencia que existe (ver PRD § 6). */
   --color-tooltip: #1a1a1a;
+  /* Fondo bajo las miniaturas NO seleccionadas del slider del hero, que van
+     atenuadas: la portada al 40% sobre este color. Sale del frame mobile; en
+     desktop se aplica el mismo tratamiento por decisión del usuario. Es el
+     negro del diseño viejo: como --color-brand-legacy, sobrevive en el
+     rediseño. */
+  --color-thumb-dim: #0c0c0c;
 
   /* --- Bordes --- */
   --color-border: #494949;
@@ -215,11 +224,26 @@
   /* El badge de nivel es un PNG con alpha: la sombra tiene que seguir la silueta,
      así que va como drop-shadow y no como box-shadow. */
   --drop-shadow-badge: 0 2px 5px rgb(12 12 12 / 0.3);
+  /* Miniaturas del slider del hero. La sombra del diseño escala con la
+     miniatura: 4 en desktop (60px) y 2.133 en mobile (32px), que redondea a 2
+     por la política de normalización (PRD § 6). */
+  --shadow-thumb: 0 4px 4px rgb(0 0 0 / 0.25);
+  --shadow-thumb-mobile: 0 2px 2px rgb(0 0 0 / 0.25);
 
   /* ============================================================
      BLUR — el namespace default de Tailwind sigue vivo; esto se suma.
      ============================================================ */
   --blur-nav: 10px;
+
+  /* ============================================================
+     MOVIMIENTO
+     El diseño no define curvas: el vocabulario de la app lo
+     fuimos armando nosotros. El pill del menú viaja con
+     `ease-in-out` porque va y vuelve; una entrada, en cambio,
+     quiere desacelerar y no volver nunca, así que lleva una
+     curva de salida marcada.
+     ============================================================ */
+  --ease-reveal: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* ============================================================
      LAYOUT — la grilla del rediseño cierra exacta:
@@ -309,10 +333,14 @@
     linear-gradient(90deg, #091900 0%, #091900 100%);
 }
 
-/* Grosores que no están en la escala de Tailwind. Se referencian con
-   border-[length:var(--border-thin)] para que el valor siga saliendo de un token. */
+
+/* Tiempos del revelado del slider. Tailwind no tiene namespace de duración ni
+   de desplazamiento de keyframe, así que van como custom properties y se
+   referencian desde el @utility, igual que los gradientes. */
 :root {
-  --border-thin: 1.5px;
+  --thumb-reveal-duration: 420ms;
+  --thumb-reveal-stagger: 90ms;
+  --thumb-reveal-shift: 8px;
 }
 
 @utility bg-gold-text {
@@ -456,6 +484,49 @@
    navegador de escritorio `env()` vale 0 y no cambia nada. */
 @utility bottom-nav-safe {
   bottom: calc(var(--spacing-gutter) + env(safe-area-inset-bottom));
+}
+
+/* ============================================================
+   REVELADO DEL SLIDER DEL HERO
+   Las portadas son los assets más pesados de la página — hasta
+   2,5 MB — y van con `loading="lazy"` (el default de next/image)
+   y `fetchPriority="low"`, así que el navegador las trae después
+   del arte del hero. Pueden llegar tarde y desordenadas.
+
+   En vez de que aparezcan de golpe, cada miniatura entra en
+   orden: sube 8px y se funde, escalonada 90ms respecto de la
+   anterior. La última cierra a los 690ms, que es el colchón que
+   les queda a las imágenes para llegar; hasta entonces lo que se
+   ve es el fondo de la miniatura, que hace de placeholder.
+
+   `backwards` es lo que sostiene el estado inicial durante el
+   delay: sin eso las cuatro se verían desde el primer frame y
+   recién después empezarían a animarse.
+
+   Sólo se animan `opacity` y `transform`, que el compositor
+   resuelve sin recalcular layout — importa porque esto corre
+   justo mientras el navegador decodifica las portadas.
+
+   El índice es el único dato que CSS no puede saber, así que
+   entra como custom property (AGENTS regla 6, igual que
+   `--nav-index`).
+   ============================================================ */
+@utility thumb-reveal {
+  animation: thumb-reveal var(--thumb-reveal-duration) var(--ease-reveal) backwards;
+  animation-delay: calc(var(--thumb-index) * var(--thumb-reveal-stagger));
+
+  /* Va acá y no como `motion-reduce:` en el call site: así la utility no se
+     puede usar mal. Sin movimiento, las miniaturas ya están en su lugar. */
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes thumb-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(var(--thumb-reveal-shift));
+  }
 }
 
 @layer base {
