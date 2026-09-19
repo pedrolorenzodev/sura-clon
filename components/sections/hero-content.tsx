@@ -48,7 +48,7 @@ export function HeroContent() {
             Ver deuda en PRD § 6. */}
         <a
           href={hero.cta.href}
-          className="inline-flex items-center self-start rounded-pill bg-brand px-4 py-2 font-techno text-copy-sm text-black shadow-cta-mobile desktop:h-11.5 desktop:min-w-42 desktop:justify-center desktop:px-5 desktop:py-0 desktop:text-cta desktop:shadow-cta"
+          className="inline-flex items-center self-start rounded-pill bg-brand px-4 py-2 font-techno text-cta-sm text-black shadow-cta-mobile desktop:h-11.5 desktop:min-w-42 desktop:justify-center desktop:px-5 desktop:py-0 desktop:text-cta desktop:shadow-cta"
         >
           {hero.cta.label}
         </a>

@@ -39,7 +39,7 @@ export function NavDesktop({
       className="fixed left-0 top-header-desktop z-40 hidden h-hero-content-desktop w-gutter-desktop items-center px-11 desktop:flex"
     >
       <TooltipProvider>
-        <div className="rounded-2xl bg-nav-glass py-2 shadow-nav ring-1 ring-border ring-inset backdrop-blur-nav">
+        <div className="border-gradient-nav-desktop rounded-2xl bg-nav-glass py-2 shadow-nav backdrop-blur-nav">
           <div className="relative">
             <span
               aria-hidden
