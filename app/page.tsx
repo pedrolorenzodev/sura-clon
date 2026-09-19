@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/header";
 import { Nav } from "@/components/layout/nav";
+import { Eventos } from "@/components/sections/eventos";
 import { Hero } from "@/components/sections/hero";
 
 /**
@@ -13,6 +14,7 @@ export default function Home() {
       <Nav />
       <main className="flex-1">
         <Hero />
+        <Eventos />
       </main>
     </>
   );

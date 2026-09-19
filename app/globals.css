@@ -62,6 +62,8 @@
   /* techno — Tektur */
   --text-title: 24px;
   --text-title--line-height: 32px;
+  --text-title-sm: 18px;
+  --text-title-sm--line-height: 24px;
   --text-card-title: 20px;
   --text-card-title--line-height: 28px;
   --text-link: 16px;
@@ -265,6 +267,13 @@
   --spacing-hero-gap: 137px;
   --spacing-section-gap: 80px;
   --spacing-title-gap: 16px;
+  /* Card de Eventos. El alto es el de la SUPERFICIE redondeada, no el del
+     frame del Figma: el personaje se sale por arriba y no cuenta como caja.
+     Mobile es el mismo diseño al 57.4% — ver la nota de normalización. */
+  --spacing-event-card: 365px;
+  --spacing-event-card-mobile: 210px;
+  --spacing-event-surface: 291px;
+  --spacing-event-surface-mobile: 167px;
 }
 
 /* ============================================================
@@ -329,6 +338,11 @@
     rgb(32 32 32 / 0.15) 74.124%,
     var(--color-background) 93.912%
   );
+  /* Scrim de la card de Eventos: funde el arte hacia abajo para que el texto
+     se lea. La variante fuerte es la de la card de fondo claro, que necesita
+     más caída. */
+  --gradient-event-scrim: linear-gradient(180deg, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 0.8) 90.865%);
+  --gradient-event-scrim-strong: linear-gradient(180deg, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 0.9) 73.077%);
   --gradient-claim: linear-gradient(90deg, rgb(48 48 48 / 0.4) 0%, rgb(48 48 48 / 0.4) 100%),
     linear-gradient(90deg, #091900 0%, #091900 100%);
 }
@@ -460,6 +474,52 @@
   background-image: var(--gradient-claim);
 }
 
+@utility bg-event-scrim {
+  background-image: var(--gradient-event-scrim);
+}
+@utility bg-event-scrim-strong {
+  background-image: var(--gradient-event-scrim-strong);
+}
+
+/* ============================================================
+   CARD DE EVENTOS — superficies y personajes
+
+   Las dos superficies van a `cover`. El Figma pone un degradé
+   lineal debajo de la foto del joystick, pero la foto es opaca y
+   lo tapa entero; además sus stops salen desordenados del export
+   (188%, 75%, 35%, 102%), así que no se replica.
+
+   Los personajes NO van acá: su recorte vive en el call site, en
+   porcentajes, porque el Figma lo expresa como offset del borde de
+   la imagen y `background-position` lo expresa como alineación de
+   puntos homólogos. Convertir de uno al otro divide por (1 - tamaño),
+   que en el personaje de la card 2 vale 0.0056: cualquier redondeo
+   en el tamaño se amplifica 180 veces. Con una ventana recortada y
+   la imagen adentro, los números son los del Figma sin conversión.
+   ============================================================ */
+/* `border-box` al final del shorthand no es decorativo: fija `background-origin`
+   y `background-clip` en la caja del borde. Sin eso `cover` escala la imagen a
+   la caja de padding, el anillo de 1px del borde queda sin fondo y el verde al
+   20% termina componiendo contra el fondo de página en vez de contra la propia
+   card — que es lo que hace el Figma, donde el stroke va por dentro y encima
+   del fill. Se nota en la card de fondo claro: su borde tiene que tomar el
+   naranja y el turquesa del degradé, no quedar verde plano. */
+@utility event-surface-gamepad {
+  background: url("/assets/home/eventos/card-surface.png") center / cover no-repeat border-box;
+}
+@utility event-surface-sunset {
+  background: url("/assets/home/eventos/card-surface-sunset.png") center / cover no-repeat border-box;
+}
+/* El slider se scrollea con el dedo en mobile y con las flechas en desktop; la
+   barra nativa no aporta nada y taparía el borde inferior de las cards. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* ============================================================
    ÍCONOS DEL MENÚ FLOTANTE
    El SVG del diseño se usa como MÁSCARA y el color lo pone un token
@@ -575,5 +635,12 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Ninguna imagen del proyecto se selecciona ni se arrastra: son assets del
+     diseño, no contenido que el usuario manipule. El highlight azul al pasar el
+     mouse sobre una card y el fantasma de drag rompen la ilusión del clon. */
+  img {
+    -webkit-user-drag: none;
+    user-select: none;
   }
 }

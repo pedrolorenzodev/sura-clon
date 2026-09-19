@@ -23,6 +23,11 @@ import { cn } from "@/lib/utils";
  * El tooltip de hover no está en el Figma: los estilos salen del elemento real
  * de app.suragaming.com (PRD § 5). El texto sí es nuestro — el live está en
  * inglés y la UI del rediseño va en español.
+ *
+ * **El `<nav>` va con `pointer-events-none`.** Mide 148 × 720 y está fijo, o
+ * sea que tapa el gutter izquierdo entero de cualquier sección que pase por
+ * debajo al scrollear: la flecha izquierda del slider de Eventos no recibía ni
+ * el hover. Los eventos los toma el riel, que es lo único que se ve.
  */
 export function NavDesktop({
   activeId,
@@ -36,10 +41,10 @@ export function NavDesktop({
   return (
     <nav
       aria-label="Secciones del Home"
-      className="fixed left-0 top-header-desktop z-40 hidden h-hero-content-desktop w-gutter-desktop items-center px-11 desktop:flex"
+      className="pointer-events-none fixed left-0 top-header-desktop z-40 hidden h-hero-content-desktop w-gutter-desktop items-center px-11 desktop:flex"
     >
       <TooltipProvider>
-        <div className="border-gradient-nav-desktop rounded-2xl bg-nav-glass py-2 shadow-nav backdrop-blur-nav">
+        <div className="pointer-events-auto border-gradient-nav-desktop rounded-2xl bg-nav-glass py-2 shadow-nav backdrop-blur-nav">
           <div className="relative">
             <span
               aria-hidden

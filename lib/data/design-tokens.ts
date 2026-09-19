@@ -135,7 +135,8 @@ export const textTokens: TextToken[] = [
   { name: "--text-display", utility: "text-display", family: "font-display", usage: "Título del hero, desktop", specimen: "Bienvenidos a la comunidad" },
   { name: "--text-display-sm", utility: "text-display-sm", family: "font-display", usage: "Título de Sura News", specimen: "Sura News" },
   { name: "--text-display-xs", utility: "text-display-xs", family: "font-display", usage: "Título del hero, mobile", specimen: "Bienvenidos a la comunidad" },
-  { name: "--text-title", utility: "text-title", family: "font-techno", usage: "Título de sección", specimen: "Torneos" },
+  { name: "--text-title", utility: "text-title", family: "font-techno", usage: "Título de sección, desktop", specimen: "Eventos" },
+  { name: "--text-title-sm", utility: "text-title-sm", family: "font-techno", usage: "Título de sección, mobile", specimen: "Eventos" },
   { name: "--text-card-title", utility: "text-card-title", family: "font-techno", usage: "Título de card de Torneos", specimen: "Valorant Champions Tour" },
   { name: "--text-link", utility: "text-link", family: "font-techno", usage: '"VER todo", "ir a sura news"', specimen: "Ver todo" },
   { name: "--text-cta", utility: "text-cta", family: "font-techno", usage: "Botón del hero, desktop — 14/14, tracking 0.5px", specimen: "Comenzar ahora" },
@@ -184,6 +185,8 @@ export const gradientTokens: Token[] = [
   { name: "--gradient-nav-border-desktop", utility: "border-gradient-nav-desktop", usage: "Borde del riel desktop — sólido arriba, se desvanece hacia abajo" },
   { name: "--gradient-hero-scrim", utility: "bg-hero-scrim", usage: "Scrim del hero desktop — funde el arte al fondo de página" },
   { name: "--gradient-hero-scrim-mobile", utility: "bg-hero-scrim-mobile", usage: "Scrim del hero mobile — cubre arriba y abajo" },
+  { name: "--gradient-event-scrim", utility: "bg-event-scrim", usage: "Scrim de la card de Eventos" },
+  { name: "--gradient-event-scrim-strong", utility: "bg-event-scrim-strong", usage: "Scrim de la card de Eventos de fondo claro" },
 ];
 
 /**
@@ -212,4 +215,8 @@ export const layoutTokens: Token[] = [
   { name: "--spacing-hero-gap", utility: "gap-hero-gap", usage: "Contenido del hero ↔ gutter derecho" },
   { name: "--spacing-section-gap", utility: "gap-section-gap", usage: "Separación entre secciones" },
   { name: "--spacing-title-gap", utility: "gap-title-gap", usage: "Título de sección → contenido" },
+  { name: "--spacing-event-card", utility: "w-event-card", usage: "Ancho de la card de Eventos, desktop" },
+  { name: "--spacing-event-card-mobile", utility: "w-event-card-mobile", usage: "Ancho de la card de Eventos, mobile" },
+  { name: "--spacing-event-surface", utility: "h-event-surface", usage: "Alto de la superficie de la card, desktop — el personaje se sale por arriba" },
+  { name: "--spacing-event-surface-mobile", utility: "h-event-surface-mobile", usage: "Alto de la superficie de la card, mobile" },
 ];
