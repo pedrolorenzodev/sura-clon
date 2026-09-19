@@ -73,7 +73,7 @@ export function NavMobile({
                         section.icon,
                         section.iconSize,
                         isActive
-                          ? "bg-background delay-150"
+                          ? "bg-primary-foreground delay-150"
                           : "bg-nav-icon group-active:bg-brand",
                       )}
                     />

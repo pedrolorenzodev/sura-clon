@@ -7,10 +7,11 @@ import { cn } from "@/lib/utils";
  * izquierdo. La versión mobile es otro componente (AGENTS regla 12).
  *
  * Geometría del Figma (`col-izq`, 148 × 720): la columna ocupa el gutter
- * izquierdo entero y el menú (60 × 322 con los 7 ítems del diseño) va centrado
- * vertical, a 44px del borde. Acá la columna arranca justo debajo del header
- * fijo y llega hasta el pie del viewport, así el centrado sigue siendo el del
- * diseño sin depender del alto de la página.
+ * izquierdo entero, arranca justo debajo del header y mide **lo mismo que la
+ * fila del hero**. Eso no es casualidad: es lo que hace que el menú se vea
+ * centrado contra el contenido del hero, que también está centrado en esos 720.
+ * Los dos centros caen en el mismo píxel por construcción, sin depender del
+ * alto del viewport. El menú (60 de ancho) va a 44px del borde.
  *
  * El borde va como `ring-inset`: en Figma el stroke se dibuja hacia adentro y
  * el menú mide 60px de ancho; un `border` lo llevaría a 62.
@@ -35,7 +36,7 @@ export function NavDesktop({
   return (
     <nav
       aria-label="Secciones del Home"
-      className="fixed bottom-0 left-0 top-header-desktop z-40 hidden w-gutter-desktop items-center px-11 desktop:flex"
+      className="fixed left-0 top-header-desktop z-40 hidden h-hero-content-desktop w-gutter-desktop items-center px-11 desktop:flex"
     >
       <TooltipProvider>
         <div className="rounded-2xl bg-nav-glass py-2 shadow-nav ring-1 ring-border ring-inset backdrop-blur-nav">
@@ -83,7 +84,7 @@ export function NavDesktop({
                             section.icon,
                             section.iconSize,
                             isActive
-                              ? "bg-background delay-150"
+                              ? "bg-primary-foreground delay-150"
                               : "bg-foreground group-hover:bg-brand group-focus-visible:bg-brand",
                           )}
                         />

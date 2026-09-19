@@ -63,6 +63,14 @@
   --text-note--line-height: 16px;
   --text-note--letter-spacing: -0.02em;
 
+  /* Copy del hero. `leading-normal` de Tailwind es 1.5 (=24px), NO el `normal`
+     de CSS: el nodo de Figma mide 38px para 2 líneas, o sea 19 exactos. El
+     tamaño chico lo comparten el copy y el CTA mobile. */
+  --text-copy: 16px;
+  --text-copy--line-height: 19px;
+  --text-copy-sm: 12px;
+  --text-copy-sm--line-height: 14px;
+
   /* sans — Inter */
   /* No sale del diseño: lo exige `components/ui/button.tsx` (shadcn lo tiene
      hardcodeado en su clase base). Se marca como tal en /styleguide. */
@@ -102,7 +110,11 @@
   --color-brand-faint: rgb(160 229 0 / 0.2);
 
   /* --- Superficies --- */
-  --color-background: #0c0c0c;
+  /* Muestreado en los dos frames compuestos del Home (desktop y mobile), seis
+     puntos cada uno. El #0C0C0C anterior salía de la variable publicada
+     `Sura/Negro`, que es del diseño viejo. El scrim del hero se funde a este
+     color, así que tiene que ser el mismo. */
+  --color-background: #202020;
   --color-surface: #222222;
   --color-surface-2: #303030;
   --color-surface-3: #282828;
@@ -170,7 +182,15 @@
   --shadow-gold-glow: 0 0 8px rgb(251 188 4 / 0.35);
   --shadow-nav: 0 0 8px rgb(39 82 108 / 0.3);
   --drop-shadow-claim: 0 4px 15px rgb(0 0 0 / 0.3);
-  --drop-shadow-cta: 0 4px 2px rgb(0 0 0 / 0.25);
+  /* Las dos sombras del CTA del hero van como box-shadow y no como drop-shadow:
+     el botón es un pill opaco, así que se ven igual, pero drop-shadow NO admite
+     varias capas en un token (Tailwind envuelve el valor entero en un solo
+     drop-shadow() y el CSS queda inválido). Con box-shadow además el override
+     de desktop cae sobre la misma propiedad. */
+  --shadow-cta: 0 4px 2px rgb(0 0 0 / 0.25);
+  /* El CTA mobile suma un glow verde. Usa #97F300: un TERCER verde legacy,
+     distinto del #A0E500 de --color-brand-faint. Ver deuda en PRD § 6. */
+  --shadow-cta-mobile: 0 0 4px rgb(151 243 0 / 0.5), 0 4px 4px rgb(0 0 0 / 0.25);
   /* El badge de nivel es un PNG con alpha: la sombra tiene que seguir la silueta,
      así que va como drop-shadow y no como box-shadow. */
   --drop-shadow-badge: 0 2px 5px rgb(12 12 12 / 0.3);
@@ -192,6 +212,12 @@
      diseño). Lo consume el menú flotante para arrancar justo debajo, y las
      secciones para su scroll-margin-top. */
   --spacing-header-desktop: 106px;
+  /* Altos del hero. Son constantes entre bloques: el 1024 define dónde la
+     sección siguiente empieza a solaparse con el fondo. */
+  --spacing-hero-desktop: 1024px;
+  --spacing-hero-mobile: 524px;
+  --spacing-hero-content-desktop: 720px;
+  --spacing-hero-gap: 137px;
   --spacing-section-gap: 80px;
   --spacing-title-gap: 16px;
 }
@@ -226,6 +252,25 @@
     180deg,
     var(--color-border) 0%,
     var(--color-surface-2) 100%
+  );
+  /* Scrim del hero. El stop transparente va como rgb(32 32 32 / 0) y no como
+     `transparent`: `transparent` es negro transparente y al interpolar ensucia
+     el degradé con un tiro a negro. */
+  --gradient-hero-scrim: linear-gradient(
+    180deg,
+    rgb(32 32 32 / 0) 0%,
+    var(--color-background) 89.904%
+  );
+  /* Mobile tiene scrim arriba Y abajo. Los stops del Figma están sobre una caja
+     de 553px que arranca 29px más arriba que el fondo; acá van reexpresados
+     sobre la caja de 524, que da lo mismo dentro de lo visible y evita tener
+     que posicionar la capa en negativo. */
+  --gradient-hero-scrim-mobile: linear-gradient(
+    180deg,
+    var(--color-background) 2.584%,
+    rgb(32 32 32 / 0.25) 10.703%,
+    rgb(32 32 32 / 0.15) 74.124%,
+    var(--color-background) 93.912%
   );
   --gradient-claim: linear-gradient(90deg, rgb(48 48 48 / 0.4) 0%, rgb(48 48 48 / 0.4) 100%),
     linear-gradient(90deg, #091900 0%, #091900 100%);
@@ -270,6 +315,28 @@
     mask-composite: exclude;
     pointer-events: none;
   }
+}
+
+@utility bg-hero-scrim {
+  background-image: var(--gradient-hero-scrim);
+}
+@utility bg-hero-scrim-mobile {
+  background-image: var(--gradient-hero-scrim-mobile);
+}
+
+/* Arte del hero: un solo archivo para los dos tamaños (mismo sha256 en los dos
+   nodos del Figma), con distinto encuadre.
+
+   El tamaño va en PORCENTAJE del contenedor y no en px: así el recorte es
+   idéntico a cualquier ancho de pantalla. Desktop 181.25% = 2610/1440; mobile
+   254.17% = 991.28/390. El 31.7% horizontal de mobile sale de
+   -190.63 / (390 - 991.28), y por ser porcentaje también es invariante a la
+   escala. */
+@utility hero-art-mobile {
+  background: url("/assets/home/hero-art.jpg") 31.704% 0 / 254.174% auto no-repeat;
+}
+@utility hero-art-desktop {
+  background: url("/assets/home/hero-art.jpg") left top / 181.25% auto no-repeat;
 }
 
 @utility bg-claim {

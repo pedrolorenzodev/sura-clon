@@ -139,6 +139,8 @@ export const textTokens: TextToken[] = [
   { name: "--text-cta", utility: "text-cta", family: "font-techno", usage: "Botón del hero", specimen: "Comenzar ahora" },
   { name: "--text-note", utility: "text-note", family: "font-techno", usage: "Copy de News, fechas, valores", specimen: "Nov 28, 8:00 PM" },
   { name: "--text-sm", utility: "text-sm", family: "font-sans", usage: "Nombre de usuario en el header mobile", specimen: "RocketMan1989" },
+  { name: "--text-copy", utility: "text-copy", family: "font-techno", usage: "Copy del hero desktop — 16/19, el `normal` real del diseño", specimen: "Unite a Sura, desbloqueá niveles" },
+  { name: "--text-copy-sm", utility: "text-copy-sm", family: "font-techno", usage: "Copy y CTA del hero mobile — 12/14", specimen: "Unite a Sura, desbloqueá niveles" },
   { name: "--text-base", utility: "text-base", family: "font-sans", usage: "Nav, título de card de Juegos", specimen: "Wagmi Defense" },
   { name: "--text-ui", utility: "text-ui", family: "font-sans", usage: "Nombre de usuario", specimen: "RocketMan1989" },
   { name: "--text-xs", utility: "text-xs", family: "font-sans", usage: "Usuario del podio", specimen: "DesenfrenadO_" },
@@ -164,7 +166,8 @@ export const shadowTokens: Token[] = [
   { name: "--shadow-gold-glow", utility: "shadow-gold-glow", usage: "Glow del primer puesto del podio" },
   { name: "--shadow-nav", utility: "shadow-nav", usage: "Menú flotante desktop" },
   { name: "--drop-shadow-claim", utility: "drop-shadow-claim", usage: "Botón Reclamar" },
-  { name: "--drop-shadow-cta", utility: "drop-shadow-cta", usage: "CTA del hero" },
+  { name: "--shadow-cta", utility: "shadow-cta", usage: "CTA del hero, desktop" },
+  { name: "--shadow-cta-mobile", utility: "shadow-cta-mobile", usage: "CTA del hero, mobile — suma un glow verde" },
 ];
 
 export const gradientTokens: Token[] = [
@@ -173,6 +176,8 @@ export const gradientTokens: Token[] = [
   { name: "--gradient-badge", utility: "bg-badge", usage: "Fondo de los badges de Torneos" },
   { name: "--gradient-claim", utility: "bg-claim", usage: "Fondo del botón Reclamar" },
   { name: "--gradient-nav-border", utility: "border-gradient-nav", usage: "Borde de la bottom bar mobile — el Figma lo dibuja con degradé vertical" },
+  { name: "--gradient-hero-scrim", utility: "bg-hero-scrim", usage: "Scrim del hero desktop — funde el arte al fondo de página" },
+  { name: "--gradient-hero-scrim-mobile", utility: "bg-hero-scrim-mobile", usage: "Scrim del hero mobile — cubre arriba y abajo" },
 ];
 
 export const layoutTokens: Token[] = [
@@ -183,6 +188,10 @@ export const layoutTokens: Token[] = [
   { name: "--spacing-nav-x", utility: "px-nav-x", usage: "Padding lateral de la nav" },
   { name: "--spacing-header-desktop", utility: "top-header-desktop", usage: "Alto del header desktop: offset del menú flotante y scroll-margin de las secciones" },
   { name: "--blur-nav", utility: "backdrop-blur-nav", usage: "Blur del menú flotante desktop" },
+  { name: "--spacing-hero-desktop", utility: "h-hero-desktop", usage: "Alto del fondo del hero desktop; define dónde se solapa la sección siguiente" },
+  { name: "--spacing-hero-mobile", utility: "h-hero-mobile", usage: "Alto del fondo del hero mobile" },
+  { name: "--spacing-hero-content-desktop", utility: "h-hero-content-desktop", usage: "Alto de la fila de contenido del hero desktop" },
+  { name: "--spacing-hero-gap", utility: "gap-hero-gap", usage: "Contenido del hero ↔ gutter derecho" },
   { name: "--spacing-section-gap", utility: "gap-section-gap", usage: "Separación entre secciones" },
   { name: "--spacing-title-gap", utility: "gap-title-gap", usage: "Título de sección → contenido" },
 ];
