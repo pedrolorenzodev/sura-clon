@@ -25,18 +25,23 @@
      TIPOGRAFÍA — tres familias.
      display y techno son SUSTITUTOS LIBRES de fuentes comerciales:
        Monument Extended  → Anybody      (wdth 120, wght 900)
-       KH Interference    → Martian Mono (wdth 75)
+       KH Interference    → Tektur
      Los ejes se eligieron midiendo el ancho de tinta del render de
-     Figma: el título queda a +3% y el copy a +0.3%. Ver PRD § 6.
+     Figma: el título queda a +3% y el copy a 3% de error medio.
+     Ver PRD § 6.
      ============================================================ */
   --font-display: var(--font-anybody), ui-sans-serif, system-ui, sans-serif;
   --font-display--font-variation-settings: "wdth" 120, "wght" 900;
 
-  --font-techno: var(--font-martian-mono), ui-monospace, SFMono-Regular, monospace;
-  --font-techno--font-variation-settings: "wdth" 75;
+  --font-techno: var(--font-tektur), ui-sans-serif, system-ui, sans-serif;
+  /* Tektur topea el eje en 100 y ahí es donde mejor calza: medido contra la
+     tinta del render de Figma, el error medio queda en 3%. OJO: KH Interference
+     es una fuente TODO MAYÚSCULAS y Tektur tiene minúsculas, así que cada texto
+     en font-techno necesita `uppercase` para verse como el diseño. */
+  --font-techno--font-variation-settings: "wdth" 100;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-martian-mono), ui-monospace, monospace;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
 
   /* --- Escala. La familia la pone el call site (font-display / font-techno /
          font-sans); acá van tamaño, interlineado y tracking. --- */
@@ -50,7 +55,7 @@
   --text-display-xs: 28px;
   --text-display-xs--line-height: 28px;
 
-  /* techno — Martian Mono */
+  /* techno — Tektur */
   --text-title: 24px;
   --text-title--line-height: 32px;
   --text-card-title: 20px;
