@@ -91,10 +91,18 @@ Acá van solo los valores, que sí dependen del target.
 | Mobile | **390 px** | 844 px (una pantalla, ver sección 5) | ✅ Confirmado |
 | Desktop | **1440 px** | 4138 px | ✅ Confirmado |
 
-De acá salen dos cosas que tienen que coincidir siempre:
+Los widths de los frames son los de `VIEWPORTS` en `scripts/shot.mjs`: mobile 390 · desktop 1440.
 
-- `--breakpoint-desktop` en `app/globals.css` → **1440px**
-- `VIEWPORTS` en `scripts/shot.mjs` → mobile 390 · desktop 1440
+### Breakpoint: 391px, no 1440px
+
+**El diseño mobile es exclusivo del frame de 390.** De 391px para arriba manda el diseño
+desktop, en la pantalla que sea. Decisión del usuario (2026-09-18), tomada al ver que con el
+corte en 1440 cualquier ventana de 1339px o menos caía al layout mobile.
+
+`--breakpoint-desktop` en `app/globals.css` → **391px**.
+
+Consecuencia aceptada: entre 391 y ~860px el header desktop **no entra y se recorta**. No hay
+diseño para esa franja y no se inventa ninguno (`AGENTS.md` regla 7).
 
 ### Grilla
 
@@ -122,6 +130,12 @@ La grilla del rediseño cierra exacta, sin asimetrías:
 |---|---|
 | **Desktop** | Nav superior (logo + saldo + perfil) **y** menú flotante vertical a la izquierda: 60 × 322, 7 ítems (nodo `3628:75011`) |
 | **Mobile** | **Bottom bar flotante**: 375 × 80, radio 16, `backdrop-blur`, borde `#494949`, con 5 ítems y un botón circular verde de 70 px al centro (nodo `3567:88398`). No hay menú lateral ni hamburguesa |
+
+**El header va fijo arriba y siempre visible**, sin tomar fondo al scrollear: queda sobre el
+hero con el fondo casi transparente del diseño. Decisión del usuario, 2026-09-18.
+
+> La status bar de iOS y el home indicator del frame mobile son chrome del dispositivo y
+> **no se maquetan**. Tampoco la "Progress bar" que está oculta dentro del header mobile.
 
 > ⚠️ **Modelo de navegación: a confirmar.** El diseño anterior scrolleaba a secciones del Home.
 > La bottom bar nueva (Home · Search · + · Medallas · Menú) parece de app con **rutas reales**.
@@ -199,10 +213,12 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
-| 2026-09-18 | `--breakpoint-desktop: 1440px` | Home | Ancho del frame desktop. Único prefijo responsive del proyecto. |
+| 2026-09-18 | `--breakpoint-desktop: 391px` | Home | Único prefijo responsive. El diseño mobile vive sólo hasta 390px; de 391 para arriba manda desktop. |
 | 2026-09-18 | Fuentes: `--font-display`, `--font-techno`, `--font-sans` | Home | Tres familias. Las dos primeras son **sustitutos libres** de fuentes comerciales (ver deuda). |
 | 2026-09-18 | Tipografía: `--text-display(-sm/-xs)`, `--text-title`, `--text-card-title`, `--text-link`, `--text-cta`, `--text-note`, `--text-base`, `--text-ui`, `--text-xs/2xs/3xs` | Home | Escala relevada sección por sección. Cada token lleva su familia, line-height y tracking. |
-| 2026-09-18 | `--text-sm` (14/20, Inter) | — | **No sale del diseño.** Lo exige `components/ui/button.tsx`, que trae `text-sm` hardcodeado en su clase base. Marcado como tal en `/styleguide`. |
+| 2026-09-18 | `--text-sm` (14/20, Inter) | Header | Nombre de usuario en el header mobile. *(Antes estaba marcado como fuera del diseño: se corrigió al maquetar el bloque 1.)* |
+| 2026-09-18 | `--border-thin: 1.5px` | Header | Anillo del avatar. Tailwind no tiene namespace de border-width, así que va como custom property y se referencia con `border-[length:var(--border-thin)]`. |
+| 2026-09-18 | `--shadow-badge` → `--drop-shadow-badge` | Header | El badge de nivel es un PNG con alfa: la sombra tiene que seguir la silueta. `box-shadow` dibujaba un rectángulo. |
 | 2026-09-18 | Marca: `--color-brand #A5E04A`, `--color-brand-deep`, `--color-brand-faint` | Home | El verde cambió respecto del diseño viejo y **no está publicado como variable de Figma**: se tomó del uso real. |
 | 2026-09-18 | Superficies y bordes: `--color-surface(-2/-3)`, `--color-overlay`, `--color-border(-muted/-light/-dim)` | Home | Nav, cards, badges, bottom bar. |
 | 2026-09-18 | **Familia dorada**: `--color-gold`, `--color-gold-deep`, `--color-gold-bright` + gradientes | Home | Nueva en el rediseño: premios, podio y medallas. No existía antes. |
@@ -220,6 +236,15 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Verde legacy en los bordes** | Las cards de Torneos tienen borde `rgba(160, 229, 0, 0.2)` — el verde **viejo** al 20%, no el nuevo. | Probable resto del rediseño a medio hacer. Se replica tal cual (`--color-brand-faint`) y se consulta. |
 | **"Torneos" vs "EVENTOS"** | La misma sección tiene distinto nombre en desktop y en mobile. | Se respeta cada frame. Confirmar cuál queda. |
 | **Diseño mobile incompleto** | Falta el 60% de las secciones (ver sección 5). | Pendiente de que lleguen los frames. |
+
+### Notas de implementación que salieron del maquetado
+
+| Tema | Qué pasó | Cómo se resolvió |
+|---|---|---|
+| **Stroke de Figma vs `border` de CSS** | En Figma el stroke se dibuja **hacia adentro** y no agrega tamaño; en CSS `border` sí. Los contadores quedaban 2px más altos y el botón Reclamar 1.3px más ancho. | Los bordes que no deben afectar el layout van como **`ring-1 ring-inset`** (box-shadow, cero impacto en layout). El anillo del avatar va en una capa **encima** de la foto, para que la imagen ocupe los 40px completos. |
+| **`next/image` rompía el alfa** | El optimizador re-encodeaba los PNG a paleta y ensuciaba la transparencia: el ícono de fuego pasaba de 33×37 px de tinta a 35×48 y se veía recortado. | `images.unoptimized: true` en `next.config.ts`. Los assets ya vienen de Figma en su tamaño final; en un clon pixel-perfect la fidelidad manda sobre la optimización. |
+| **Exports opacos** | El export de un nodo hornea el fondo del padre. El PNG de las estrellitas salía 100% opaco con el verde del botón adentro y tapaba el cofre. | Para un asset que se superpone a otro se usa la **imagen original** del fill (que sí tiene alfa), no el export del nodo. |
+| **Assets con recorte interno** | El ícono de fuego es un sprite de 3072×2048 que el diseño clipea, y el logo de CS2 lleva un glow radial encima. Reproducir eso con porcentajes es frágil. | Se **exporta el nodo** desde Figma en vez de reproducir el recorte. Sigue siendo el asset del diseño, sin redibujarlo (regla 10). |
 
 ### Política de normalización de valores
 
@@ -319,8 +344,10 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | Bloque | Pantalla | Archivo | Figma desktop | Figma mobile | Estado |
 |---|---|---|---|---|---|
 | Home completo (fuente del DS) | Home | — | [`3628:74971`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-74971&m=dev) | [`3567:88242`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88242&m=dev) | ✅ Escaneado → Design System |
-| 1 · Nav / Header | Home | `components/layout/` | [`3628:74976`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-74976&m=dev) | [`3567:88345`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88345&m=dev) | ⏳ Dos componentes separados |
-| 2 · Menú flotante · Bottom bar | Home | `components/layout/` | [`3628:75011`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75011&m=dev) | [`3567:88398`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88398&m=dev) | ⏳ Dos componentes separados |
+| 1 · Header | Home | `components/layout/header*.tsx` | [`6008:26313`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26313&m=dev) | [`6008:23224`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-23224&m=dev) | 👀 Implementado, esperando aprobación |
+| 2 · Menú flotante (desktop) | Home | `components/layout/` | [`3628:75011`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75011&m=dev) | — (no existe en mobile) | ⏳ Pendiente |
+| 3 · Bottom bar (mobile) | Home | `components/layout/` | — | [`3567:88398`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88398&m=dev) | ⏳ Pendiente |
+| 4 · Drawer lateral | Home | `components/layout/` | — **falta** | — **falta** | 🚫 Sin frame |
 | 3 · Hero | Home | `components/sections/` | [`3628:75013`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75013&m=dev) | [`3567:88332`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88332&m=dev) | ⏳ Dos pases, mobile → desktop |
 | 4 · Torneos / Eventos | Home | `components/sections/` | [`3628:75027`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75027&m=dev) | [`3567:88246`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88246&m=dev) | ⏳ Los dos juntos |
 | 5 · Leaderboard | Home | `components/sections/` | [`3628:75142`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75142&m=dev) | — **falta** | 🚫 Falta el frame mobile |

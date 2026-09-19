@@ -135,7 +135,7 @@ export const textTokens: TextToken[] = [
   { name: "--text-link", utility: "text-link", family: "font-techno", usage: '"VER todo", "ir a sura news"', specimen: "Ver todo" },
   { name: "--text-cta", utility: "text-cta", family: "font-techno", usage: "Botón del hero", specimen: "Comenzar ahora" },
   { name: "--text-note", utility: "text-note", family: "font-techno", usage: "Copy de News, fechas, valores", specimen: "Nov 28, 8:00 PM" },
-  { name: "--text-sm", utility: "text-sm", family: "font-sans", usage: "Sólo para el primitive Button de shadcn", specimen: "Button", offDesign: true },
+  { name: "--text-sm", utility: "text-sm", family: "font-sans", usage: "Nombre de usuario en el header mobile", specimen: "RocketMan1989" },
   { name: "--text-base", utility: "text-base", family: "font-sans", usage: "Nav, título de card de Juegos", specimen: "Wagmi Defense" },
   { name: "--text-ui", utility: "text-ui", family: "font-sans", usage: "Nombre de usuario", specimen: "RocketMan1989" },
   { name: "--text-xs", utility: "text-xs", family: "font-sans", usage: "Usuario del podio", specimen: "DesenfrenadO_" },
@@ -157,7 +157,7 @@ export const radiusTokens: Token[] = [
 
 export const shadowTokens: Token[] = [
   { name: "--shadow-bar", utility: "shadow-bar", usage: 'Bottom bar mobile — es la variable "Shadow 3" del Figma' },
-  { name: "--shadow-badge", utility: "shadow-badge", usage: "Badge de nivel en la nav" },
+  { name: "--drop-shadow-badge", utility: "drop-shadow-badge", usage: "Badge de nivel en el header (PNG con alpha)" },
   { name: "--shadow-gold-glow", utility: "shadow-gold-glow", usage: "Glow del primer puesto del podio" },
   { name: "--drop-shadow-claim", utility: "drop-shadow-claim", usage: "Botón Reclamar" },
   { name: "--drop-shadow-cta", utility: "drop-shadow-cta", usage: "CTA del hero" },
@@ -171,7 +171,7 @@ export const gradientTokens: Token[] = [
 ];
 
 export const layoutTokens: Token[] = [
-  { name: "--breakpoint-desktop", utility: "desktop:", usage: "Único prefijo responsive del proyecto" },
+  { name: "--breakpoint-desktop", utility: "desktop:", usage: "Único prefijo responsive. El diseño mobile vive sólo hasta 390px" },
   { name: "--container-page", utility: "max-w-page", usage: "Columna de contenido desktop (4 × 268 + 3 × 24)" },
   { name: "--spacing-gutter", utility: "px-gutter", usage: "Padding lateral de sección, mobile" },
   { name: "--spacing-gutter-desktop", utility: "desktop:px-gutter-desktop", usage: "Gutter desktop; el izquierdo aloja el menú flotante" },

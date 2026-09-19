@@ -13,10 +13,13 @@
   /* ============================================================
      BREAKPOINTS — un solo prefijo responsive: desktop:
      Se maqueta mobile-first; `desktop:` es el override.
-     El valor es el ancho del frame de Figma (AGENTS regla 7).
+
+     El diseño mobile es EXCLUSIVO del frame de 390: de 391px para
+     arriba manda el diseño desktop, se vea en la pantalla que se vea.
+     Por eso el corte está en 391 y no en el ancho del frame desktop.
      ============================================================ */
   --breakpoint-*: initial;
-  --breakpoint-desktop: 1440px;
+  --breakpoint-desktop: 391px;
 
   /* ============================================================
      TIPOGRAFÍA — tres familias.
@@ -156,10 +159,12 @@
      SOMBRA — se suman a las de Tailwind, no las reemplazan.
      ============================================================ */
   --shadow-bar: 0 4px 12px rgb(13 10 44 / 0.06);
-  --shadow-badge: 0 2px 5px rgb(12 12 12 / 0.3);
   --shadow-gold-glow: 0 0 8px rgb(251 188 4 / 0.35);
   --drop-shadow-claim: 0 4px 15px rgb(0 0 0 / 0.3);
   --drop-shadow-cta: 0 4px 2px rgb(0 0 0 / 0.25);
+  /* El badge de nivel es un PNG con alpha: la sombra tiene que seguir la silueta,
+     así que va como drop-shadow y no como box-shadow. */
+  --drop-shadow-badge: 0 2px 5px rgb(12 12 12 / 0.3);
 
   /* ============================================================
      LAYOUT — la grilla del rediseño cierra exacta:
@@ -197,6 +202,12 @@
   );
   --gradient-claim: linear-gradient(90deg, rgb(48 48 48 / 0.4) 0%, rgb(48 48 48 / 0.4) 100%),
     linear-gradient(90deg, #091900 0%, #091900 100%);
+}
+
+/* Grosores que no están en la escala de Tailwind. Se referencian con
+   border-[length:var(--border-thin)] para que el valor siga saliendo de un token. */
+:root {
+  --border-thin: 1.5px;
 }
 
 @utility bg-gold-text {
