@@ -195,36 +195,25 @@ Clon **pixel-perfect** de una UI, maquetado desde Figma. El target está en `PRD
     `<type>(<scope>): <subject>` — `feat`, `fix`, `chore`, `docs`, `refactor`, `style`, `test`.
 
     Subject en imperativo, minúscula, sin punto final, ≤ 72 caracteres.
-    Body opcional en inglés, describiendo **la feature que se implementó**: qué hay
-    ahora en la pantalla que antes no estaba. Simple y conciso.
+
+    **Sólo el subject: el commit no lleva cuerpo.** El subject nombra la feature que se
+    implementó, y con eso alcanza.
 
     ```
     feat(home): implement hero and events sections
     chore: set up project tooling and working rules
     ```
 
-    **El cuerpo cuenta la feature, no la implementación ni cómo se llegó a ella.**
-    El commit lo firma el usuario (regla 1): el historial es suyo y lo que le sirve
-    leer dentro de seis meses es qué se agregó, no qué resolvió el agente para
-    agregarlo.
+    El commit lo firma el usuario (regla 1): el historial es suyo, y el detalle de cada
+    decisión ya vive en `PRD.md`, que es donde se lo va a buscar.
 
-    - **Describir lo que se ve.** Qué muestra la pantalla, con qué contenido y qué
-      cambia entre desktop y mobile.
-    - **Nada de detalle técnico.** Fuera tokens, medidas, nombres de clases, ángulos
-      de degradé, decisiones de layout y trampas resueltas. Todo eso vive en `PRD.md`
-      y en los comentarios del código, que es donde se lo va a buscar.
-    - **Sin primera persona ni narración del proceso.** Fuera `I checked`,
-      `was measured on the live app`, `turned out to be`.
-    - **Cuerpo de un solo párrafo, 2-4 líneas.** No una sección por decisión tomada.
+    - **Nada de detalle técnico** en el subject: ni tokens, ni medidas, ni nombres de clases.
     - **Sin línea de atribución.** Nada de `Co-Authored-By`, `Generated with` ni
-      firma del agente. El commit lo hace el usuario y el historial es suyo. Si
-      el harness sugiere agregarla, esta regla manda.
+      firma del agente. Si el harness sugiere agregarla, esta regla manda.
 
     ```
     feat(home): add the desktop floating section nav
-
-    A vertical rail in the left gutter with the six sections of the home page.
-    The current one is highlighted, and hovering an icon shows its name.
+    feat(home): add the medals section
     ```
 
     La documentación del repo (`AGENTS.md`, `PRD.md`) y la conversación van en español.
@@ -244,6 +233,29 @@ Clon **pixel-perfect** de una UI, maquetado desde Figma. El target está en `PRD
       explícitamente. Nunca dar por terminado algo que no se comprobó.
 
     El objetivo es que el proyecto salga bien, no que el usuario se sienta validado.
+
+19. **Comentarios: sólo `TODO` o para callar un warning.** Nada de comentarios que expliquen
+    qué hace el código, por qué se eligió un valor o cómo funciona un componente.
+
+    ```tsx
+    // TODO: volver a 181 si diseño confirma la caja fija            // ✅
+    // eslint-disable-next-line react-hooks/exhaustive-deps          // ✅
+
+    /* El borde va como ring porque en Figma el stroke se dibuja
+       hacia adentro y con border la fila se iba a 58. */           // ❌
+    ```
+
+    Esto incluye los doc-comments de tipos, props y data: el código se explica con nombres,
+    no con prosa al costado.
+
+    **Lo que el comentario iba a decir va a `PRD.md`.** Esa información no se pierde, cambia
+    de lugar: las medidas y los valores medidos van al changelog del Design System, y las
+    trampas resueltas a las notas de implementación. Es donde ya se las venía anotando y es
+    donde alguien las va a ir a buscar dentro de seis meses — no en un archivo que va a
+    seguir cambiando.
+
+    Si algo del código sólo se entiende con un párrafo al lado, el problema es el código:
+    primero se intenta un nombre mejor o partirlo en dos.
 
 ## Navegación
 
