@@ -362,7 +362,13 @@ El frame mobile original mide **390 × 844: una sola pantalla**, no la página c
 status bar, header, Hero, la sección Eventos y la bottom bar. El **Leaderboard mobile llegó
 aparte** el 2026-09-19, como nodo suelto (`6011:77868`), y por eso no está en ese frame.
 
-**No hay diseño mobile de:** Medallas · Misiones · Sura News · Juegos · Footer.
+**No hay diseño mobile de:** Misiones · Sura News · Juegos · Footer.
+
+**Medallas es la excepción**: tampoco tiene frame mobile, pero el usuario pidió adaptarlo
+(2026-09-19) en vez de esperarlo — desvío consciente de la regla 2, acotado a ese bloque. La
+adaptación no inventó nada: la grilla de 3 × 3 del desktop entra tal cual en mobile (3 celdas
+de 106 + 2 gaps de 8 = 334 contra los 342 de ancho útil), así que lo único que cambia es que
+las celdas quedan en ~98 y todo lo de adentro escala con ellas.
 
 Por la regla 2 de `AGENTS.md`, esos bloques **no se maquetan** hasta que aparezcan sus frames.
 
@@ -451,6 +457,8 @@ public/assets/<pantalla>/   assets exportados de Figma
 | 2026-09-19 | `--spacing-event-card(-mobile)` 365/210 y `--spacing-event-surface(-mobile)` 291/167 | Eventos | El alto tokenizado es el de la **superficie redondeada**, no el del frame: el personaje se sale por arriba y no cuenta como caja. |
 | 2026-09-19 | `--gradient-event-scrim` y `--gradient-event-scrim-strong` | Eventos | Funden el arte de la card hacia abajo para que se lea el texto. La variante fuerte es la de la card de fondo claro. |
 | 2026-09-19 | `--hero-art-fade-duration: 320ms` | Slider del hero | El arte se funde al cambiar de juego. No corre en la carga inicial: el arte es el LCP y no se le pone un fade adelante. |
+| 2026-09-19 | `--color-surface-deep` (#191919), `--color-locked-foreground` (#5a5a5a), `--color-medal-veil` | Medallas | Panel de la grilla, label de una medalla bloqueada y el velo que la apaga. `--color-tooltip` está a 1 nivel del panel, pero es el fondo de otro componente: mismo criterio que `--color-thumb-dim`. La celda desbloqueada reusa `--color-background`, que es exactamente su #202020. |
+| 2026-09-19 | `--gradient-medal-sheen` y `-locked` | Medallas | Brillo diagonal del círculo. El verde es el **legacy** (#A0E500), el mismo que sobrevive en el borde de la miniatura activa del hero. El gris va al **0.28** y no al 0.4 que devolvió el MCP (ver notas de implementación). |
 | 2026-09-19 | **Plata y bronce**: `--color-silver(-deep/-bright)`, `--color-bronze(-deep)` | Leaderboard | Los otros dos puestos del podio, con la misma estructura de nombres que la dorada: `-bright` para el borde de la card y el anillo del avatar, `-deep` para el fondo del pill y el base para su borde. El fondo del pill del 3º es `#714900`, que ya era `--color-gold-deep`: se reusó. |
 | 2026-09-19 | `--gradient-podium-silver` / `-bronze` y las tres variantes `-mobile`; `--gradient-podium-gold` **corregido** | Leaderboard | El dorado existía desde el escaneo inicial con `177deg` y sin la capa negra al 20% que el Figma le superpone: ahora lleva las dos capas y el ángulo medido. Mobile tiene tokens propios porque el mismo fill cambia de ángulo con la proporción de la card y ahí no hay capa negra. |
 | 2026-09-19 | `--spacing-leaderboard-col` (657), `--spacing-leaderboard-row` (486), `--spacing-podium-card` (97) | Leaderboard | La fila de dos columnas del diseño y la card del podio. El alto vive en la fila, no en la columna, para que Medallas lo herede sin declararlo. |
@@ -484,6 +492,16 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **El podio trae usuarios distintos en cada tamaño** | Desktop dice `DesenfrenadO_ / BretasNFT / SabooMafoo` con 7.015 / 6.890 / 6.755; mobile dice `KoibitoSura / Madness9891 / Gasstiel` con 999 / 888 / 800. Los avatares también difieren. | Se unificó en los de desktop (prioridad del proyecto, y el mismo criterio que la fecha de Eventos). Confirmar cuál es la data buena. |
 | **El título del Leaderboard mobile dice "eventos"** | Es un typo del frame (lo confirmó el usuario, 2026-09-19): repite el título de la sección de arriba. | Se maquetó **"Leaderboard"** en los dos tamaños. Corregir en el archivo. |
 | **Ícono vacío en el título mobile** | Al lado del título hay un frame de 16px llamado "Icon / info" **sin contenido**: no tiene ícono adentro ni en el render. | No se maquetó. Si tiene que existir, hace falta el asset (regla 10: no se redibuja). |
+
+### Deuda técnica — se encara con el Home completo
+
+Decisión del usuario (2026-09-19): estos dos temas **no se atacan bloque por bloque**. Se
+resuelven de una sola pasada cuando el Home esté terminado, o más adelante.
+
+| Tema | Estado hoy | Qué hacer |
+|---|---|---|
+| **Peso de los assets** | `public/assets/home/` va por **15 MB**, y 7,5 son de Medallas: los PNG son los fills originales del Figma (sprites de 1024², una textura de 1920 × 1080) y el diseño los muestra a 86px. Lo mismo pasa con las portadas del slider del hero (4,2 MB para tres miniaturas de 60px). | Pedirle a diseño un lote de exports a tamaño de uso. **No se editan los assets** (regla 10) y **no se prende el optimizador** de `next/image`, que se apagó en el bloque 1 porque ensuciaba el alfa de los PNG recortados. |
+| **Accesibilidad** | Se cubrió lo que salía gratis del markup (`sr-only` en los ítems del menú, `aria-current`, listas y encabezados reales). Falta lo que el diseño no dice: el estado bloqueado de una medalla sólo se comunica por color y por un candado decorativo, así que un lector de pantalla anuncia igual una obtenida y una que no. | Una pasada de accesibilidad sobre el Home entero: estados que hoy son sólo visuales, orden de foco y contraste. Bloque por bloque se hace inconsistente. |
 
 ### Notas de implementación que salieron del maquetado
 
@@ -520,6 +538,10 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **El 59,4 de las filas no es un alto** | La tabla desktop parecía pedir filas de 59,4px, un número que no normaliza a nada. | Es el reparto de los 329 que deja la fila de 486 entre 5 filas y 4 gaps. Se fija el alto de la **fila** y las `<li>` van `desktop:flex-1`: el 59,4 no se escribe en ningún archivo y la cuenta cierra sola. En mobile los 56 salen del contenido (`p-12` × 2 + avatar 32). |
 | **La corona cambia de naturaleza entre tamaños** | En desktop, 14 + 4 + 56 = 74 no entra en los 65 de contenido de una card de 97: puesta en el flujo, la card se iba a ~106. En mobile la card sí la contempla en su alto. | Desktop la posiciona `absolute` sobre el avatar (`bottom-full mb-1`); mobile la deja en el flujo. Es una de las razones por las que los dos podios son componentes distintos. |
 | **La card del podio lleva alto fijo** | Nuestro nombre de usuario mide 16 de interlineado (`--text-xs`) contra los 15 del diseño, así que la card daba 98 y la tabla se quedaba con 328. | Se fijó `--spacing-podium-card: 97px` y el píxel sobrante se reparte dentro de la card, que centra su contenido. Con eso la tabla vuelve a 329 y la fila cierra en los 486 del Figma. |
+| **El MCP infló la opacidad de un brillo** | El brillo gris de las medallas bloqueadas salía 10 niveles más claro que el render. El ángulo no era el problema: barrido entero, todos los de la familia -52.74° puntuaban igual. | Barriendo la opacidad del stop medio contra el render, la que reproduce el diseño es **0.28**, no el 0.4 del MCP — 0.4 × 0.7 da 0.28, así que lo más probable es una opacidad de grupo que el MCP aplanó dentro del color. Con eso la mediana del anillo pasa de 48 a 41 contra los 40 del Figma. El brillo verde, en cambio, sí va al 0.32 que reportó: medido, Δ 3,2. |
+| **Las medallas doradas son dos sprites de 2 × 2** | Nueve celdas y sólo siete archivos: tres doradas salen del mismo PNG y una cuarta de otro, recortando un cuadrante distinto por celda. Las grises sí vienen sueltas. | Se replica el recorte con la ventana de siempre (`overflow-hidden` + imagen posicionada), con los porcentajes del Figma sin convertir. Pedir nueve exports habría sido cambiar el asset del diseño por otro. |
+| **El círculo de 86 vive en una caja de 82** | El Figma le pone `p-12` a la celda y un círculo de 86 en una caja de 82: sobresale 2px por lado. Copiado literal, eso obliga a un desborde que después hay que recortar. | Se usa `p-10` con el círculo al ancho completo: el render es idéntico —86 de círculo a 10px del borde, celda de 130— y todo lo de adentro puede ir en porcentajes, que es lo que hace que la misma celda funcione en mobile a 98. |
+| **La grilla de Medallas se cuelga del alto de la fila** | Repartir 335 entre 3 columnas da celdas de 106,33 y no de 106: el panel se iba a 439 contra una fila de 486 que ya estaba cerrada. | El panel toma el alto que le deja la fila (`flex-1`) y `grid-rows-3` reparte las tres filas en los 130 exactos. Los 0,33 de ancho quedan: son el redondeo simétrico del píxel que el Figma deja suelto a la derecha. |
 
 ### Política de normalización de valores
 
@@ -607,7 +629,7 @@ Más:
 |---|---|---|---|
 | Setup (skills, PRD, reglas, shadcn, Playwright) | — | — | ✅ Listo |
 | Design System | — | — | 📦 Aprobado y commiteado |
-| Home | 🚧 | 🚧 | 🚧 En progreso — Header, menú y hero commiteados; Eventos y Leaderboard esperando aprobación. Medallas y lo que sigue, bloqueados por falta de frame mobile |
+| Home | 🚧 | 🚧 | 🚧 En progreso — Header, menú y hero commiteados; Eventos, Leaderboard y Medallas esperando aprobación. Lo que sigue, bloqueado por falta de frame mobile |
 
 **Leyenda:** ⏳ Pendiente · 🚧 En progreso · 👀 Esperando aprobación · ✅ Aprobada · 📦 Commiteada · 🚫 Bloqueada
 
@@ -628,13 +650,13 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 7 · Hero — slider de miniaturas | Home | `components/sections/hero-slider.tsx` + `hero-slide-context.tsx` | [`6008:26358`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26358&m=dev) | [`3567:88340`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88340&m=dev) | 👀 Esperando aprobación |
 | 8 · Eventos | Home | `components/sections/eventos.tsx`, `event-card.tsx`, `events-slider.tsx` | [`6008:26364`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26364&m=dev) | [`6009:35218`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6009-35218&m=dev) | 👀 Esperando aprobación. Reemplazan a `3628:75027` / `3567:88246`, que son copias idénticas del escaneo inicial. Las flechas salen del frame compuesto [`3628:74971`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-74971&m=dev) |
 | 9 · Leaderboard | Home | `components/sections/leaderboard*.tsx`, `section-header.tsx`, `value-pill.tsx` | [`6008:26479`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26479&m=dev) | [`6011:77868`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6011-77868&m=dev) | 👀 Esperando aprobación. Reemplazan a `3628:75142`, copia del escaneo inicial. El desktop es la **columna izquierda** de [`6008:26478`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26478&m=dev), que también contiene Medallas |
-| 10 · Medallas | Home | `components/sections/` | [`6008:26535`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26535&m=dev) | — **falta** | 🚫 Falta el frame mobile. Comparte fila con el bloque 9 y entra en su misma `<section>` |
+| 10 · Medallas | Home | `components/sections/medallas.tsx`, `medal-card.tsx` | [`6008:26535`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26535&m=dev) | — **no existe**: el mobile se adapta del desktop (decisión del usuario, 2026-09-19) | 👀 Esperando aprobación. Comparte fila con el bloque 9 y entra en su misma `<section>` |
 | 11 · Misiones | Home | `components/sections/` | [`3628:75275`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75275&m=dev) | — **falta** | 🚫 Falta el frame mobile |
 | 12 · Sura News | Home | `components/sections/` | [`3628:75287`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75287&m=dev) | — **falta** | 🚫 Falta el frame mobile |
 | 13 · Juegos | Home | `components/sections/` | [`3628:75330`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75330&m=dev) | — **falta** | 🚫 Falta el frame mobile |
 | 14 · Footer | Home | `components/layout/` | [`3628:75356`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75356&m=dev) | — **falta** | 🚫 Falta el frame mobile |
 
-> **Bloques 10 a 14 bloqueados**: el frame mobile que existe cubre sólo Hero + Eventos + Leaderboard.
+> **Bloques 11 a 14 bloqueados**: el frame mobile que existe cubre sólo Hero + Eventos + Leaderboard.
 > Por la regla 2, no se maquetan hasta tener su diseño mobile.
 >
 > La numeración es el orden en que se atacan, y es continua: si entra un bloque nuevo

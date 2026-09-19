@@ -187,6 +187,15 @@
          avatar, `-deep` el fondo del pill, y el base el borde del pill.
          El bronce no lleva `-deep` propio para el fondo del pill: el Figma usa
          ahí el mismo #714900 de `--color-gold-deep`, así que se reusa. --- */
+  /* Panel de Medallas. Mismo caso que `--color-thumb-dim`: `--color-tooltip`
+     (#1a1a1a) está a 1 nivel, pero es el fondo de otro componente y reusarlo
+     por el valor ataría dos cosas que no tienen nada que ver. */
+  --color-surface-deep: #191919;
+  /* Label de una medalla bloqueada. */
+  --color-locked-foreground: #5a5a5a;
+  /* Velo que apaga la medalla bloqueada, en `mix-blend-darken`. */
+  --color-medal-veil: rgb(54 54 54 / 0.7);
+
   --color-silver: #bcbcbc;
   --color-silver-deep: #707070;
   --color-silver-bright: #d2d2d2;
@@ -342,6 +351,20 @@
     linear-gradient(162deg, #7d7972 7.69%, #9a968f 39.42%, #635f58 89.42%);
   --gradient-podium-bronze: linear-gradient(rgb(0 0 0 / 0.2), rgb(0 0 0 / 0.2)),
     linear-gradient(162deg, #b17823 7.69%, #c88544 39.42%, #905702 89.42%);
+  /* Brillo diagonal de la medalla. El verde es el legacy (#A0E500), igual que
+     el borde de la miniatura activa del hero: el Figma lo sigue usando acá. */
+  --gradient-medal-sheen: linear-gradient(
+    -52.74deg,
+    rgb(160 229 0 / 0) 0.11%,
+    rgb(160 229 0 / 0.32) 48.7%,
+    rgb(160 229 0 / 0) 97.3%
+  );
+  --gradient-medal-sheen-locked: linear-gradient(
+    -52.74deg,
+    rgb(40 40 40 / 0) 0.11%,
+    rgb(124 124 124 / 0.28) 48.7%,
+    rgb(40 40 40 / 0) 97.3%
+  );
   --gradient-podium-gold-mobile: linear-gradient(140deg, #ba8d31 8%, #c19438 39%, #895c00 89%);
   --gradient-podium-silver-mobile: linear-gradient(132deg, #7d7972 8%, #9a968f 39%, #635f58 89%);
   --gradient-podium-bronze-mobile: linear-gradient(132deg, #b17823 8%, #c88544 39%, #905702 89%);
@@ -416,6 +439,12 @@
 }
 @utility bg-podium-gold {
   background-image: var(--gradient-podium-gold);
+}
+@utility bg-medal-sheen {
+  background-image: var(--gradient-medal-sheen);
+}
+@utility bg-medal-sheen-locked {
+  background-image: var(--gradient-medal-sheen-locked);
 }
 @utility bg-podium-silver {
   background-image: var(--gradient-podium-silver);

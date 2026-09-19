@@ -121,6 +121,16 @@ export const podiumColors: TokenGroup = {
   ],
 };
 
+export const medalColors: TokenGroup = {
+  title: "Medallas",
+  description: "Panel de la grilla y estado bloqueado.",
+  tokens: [
+    { name: "--color-surface-deep", utility: "bg-surface-deep", usage: "Fondo del panel de Medallas" },
+    { name: "--color-locked-foreground", utility: "text-locked-foreground", usage: "Label de una medalla bloqueada" },
+    { name: "--color-medal-veil", utility: "bg-medal-veil", usage: "Velo que apaga la medalla bloqueada (mix-blend-darken)" },
+  ],
+};
+
 export const semanticColors: TokenGroup = {
   title: "Alias de shadcn",
   description: "Mismos valores, con los nombres que consumen los primitives.",
@@ -191,6 +201,8 @@ export const shadowTokens: Token[] = [
 
 export const gradientTokens: Token[] = [
   { name: "--gradient-gold-text", utility: "bg-gold-text", usage: "Texto del premio (con bg-clip-text)" },
+  { name: "--gradient-medal-sheen", utility: "bg-medal-sheen", usage: "Brillo diagonal de una medalla obtenida — verde legacy" },
+  { name: "--gradient-medal-sheen-locked", utility: "bg-medal-sheen-locked", usage: "Brillo de una medalla bloqueada" },
   { name: "--gradient-podium-gold", utility: "bg-podium-gold", usage: "Fondo del primer puesto del podio, desktop" },
   { name: "--gradient-podium-silver", utility: "bg-podium-silver", usage: "Fondo del segundo puesto, desktop" },
   { name: "--gradient-podium-bronze", utility: "bg-podium-bronze", usage: "Fondo del tercer puesto, desktop" },

@@ -1,5 +1,6 @@
 import { LeaderboardPodiumDesktop } from "@/components/sections/leaderboard-podium-desktop";
 import { LeaderboardPodiumMobile } from "@/components/sections/leaderboard-podium-mobile";
+import { Medallas } from "@/components/sections/medallas";
 import { LeaderboardRow } from "@/components/sections/leaderboard-row";
 import { SectionHeader } from "@/components/sections/section-header";
 import { leaderboardRows } from "@/lib/data/leaderboard";
@@ -31,7 +32,7 @@ export function Leaderboard() {
       className="mt-section-gap-mobile scroll-mt-14 px-gutter desktop:mt-section-gap desktop:scroll-mt-header-desktop desktop:px-gutter-desktop"
     >
       <div className="mx-auto max-w-page">
-        <div className="desktop:flex desktop:h-leaderboard-row desktop:gap-30">
+        <div className="flex flex-col gap-section-gap-mobile desktop:h-leaderboard-row desktop:flex-row desktop:gap-30">
           <div className="flex flex-col gap-title-gap desktop:w-leaderboard-col">
             <SectionHeader title="Leaderboard" />
 
@@ -53,7 +54,7 @@ export function Leaderboard() {
             </div>
           </div>
 
-          {/* Acá entra <Medallas /> (bloque 10) sin tocar nada de arriba. */}
+          <Medallas className="desktop:flex-1" />
         </div>
       </div>
     </section>

@@ -7,6 +7,7 @@ import {
   goldColors,
   gradientTokens,
   layoutTokens,
+  medalColors,
   motionTokens,
   podiumColors,
   radiusTokens,
@@ -129,6 +130,7 @@ export default function StyleguidePage() {
       <ColorGrid group={textColors} />
       <ColorGrid group={goldColors} />
       <ColorGrid group={podiumColors} />
+      <ColorGrid group={medalColors} />
       <ColorGrid group={semanticColors} />
 
       <Section
