@@ -129,6 +129,16 @@ export const missionColors: TokenGroup = {
   ],
 };
 
+export const promoColors: TokenGroup = {
+  title: "Banner de Juegos",
+  description: "El violeta del banner promocional: borde, scrim y texto del CTA.",
+  tokens: [
+    { name: "--color-promo", utility: "border-promo", usage: "Borde del banner y color del scrim" },
+    { name: "--color-promo-foreground", utility: "text-promo-foreground", usage: "Texto del CTA, sobre el verde" },
+    { name: "--color-brand-vivid", utility: "border-brand-vivid", usage: "Borde y glow del CTA del banner" },
+  ],
+};
+
 export const medalColors: TokenGroup = {
   title: "Medallas",
   description: "Panel de la grilla y estado bloqueado.",
@@ -205,6 +215,9 @@ export const shadowTokens: Token[] = [
   { name: "--drop-shadow-claim", utility: "drop-shadow-claim", usage: "Botón Reclamar" },
   { name: "--shadow-cta", utility: "shadow-cta", usage: "CTA del hero, desktop" },
   { name: "--shadow-cta-mobile", utility: "shadow-cta-mobile", usage: "CTA del hero, mobile — suma un glow verde" },
+  { name: "--text-shadow-banner", utility: "text-shadow-banner", usage: "Bajada del banner de Juegos en mobile, que cae sobre la foto", offDesign: true },
+  { name: "--shadow-promo", utility: "shadow-promo", usage: "Glow violeta del banner de Juegos" },
+  { name: "--shadow-promo-cta", utility: "shadow-promo-cta", usage: "Glow verde del CTA del banner" },
   { name: "--shadow-mission-card", utility: "shadow-mission-card", usage: "Card de una misión" },
   { name: "--shadow-sp-badge", utility: "shadow-sp-badge", usage: "Badge de premio de una misión" },
   { name: "--shadow-thumb", utility: "shadow-thumb", usage: "Miniaturas del slider del hero, desktop" },
@@ -213,6 +226,9 @@ export const shadowTokens: Token[] = [
 
 export const gradientTokens: Token[] = [
   { name: "--gradient-gold-text", utility: "bg-gold-text", usage: "Texto del premio (con bg-clip-text)" },
+  { name: "--gradient-promo-scrim", utility: "bg-promo-scrim", usage: "Scrim del banner de Juegos, desktop" },
+  { name: "--gradient-promo-scrim-mobile", utility: "bg-promo-scrim-mobile", usage: "Scrim del banner en mobile — no sale del diseño", offDesign: true },
+  { name: "--gradient-promo-cta", utility: "bg-promo-cta", usage: "Fondo del CTA del banner" },
   { name: "--gradient-sp-badge", utility: "bg-sp-badge", usage: "Fondo del badge de premio de una misión" },
   { name: "--gradient-medal-sheen", utility: "bg-medal-sheen", usage: "Brillo diagonal de una medalla obtenida — verde legacy" },
   { name: "--gradient-medal-sheen-locked", utility: "bg-medal-sheen-locked", usage: "Brillo de una medalla bloqueada" },
@@ -252,6 +268,7 @@ export const layoutTokens: Token[] = [
   { name: "--spacing-nav-x", utility: "px-nav-x", usage: "Padding lateral de la nav" },
   { name: "--spacing-header-desktop", utility: "top-header-desktop", usage: "Alto del header desktop: offset del menú flotante y scroll-margin de las secciones" },
   { name: "--blur-nav", utility: "backdrop-blur-nav", usage: "Blur del menú flotante desktop" },
+  { name: "--blur-card", utility: "backdrop-blur-card", usage: "Blur del panel de la card de Juegos" },
   { name: "--spacing-hero-desktop", utility: "h-hero-desktop", usage: "Alto del fondo del hero desktop; define dónde se solapa la sección siguiente" },
   { name: "--spacing-hero-mobile", utility: "h-hero-mobile", usage: "Alto del fondo del hero mobile" },
   { name: "--spacing-hero-content-desktop", utility: "h-hero-content-desktop", usage: "Alto de la fila de contenido del hero desktop" },

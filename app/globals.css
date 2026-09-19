@@ -196,6 +196,13 @@
          avatar, `-deep` el fondo del pill, y el base el borde del pill.
          El bronce no lleva `-deep` propio para el fondo del pill: el Figma usa
          ahí el mismo #714900 de `--color-gold-deep`, así que se reusa. --- */
+  /* Verde vivo: borde y glow del CTA del banner de Juegos. Es el mismo #97F300
+     que ya vivía sin nombre dentro de `--shadow-cta-mobile`. */
+  --color-brand-vivid: #97f300;
+  /* Violeta del banner de Juegos: borde, scrim y texto del CTA. */
+  --color-promo: #6c38b5;
+  --color-promo-foreground: #2d184b;
+
   /* Texto del badge de puntos, sobre el verde. */
   --color-sp-foreground: #354619;
 
@@ -278,6 +285,10 @@
   /* Misiones: la card y el badge de puntos. En Figma son `drop-shadow`, pero las
      dos cajas son opacas y con radio, así que se ven igual como `box-shadow` —
      que además es la política del proyecto desde el CTA del hero. */
+  --text-shadow-banner: 0 1px 4px rgb(0 0 0 / 0.75);
+
+  --shadow-promo: 0 0 15px rgb(168 130 217 / 0.2);
+  --shadow-promo-cta: 0 1px 6px rgb(151 243 0 / 0.5);
   --shadow-mission-card: 0 2px 2.5px rgb(0 0 0 / 0.15);
   --shadow-sp-badge: 0 2px 5px rgb(0 0 0 / 0.15);
   --shadow-thumb: 0 4px 4px rgb(0 0 0 / 0.25);
@@ -287,6 +298,7 @@
      BLUR — el namespace default de Tailwind sigue vivo; esto se suma.
      ============================================================ */
   --blur-nav: 10px;
+  --blur-card: 2px;
 
   /* ============================================================
      MOVIMIENTO
@@ -371,6 +383,23 @@
     linear-gradient(162deg, #7d7972 7.69%, #9a968f 39.42%, #635f58 89.42%);
   --gradient-podium-bronze: linear-gradient(rgb(0 0 0 / 0.2), rgb(0 0 0 / 0.2)),
     linear-gradient(162deg, #b17823 7.69%, #c88544 39.42%, #905702 89.42%);
+  --gradient-promo-scrim: linear-gradient(
+    238.69deg,
+    rgb(108 56 181 / 0) 31.86%,
+    rgb(108 56 181 / 0.25) 54.04%,
+    rgb(108 56 181 / 0.8) 61.1%,
+    rgb(108 56 181) 80.85%,
+    rgb(108 56 181 / 0.8) 90.73%
+  );
+  --gradient-promo-scrim-mobile: linear-gradient(
+    100deg,
+    rgb(108 56 181) 0%,
+    rgb(108 56 181 / 0.85) 30%,
+    rgb(108 56 181 / 0.4) 50%,
+    rgb(108 56 181 / 0) 68%
+  );
+  --gradient-promo-cta: linear-gradient(#bcff55 40.39%, #6c932f);
+
   /* Badge de puntos de una misión: el verde de marca con un negro al 20% encima. */
   --gradient-sp-badge: linear-gradient(rgb(48 48 48 / 0.2), rgb(48 48 48 / 0.2)),
     linear-gradient(165.56deg, #456215 1.62%, #a5e04a 52.4%, #456215 109.4%);
@@ -462,6 +491,15 @@
 }
 @utility bg-podium-gold {
   background-image: var(--gradient-podium-gold);
+}
+@utility bg-promo-scrim {
+  background-image: var(--gradient-promo-scrim);
+}
+@utility bg-promo-scrim-mobile {
+  background-image: var(--gradient-promo-scrim-mobile);
+}
+@utility bg-promo-cta {
+  background-image: var(--gradient-promo-cta);
 }
 @utility bg-sp-badge {
   background-image: var(--gradient-sp-badge);

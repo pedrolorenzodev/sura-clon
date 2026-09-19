@@ -11,6 +11,7 @@ import {
   missionColors,
   motionTokens,
   podiumColors,
+  promoColors,
   radiusTokens,
   semanticColors,
   shadowTokens,
@@ -133,6 +134,7 @@ export default function StyleguidePage() {
       <ColorGrid group={podiumColors} />
       <ColorGrid group={medalColors} />
       <ColorGrid group={missionColors} />
+      <ColorGrid group={promoColors} />
       <ColorGrid group={semanticColors} />
 
       <Section
