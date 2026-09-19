@@ -49,9 +49,15 @@ export function HeaderDesktop({ className }: { className?: string }) {
       </a>
 
       <div className="flex items-center gap-3 rounded-xl bg-surface p-2">
+        {/* El hover no está en el diseño (PRD § 6): el botón se ilumina con el
+            mismo verde con el que el Figma ilumina el CTA del hero, y el label
+            sube al verde aclarado. Dos señales coordinadas, cero movimiento.
+
+            El glow va como `box-shadow` y la caída del diseño sigue siendo un
+            `drop-shadow`, que es un filtro: no se pisan. */}
         <button
           type="button"
-          className="flex items-center gap-2 rounded-lg bg-claim py-1 pl-3 pr-4 ring-1 ring-inset ring-brand drop-shadow-claim"
+          className="group flex cursor-pointer items-center gap-2 rounded-lg bg-claim py-1 pl-3 pr-4 ring-1 ring-inset ring-brand drop-shadow-claim transition-shadow duration-200 hover:shadow-brand-glow focus-visible:shadow-brand-glow motion-reduce:transition-none"
         >
           <span className="relative size-8 shrink-0">
             <Image
@@ -69,15 +75,37 @@ export function HeaderDesktop({ className }: { className?: string }) {
               className="absolute left-3 top-0 size-3 object-contain"
             />
           </span>
-          <span className="text-base font-semibold text-brand">{dailyClaim.label}</span>
+          <span className="text-base font-semibold text-brand transition-colors duration-200 group-hover:text-brand-bright group-focus-visible:text-brand-bright motion-reduce:transition-none">
+            {dailyClaim.label}
+          </span>
         </button>
 
         <Counter iconSrc="/assets/home/fire.png" value={currentUser.streak} bold />
         <Counter iconSrc="/assets/home/sp-coin.png" value={currentUser.points} />
 
-        <div className="flex items-center gap-3 pr-3">
+        {/* Avatar, nombre y nivel son UNA identidad, así que el hover toma los
+            tres juntos y no cada uno por su lado.
+
+            Va como `button` y no como `div`: es el elemento que en la app real
+            abre el menú de perfil, y en Fase 1 queda inerte igual que el botón
+            Reclamar. Cuando llegue el frame del drawer (bloque 4) ya tiene su
+            trigger.
+
+            El fondo es una CAPA ABSOLUTA y no padding del propio botón: el
+            header está medido al píxel y un `px-2` le cambiaría el ancho a la
+            pill entera. Pinta debajo porque los dos hijos están posicionados
+            —`UserAvatar` ya era `relative`— y el aire que deja es el de la
+            pill: 4px arriba y abajo, medio gap a la izquierda. */}
+        <button
+          type="button"
+          className="group relative flex cursor-pointer items-center gap-3 pr-3 text-left"
+        >
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -inset-y-1 -left-2 right-0 rounded-lg bg-surface-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none"
+          />
           <UserAvatar src={currentUser.avatarSrc} />
-          <div className="flex flex-col justify-center gap-0.5">
+          <div className="relative flex flex-col justify-center gap-0.5">
             <p className="text-ui font-semibold text-foreground">{currentUser.name}</p>
             <div className="flex items-center gap-1">
               <Image
@@ -92,7 +120,7 @@ export function HeaderDesktop({ className }: { className?: string }) {
               </p>
             </div>
           </div>
-        </div>
+        </button>
       </div>
     </div>
   );

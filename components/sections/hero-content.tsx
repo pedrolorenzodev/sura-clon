@@ -54,10 +54,15 @@ export function HeroContent() {
             fijo de 141, mientras que en mobile se ajusta al texto. Ajustarse
             daba 157.6, así que se fija un punto intermedio en 168.
 
-            Las dos decisiones son del usuario y están en la deuda, PRD § 6. */}
+            Las dos decisiones son del usuario y están en la deuda, PRD § 6.
+
+            El hover no está en el diseño (PRD § 6): el verde se aclara y el
+            botón se enciende con el mismo glow que el Figma ya le pone al CTA
+            mobile. El `desktop:hover:` está escrito aparte a propósito — sin
+            él, `desktop:shadow-cta` le gana al hover dentro del breakpoint. */}
         <a
           href={hero.cta.href}
-          className="inline-flex h-8 items-center self-start rounded-pill bg-brand px-4 font-techno text-cta-sm text-black shadow-cta-mobile desktop:h-11.5 desktop:min-w-42 desktop:justify-center desktop:px-5 desktop:text-cta desktop:shadow-cta"
+          className="inline-flex h-8 items-center self-start rounded-pill bg-brand px-4 font-techno text-cta-sm text-black shadow-cta-mobile transition duration-200 hover:bg-brand-bright hover:shadow-cta-hover motion-reduce:transition-none desktop:h-11.5 desktop:min-w-42 desktop:justify-center desktop:px-5 desktop:text-cta desktop:shadow-cta desktop:hover:shadow-cta-hover"
         >
           {hero.cta.label}
         </a>

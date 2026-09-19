@@ -195,22 +195,27 @@ Clon **pixel-perfect** de una UI, maquetado desde Figma. El target está en `PRD
     `<type>(<scope>): <subject>` — `feat`, `fix`, `chore`, `docs`, `refactor`, `style`, `test`.
 
     Subject en imperativo, minúscula, sin punto final, ≤ 72 caracteres.
-    Body opcional en inglés, explicando el **por qué**, no el qué.
+    Body opcional en inglés, describiendo **la feature que se implementó**: qué hay
+    ahora en la pantalla que antes no estaba. Simple y conciso.
 
     ```
     feat(home): implement hero and events sections
     chore: set up project tooling and working rules
     ```
 
-    **El mensaje describe el cambio, no cómo se llegó a él.** El commit lo firma el
-    usuario (regla 1): un cuerpo que narra la investigación del agente queda ajeno en
-    un historial que no es suyo.
+    **El cuerpo cuenta la feature, no la implementación ni cómo se llegó a ella.**
+    El commit lo firma el usuario (regla 1): el historial es suyo y lo que le sirve
+    leer dentro de seis meses es qué se agregó, no qué resolvió el agente para
+    agregarlo.
 
+    - **Describir lo que se ve.** Qué muestra la pantalla, con qué contenido y qué
+      cambia entre desktop y mobile.
+    - **Nada de detalle técnico.** Fuera tokens, medidas, nombres de clases, ángulos
+      de degradé, decisiones de layout y trampas resueltas. Todo eso vive en `PRD.md`
+      y en los comentarios del código, que es donde se lo va a buscar.
     - **Sin primera persona ni narración del proceso.** Fuera `I checked`,
       `was measured on the live app`, `turned out to be`.
-    - **Cuerpo de un solo párrafo, 3-4 líneas.** No una sección por decisión tomada.
-    - **Lo que ya está en `PRD.md` no se repite.** Las decisiones de diseño se
-      documentan ahí, que es donde se las va a buscar.
+    - **Cuerpo de un solo párrafo, 2-4 líneas.** No una sección por decisión tomada.
     - **Sin línea de atribución.** Nada de `Co-Authored-By`, `Generated with` ni
       firma del agente. El commit lo hace el usuario y el historial es suyo. Si
       el harness sugiere agregarla, esta regla manda.
@@ -218,9 +223,8 @@ Clon **pixel-perfect** de una UI, maquetado desde Figma. El target está en `PRD
     ```
     feat(home): add the desktop floating section nav
 
-    Only the six items that have a section on the page, in the order design
-    asked for. Icons are masked so a single export covers both colour states.
-    The hover tooltip is not in the Figma and follows the live app instead.
+    A vertical rail in the left gutter with the six sections of the home page.
+    The current one is highlighted, and hovering an icon shows its name.
     ```
 
     La documentación del repo (`AGENTS.md`, `PRD.md`) y la conversación van en español.
