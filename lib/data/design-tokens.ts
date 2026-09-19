@@ -77,6 +77,8 @@ export const surfaceColors: TokenGroup = {
     { name: "--color-surface-2", utility: "bg-surface-2", usage: "Ítems de la nav" },
     { name: "--color-surface-3", utility: "bg-surface-3", usage: "Chip interno de los contadores" },
     { name: "--color-overlay", utility: "bg-overlay", usage: "Panel translúcido sobre imagen (Juegos)" },
+    { name: "--color-nav-glass", utility: "bg-nav-glass", usage: "Menú flotante desktop — casi transparente, el efecto lo hace el blur" },
+    { name: "--color-tooltip", utility: "bg-tooltip", usage: "Tooltip del menú flotante — tomado del sitio live, no del Figma" },
     { name: "--color-border", utility: "bg-border", usage: "Bottom bar mobile" },
     { name: "--color-border-muted", utility: "bg-border-muted", usage: "Badges de Juegos" },
     { name: "--color-border-light", utility: "bg-border-light", usage: "Badges de Torneos" },
@@ -159,6 +161,7 @@ export const shadowTokens: Token[] = [
   { name: "--shadow-bar", utility: "shadow-bar", usage: 'Bottom bar mobile — es la variable "Shadow 3" del Figma' },
   { name: "--drop-shadow-badge", utility: "drop-shadow-badge", usage: "Badge de nivel en el header (PNG con alpha)" },
   { name: "--shadow-gold-glow", utility: "shadow-gold-glow", usage: "Glow del primer puesto del podio" },
+  { name: "--shadow-nav", utility: "shadow-nav", usage: "Menú flotante desktop" },
   { name: "--drop-shadow-claim", utility: "drop-shadow-claim", usage: "Botón Reclamar" },
   { name: "--drop-shadow-cta", utility: "drop-shadow-cta", usage: "CTA del hero" },
 ];
@@ -176,6 +179,8 @@ export const layoutTokens: Token[] = [
   { name: "--spacing-gutter", utility: "px-gutter", usage: "Padding lateral de sección, mobile" },
   { name: "--spacing-gutter-desktop", utility: "desktop:px-gutter-desktop", usage: "Gutter desktop; el izquierdo aloja el menú flotante" },
   { name: "--spacing-nav-x", utility: "px-nav-x", usage: "Padding lateral de la nav" },
+  { name: "--spacing-header-desktop", utility: "top-header-desktop", usage: "Alto del header desktop: offset del menú flotante y scroll-margin de las secciones" },
+  { name: "--blur-nav", utility: "backdrop-blur-nav", usage: "Blur del menú flotante desktop" },
   { name: "--spacing-section-gap", utility: "gap-section-gap", usage: "Separación entre secciones" },
   { name: "--spacing-title-gap", utility: "gap-title-gap", usage: "Título de sección → contenido" },
 ];

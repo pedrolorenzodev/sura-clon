@@ -79,6 +79,11 @@ Solo UI. Toda la data es hardcodeada. El foco está 100% en que el render coinci
 
 > Ante cualquier diferencia entre el Figma y el sitio live, **manda el Figma**.
 
+> **Excepción acotada:** si un elemento **no existe en el Figma** pero sí en el live, el live
+> es la única referencia posible y se usa — solo para ese elemento, y queda anotado. Hasta hoy
+> pasó una vez: el tooltip de hover del menú flotante (2026-09-18). Ojo con el texto: el live
+> está en **inglés** ("Events", "Missions") y la UI del rediseño va en español.
+
 ---
 
 ## 4. Widths de los frames
@@ -128,7 +133,7 @@ La grilla del rediseño cierra exacta, sin asimetrías:
 
 | | Qué hay |
 |---|---|
-| **Desktop** | Nav superior (logo + saldo + perfil) **y** menú flotante vertical a la izquierda: 60 × 322, 7 ítems (nodo `3628:75011`) |
+| **Desktop** | Nav superior (logo + saldo + perfil) **y** menú flotante vertical a la izquierda: 60 de ancho, a 44 px del borde, centrado vertical dentro del gutter (`col-izq`, 148 × 720, nodo `6008:26347`). El Figma trae 7 ítems; se maquetan **6** (ver abajo) |
 | **Mobile** | **Bottom bar flotante**: 375 × 80, radio 16, `backdrop-blur`, borde `#494949`, con 5 ítems y un botón circular verde de 70 px al centro (nodo `3567:88398`). No hay menú lateral ni hamburguesa |
 
 **El header va fijo arriba y siempre visible**, sin tomar fondo al scrollear: queda sobre el
@@ -137,12 +142,70 @@ hero con el fondo casi transparente del diseño. Decisión del usuario, 2026-09-
 > La status bar de iOS y el home indicator del frame mobile son chrome del dispositivo y
 > **no se maquetan**. Tampoco la "Progress bar" que está oculta dentro del header mobile.
 
-> ⚠️ **Modelo de navegación: a confirmar.** El diseño anterior scrolleaba a secciones del Home.
-> La bottom bar nueva (Home · Search · + · Medallas · Menú) parece de app con **rutas reales**.
-> No se asume: se decide en el bloque 2, con el diseño a la vista, y se documenta acá.
+### Modelo: scroll a sección ✅ Confirmado
 
-Si resulta ser scroll a sección: anchors (`href="#seccion"`) contra `<section id="seccion">`
-con `scroll-margin-top` y respeto de `prefers-reduced-motion`.
+Decisión del usuario, 2026-09-18 (bloque 2): el menú **scrollea a las secciones del Home**,
+no rutea. Se implementa con anchors (`href="#seccion"`) contra `<section id="seccion">`, con
+`scroll-margin-top` = `--spacing-header-desktop` y `scroll-behavior: smooth` envuelto en
+`prefers-reduced-motion: no-preference` (ya está en `app/globals.css`).
+
+### Ítems del menú flotante desktop
+
+Solo entran las secciones que **tienen contenido en el Home**, en este orden — que **no** es
+el del Figma. Lo pidió el usuario y manda sobre el orden del diseño.
+
+| # | Ítem | Ancla | Ícono (tamaño nativo del export) |
+|---|---|---|---|
+| 1 | Home | `#home` | 26 px — **seleccionado**, pill verde |
+| 2 | Torneos | `#torneos` | 26 px |
+| 3 | Leaderboard | `#leaderboard` | 24 px |
+| 4 | Misiones | `#misiones` | 18 px |
+| 5 | Sura News | `#sura-news` | 20 px |
+| 6 | Juegos | `#juegos` | 24 px |
+
+El séptimo ítem del Figma, **Niveles**, queda fuera: no tiene sección en el Home. Vuelve
+cuando exista la pantalla.
+
+Los ítems son solo íconos: el nombre accesible va en un `sr-only` y el activo lleva
+`aria-current`.
+
+**Estado activo:** arranca en Home y se mueve con el click, aunque todavía no haya secciones
+a donde scrollear. Eso hace que `nav-desktop.tsx` sea client component — es su única razón de
+serlo. El **scroll-spy** (que el activo siga al scroll) queda pendiente para cuando existan
+al menos dos secciones maquetadas.
+
+**Tooltip en hover.** No está en el Figma: existe solo en `app.suragaming.com` y se replicó
+midiendo el elemento real (decisión del usuario, 2026-09-18). Abre a la derecha del ítem, sin
+delay, y también con foco de teclado — eso último lo suma el primitive, el live no lo tiene.
+
+| Propiedad | Valor | De dónde sale |
+|---|---|---|
+| Posición | a la derecha, centrado vertical, gap 12 px | `side="right" sideOffset={12}` |
+| Fondo | `#1A1A1A` | `--color-tooltip` (token nuevo) |
+| Borde | 1 px `#494949` | `--color-border` |
+| Radio | 12 px | `--radius-xl` |
+| Sombra | `0 0 8px rgba(39,82,108,.3)` | `--shadow-nav` — la misma del menú |
+| Padding | 8 / 12 px | `py-2 px-3` |
+| Texto | Inter 14/20, regular, blanco, `nowrap` | `--text-sm` |
+| Transición | fade 200 ms | la del elemento real |
+
+Se implementó con el primitive **Tooltip de shadcn** (`components/ui/tooltip.tsx`), re-estilado
+con nuestros tokens y sin flecha (el de referencia no tiene; queda disponible con `arrow`).
+Base UI, así que el trigger usa `render`, no `asChild`.
+
+El nombre accesible del link sigue en un `sr-only`: el tooltip aporta `aria-describedby`, no
+reemplaza al nombre cuando está cerrado.
+
+**Hover del ícono.** No existe ni en el Figma ni en el live: lo elegimos nosotros (usuario,
+2026-09-18). El ícono pasa de `--color-foreground` a **`--color-brand`** en 200 ms, y lo mismo
+con `focus-visible` para que el teclado tenga la misma señal.
+
+El verde de marca se eligió porque es el color del pill del activo: el hover queda funcionando
+como **preview del estado seleccionado** en lugar de ser un color decorativo. Se descartaron
+`--color-subtle-foreground` y `--color-muted-foreground` (sobre fondo oscuro, oscurecer el
+blanco lee como deshabilitado) y la familia dorada (reservada a premios, podio y medallas).
+
+El ítem activo **no** reacciona al hover: ya está en su estado final.
 
 ### Mapa de rutas
 
@@ -225,6 +288,9 @@ public/assets/<pantalla>/   assets exportados de Figma
 | 2026-09-18 | Radio: `--radius-xs…2xl`, `--radius-pill` | Home | De 2 px (badges) a 30 px (CTA del hero). |
 | 2026-09-18 | Sombra: `--shadow-bar`, `--shadow-badge`, `--shadow-gold-glow`, `--drop-shadow-claim`, `--drop-shadow-cta` | Home | `--shadow-bar` es la variable "Shadow 3" del Figma. |
 | 2026-09-18 | Layout: `--container-page 1144px`, `--spacing-gutter(-desktop)`, `--spacing-nav-x`, `--spacing-section-gap`, `--spacing-title-gap` | Home | La grilla del rediseño cierra exacta (ver sección 4). |
+| 2026-09-18 | `--color-nav-glass`, `--shadow-nav`, `--blur-nav` | Menú flotante desktop | Fondo `rgba(255,255,255,0.01)` + `backdrop-blur(10px)` + sombra `0 0 8px rgba(39,82,108,0.3)`. La sombra es distinta de `--shadow-bar`; el blur va al namespace `--blur-*`, que no está reseteado. |
+| 2026-09-18 | `--color-tooltip: #1A1A1A` | Tooltip del menú flotante | Único token que **no sale del Figma**: el elemento solo existe en `app.suragaming.com`. El resto de sus valores ya eran tokens nuestros (`--color-border`, `--radius-xl`, `--shadow-nav`, `--text-sm`). |
+| 2026-09-18 | `--spacing-header-desktop: 106px` | Menú flotante desktop | Alto real del header (medido sobre el render, coincide con el diseño). El menú arranca justo debajo y las secciones lo van a usar como `scroll-margin-top`. |
 
 ### Deuda de diseño abierta
 
@@ -236,6 +302,8 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Verde legacy en los bordes** | Las cards de Torneos tienen borde `rgba(160, 229, 0, 0.2)` — el verde **viejo** al 20%, no el nuevo. | Probable resto del rediseño a medio hacer. Se replica tal cual (`--color-brand-faint`) y se consulta. |
 | **"Torneos" vs "EVENTOS"** | La misma sección tiene distinto nombre en desktop y en mobile. | Se respeta cada frame. Confirmar cuál queda. |
 | **Diseño mobile incompleto** | Falta el 60% de las secciones (ver sección 5). | Pendiente de que lleguen los frames. |
+| **Íconos del menú en un solo estado** | El Figma exporta cada ícono del menú en un solo color: Home en negro (seleccionado) y los otros seis en blanco (default). | **Resuelto sin pedir assets**: el SVG se usa como máscara y el color lo ponen los tokens (ver Notas de implementación). Ya no hace falta la versión que falta. |
+| **Estados del menú flotante** | El componente del Figma solo define `Default` y `Selected`. No hay hover ni focus — y el sitio live tampoco cambia el color del ícono en hover (medido: se queda en `text-gray-300`). | **Resuelto por decisión propia** (usuario, 2026-09-18): tooltip con el nombre de la sección + tinte verde de marca en el ícono. Es lo único del bloque que no sale ni del Figma ni del live. Si diseño define un hover propio, esto se reemplaza. |
 
 ### Notas de implementación que salieron del maquetado
 
@@ -244,6 +312,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Stroke de Figma vs `border` de CSS** | En Figma el stroke se dibuja **hacia adentro** y no agrega tamaño; en CSS `border` sí. Los contadores quedaban 2px más altos y el botón Reclamar 1.3px más ancho. | Los bordes que no deben afectar el layout van como **`ring-1 ring-inset`** (box-shadow, cero impacto en layout). El anillo del avatar va en una capa **encima** de la foto, para que la imagen ocupe los 40px completos. |
 | **`next/image` rompía el alfa** | El optimizador re-encodeaba los PNG a paleta y ensuciaba la transparencia: el ícono de fuego pasaba de 33×37 px de tinta a 35×48 y se veía recortado. | `images.unoptimized: true` en `next.config.ts`. Los assets ya vienen de Figma en su tamaño final; en un clon pixel-perfect la fidelidad manda sobre la optimización. |
 | **Exports opacos** | El export de un nodo hornea el fondo del padre. El PNG de las estrellitas salía 100% opaco con el verde del botón adentro y tapaba el cofre. | Para un asset que se superpone a otro se usa la **imagen original** del fill (que sí tiene alfa), no el export del nodo. |
+| **Un ícono, dos colores** | El menú flotante necesita cada ícono en blanco (default) y en `#0C0C0C` (sobre el pill verde), pero el Figma exporta uno solo de los dos por ícono. Pedir los 12 archivos era la salida obvia. | El SVG se usa como **`mask-image`** (`@utility nav-icon-*` en `globals.css`) y el color lo pone un token de fondo: `bg-foreground` en default, `bg-background` en el activo. Un solo export sirve para los dos estados. El asset no se toca: se referencia por URL igual que en un `<img>`, con la misma geometría — verificado midiendo los dos renders. Solo sirve para íconos de **un color**; si entra uno multicolor, ese vuelve a `<img>`. |
 | **Assets con recorte interno** | El ícono de fuego es un sprite de 3072×2048 que el diseño clipea, y el logo de CS2 lleva un glow radial encima. Reproducir eso con porcentajes es frágil. | Se **exporta el nodo** desde Figma en vez de reproducir el recorte. Sigue siendo el asset del diseño, sin redibujarlo (regla 10). |
 
 ### Política de normalización de valores
@@ -332,7 +401,7 @@ Más:
 |---|---|---|---|
 | Setup (skills, PRD, reglas, shadcn, Playwright) | — | — | ✅ Listo |
 | Design System | — | — | 📦 Aprobado y commiteado |
-| Home | 🚧 | 🚧 | 🚧 En progreso — Header listo. Navegación (bloques 2 y 3) es lo que sigue |
+| Home | 🚧 | 🚧 | 🚧 En progreso — Header listo; menú flotante desktop esperando aprobación. Sigue la bottom bar mobile (bloque 3) |
 
 **Leyenda:** ⏳ Pendiente · 🚧 En progreso · 👀 Esperando aprobación · ✅ Aprobada · 📦 Commiteada · 🚫 Bloqueada
 
@@ -345,7 +414,7 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 |---|---|---|---|---|---|
 | Home completo (fuente del DS) | Home | — | [`3628:74971`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-74971&m=dev) | [`3567:88242`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88242&m=dev) | ✅ Escaneado → Design System |
 | 1 · Header | Home | `components/layout/header*.tsx` | [`6008:26313`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26313&m=dev) | [`6008:23224`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-23224&m=dev) | 📦 Aprobado y commiteado |
-| 2 · Menú flotante (desktop) | Home | `components/layout/` | [`3628:75011`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75011&m=dev) | — (no existe en mobile) | ⏳ Pendiente |
+| 2 · Menú flotante (desktop) | Home | `components/layout/nav-desktop.tsx` | [`6008:26347`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26347&m=dev) (frame `col-izq`; el menú suelto es [`3628:75011`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75011&m=dev)) | — (no existe en mobile) | 👀 Esperando aprobación |
 | 3 · Bottom bar (mobile) | Home | `components/layout/` | — | [`3567:88398`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88398&m=dev) | ⏳ Pendiente |
 | 4 · Drawer lateral | Home | `components/layout/` | — **falta** | — **falta** | 🚫 Sin frame |
 | 3 · Hero | Home | `components/sections/` | [`3628:75013`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75013&m=dev) | [`3567:88332`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88332&m=dev) | ⏳ Dos pases, mobile → desktop |

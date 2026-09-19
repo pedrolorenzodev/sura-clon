@@ -107,6 +107,11 @@
   --color-surface-2: #303030;
   --color-surface-3: #282828;
   --color-overlay: rgb(34 34 34 / 0.9);
+  /* Menú flotante del Home: casi transparente, el efecto lo hace el backdrop-blur. */
+  --color-nav-glass: rgb(255 255 255 / 0.01);
+  /* Tooltip del menú flotante. No sale del Figma: es el valor del elemento real
+     en app.suragaming.com, la única referencia que existe (ver PRD § 6). */
+  --color-tooltip: #1a1a1a;
 
   /* --- Bordes --- */
   --color-border: #494949;
@@ -160,11 +165,17 @@
      ============================================================ */
   --shadow-bar: 0 4px 12px rgb(13 10 44 / 0.06);
   --shadow-gold-glow: 0 0 8px rgb(251 188 4 / 0.35);
+  --shadow-nav: 0 0 8px rgb(39 82 108 / 0.3);
   --drop-shadow-claim: 0 4px 15px rgb(0 0 0 / 0.3);
   --drop-shadow-cta: 0 4px 2px rgb(0 0 0 / 0.25);
   /* El badge de nivel es un PNG con alpha: la sombra tiene que seguir la silueta,
      así que va como drop-shadow y no como box-shadow. */
   --drop-shadow-badge: 0 2px 5px rgb(12 12 12 / 0.3);
+
+  /* ============================================================
+     BLUR — el namespace default de Tailwind sigue vivo; esto se suma.
+     ============================================================ */
+  --blur-nav: 10px;
 
   /* ============================================================
      LAYOUT — la grilla del rediseño cierra exacta:
@@ -174,6 +185,10 @@
   --spacing-gutter: 24px;
   --spacing-gutter-desktop: 148px;
   --spacing-nav-x: 40px;
+  /* Alto real del header desktop (medido sobre el render, coincide con el
+     diseño). Lo consume el menú flotante para arrancar justo debajo, y las
+     secciones para su scroll-margin-top. */
+  --spacing-header-desktop: 106px;
   --spacing-section-gap: 80px;
   --spacing-title-gap: 16px;
 }
@@ -223,12 +238,49 @@
   background-image: var(--gradient-claim);
 }
 
+/* ============================================================
+   ÍCONOS DEL MENÚ FLOTANTE
+   El SVG del diseño se usa como MÁSCARA y el color lo pone un token
+   (bg-foreground en default, bg-background en el pill verde). Así un
+   solo export sirve para los dos estados: el archivo no se toca ni se
+   redibuja, se referencia por URL igual que en un <img>.
+
+   Van como @utility y no como clase dinámica porque Tailwind necesita
+   ver la clase escrita para compilarla, y porque la URL no puede salir
+   de un token (mismo patrón que los gradientes de arriba).
+   ============================================================ */
+@utility nav-icon-home {
+  mask: url("/assets/home/nav/home.svg") center / contain no-repeat;
+}
+@utility nav-icon-torneos {
+  mask: url("/assets/home/nav/torneos.svg") center / contain no-repeat;
+}
+@utility nav-icon-leaderboard {
+  mask: url("/assets/home/nav/leaderboard.svg") center / contain no-repeat;
+}
+@utility nav-icon-misiones {
+  mask: url("/assets/home/nav/misiones.svg") center / contain no-repeat;
+}
+@utility nav-icon-news {
+  mask: url("/assets/home/nav/news.svg") center / contain no-repeat;
+}
+@utility nav-icon-juegos {
+  mask: url("/assets/home/nav/juegos.svg") center / contain no-repeat;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   html {
     @apply font-sans;
+  }
+  /* La navegación del Home scrollea a secciones (PRD § 5). El scroll suave se
+     desactiva solo si el sistema pide menos movimiento. */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
   body {
     @apply bg-background text-foreground;
