@@ -128,6 +128,12 @@
   /* --- Marca --- */
   --color-brand: #a5e04a;
   --color-brand-deep: #091900;
+  /* Verde de marca aclarado 12% con blanco. No sale del Figma: el diseño no
+     define ningún hover (PRD § 6). Lo consumen los dos verdes accionables del
+     Home — el CTA del hero y el label de Reclamar —, que ya son de marca: en
+     un elemento que ya usa el color, aclararlo es la única señal de hover que
+     no le cambia el peso en la jerarquía. */
+  --color-brand-bright: #b0e460;
   /* Verde del diseño ANTERIOR. Sobrevive en dos lugares del rediseño, que quedó
      a medio aplicar: el borde de la miniatura activa del hero (a full) y el de
      las cards de Torneos (al 20%). Se replica tal cual, medido sobre el render:
@@ -176,6 +182,17 @@
   --color-gold-deep: #714900;
   --color-gold-bright: #fbbc04;
 
+  /* --- Plata y bronce: los otros dos puestos del podio. Misma estructura de
+         nombres que la dorada: `-bright` es el borde de la card y el anillo del
+         avatar, `-deep` el fondo del pill, y el base el borde del pill.
+         El bronce no lleva `-deep` propio para el fondo del pill: el Figma usa
+         ahí el mismo #714900 de `--color-gold-deep`, así que se reusa. --- */
+  --color-silver: #bcbcbc;
+  --color-silver-deep: #707070;
+  --color-silver-bright: #d2d2d2;
+  --color-bronze: #df882e;
+  --color-bronze-deep: #62401f;
+
   /* --- Alias de shadcn: los consumen button.tsx y cualquier primitive futuro --- */
   --color-primary: var(--color-brand);
   --color-primary-foreground: #0c0c0c;
@@ -223,6 +240,14 @@
   /* El CTA mobile suma un glow verde. Usa #97F300: un TERCER verde legacy,
      distinto del #A0E500 de --color-brand-faint. Ver deuda en PRD § 6. */
   --shadow-cta-mobile: 0 0 4px rgb(151 243 0 / 0.5), 0 4px 4px rgb(0 0 0 / 0.25);
+  /* Hover de los dos verdes accionables del Home. El glow no sale del Figma
+     —no hay hover en el diseño— pero el color sí: es el #97F300 con el que el
+     propio diseño ilumina el CTA mobile. Así el hover no inventa una luz
+     nueva, intensifica la que la página ya tiene. */
+  --shadow-brand-glow: 0 0 12px rgb(151 243 0 / 0.35);
+  /* El CTA en hover suma el glow a su caída. Va como token propio y no
+     apilando dos clases porque box-shadow no se acumula: gana la última. */
+  --shadow-cta-hover: 0 0 12px rgb(151 243 0 / 0.45), 0 4px 2px rgb(0 0 0 / 0.25);
   /* El badge de nivel es un PNG con alpha: la sombra tiene que seguir la silueta,
      así que va como drop-shadow y no como box-shadow. */
   --drop-shadow-badge: 0 2px 5px rgb(12 12 12 / 0.3);
@@ -274,6 +299,18 @@
   --spacing-event-card-mobile: 210px;
   --spacing-event-surface: 291px;
   --spacing-event-surface-mobile: 167px;
+  /* Leaderboard. El diseño lo arma como una fila de dos columnas:
+     657 + gap 120 + 367 (Medallas) = 1144. El alto vive en la fila y no en la
+     columna, para que Medallas lo herede sin declararlo. */
+  --spacing-leaderboard-col: 657px;
+  /* Alto de la card del podio. Se fija porque nuestro nombre de usuario mide
+     16 de interlineado contra los 15 del diseño: sin esto la card da 98 y la
+     tabla se queda con 328 en vez de 329. */
+  --spacing-podium-card: 97px;
+  --spacing-leaderboard-row: 486px;
+  /* Separación entre secciones en mobile. No hay frame compuesto que la defina:
+     es decisión del usuario (2026-09-19), la mitad de los 80 de desktop. */
+  --spacing-section-gap-mobile: 40px;
 }
 
 /* ============================================================
@@ -291,7 +328,23 @@
     #ba8d00 73%,
     #f9be08 100%
   );
-  --gradient-podium-gold: linear-gradient(177deg, #ba8d31 8%, #c19438 39%, #895c00 89%);
+  /* Podio. El mismo fill da distinto ángulo en cada tamaño porque Figma lo
+     define en el espacio normalizado de la caja, y al cambiar la proporción de
+     la card cambia la diagonal. Sólo desktop le superpone un negro al 20%.
+     Los ángulos salen de **medir el render**, no del MCP: para desktop el MCP
+     devolvió 170.7° y el valor que reproduce el diseño es 162° (con 170.7 la
+     esquina inferior izquierda se iba 11 niveles). En mobile sus 140/132° sí
+     dieron bien. Medido punto por punto sobre el fondo de las tres cards:
+     ≤2 niveles en desktop, 2,4 de media en mobile. */
+  --gradient-podium-gold: linear-gradient(rgb(0 0 0 / 0.2), rgb(0 0 0 / 0.2)),
+    linear-gradient(162deg, #ba8d31 7.69%, #c19438 39.42%, #895c00 89.42%);
+  --gradient-podium-silver: linear-gradient(rgb(0 0 0 / 0.2), rgb(0 0 0 / 0.2)),
+    linear-gradient(162deg, #7d7972 7.69%, #9a968f 39.42%, #635f58 89.42%);
+  --gradient-podium-bronze: linear-gradient(rgb(0 0 0 / 0.2), rgb(0 0 0 / 0.2)),
+    linear-gradient(162deg, #b17823 7.69%, #c88544 39.42%, #905702 89.42%);
+  --gradient-podium-gold-mobile: linear-gradient(140deg, #ba8d31 8%, #c19438 39%, #895c00 89%);
+  --gradient-podium-silver-mobile: linear-gradient(132deg, #7d7972 8%, #9a968f 39%, #635f58 89%);
+  --gradient-podium-bronze-mobile: linear-gradient(132deg, #b17823 8%, #c88544 39%, #905702 89%);
   --gradient-badge: linear-gradient(
     -19deg,
     rgb(40 40 40 / 0.6) 0%,
@@ -363,6 +416,21 @@
 }
 @utility bg-podium-gold {
   background-image: var(--gradient-podium-gold);
+}
+@utility bg-podium-silver {
+  background-image: var(--gradient-podium-silver);
+}
+@utility bg-podium-bronze {
+  background-image: var(--gradient-podium-bronze);
+}
+@utility bg-podium-gold-mobile {
+  background-image: var(--gradient-podium-gold-mobile);
+}
+@utility bg-podium-silver-mobile {
+  background-image: var(--gradient-podium-silver-mobile);
+}
+@utility bg-podium-bronze-mobile {
+  background-image: var(--gradient-podium-bronze-mobile);
 }
 @utility bg-badge {
   background-image: var(--gradient-badge);

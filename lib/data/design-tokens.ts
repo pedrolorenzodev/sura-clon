@@ -108,6 +108,19 @@ export const goldColors: TokenGroup = {
   ],
 };
 
+export const podiumColors: TokenGroup = {
+  title: "Plata y bronce",
+  description:
+    "Los otros dos puestos del podio. Misma estructura que la dorada: -bright para el borde de la card y el anillo del avatar, -deep para el fondo del pill, y el base para su borde.",
+  tokens: [
+    { name: "--color-silver", utility: "bg-silver", usage: "Borde del pill del segundo puesto" },
+    { name: "--color-silver-deep", utility: "bg-silver-deep", usage: "Fondo del pill del segundo puesto" },
+    { name: "--color-silver-bright", utility: "bg-silver-bright", usage: "Borde de la card y anillo del segundo puesto" },
+    { name: "--color-bronze", utility: "bg-bronze", usage: "Borde de la card y del pill del tercer puesto" },
+    { name: "--color-bronze-deep", utility: "bg-bronze-deep", usage: "Anillo del avatar del tercer puesto" },
+  ],
+};
+
 export const semanticColors: TokenGroup = {
   title: "Alias de shadcn",
   description: "Mismos valores, con los nombres que consumen los primitives.",
@@ -178,7 +191,12 @@ export const shadowTokens: Token[] = [
 
 export const gradientTokens: Token[] = [
   { name: "--gradient-gold-text", utility: "bg-gold-text", usage: "Texto del premio (con bg-clip-text)" },
-  { name: "--gradient-podium-gold", utility: "bg-podium-gold", usage: "Fondo del primer puesto del podio" },
+  { name: "--gradient-podium-gold", utility: "bg-podium-gold", usage: "Fondo del primer puesto del podio, desktop" },
+  { name: "--gradient-podium-silver", utility: "bg-podium-silver", usage: "Fondo del segundo puesto, desktop" },
+  { name: "--gradient-podium-bronze", utility: "bg-podium-bronze", usage: "Fondo del tercer puesto, desktop" },
+  { name: "--gradient-podium-gold-mobile", utility: "bg-podium-gold-mobile", usage: "Primer puesto, mobile — otro ángulo y sin el negro al 20%" },
+  { name: "--gradient-podium-silver-mobile", utility: "bg-podium-silver-mobile", usage: "Segundo puesto, mobile" },
+  { name: "--gradient-podium-bronze-mobile", utility: "bg-podium-bronze-mobile", usage: "Tercer puesto, mobile" },
   { name: "--gradient-badge", utility: "bg-badge", usage: "Fondo de los badges de Torneos" },
   { name: "--gradient-claim", utility: "bg-claim", usage: "Fondo del botón Reclamar" },
   { name: "--gradient-nav-border-mobile", utility: "border-gradient-nav-mobile", usage: "Borde de la bottom bar mobile — el Figma lo dibuja con degradé vertical" },
@@ -219,4 +237,8 @@ export const layoutTokens: Token[] = [
   { name: "--spacing-event-card-mobile", utility: "w-event-card-mobile", usage: "Ancho de la card de Eventos, mobile" },
   { name: "--spacing-event-surface", utility: "h-event-surface", usage: "Alto de la superficie de la card, desktop — el personaje se sale por arriba" },
   { name: "--spacing-event-surface-mobile", utility: "h-event-surface-mobile", usage: "Alto de la superficie de la card, mobile" },
+  { name: "--spacing-section-gap-mobile", utility: "mt-section-gap-mobile", usage: "Separación entre secciones en mobile — no sale del diseño", offDesign: true },
+  { name: "--spacing-leaderboard-col", utility: "w-leaderboard-col", usage: "Ancho de la columna del Leaderboard (657 + 120 + 367 = 1144)" },
+  { name: "--spacing-podium-card", utility: "h-podium-card", usage: "Alto de la card del podio desktop" },
+  { name: "--spacing-leaderboard-row", utility: "h-leaderboard-row", usage: "Alto de la fila Leaderboard + Medallas" },
 ];
