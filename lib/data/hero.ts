@@ -13,15 +13,33 @@ export type CopySegment = {
 };
 
 /**
- * Una entrada del slider de miniaturas. Cada miniatura es la portada de un
- * juego, y la de la entrada activa es el arte que el hero muestra de fondo —
- * por eso la primera reusa el asset del hero en vez de duplicarlo: son el mismo
- * archivo del Figma (1440 × 811, verificado píxel a píxel).
+ * Una entrada del slider del hero: un juego, su miniatura y el arte que el hero
+ * muestra de fondo cuando está seleccionada.
+ *
+ * Valorant apunta al mismo archivo en los dos campos: la miniatura del Figma y
+ * el arte del hero son el mismo asset (1440 × 811, verificado píxel a píxel),
+ * así que no se duplica.
  */
 export type HeroSlide = {
   /** Juego de la portada. Va como `alt`: la miniatura no es decorativa. */
   game: string;
+  /** Portada chica del slider. */
   thumbnailSrc: string;
+  /** Arte de fondo del hero. */
+  artSrc: string;
+  /**
+   * Cómo se encuadra el arte en el hero.
+   *
+   * `design` es el encuadre medido sobre el Figma — 181.25% anclado arriba a la
+   * izquierda en desktop, 254% en mobile — y sólo tiene sentido para el arte
+   * del diseño, que está compuesto para ese recorte.
+   *
+   * `cover` es el default para los otros tres. El diseño no define cómo se ven,
+   * y aplicarles el encuadre de Valorant los parte: son portadas centradas en
+   * su logo, así que a 181% se ve un pedazo de letra. Centradas y a `cover` se
+   * lee la composición que cada una trae.
+   */
+  framing: "design" | "cover";
 };
 
 export type Hero = {
@@ -30,11 +48,7 @@ export type Hero = {
   copy: CopySegment[];
   cta: { label: string; href: string };
   slides: HeroSlide[];
-  /**
-   * Miniatura seleccionada. Es una constante y no estado: el diseño trae un
-   * solo arte de fondo, así que no hay adónde cambiar. Cuando lleguen los otros
-   * tres, esto pasa a estado y el slider se vuelve client component.
-   */
+  /** Miniatura seleccionada al cargar. Después manda el click del usuario. */
   activeSlide: number;
 };
 
@@ -48,10 +62,30 @@ export const hero: Hero = {
   ],
   cta: { label: "COMENZAR AHORA", href: "#eventos" },
   slides: [
-    { game: "Valorant", thumbnailSrc: "/assets/home/hero-art.jpg" },
-    { game: "Fortnite", thumbnailSrc: "/assets/home/slider/fortnite.png" },
-    { game: "Call of Duty: Black Ops 6", thumbnailSrc: "/assets/home/slider/black-ops-6.png" },
-    { game: "Call of Duty: Modern Warfare III", thumbnailSrc: "/assets/home/slider/modern-warfare-3.png" },
+    {
+      game: "Valorant",
+      thumbnailSrc: "/assets/home/hero-art.jpg",
+      artSrc: "/assets/home/hero-art.jpg",
+      framing: "design",
+    },
+    {
+      game: "Fortnite",
+      thumbnailSrc: "/assets/home/slider/fortnite.png",
+      artSrc: "/assets/home/slider/fortnite.png",
+      framing: "cover",
+    },
+    {
+      game: "Call of Duty: Black Ops 6",
+      thumbnailSrc: "/assets/home/slider/black-ops-6.png",
+      artSrc: "/assets/home/slider/black-ops-6.png",
+      framing: "cover",
+    },
+    {
+      game: "Call of Duty: Modern Warfare III",
+      thumbnailSrc: "/assets/home/slider/modern-warfare-3.png",
+      artSrc: "/assets/home/slider/modern-warfare-3.png",
+      framing: "cover",
+    },
   ],
   activeSlide: 0,
 };

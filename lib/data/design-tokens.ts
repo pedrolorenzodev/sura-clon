@@ -195,6 +195,7 @@ export const motionTokens: Token[] = [
   { name: "--thumb-reveal-duration", utility: "thumb-reveal", usage: "Cuánto tarda en entrar una miniatura del slider", offDesign: true },
   { name: "--thumb-reveal-stagger", utility: "thumb-reveal", usage: "Retraso de cada miniatura respecto de la anterior", offDesign: true },
   { name: "--thumb-reveal-shift", utility: "thumb-reveal", usage: "Cuánto sube la miniatura al entrar", offDesign: true },
+  { name: "--hero-art-fade-duration", utility: "hero-art-fade", usage: "Fundido del arte del hero al cambiar de juego", offDesign: true },
 ];
 
 export const layoutTokens: Token[] = [

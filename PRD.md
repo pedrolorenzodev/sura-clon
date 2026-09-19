@@ -171,8 +171,48 @@ Los ítems son solo íconos: el nombre accesible va en un `sr-only` y el activo 
 
 **Estado activo:** arranca en Home y se mueve con el click, aunque todavía no haya secciones
 a donde scrollear. Eso hace que `nav-desktop.tsx` sea client component — es su única razón de
-serlo. El **scroll-spy** (que el activo siga al scroll) queda pendiente para cuando existan
-al menos dos secciones maquetadas.
+serlo.
+
+### Scroll-spy ⏳ Pendiente — plan cerrado, falta contenido para probarlo
+
+Que el pill siga a la sección donde está el usuario. **Se implementa cuando haya al menos dos
+secciones maquetadas**: hoy el Home es sólo el hero y no hay nada que observar.
+
+No hace falta nada nuevo. El estado activo ya vive en `components/layout/nav.tsx`, que ya es
+client component y ya lo comparten los dos menús; lo único que cambia es **quién lo escribe**.
+Hoy sólo el click, después también el scroll. La capa de animación no se toca: el pill viaja
+con `--nav-index`, así que le da igual de dónde salga el índice.
+
+**Cómo:** un `IntersectionObserver` sobre las `<section id>` de `homeSections`. Nada de
+listener de scroll — el observer sólo dispara cuando una sección cruza el umbral, así que no
+hay trabajo por píxel y no hay re-render de más.
+
+```
+rootMargin: "-106px 0px -70% 0px"   // el top es --spacing-header-desktop
+```
+
+El inset de arriba descuenta el header fijo, para que una sección cuente como activa recién
+cuando lo pasa. El de abajo achica la zona de decisión a la franja superior del viewport, que
+es lo que evita que dos secciones estén activas a la vez. Gana la más alta de las que
+intersectan.
+
+**Cuatro cosas que hay que resolver sí o sí**, y que son la razón por la que esto no se
+improvisa en cinco minutos:
+
+1. **El click pelea con el scroll.** Como el scroll es suave, al ir de Home a Juegos el
+   observer ve pasar las cuatro secciones del medio y el pill las recorre de a saltos. Se
+   arregla ignorando al observer mientras hay un scroll por click en curso: un `ref` que se
+   levanta en el click y se baja en `scrollend`, con un timeout de respaldo.
+2. **La última sección puede no llegar nunca a la franja de arriba** si la página termina
+   antes. El remedio de siempre: si el scroll está al fondo, gana el último ítem.
+3. **`prefers-reduced-motion`** ya está resuelto aguas abajo — el pill salta en vez de viajar.
+   El scroll-spy no agrega nada.
+4. **Sin JS el menú sigue funcionando**: los ítems son anclas de verdad, lo único que se pierde
+   es que el pill acompañe.
+
+**Se lleva puesta una inconsistencia que hoy existe:** el logo del header también apunta a
+`#home` (bloque 1), así que scrollea al hero pero no mueve el pill. Con el scroll-spy el pill
+sigue al scroll venga de donde venga, y deja de hacer falta sincronizar el logo con el menú.
 
 **Tooltip en hover.** No está en el Figma: existe solo en `app.suragaming.com` y se replicó
 midiendo el elemento real (decisión del usuario, 2026-09-18). Abre a la derecha del ítem, sin
@@ -386,6 +426,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | 2026-09-19 | `--color-brand-legacy: #A0E500` | Slider del hero | El borde de la miniatura activa es el verde **viejo** a full, medido sobre el render (`160,229,0` exacto). No se usó `--color-brand` (#A5E04A) porque el Figma manda: es el mismo verde legacy que ya sobrevivía al 20% en `--color-brand-faint`, que ahora queda documentado como su derivado. |
 | 2026-09-19 | `--color-thumb-dim: #0C0C0C` | Slider del hero | Fondo bajo las miniaturas no seleccionadas, que van atenuadas (portada al 40%). Sale del frame mobile y se aplica también en desktop por decisión del usuario. Es el negro del diseño viejo; no se reusó `--color-primary-foreground`, que tiene el mismo valor pero es un alias de shadcn para texto sobre verde. |
 | 2026-09-19 | `--shadow-thumb`, `--shadow-thumb-mobile` | Slider del hero | La sombra escala con la miniatura: `0 4px 4px` en desktop (60px) y `0 2.133px 2.133px` en mobile (32px), que normaliza a 2. |
+| 2026-09-19 | `--hero-art-fade-duration: 320ms` | Slider del hero | El arte se funde al cambiar de juego. No corre en la carga inicial: el arte es el LCP y no se le pone un fade adelante. |
 | 2026-09-19 | `--ease-reveal` y `--thumb-reveal-duration` / `-stagger` / `-shift` | Slider del hero | Revelado escalonado (ver abajo). Ninguno sale del Figma. La curva es de salida marcada, `cubic-bezier(.22,1,.36,1)`: una entrada desacelera y no vuelve, a diferencia del pill del menú, que va y viene con `ease-in-out`. Los tiempos no tienen namespace en Tailwind, así que van como custom properties junto a los gradientes. |
 
 ### Deuda de diseño abierta
@@ -403,7 +444,9 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Arte del hero escalado 1.81×** | El asset mide 1440 × 811 y el diseño lo muestra a 2610 de ancho. Se ve blando, y el clon hereda esa blandura. | Pedir el arte a 2610px de ancho o más. |
 | **Portadas del slider a tamaño completo** | Las miniaturas se muestran a 60px pero el Figma sirve las portadas originales: 1920 × 1080 (2,5 MB), 1536 × 864 y 840 × 560. Son 4,2 MB para tres cuadraditos. | No se tocan: editarlas viola la regla 10. Pedir exports a tamaño de miniatura. Mientras tanto la primera reusa `hero-art.jpg`, que ya estaba en el repo. |
 | **El slider se aparta del Figma en desktop** | Decisión del usuario (2026-09-19): las no seleccionadas van atenuadas **también en desktop** (el frame las deja a full), el radio de la miniatura pasa de 4.8 a **8px** y el borde de la activa de 1.5 a **2px**. Mobile no se aparta: 1.6 → 2 y 0.8 → 1 caen dentro de la política de normalización. | Confirmar con diseño. |
-| **El slider no navega** | El Figma trae un solo arte de fondo, así que clickear una miniatura no tendría adónde cambiar. Se maqueta estático, con la primera marcada. | Pedir los otros tres artes de hero. Recién ahí `hero.activeSlide` pasa a estado y el slider se vuelve client component. |
+| ~~**El slider no navega**~~ | — | **Resuelto** (2026-09-19): clickear una miniatura cambia el arte del hero. Ver las dos filas de abajo, que son lo que quedó abierto. |
+| **Sin arte de hero propio por juego** | El Figma sólo compone el arte de Valorant. Los otros tres usan su propia portada de 16:9 como fondo full-bleed, que no es lo mismo: son portadas centradas en su logo, no key art pensado para tener texto encima. En Black Ops 6 el logo queda detrás del copy. | Pedir a diseño un arte de hero por juego, compuesto con aire a la izquierda como el de Valorant. Mientras tanto van con encuadre `cover`. |
+| **Black Ops 6 se ve blando de fondo** | La portada mide 840 × 560 y el hero la muestra a ~1820 de ancho: 2,2× de escalado. Es el mismo problema que el arte del hero (1,81×), pero peor. | Pedir el export grande. Se buscó una versión 4K del mismo key art y la que hay en la web es **otro recorte** (ratio 1.500 contra 1.778, diferencia media de 34 niveles): no es la misma imagen, así que no se sustituyó — regla 10. |
 | **CTA desktop con caja de texto fija** | El botón del Figma mide 181 porque el nodo de texto tiene un ancho fijo de 141 con el texto centrado. En mobile el mismo botón **hugea** al texto (101 de ink, que es lo que mide en la fuente real). Ajustándose al texto con la fuente sustituta, el nuestro daba 157,6. | Decisión del usuario (2026-09-19): punto intermedio, `min-w` de **168** en desktop. El padding sigue en los 20 del diseño. Confirmar con diseño si la caja fija de 141 es intencional; si lo es, se lleva a 181. |
 | **CTA mobile más alto que el diseño** | El botón del Figma es 133 × 30 y el nuestro sale 143,4 de ancho: la tinta de Tektur mide 111,4 contra los 101 de KH Interference. A 30 de alto se veía chato. | Decisión del usuario (2026-09-19): el alto sube a **32**, que es lo que conserva la proporción del diseño (143,4 ÷ 4,43 = 32,35). Consecuencia: todo lo que va debajo del CTA baja 2px — el slider queda en y=402 y la sección mide 458. Se revierte solo cuando aparezcan los `.woff2` reales. |
 | **Estados del menú flotante** | El componente del Figma solo define `Default` y `Selected`. No hay hover ni focus — y el sitio live tampoco cambia el color del ícono en hover (medido: se queda en `text-gray-300`). | **Resuelto por decisión propia** (usuario, 2026-09-18): tooltip con el nombre de la sección + tinte verde de marca en el ícono. Es lo único del bloque que no sale ni del Figma ni del live. Si diseño define un hover propio, esto se reemplaza. |
@@ -426,6 +469,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Scroll horizontal en la franja sin diseño** | Entre 391 y ~860px el título de 64px no entra y la fila del hero desbordaba, empujando la página entera de costado. | `overflow-x-clip` en la `<section>`: recorta solo en X y deja pasar el desborde vertical del fondo, que es el que tiene que verse. El PRD § 4 ya aceptaba que esa franja se recorte; lo que no se acepta es que scrollee. |
 | **Unificar el tamaño de caja desbalanceó los íconos** | La bottom bar del Figma usa todos sus íconos en 24 px, así que se unificaron los nuestros. El de Misiones quedó visiblemente más grande. | Los exports tienen **padding interno distinto**: medida la tinta con canvas, en una caja de 24 Misiones pinta 24 × 24 y Home 18 × 18. Los tamaños nativos existen para igualar la **tinta**, no la caja — con ellos los dos pintan 18 × 18. Se revirtió a nativos. **Antes de unificar cajas, medir la tinta.** |
 | **Revelado escalonado del slider** | Las portadas son los assets más pesados de la página (4,2 MB entre tres) y aparecían de golpe, cada una cuando terminaba de bajar — desordenadas y sin relación con el orden de la lista. | Las tres no activas van con `fetchPriority="low"` para que no compitan con el arte del hero (`loading="lazy"` ya es el default de `next/image`), y el `<li>` entra con un `@utility thumb-reveal`: sube 8px y se funde, escalonado 90ms por índice. La última cierra a los 690ms, que es el colchón de carga; hasta entonces se ve `--color-thumb-dim` de placeholder. Sólo `opacity` y `transform`, que resuelve el compositor sin tocar layout — medido: las posiciones finales son idénticas y el `transform` queda en `none`. Con `prefers-reduced-motion: reduce` no hay animación, y el guard vive dentro de la utility para que no se pueda usar mal. **Es el segundo desvío consciente de AGENTS regla 16**, con el mismo criterio que el pill del menú: cero librerías de motion. |
+| **El encuadre del Figma no sirve para las otras portadas** | Al hacer funcional el slider, los cuatro artes arrancaron con el encuadre medido del Figma (181,25% anclado arriba a la izquierda). Valorant y Modern Warfare III quedaron bien; Fortnite mostraba media letra de su logo a pantalla completa y Black Ops 6 un arma gigante. | El encuadre del Figma está compuesto **para el arte del Figma**. Cada entrada declara el suyo en `lib/data/hero.ts`: `design` para el arte del diseño, que conserva el hero aprobado intacto — verificado, `181.25% auto` en `0% 0%` y `254.174%` en `31.704% 0` —, y `cover` centrado para las otras tres, que así muestran su propia composición. |
 | **Chrome trunca `border-width` a píxeles enteros** | El borde de 1.5px de la miniatura activa se pintaba de 1px: medido a `deviceScaleFactor: 2`, 2 píxeles de dispositivo en vez de 3. Pasa igual con un `border: 1.5px` literal. El anillo del avatar del header arrastraba el mismo redondeo desde el bloque 1. | Se probó con `ring` inset (`box-shadow`), que sí respeta el medio píxel, pero la decisión del usuario (2026-09-19) fue al revés: **los strokes de medio píxel se redondean al entero de arriba** y quedan como `border`. Un mecanismo menos que recordar, y un borde entero se pinta como se pide. La miniatura activa queda en 2px en desktop y 1 en mobile (donde el diseño pide 0.8, que redondea a entero igual), y el avatar en 2px. |
 | **El MCP acertó la atenuación, pero igual se midió** | El frame mobile atenúa las miniaturas no seleccionadas (portada al 40% sobre `--color-thumb-dim`) y el desktop no. | Se muestrearon los dos renders antes de decidir, y la diferencia era real. Después el usuario resolvió unificar en el tratamiento de mobile (ver deuda). Misma política que el degradé de la bottom bar: **ante la duda, medir el render.** |
 | **Assets con recorte interno** | El ícono de fuego es un sprite de 3072×2048 que el diseño clipea, y el logo de CS2 lleva un glow radial encima. Reproducir eso con porcentajes es frágil. | Se **exporta el nodo** desde Figma en vez de reproducir el recorte. Sigue siendo el asset del diseño, sin redibujarlo (regla 10). |
@@ -534,7 +578,7 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 4 · Drawer lateral | Home | `components/layout/` | — **falta** | — **falta** | 🚫 Sin frame |
 | 5 · Hero — fondo | Home | `components/sections/hero-background.tsx` | [`6008:26309`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26309&m=dev) | [`6009:35215`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6009-35215&m=dev) | 👀 Esperando aprobación |
 | 6 · Hero — contenido | Home | `components/sections/hero-content.tsx` | [`6008:26350`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26350&m=dev) | [`3567:88332`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88332&m=dev) · [`6008:23211`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-23211&m=dev) | 👀 Esperando aprobación |
-| 7 · Hero — slider de miniaturas | Home | `components/sections/hero-slider.tsx` | [`6008:26358`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26358&m=dev) | [`3567:88340`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88340&m=dev) | 👀 Esperando aprobación |
+| 7 · Hero — slider de miniaturas | Home | `components/sections/hero-slider.tsx` + `hero-slide-context.tsx` | [`6008:26358`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26358&m=dev) | [`3567:88340`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88340&m=dev) | 👀 Esperando aprobación |
 | 4 · Torneos / Eventos | Home | `components/sections/` | [`3628:75027`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75027&m=dev) | [`3567:88246`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88246&m=dev) | ⏳ Los dos juntos |
 | 5 · Leaderboard | Home | `components/sections/` | [`3628:75142`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75142&m=dev) | — **falta** | 🚫 Falta el frame mobile |
 | 6 · Medallas | Home | `components/sections/` | [`3628:75198`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75198&m=dev) | — **falta** | 🚫 Falta el frame mobile |

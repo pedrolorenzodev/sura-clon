@@ -1,5 +1,6 @@
 import { HeroBackground } from "@/components/sections/hero-background";
 import { HeroContent } from "@/components/sections/hero-content";
+import { HeroSlideProvider } from "@/components/sections/hero-slide-context";
 
 /**
  * Hero del Home y destino del ancla `#home` del menú de navegación.
@@ -16,12 +17,17 @@ import { HeroContent } from "@/components/sections/hero-content";
  *
  * Esta `<section>` NO puede llevar `isolate`, `z-*`, `transform` ni `opacity`:
  * rompería el apilado del fondo. Ver el comentario en `hero-background.tsx`.
+ *
+ * Sigue siendo server component: el estado del slider vive en el provider, que
+ * envuelve a los dos que lo necesitan sin arrastrar al resto.
  */
 export function Hero() {
   return (
     <section id="home" className="relative scroll-mt-14 overflow-x-clip pt-28 desktop:scroll-mt-header-desktop desktop:pt-header-desktop">
-      <HeroBackground />
-      <HeroContent />
+      <HeroSlideProvider>
+        <HeroBackground />
+        <HeroContent />
+      </HeroSlideProvider>
     </section>
   );
 }

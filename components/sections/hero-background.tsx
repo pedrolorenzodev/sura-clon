@@ -1,7 +1,21 @@
+"use client";
+
+import { useHeroSlide } from "@/components/sections/hero-slide-context";
+import { hero } from "@/lib/data/hero";
+import { cn } from "@/lib/utils";
+
 /**
  * Fondo del hero: tres capas dentro de una caja que se desborda por debajo del
  * contenido (1024 de alto contra 826 de hero en desktop), para que la sección
  * siguiente arranque pisándola, como en el diseño.
+ *
+ * Es client component por una sola razón: el arte lo elige el slider. La URL
+ * baja como `--hero-art` (AGENTS regla 6) y el encuadre sigue viviendo en las
+ * utilities de `globals.css`.
+ *
+ * El encuadre no es el mismo para todos: el del Figma está medido para el arte
+ * del Figma y a las otras portadas las parte, así que cada entrada declara el
+ * suyo (`framing` en `lib/data/hero.ts`).
  *
  * Cuidado con dos cosas, que son frágiles a un cambio inocente:
  *
@@ -17,15 +31,31 @@
  * La capa base sólida no es decorativa: el arte mide 101.95% del ancho del
  * contenedor de alto, así que por debajo de ~1004px de viewport no llega a
  * cubrir los 1024 y quedaría una franja sin pintar. Y en mobile el arte va al
- * 75%, o sea que deja pasar lo que tenga debajo.
+ * 75%, o sea que deja pasar lo que tenga debajo. Es también lo que se ve
+ * mientras el arte nuevo todavía no bajó.
  */
 export function HeroBackground() {
+  const { activeSlide, hasSwitched } = useHeroSlide();
+  const slide = hero.slides[activeSlide];
+
   return (
     <div
       aria-hidden
       className="absolute inset-x-0 top-4 -z-10 h-hero-mobile overflow-hidden bg-background desktop:top-0 desktop:h-hero-desktop"
     >
-      <div className="hero-art-mobile absolute inset-0 opacity-75 desktop:hero-art-desktop desktop:opacity-100" />
+      {/* `key` remonta la capa en cada cambio, que es lo que hace repetir el
+          fade: `background-image` no se puede transicionar. */}
+      <div
+        key={activeSlide}
+        style={{ "--hero-art": `url("${slide.artSrc}")` } as React.CSSProperties}
+        className={cn(
+          "absolute inset-0 opacity-75 desktop:opacity-100",
+          slide.framing === "design"
+            ? "hero-art-mobile desktop:hero-art-desktop"
+            : "hero-art-cover",
+          hasSwitched && "hero-art-fade",
+        )}
+      />
       <div className="bg-hero-scrim-mobile absolute inset-0 desktop:bg-hero-scrim" />
     </div>
   );
