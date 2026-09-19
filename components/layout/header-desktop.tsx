@@ -29,14 +29,24 @@ function Counter({
 export function HeaderDesktop({ className }: { className?: string }) {
   return (
     <div className={cn("items-center justify-between px-10 py-6", className)}>
-      <Image
-        src="/assets/home/logo-sura.svg"
-        alt="Sura Gaming"
-        width={164}
-        height={40}
-        className="h-10 w-41"
-        priority
-      />
+      {/* El logo vuelve al hero, igual que el primer ítem del menú. Es un ancla
+          y no un `Link` a `/`: el menú scrollea en vez de rutear (PRD § 5) y
+          estamos parados en `/`, así que navegar no tendría a dónde ir.
+
+          El `flex` no es decorativo: sin él el `<a>` es inline y le suma el
+          espacio de descendente de la línea al alto del header.
+
+          El nombre accesible del link lo pone el `alt` de la imagen. */}
+      <a href="#home" className="flex">
+        <Image
+          src="/assets/home/logo-sura.svg"
+          alt="Sura Gaming"
+          width={164}
+          height={40}
+          className="h-10 w-41"
+          priority
+        />
+      </a>
 
       <div className="flex items-center gap-3 rounded-xl bg-surface p-2">
         <button

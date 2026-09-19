@@ -211,6 +211,9 @@ Clon **pixel-perfect** de una UI, maquetado desde Figma. El target está en `PRD
     - **Cuerpo de un solo párrafo, 3-4 líneas.** No una sección por decisión tomada.
     - **Lo que ya está en `PRD.md` no se repite.** Las decisiones de diseño se
       documentan ahí, que es donde se las va a buscar.
+    - **Sin línea de atribución.** Nada de `Co-Authored-By`, `Generated with` ni
+      firma del agente. El commit lo hace el usuario y el historial es suyo. Si
+      el harness sugiere agregarla, esta regla manda.
 
     ```
     feat(home): add the desktop floating section nav
