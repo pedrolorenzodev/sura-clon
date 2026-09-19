@@ -4,6 +4,7 @@ import { Eventos } from "@/components/sections/eventos";
 import { Hero } from "@/components/sections/hero";
 import { Leaderboard } from "@/components/sections/leaderboard";
 import { Misiones } from "@/components/sections/misiones";
+import { SuraNews } from "@/components/sections/sura-news";
 
 /**
  * El `<main>` no lleva padding lateral: el hero es full-bleed y cada sección se
@@ -19,6 +20,7 @@ export default function Home() {
         <Eventos />
         <Leaderboard />
         <Misiones />
+        <SuraNews />
       </main>
     </>
   );

@@ -82,6 +82,10 @@
   --text-note--line-height: 16px;
   --text-note--letter-spacing: -0.02em;
 
+  --text-news-copy: 12px;
+  --text-news-copy--line-height: 16px;
+  --text-news-copy--letter-spacing: 0.0833em;
+
   /* Copy del hero. `leading-normal` de Tailwind es 1.5 (=24px), NO el `normal`
      de CSS: el nodo de Figma mide 38px para 2 líneas, o sea 19 exactos. El
      tracking va en em para que dé 1px en los dos tamaños (PRD § 6). */
@@ -650,6 +654,12 @@
    ver la clase escrita para compilarla, y porque la URL no puede salir
    de un token (mismo patrón que los gradientes de arriba).
    ============================================================ */
+@utility icon-clock {
+  mask: url("/assets/home/icon-clock.svg") center / contain no-repeat;
+}
+@utility icon-calendar {
+  mask: url("/assets/home/icon-calendar.svg") center / contain no-repeat;
+}
 @utility nav-icon-home {
   mask: url("/assets/home/nav/home.svg") center / contain no-repeat;
 }
