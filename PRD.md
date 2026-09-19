@@ -331,8 +331,8 @@ Más:
 | Pantalla | Desktop | Mobile | Estado |
 |---|---|---|---|
 | Setup (skills, PRD, reglas, shadcn, Playwright) | — | — | ✅ Listo |
-| Design System | — | — | 👀 Rehecho sobre el rediseño, esperando aprobación |
-| Home | ⏳ | ⏳ | ⏳ Pendiente — bloques 1 a 4 desbloqueados, 5 a 10 sin diseño mobile |
+| Design System | — | — | 📦 Aprobado y commiteado |
+| Home | 🚧 | 🚧 | 🚧 En progreso — Header listo. Navegación (bloques 2 y 3) es lo que sigue |
 
 **Leyenda:** ⏳ Pendiente · 🚧 En progreso · 👀 Esperando aprobación · ✅ Aprobada · 📦 Commiteada · 🚫 Bloqueada
 
@@ -344,7 +344,7 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | Bloque | Pantalla | Archivo | Figma desktop | Figma mobile | Estado |
 |---|---|---|---|---|---|
 | Home completo (fuente del DS) | Home | — | [`3628:74971`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-74971&m=dev) | [`3567:88242`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88242&m=dev) | ✅ Escaneado → Design System |
-| 1 · Header | Home | `components/layout/header*.tsx` | [`6008:26313`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26313&m=dev) | [`6008:23224`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-23224&m=dev) | 👀 Implementado, esperando aprobación |
+| 1 · Header | Home | `components/layout/header*.tsx` | [`6008:26313`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26313&m=dev) | [`6008:23224`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-23224&m=dev) | 📦 Aprobado y commiteado |
 | 2 · Menú flotante (desktop) | Home | `components/layout/` | [`3628:75011`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3628-75011&m=dev) | — (no existe en mobile) | ⏳ Pendiente |
 | 3 · Bottom bar (mobile) | Home | `components/layout/` | — | [`3567:88398`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3567-88398&m=dev) | ⏳ Pendiente |
 | 4 · Drawer lateral | Home | `components/layout/` | — **falta** | — **falta** | 🚫 Sin frame |
