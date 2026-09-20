@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { UserAvatar } from "@/components/layout/user-avatar";
 import {
   Crown,
@@ -24,6 +26,10 @@ import { cn } from "@/lib/utils";
  * Las bases se alinean con `items-end`: los hermanos `flex-1` reparten ancho
  * pero dejan de estirarse en alto, que es justo lo que se busca. No combinar
  * con `h-full`, que lo anula.
+ *
+ * Cada card es un link al perfil, igual que las filas de la tabla. El `order` y
+ * el ancho se quedan en el `<li>` — son cosa del escalonado — y todo lo visual
+ * baja al link.
  */
 const GRADIENT: Record<PodiumRank, string> = {
   1: "bg-podium-gold-mobile",
@@ -50,35 +56,52 @@ export function LeaderboardPodiumMobile({ className }: { className?: string }) {
           <li
             key={entry.id}
             className={cn(
-              "flex flex-col items-center justify-end gap-2 rounded-lg p-3 ring-1 ring-inset",
-              GRADIENT[rank],
+              "flex",
               ORDER[rank],
-              style.ring,
-              isFirst ? "w-36 shrink-0 shadow-gold-glow" : "min-w-0 flex-1",
+              isFirst ? "w-36 shrink-0" : "min-w-0 flex-1",
             )}
           >
-            <div className="flex flex-col items-center gap-1">
-              {isFirst && <Crown className="h-3 w-5" />}
-              <UserAvatar
-                src={entry.avatarSrc}
-                size={isFirst ? 64 : 56}
-                ringClassName={style.avatarRing}
-                className={isFirst ? "size-16" : "size-14"}
-              >
-                <PodiumMedal rank={rank} className={isFirst ? "size-5.25" : "size-4.5"} />
-              </UserAvatar>
-            </div>
-
-            <p
+            <Link
+              href={`/profile/${entry.id}`}
+              prefetch={false}
+              aria-label={`Ver el perfil de ${entry.name}`}
               className={cn(
-                "max-w-full truncate text-center font-semibold text-foreground",
-                isFirst ? "text-xs" : "text-2xs",
+                "flex w-full flex-col items-center justify-end gap-2 rounded-lg p-3 ring-1 ring-inset transition-transform duration-250 ease-reveal hover:-translate-y-0.5 focus-visible:-translate-y-0.5 active:-translate-y-0.5 motion-reduce:transition-none",
+                GRADIENT[rank],
+                style.ring,
+                isFirst && "shadow-gold-glow",
               )}
             >
-              {entry.name}
-            </p>
+              <div className="flex flex-col items-center gap-1">
+                {isFirst && <Crown className="h-3 w-5" />}
+                <UserAvatar
+                  src={entry.avatarSrc}
+                  size={isFirst ? 64 : 56}
+                  ringClassName={style.avatarRing}
+                  className={isFirst ? "size-16" : "size-14"}
+                >
+                  <PodiumMedal
+                    rank={rank}
+                    className={isFirst ? "size-5.25" : "size-4.5"}
+                  />
+                </UserAvatar>
+              </div>
 
-            <ValuePill points={entry.points} variant={style.pill} small={!isFirst} />
+              <p
+                className={cn(
+                  "max-w-full truncate text-center font-semibold text-foreground",
+                  isFirst ? "text-xs" : "text-2xs",
+                )}
+              >
+                {entry.name}
+              </p>
+
+              <ValuePill
+                points={entry.points}
+                variant={style.pill}
+                small={!isFirst}
+              />
+            </Link>
           </li>
         );
       })}

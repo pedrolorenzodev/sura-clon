@@ -236,7 +236,7 @@
      SOMBRA — se suman a las de Tailwind, no las reemplazan.
      ============================================================ */
   --shadow-bar: 0 4px 12px rgb(13 10 44 / 0.06);
-  --shadow-gold-glow: 0 0 8px rgb(251 188 4 / 0.35);
+  --shadow-gold-glow: 0 0 15px rgb(251 188 4 / 0.55);
   --shadow-nav: 0 0 8px rgb(39 82 108 / 0.3);
   --drop-shadow-claim: 0 4px 15px rgb(0 0 0 / 0.3);
   /* Las dos sombras del CTA del hero van como box-shadow y no como drop-shadow:
@@ -411,6 +411,28 @@
      no con un color plano. Medido sobre el render: #494949 arriba → #2E2E2E
      abajo, lineal. El stop inferior se resuelve con --color-surface-2 (#303030),
      que queda a 2 niveles del medido — ver política de normalización, PRD § 6. */
+  /* Borde de la fila del Leaderboard: el mismo gris del resto, pero apagándose
+     hacia abajo. Medido sobre el render del nodo `6008:26530`, muestreando el
+     borde izquierdo cada 2px: arriba 0.95, a media altura 0.59 y abajo 0.18 — el de abajo se subió a 0.25 por
+     pedido del usuario (2026-09-20).
+     El MCP lo devuelve plano, como con la bottom bar y el podio. */
+  --gradient-row-border: linear-gradient(
+    180deg,
+    rgb(73 73 73 / 0.95) 0%,
+    rgb(73 73 73 / 0.59) 50%,
+    rgb(73 73 73 / 0.25) 100%
+  );
+
+  /* Borde de la fila con el puntero encima: el mismo gris de siempre, un
+     escalón más presente. Es el gris claro del DS a opacidad baja, con el mismo
+     desvanecido hacia abajo — no cambia el color, sólo sube el contraste. */
+  --gradient-row-border-active: linear-gradient(
+    180deg,
+    rgb(165 165 165 / 0.52) 0%,
+    rgb(165 165 165 / 0.34) 50%,
+    rgb(165 165 165 / 0.16) 100%
+  );
+
   --gradient-nav-border-mobile: linear-gradient(
     180deg,
     var(--color-border) 0%,
@@ -512,6 +534,61 @@
 /* Borde con degradé: no existe `border-image` con radio, así que el anillo se
    dibuja en un ::before enmascarado. Hace falta porque la barra es casi
    transparente y un fondo en dos capas taparía el backdrop-blur. */
+@utility border-gradient-row {
+  position: relative;
+
+  /* El anillo verde va en un segundo pseudo-elemento y no cambiando el fondo
+     del primero: un `background` con degradé no transiciona, y la opacidad sí. */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-row-border-active);
+    opacity: 0;
+    transition: opacity 200ms;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    opacity: 1;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-row-border);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
 @utility border-gradient-nav-mobile {
   position: relative;
 

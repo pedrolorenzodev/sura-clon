@@ -27,17 +27,20 @@ export function ValuePill({
   points,
   variant = "neutral",
   small = false,
+  className,
 }: {
   points: string;
   variant?: ValuePillVariant;
   /** El podio mobile achica el número a 10px en el 2º y el 3º. La moneda no cambia. */
   small?: boolean;
+  className?: string;
 }) {
   return (
     <div
       className={cn(
         "flex shrink-0 items-center gap-1 rounded-sm p-2 ring-1 ring-inset",
         VARIANT[variant],
+        className,
       )}
     >
       <Image

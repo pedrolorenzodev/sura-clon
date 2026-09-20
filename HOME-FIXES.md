@@ -58,9 +58,9 @@ experimental y depende del upscale.
 - [x] **11 · Misiones: cards como link** + hover con zoom de la imagen — `mission-card.tsx`
 
 ### Bloque 3 · Leaderboard y Sura News
-- [ ] **9 · Leaderboard: borde inferior atenuado** en las filas — `leaderboard-row.tsx`, `globals.css`
-- [ ] **10 · Leaderboard: filas como link** a `/profile/:id` + hover — `leaderboard-row.tsx`, `ROUTES.md`
-- [ ] **12 · Sura News: cards como link** a `/news/:id` + hover con zoom — `news-card.tsx`, `news-card-wide.tsx`
+- [x] **9 · Leaderboard: borde inferior atenuado** en las filas — `leaderboard-row.tsx`, `globals.css`
+- [x] **10 · Leaderboard: filas como link** a `/profile/:id` + hover — `leaderboard-row.tsx`, `ROUTES.md`
+- [x] **12 · Sura News: cards como link** a `/news/:id` + hover con zoom — `news-card.tsx`, `news-card-wide.tsx`
 
 ### Bloque 4 · Juegos
 - [ ] **13 · Scrim violeta** del banner al ~40% del eje X — `globals.css`
