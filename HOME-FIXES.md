@@ -7,7 +7,9 @@
 
 Para arrancar, decirle al agente: **"Empecemos a encarar el archivo `HOME-FIXES.md`"**.
 
-El agente toma **una tarea por vez**, en el orden de la lista. Por cada una:
+El agente toma **un bloque por vez**, en el orden de la lista. Las tareas se agruparon por
+sección el 2026-09-20 (decisión del usuario): cuatro archivos los tocaban varias tareas, así
+que agrupar evita editar y re-verificar lo mismo dos veces. Por cada bloque:
 
 1. Implementa.
 2. Corre `npm run typecheck && npm run lint`.
@@ -47,19 +49,30 @@ experimental y depende del upscale.
 - [x] **3 · Bug del pill** (Eventos medido; Juegos a confirmar en el navegador del usuario) — `lib/use-section-spy.ts`
 - [x] **4 · Scroll-spy más intuitivo**: activa al cruzar el 40% del viewport — `lib/use-section-spy.ts`
 - [x] **5 · Hero: resolución del arte** (upscale 2× con Real-ESRGAN, los cuatro artes) — `public/assets/home/`, `lib/data/hero.ts`, `PRD.md`
-- [ ] **6 · Hero: slider → carrusel con flechas** (vertical en desktop, horizontal en mobile) + autoplay cada 3 s — `hero-slider.tsx`, `hero-slide-context.tsx`, `lib/data/hero.ts`
+### Bloque 1 · Hero — carrusel y autoplay
+- [x] **6 · Slider → carrusel con flechas** (vertical en desktop, horizontal en mobile) + autoplay cada 3 s — `hero-slider.tsx`, `hero-slide-context.tsx`, `lib/data/hero.ts`
+
+### Bloque 2 · Eventos y Misiones
 - [ ] **7 · Eventos: 6 cards** alternando Domino / Squad — `lib/data/events.ts`
-- [ ] **8 · Misiones: 6 cards + carrusel con flechas** (slider compartido con Eventos) — `events-slider.tsx` → `card-slider.tsx`, `misiones.tsx`, `mission-card.tsx`, `lib/data/missions.ts`
+- [ ] **8 · Misiones: 6 cards + carrusel con flechas** (slider compartido con Eventos) — `events-slider.tsx` → `card-slider.tsx`, `misiones.tsx`, `lib/data/missions.ts`
+- [ ] **11 · Misiones: cards como link** + hover con zoom de la imagen — `mission-card.tsx`
+
+### Bloque 3 · Leaderboard y Sura News
 - [ ] **9 · Leaderboard: borde inferior atenuado** en las filas — `leaderboard-row.tsx`, `globals.css`
 - [ ] **10 · Leaderboard: filas como link** a `/profile/:id` + hover — `leaderboard-row.tsx`, `ROUTES.md`
-- [ ] **11 · Misiones: cards como link** + hover con zoom de la imagen — `mission-card.tsx`
-- [ ] **12 · Sura News: cards como link** a `/news/:id` + hover con zoom de la imagen — `news-card.tsx`, `news-card-wide.tsx`
-- [ ] **13 · Juegos: scrim violeta** del banner al ~40% del eje X — `globals.css` (`--gradient-promo-scrim*`)
-- [ ] **14 · Juegos: hover del CTA** "Jugar ahora" y sombra violeta on hover del banner — `game-banner.tsx`, `globals.css`
-- [ ] **15 · Juegos: cards como link** a `/games/:id` + hover; hover de los badges — `game-card.tsx`
-- [ ] **16 · Juegos: borde inferior atenuado** del panel de la card — `game-card.tsx`, `globals.css`
-- [ ] **17 · Limpieza de comentarios** (ts/tsx, `scripts/shot.mjs`, `globals.css`) → lo útil migra al PRD — todos
-- [ ] **18 · Hero en video** (experimental, gratis; go/no-go tras el primer clip) — `hero-background.tsx`, `public/assets/home/hero-art.{mp4,webm}`, `PRD.md`
+- [ ] **12 · Sura News: cards como link** a `/news/:id` + hover con zoom — `news-card.tsx`, `news-card-wide.tsx`
+
+### Bloque 4 · Juegos
+- [ ] **13 · Scrim violeta** del banner al ~40% del eje X — `globals.css`
+- [ ] **14 · Hover del CTA** "Jugar ahora" y sombra violeta on hover del banner — `game-banner.tsx`, `globals.css`
+- [ ] **15 · Cards como link** a `/games/:id` + hover; hover de los badges — `game-card.tsx`
+- [ ] **16 · Borde inferior atenuado** del panel de la card — `game-card.tsx`, `globals.css`
+
+### Bloque 5 · Limpieza
+- [ ] **17 · Comentarios** (ts/tsx, `scripts/shot.mjs`, `globals.css`) → lo útil migra al PRD — todos
+
+### Bloque 6 · Cierre
+- [ ] **18 · Hero en video** (experimental, gratis; go/no-go tras el primer clip) — `hero-background.tsx`, `PRD.md`
 - [ ] **19 · Cierre**: `npm run verify`, screenshots completos, borrar este archivo, commit message
 
 ## Hallazgos de la exploración

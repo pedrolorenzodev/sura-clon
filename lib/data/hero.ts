@@ -50,6 +50,8 @@ export type Hero = {
   slides: HeroSlide[];
   /** Miniatura seleccionada al cargar. Después manda el click del usuario. */
   activeSlide: number;
+  /** Cada cuánto avanza solo el carrusel. Se reinicia con cada cambio manual. */
+  autoplayMs: number;
 };
 
 export const hero: Hero = {
@@ -88,4 +90,5 @@ export const hero: Hero = {
     },
   ],
   activeSlide: 0,
+  autoplayMs: 3000,
 };
