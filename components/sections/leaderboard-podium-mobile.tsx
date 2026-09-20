@@ -11,33 +11,12 @@ import { ValuePill } from "@/components/sections/value-pill";
 import { podium } from "@/lib/data/leaderboard";
 import { cn } from "@/lib/utils";
 
-/**
- * Podio del Leaderboard, versión mobile: un pódium escalonado, con el primer
- * puesto al centro, más ancho (144), más alto y con el avatar más grande (64).
- * En desktop son tres cards iguales en fila, así que es otro componente
- * (AGENTS regla 12).
- *
- * El DOM va 1-2-3, que es el orden de lectura, y el escalonado lo hace CSS con
- * `order-*`: la data no se reordena.
- *
- * Acá la corona **sí** va en el flujo — la card la tiene en cuenta en su alto,
- * al revés que en desktop, donde tendría que crecer para alojarla.
- *
- * Las bases se alinean con `items-end`: los hermanos `flex-1` reparten ancho
- * pero dejan de estirarse en alto, que es justo lo que se busca. No combinar
- * con `h-full`, que lo anula.
- *
- * Cada card es un link al perfil, igual que las filas de la tabla. El `order` y
- * el ancho se quedan en el `<li>` — son cosa del escalonado — y todo lo visual
- * baja al link.
- */
 const GRADIENT: Record<PodiumRank, string> = {
   1: "bg-podium-gold-mobile",
   2: "bg-podium-silver-mobile",
   3: "bg-podium-bronze-mobile",
 };
 
-/** El escalonado: el 1º al medio. */
 const ORDER: Record<PodiumRank, string> = {
   1: "order-2",
   2: "order-1",
@@ -46,6 +25,7 @@ const ORDER: Record<PodiumRank, string> = {
 
 export function LeaderboardPodiumMobile({ className }: { className?: string }) {
   return (
+    /* no tocar: items-end hace el escalonado; h-full en las cards lo anula */
     <ul className={cn("flex w-full items-end gap-2", className)}>
       {podium.map((entry) => {
         const rank = entry.rank as PodiumRank;

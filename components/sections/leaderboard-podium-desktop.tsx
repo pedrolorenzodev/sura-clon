@@ -11,27 +11,6 @@ import { ValuePill } from "@/components/sections/value-pill";
 import { podium } from "@/lib/data/leaderboard";
 import { cn } from "@/lib/utils";
 
-/**
- * Podio del Leaderboard, versión desktop: tres cards iguales en fila, con el
- * avatar a la izquierda y el texto a la derecha. La versión mobile es un
- * pódium escalonado y por eso es otro componente (AGENTS regla 12).
- *
- * Cada card mide 211 × 97 y el alto lo define el texto, no el avatar: nombre 16
- * + nivel 10 + gap 8 + pill 32 = 66, contra los 56 de la foto.
- *
- * La corona va `absolute` sobre el avatar y no en el flujo: 14 + 4 + 56 = 74 no
- * entra en los 65 de contenido que deja una card de 97 con `p-16`, y la card se
- * iría a ~106.
- *
- * Cada card es un link al perfil, igual que las filas de la tabla: son
- * usuarios, no adornos. Con el puntero encima se eleva 2px — acá no puede
- * crecer como las filas, porque las tres comparten una fila horizontal.
- *
- * El borde va como `ring-inset` (el stroke del Figma se dibuja hacia adentro) y
- * el tinte negro del 20% está horneado en el token del degradé: como capa
- * hermana se apilaría sobre el avatar, y la card no puede llevar
- * `overflow-hidden` porque la medallita se sale.
- */
 const GRADIENT: Record<PodiumRank, string> = {
   1: "bg-podium-gold",
   2: "bg-podium-silver",

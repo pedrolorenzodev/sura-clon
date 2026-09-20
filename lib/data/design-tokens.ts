@@ -1,20 +1,7 @@
-/**
- * Inventario del Design System, derivado del Home del rediseño de Figma
- * (archivo `uuh0qonxt0qkmKJku7jSUd`).
- *
- * Acá viven sólo los NOMBRES y la utility que genera cada token: el valor se lee
- * en runtime desde el CSS (ver `components/styleguide/token-value.tsx`). Duplicar
- * los valores acá haría que /styleguide pueda mentir si alguien edita globals.css.
- */
-
 export type Token = {
-  /** Custom property, tal cual se declara en `@theme`. */
   name: string;
-  /** Utility de Tailwind que genera. Literal, para que Tailwind la detecte. */
   utility: string;
-  /** Dónde aparece en el diseño. */
   usage: string;
-  /** Marca los tokens que NO salen del Figma. */
   offDesign?: boolean;
 };
 
@@ -24,10 +11,7 @@ export type TokenGroup = {
   tokens: Token[];
 };
 
-/* ---------------------------------------------------------------- fuentes */
-
 export type FontToken = Token & {
-  /** Nombre de la familia tal cual la nombra el Figma. */
   designName: string;
   specimen: string;
 };
@@ -55,8 +39,6 @@ export const fontTokens: FontToken[] = [
     specimen: "RocketMan1989 · Nivel: Novato · 473",
   },
 ];
-
-/* ---------------------------------------------------------------- colores */
 
 export const brandColors: TokenGroup = {
   title: "Marca",
@@ -164,10 +146,7 @@ export const semanticColors: TokenGroup = {
   ],
 };
 
-/* ------------------------------------------------------------ tipografía */
-
 export type TextToken = Token & {
-  /** Utility de familia con la que se usa este tamaño. */
   family: string;
   specimen: string;
 };
@@ -195,8 +174,6 @@ export const textTokens: TextToken[] = [
   { name: "--text-2xs", utility: "text-2xs", family: "font-sans", usage: "Descripción de card, badges de Juegos", specimen: "Free-To-Play" },
   { name: "--text-3xs", utility: "text-3xs", family: "font-sans", usage: "Badges de Torneos, nivel del podio", specimen: "15 participantes" },
 ];
-
-/* ------------------------------------------------------ radio y sombra */
 
 export const radiusTokens: Token[] = [
   { name: "--radius-xs", utility: "rounded-xs", usage: "Badges de Torneos y de Juegos" },
@@ -257,10 +234,6 @@ export const gradientTokens: Token[] = [
   { name: "--gradient-event-scrim-strong", utility: "bg-event-scrim-strong", usage: "Scrim de la card de Eventos de fondo claro" },
 ];
 
-/**
- * Movimiento. El diseño no define ninguna animación: el vocabulario lo fuimos
- * armando nosotros y está justificado bloque por bloque en PRD § 5 y § 6.
- */
 export const motionTokens: Token[] = [
   { name: "--ease-reveal", utility: "ease-reveal", usage: "Curva de entrada del slider del hero — desacelera y no vuelve", offDesign: true },
   { name: "--thumb-reveal-duration", utility: "thumb-reveal", usage: "Cuánto tarda en entrar una miniatura del slider", offDesign: true },

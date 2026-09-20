@@ -3,15 +3,6 @@ import Image from "next/image";
 import type { Medal, MedalArt } from "@/lib/data/medals";
 import { cn } from "@/lib/utils";
 
-/**
- * Arte de cada medalla. Las doradas salen de **dos sprites de 2 × 2** que el
- * Figma recorta por celda, así que el asset se comparte y lo que cambia es la
- * ventana — el mismo patrón que los personajes de las cards de Eventos. Las
- * grises vienen como imagen suelta y se usan enteras.
- *
- * Los porcentajes son los del Figma, sin convertir: como la caja del arte es
- * cuadrada y escala con la celda, sirven igual en los dos tamaños.
- */
 const ART: Record<MedalArt, { src: string; image: string }> = {
   devocion: {
     src: "/assets/home/medallas/sprite-gold-1.png",
@@ -30,8 +21,6 @@ const ART: Record<MedalArt, { src: string; image: string }> = {
     image: "left-[-127.8%] top-[-125.93%] size-[239.25%]",
   },
   ranking: { src: "/assets/home/medallas/ranking.png", image: "inset-0 size-full" },
-  /* El Figma la trae rotada y espejada. Se replica: el asset se usa como el
-     diseño lo usa (regla 10). */
   social: {
     src: "/assets/home/medallas/social.png",
     image: "inset-0 size-full rotate-90 -scale-y-100",
@@ -41,22 +30,6 @@ const ART: Record<MedalArt, { src: string; image: string }> = {
   influencer: { src: "/assets/home/medallas/influencer.png", image: "inset-0 size-full" },
 };
 
-/**
- * Una medalla de la grilla.
- *
- * Todo lo de adentro del círculo va en porcentajes para que la celda escale
- * sola: el Figma la define en 106 de ancho con un círculo de 86, y en mobile
- * la misma grilla de 3 columnas la deja en ~98.
- *
- * El diseño pone el círculo en 86 dentro de una caja de 82 con `p-12`, o sea
- * que sobresale 2px por lado. Acá es `p-10` con el círculo al ancho completo:
- * misma geometría renderizada — 86 de círculo a 10 del borde de la celda y 130
- * de alto— sin depender de un desborde.
- *
- * Desbloqueada: fondo propio, anillo verde, la textura de marca al 20% y el
- * brillo diagonal. Bloqueada: sin fondo ni anillo, brillo gris, la medalla
- * apagada con un velo en `mix-blend-darken` y el candado en la esquina.
- */
 export function MedalCard({ medal }: { medal: Medal }) {
   const art = ART[medal.art];
 

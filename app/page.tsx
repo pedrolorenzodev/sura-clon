@@ -8,10 +8,6 @@ import { Misiones } from "@/components/sections/misiones";
 import { Juegos } from "@/components/sections/juegos";
 import { SuraNews } from "@/components/sections/sura-news";
 
-/**
- * El `<main>` no lleva padding lateral: el hero es full-bleed y cada sección se
- * hace cargo de su propio gutter.
- */
 export default function Home() {
   return (
     <>

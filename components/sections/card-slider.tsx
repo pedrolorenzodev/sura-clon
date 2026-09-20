@@ -5,35 +5,21 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-/** Ancho de card + gap, por tamaño. Es lo que avanza cada click. */
 export type SliderStep = { mobile: number; desktop: number };
 
-/**
- * Viewport scrolleable con flechas. Lo comparten Eventos y Misiones.
- *
- * Es client component por las flechas y nada más: las cards llegan como
- * `children` y se siguen renderizando en el servidor.
- *
- * Lo que cambia entre secciones son el paso, el recorte del viewport y la
- * altura de las flechas, así que los tres entran por prop. El recorte de
- * Eventos no es decorativo: sus cards dejan que el personaje se salga por
- * arriba y el `padding-top` del viewport es lo que deja el aire justo.
- *
- * **Las flechas sí están en el diseño** de Eventos, aunque no dentro del nodo
- * de la sección: viven en el frame compuesto del Home, apoyadas en los gutters.
- * Se midieron sobre el render a resolución completa (posición, tamaño de tinta
- * y los dos colores). En mobile no hay: ahí se scrollea con el dedo y la card
- * siguiente ya asoma.
- */
+const SUBPIXEL_SLACK = 1;
+
 export function CardSlider({
   step,
   labels,
+  className,
   viewportClassName,
   arrowClassName,
   children,
 }: {
   step: SliderStep;
   labels: { prev: string; next: string };
+  className?: string;
   viewportClassName: string;
   arrowClassName: string;
   children: React.ReactNode;
@@ -45,10 +31,10 @@ export function CardSlider({
   const sync = useCallback(() => {
     const el = viewport.current;
     if (!el) return;
-    setAtStart(el.scrollLeft <= 1);
-    /* El margen de 1px absorbe el redondeo a subpíxel del scroll: sin él la
-       flecha derecha nunca llega a apagarse. */
-    setAtEnd(el.scrollLeft >= el.scrollWidth - el.clientWidth - 1);
+    setAtStart(el.scrollLeft <= SUBPIXEL_SLACK);
+    setAtEnd(
+      el.scrollLeft >= el.scrollWidth - el.clientWidth - SUBPIXEL_SLACK,
+    );
   }, []);
 
   useEffect(sync, [sync]);
@@ -63,17 +49,19 @@ export function CardSlider({
   };
 
   return (
-    <div className="relative">
+    <div className={cn("relative", className)}>
       <div
         ref={viewport}
         onScroll={sync}
-        /* El `px` no es aire de diseño: un viewport con `overflow` recorta lo
-           que se sale del área scrolleable, y el glow del hover de la primera y
-           la última card caía justo ahí. El margen negativo lo devuelve, así
-           las cards quedan donde el diseño las pone. El aire de arriba y abajo
-           lo declara cada sección, que es la que sabe cuánto necesita. */
+        style={
+          {
+            "--clip-start": atStart ? "0px" : undefined,
+            "--clip-end": atEnd ? "0px" : undefined,
+          } as React.CSSProperties
+        }
+        /* no tocar: -mx-6/px-6 es aire para la sombra del hover y lift-clip es lo que evita que asome la card siguiente */
         className={cn(
-          "no-scrollbar -mx-3 flex overflow-x-auto overflow-y-hidden px-3",
+          "lift-clip no-scrollbar -mx-6 flex overflow-x-auto overflow-y-hidden px-6",
           viewportClassName,
         )}
       >
@@ -98,20 +86,6 @@ export function CardSlider({
   );
 }
 
-/**
- * Flecha de scroll, medida sobre el render del Home a resolución completa.
- *
- * | | Valor |
- * |---|---|
- * | Tinta | 10 × 18 px — un chevron de 32 con trazo 1.5 la reproduce exacta |
- * | Centro | 33px por fuera de la columna de contenido, a 202 del tope del slider |
- * | Activa | `#FFFFFF` |
- * | Inactiva | `#444444`, que es `--color-border-dim` |
- *
- * El diseño **apaga** la flecha en la punta en vez de esconderla: en el frame
- * la izquierda está gris porque el carrusel arranca al principio. El hover no
- * está definido y se resuelve como en el menú flotante, con el verde de marca.
- */
 function SliderButton({
   side,
   label,

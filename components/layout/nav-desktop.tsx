@@ -2,33 +2,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { homeSections } from "@/lib/data/navigation";
 import { cn } from "@/lib/utils";
 
-/**
- * Menú flotante de secciones, versión desktop: riel vertical en el gutter
- * izquierdo. La versión mobile es otro componente (AGENTS regla 12).
- *
- * Geometría del Figma (`col-izq`, 148 × 720): la columna ocupa el gutter
- * izquierdo entero, arranca justo debajo del header y mide **lo mismo que la
- * fila del hero**. Eso no es casualidad: es lo que hace que el menú se vea
- * centrado contra el contenido del hero, que también está centrado en esos 720.
- * Los dos centros caen en el mismo píxel por construcción, sin depender del
- * alto del viewport. El menú (60 de ancho) va a 44px del borde.
- *
- * El borde va como `ring-inset`: en Figma el stroke se dibuja hacia adentro y
- * el menú mide 60px de ancho; un `border` lo llevaría a 62.
- *
- * El pill verde es **una sola capa que se desplaza**, no uno por ítem que
- * aparece y desaparece (PRD § 5). Va debajo de la lista; los íconos pintan
- * encima porque el `<ul>` también está posicionado.
- *
- * El tooltip de hover no está en el Figma: los estilos salen del elemento real
- * de app.suragaming.com (PRD § 5). El texto sí es nuestro — el live está en
- * inglés y la UI del rediseño va en español.
- *
- * **El `<nav>` va con `pointer-events-none`.** Mide 148 × 720 y está fijo, o
- * sea que tapa el gutter izquierdo entero de cualquier sección que pase por
- * debajo al scrollear: la flecha izquierda del slider de Eventos no recibía ni
- * el hover. Los eventos los toma el riel, que es lo único que se ve.
- */
 export function NavDesktop({
   activeId,
   onSelect,
@@ -71,18 +44,7 @@ export function NavDesktop({
                           />
                         }
                       >
-                        {/* El ícono es el SVG del diseño usado como máscara: el
-                            color sale del token, no del archivo (globals.css).
 
-                            El hover lo tiñe con el verde de marca — el mismo del
-                            pill, así funciona como preview del activo.
-
-                            El cambio a negro espera a que el pill entre en
-                            tolerancia (`delay-150` + 75ms): antes de eso el ícono
-                            quedaría negro fuera del pill, o sea invisible. Los
-                            150ms salieron de medir cuánto tarda el pill en quedar
-                            a menos de 10px del destino — que es el juego que
-                            tiene el ícono de 26px dentro del pill de 46. */}
                         <span
                           className={cn(
                             "block shrink-0 transition-colors duration-75 motion-reduce:transition-none motion-reduce:delay-0",

@@ -1,14 +1,9 @@
-/** Data del usuario logueado. Fase 1: hardcodeada (AGENTS regla 9). */
-
 export type CurrentUser = {
   name: string;
   avatarSrc: string;
-  /** Texto del nivel, tal cual lo muestra el diseño. */
   levelLabel: string;
   levelBadgeSrc: string;
-  /** Racha de días consecutivos. */
   streak: number;
-  /** Sura Points. */
   points: number;
 };
 
@@ -21,7 +16,6 @@ export const currentUser: CurrentUser = {
   points: 473,
 };
 
-/** Recompensa diaria reclamable que vive en el header desktop. */
 export type DailyClaim = {
   label: string;
   gameIconSrc: string;

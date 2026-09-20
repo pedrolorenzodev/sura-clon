@@ -5,28 +5,6 @@ import { ValuePill } from "@/components/sections/value-pill";
 import type { LeaderboardEntry } from "@/lib/data/leaderboard";
 import { cn } from "@/lib/utils";
 
-/**
- * Fila de la tabla, del cuarto puesto para abajo. Un solo componente para los
- * dos tamaños: el markup y el layout son los mismos y lo único que difiere es
- * el alto.
- *
- * En mobile mide 56 sin que nadie lo declare — `p-12` × 2 más el avatar de 32.
- * En desktop va `flex-1`, así las cinco se reparten los 329 que deja la fila de
- * 486 (PRD § 6): los 59,4 del Figma son esa división, no una medida.
- *
- * El borde se apaga hacia abajo, como en el diseño, y por eso no puede ser un
- * `ring`: va como anillo enmascarado en un `::before` (`border-gradient-row`),
- * que tampoco agrega tamaño — con `border` la fila se iría a 58.
- *
- * Con el puntero encima la fila **se agranda y empuja a las de abajo**, pero la
- * tabla no cambia de alto: las cinco se reparten los mismos 329 con `flex-1`,
- * así que subirle el `grow` a una se lo quita a las otras. Es lo que mantiene
- * la sección alineada con Medallas, que comparte la fila de 486.
- *
- * La fila entera es un link al perfil del usuario. La ruta todavía no existe
- * (regla 14: se apunta al destino real y la ruta se implementa después), así
- * que va con `prefetch={false}` para no pedir algo que hoy da 404.
- */
 export function LeaderboardRow({
   entry,
   className,
@@ -47,9 +25,6 @@ export function LeaderboardRow({
         aria-label={`Ver el perfil de ${entry.name}`}
         className="border-gradient-row group flex w-full items-center gap-5 overflow-hidden rounded-lg bg-surface p-3"
       >
-        {/* El fondo del hover va como capa y no como `bg-*` en el propio link:
-            el `::before` del borde ya ocupa ese lugar y pintarlos juntos haría
-            que el degradé del anillo compusiera contra el color nuevo. */}
         <span
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-surface-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none"

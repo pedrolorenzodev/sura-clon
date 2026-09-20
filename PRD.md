@@ -467,6 +467,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | 2026-09-20 | `--shadow-promo-hover` y `--shadow-promo-cta-hover` | Juegos | Hover del banner y de su CTA. Ninguno sale del Figma. El violeta es el de `--shadow-promo` más extendido y al doble de opacidad (15px/0.2 → **24px/0.4**); el verde apila un glow de 14px al 0.55 sobre la caída que el CTA ya tenía, que es la receta de `--shadow-cta-hover`. El banner no es link: el hover es del contenedor y el CTA mantiene el suyo. |
 | 2026-09-20 | `--gradient-card-border` + `@utility border-gradient-card` | Juegos | El borde del panel de la card también se apaga hacia abajo. Medido sobre el render del nodo `6008:26683`: `rgba(161,161,161,.5)` arriba, que se sostiene hasta el **40% de la altura** y cae a **0,1** abajo. Mismo anillo enmascarado que la fila del Leaderboard y el menú. |
 | 2026-09-20 | **El banner de Juegos es un solo destino** | Juegos | Pedido del usuario: la card entera lleva al mismo lado que "Jugar ahora". Como no hay ruta todavía, los dos van como `<button>` sin handler — el criterio del footer y de "Ver todo". El CTA sigue siendo el control real, focusable y con su propio hover; la card suma un segundo botón estirado (`absolute inset-0`), `aria-hidden` y `tabIndex={-1}`, que es sólo comodidad de puntero y no agrega una parada de tabulación. El contenido va `pointer-events-none` sobre él, con el CTA de vuelta en `auto`: así el click en el título cae en el botón estirado y el del CTA en el CTA. |
+| 2026-09-20 | **Se aplicó la regla 19 a todo el repo** | — | Se borraron los 146 bloques de comentario de `app/`, `components/` y `lib/`, los de `scripts/shot.mjs` y los 81 de `globals.css`: 1138 líneas. Sobreviven el único `TODO` (los widths de `shot.mjs`), 24 separadores de `globals.css` reducidos a su etiqueta — son navegación en un archivo de 900 líneas, no explicación. Lo que decían las medidas y los desvíos ya estaba acá; lo que no, se migró antes de borrar: tres trampas nuevas a las notas de implementación y todo lo que era decisión de código a **Notas de arquitectura**, una sección nueva de § 6. Después se agregaron **13 guardas** de una línea, con la excepción que estrena la regla 19 (ver Notas de arquitectura). Verificado: `npm run verify` limpio y el render no se movió (el único delta contra el screenshot anterior es el pill del menú, que depende del scroll al sacar la foto). |
 | 2026-09-20 | `--drop-shadow-link-hover` | Todas las secciones | Los links "Ver todo" e "Ir a Sura News" no tenían ningún hover. Pedido del usuario. `0 0 4px` del `#97F300` al 0,25 — la misma familia de luz que `--shadow-brand-glow`. Arrancó en `0 0 8px` al 0,45 y el usuario lo bajó: a ese tamaño era una nube alrededor del texto. A 4px el halo queda pegado a la letra, que es lo que se pedía. Se comparó también con `0 0 3px` al 0,2, que ya casi no se ve. Va como `drop-shadow` y no `text-shadow` porque la flecha es un `<img>` y quedaría apagada. |
 | 2026-09-20 | **Misiones y Sura News pasan al hover de elevación** | Misiones · Sura News | Pedido del usuario: las dos usaban el glow verde y el título a verde, y querían el efecto de Juegos. Sin tokens nuevos — reusan `--shadow-card-hover` y los grises que ya existen. Misiones sube su anillo de `--color-border` a `--color-border-muted` al 60%; Sura News no tiene borde, así que el escalón lo da la superficie: `--color-background` → `--color-surface-3` en desktop y `--color-surface-3` → `--color-surface-2` en mobile, los dos de 8 niveles. Los títulos dejan de teñirse. |
 | 2026-09-20 | Cards de Juegos → `<Link href="/games/:id">`, con `--shadow-card-hover` y `--gradient-card-border-active` | Juegos | Arrancaron con el vocabulario verde de Misiones y Sura News (glow de marca + título a verde) y el usuario lo descartó (2026-09-20): lo quería **oscuro y sutil**. El verde se fue entero. Queda el zoom de la portada, la card **sube 2px** con `translate` —el mismo recurso que las cards del podio, que no toca el layout—, una sombra negra de elevación (`0 8px 24px` al 0,55) y el borde del panel un escalón más presente, con el mismo desvanecido hacia abajo: medido, de 100 a **175** a media altura. El título se queda blanco y los badges van de `--color-muted-foreground` a `--color-subtle-foreground`. Es el mismo criterio que la fila del Leaderboard: **el movimiento es la señal fuerte, el color sólo acompaña.** |
@@ -570,10 +571,14 @@ resuelven de una sola pasada cuando el Home esté terminado, o más adelante.
 
 | Tema | Qué pasó | Cómo se resolvió |
 |---|---|---|
-| **La sombra de elevación necesita más aire que el glow, y el aire no puede mover el layout** | `--shadow-card-hover` es `0 8px 24px`: pide 18px por arriba (con los 2 del salto) y 30 por abajo, contra los 12 que difundía el glow verde. Los dos carruseles recortan —`overflow-x-auto` obliga al eje Y— así que la sombra se cortaba con una línea dura. | Se le da el aire con padding y se devuelve con margen negativo, el mismo truco que el `-mx-3 px-3` que ya tenía `card-slider`. **Ojo con cuánto se devuelve:** el viewport de Misiones tenía `py-3` sin compensar, o sea 12px de alto real que el bloque aprobado ya incluía. Compensarlo entero (`-my-8 py-8`) subía todo lo de abajo 24px. Va `-my-5 py-8`: 32 de aire para pintar y los mismos 12 netos de antes. Verificado: el banner de Juegos vuelve a y=2403,328125 en mobile y 2869,640625 en desktop, al subpíxel. El `<ul>` de Sura News mobile no tenía padding, así que ahí sí se compensa entero. |
+| **La sombra de elevación necesita más aire que el glow, y el aire no puede mover el layout** | `--shadow-card-hover` es `0 8px 24px`: pide 18px por arriba (con los 2 del salto) y 30 por abajo, contra los 12 que difundía el glow verde. Los dos carruseles recortan —`overflow-x-auto` obliga al eje Y— así que la sombra se cortaba con una línea dura. | Se le da el aire con padding y se devuelve con margen negativo, el mismo truco que el `-mx-3 px-3` que ya tenía `card-slider`. **Ojo con cuánto se devuelve:** el viewport de Misiones tenía `py-3` sin compensar, o sea 12px de alto real que el bloque aprobado ya incluía. Compensarlo entero (`-my-8 py-8`) subía todo lo de abajo 24px. Va `-my-5 py-8`: 32 de aire para pintar y los mismos 12 netos de antes. Verificado: el banner de Juegos vuelve a y=2403,328125 en mobile y 2869,640625 en desktop, al subpíxel. El `<ul>` de Sura News mobile no tenía padding, así que ahí sí se compensa entero. **Y el eje X tampoco alcanzaba:** los 12px de `-mx-3 px-3` que había puesto el glow verde dejaban la sombra de la última card cortada con una línea vertical dura. Pasaron a **24**, pero ahí aparece el conflicto de fondo — ver la fila de abajo. Verificado que las cards no se movieron: la primera sigue en 24 en mobile y 148 en desktop. |
+| **En un carrusel, el aire de la sombra ES área visible** | Al subir el aire horizontal a 24px, en el otro extremo del scroll ese aire mostraba 24px de la card siguiente **por fuera de la columna** — y en Misiones desktop, donde las cuatro cards cierran los 1144 exactos, eso rompe la grilla. Lo vio el usuario. El `overflow` de un carrusel no distingue entre la sombra y el contenido: los dos se pintan en el mismo lugar. | Se separaron las dos cosas. El viewport conserva sus 24px de aire y **`lift-clip`** lo recorta en el borde de la columna, salvo del lado donde el carrusel ya llegó a la punta: ahí el recorte se abre a 0 y la sombra sale entera, que es justo cuando no hay card siguiente que mostrar. El estado entra como custom property (`--clip-start` / `--clip-end`) desde el `atStart`/`atEnd` que el slider ya tenía — la excepción de la regla 6, igual que `--nav-index`. **Primero se probó taparlo con dos capas opacas y estuvo mal:** bajo Eventos asoma el fondo del hero, así que pintaban un rectángulo gris sobre el arte. `clip-path` recorta sin pintar. |
 | **Un overlay clickeable se come el `hover` de lo que tapa** | Con la card entera cubierta por un botón estirado, el CTA quedaba fuera del hit-test: `:hover` sólo alcanza al target y a sus ancestros, así que el glow verde no se encendía nunca por sí solo y hubo que dispararlo con `group-hover` — o sea que hoverear el CTA y hoverear la card se volvían indistinguibles. Lo vio el usuario. | El overlay baja a `z-10` y el contenido sube a `z-20` con `pointer-events-none`; el CTA vuelve a `pointer-events-auto` y así hit-testea él. Medido: sobre la card se enciende sólo el violeta, sobre el CTA se encienden los dos, y el click del título lo toma el overlay y el del CTA el CTA. **Un overlay que cubre una card anula el hover de todo lo que hay debajo: si algo adentro necesita estado propio, tiene que hit-testearse.** |
 | **El scrim del banner no se puede correr sin perder el copy** | Se pidió apagar el violeta al 40% del ancho para ver más el arte. | En desktop el copy vive en una caja de 530 sobre 1144 y termina en el 49%, así que el violeta puede morir en el 40%; en mobile es **de borde a borde** y no hay ningún x que sirva. Se implementó desktop, se miró y el usuario lo revirtió: **el scrim queda como el diseño en los dos tamaños**. Si el tema vuelve, la salida no es el degradé sino el texto — darle al título la sombra que hoy sólo tiene la bajada. |
 | **El panel de la card no necesitó compensar el píxel del borde** | Al pasar de `border` a anillo enmascarado se esperaba perder 2px de alto y había que devolverlos. | No hizo falta: el `min-h` ya era el que mandaba. Medido antes y después, el panel da **126 en desktop y 94 en mobile** en las ocho cards, y la card sigue en 357 / 219,78. El contenido más padding entra en 124, así que el borde nunca estuvo definiendo el alto. |
+| **El stop transparente de un degradé va con el color al 0, nunca `transparent`** | Salió en el scrim del hero. La palabra clave `transparent` es `rgba(0,0,0,0)`: el navegador interpola hacia el **negro** y el degradé pasa por un gris sucio antes de desaparecer. | Se escribe el mismo color con alfa 0 — `rgb(32 32 32 / 0)` en vez de `transparent` — y la interpolación queda dentro del color. Vale para todos los scrims del proyecto. |
+| **`items-end` y `h-full` se anulan** | En el podio mobile las tres cards tienen que apoyar en la misma base y crecer cada una lo suyo. | Van con `items-end`: los hermanos `flex-1` siguen repartiendo ancho pero dejan de estirarse en alto, que es justo lo que se busca. **No combinar con `h-full`**, que vuelve a estirarlas y tira el escalonado. |
+| **La flecha derecha del carrusel no llegaba a apagarse** | `scrollLeft` no cae nunca en el valor exacto de `scrollWidth - clientWidth`: queda a una fracción de píxel. | La comparación lleva 1px de margen. Sin eso el carrusel nunca se da por terminado y la flecha queda encendida sobre un scroll que ya no avanza. |
 | **El hover de una fila de tabla no puede ser un glow** | Las filas del Leaderboard van pegadas y con 5 a la vista; el resplandor que usan las cards las habría hecho parpadear en bloque. | Las cards de News sí llevan glow —están separadas y son pocas—, pero la fila no. La capa de fondo va como `<span>` absoluto y no como `bg-*` del propio link, porque el `::before` del borde ya ocupa ese lugar y el degradé del anillo compondría contra el color nuevo. |
 | **El hover de la fila pasó por tres versiones hasta funcionar** | La primera era capa de fondo más nombre en verde: "muy plano y simple". La segunda sumó cinco señales de color y seguía sin convencer. | La que funcionó agrega **movimiento real**: con el puntero encima la fila **se agranda y empuja a las de abajo**. La tabla no cambia de alto y la sección tampoco — las cinco filas se reparten los mismos 329 con `flex-1`, así que subirle el `grow` a una se lo quita a las otras (medido: 59,4 → **70,7** la activa y 56,6 las demás, sección clavada en 486). Eso es lo que mantiene la alineación con Medallas, que comparte la fila de 486. **No rebota**: la fila crece bajo el puntero, nunca se achica, así que el puntero no puede quedar afuera — verificado fila por fila y con seis saltos rápidos. El `min` de 56 no es casual: es el avatar de 32 más los dos `p-3`. |
 | **El podio quedó sin link cuando las filas sí lo tenían** | La tarea decía "filas como link" y se implementó literal: los puestos 4 a 8 llevaban al perfil y el podio no, siendo los mismos usuarios. Lo detectó el usuario. | Las tres cards del podio son links, en los dos componentes. **No se elevan igual que las filas**: las tres comparten una fila horizontal, así que crecer las desalinearía; suben 2px con `translate`, que no toca el layout. Verificado que las medidas no se movieron: 211 × 97 en desktop y el escalonado de mobile (144 × 168 el primero, 91 × 140 los otros). El `order` y el ancho se quedan en el `<li>` —son cosa del escalonado— y todo lo visual baja al link. |
@@ -683,6 +688,76 @@ admite (ver notas de implementación).
 - Siempre `focus-visible:` en pareja con `hover:`, siempre `motion-reduce:transition-none`.
 - Duraciones: **200 ms** para sombra, color y borde; **250 ms** con `--ease-reveal` para el
   zoom de una imagen.
+
+### Notas de arquitectura
+
+Decisiones de código que no son medidas del diseño y que el código ya no explica al
+costado (`AGENTS.md` regla 19). Son las que se rompen con un cambio que parece inocente.
+
+**El fondo del hero es frágil por diseño.** Se apoya en `-z-10` y eso funciona sólo porque
+su `<section>` **no** crea contexto de apilado: si alguien le agrega `isolate`, `z-*`,
+`transform` u `opacity`, el fondo pasa a pintarse encima del contenido de las secciones
+siguientes. Por lo mismo, ningún ancestro puede tener fondo propio. Y el `overflow-hidden`
+va en la capa de fondo, nunca en la `<section>`: ahí recortaría el desborde vertical, que
+es justo lo que tiene que verse.
+
+**La capa base sólida del hero no es decorativa.** El arte mide 101,95% del ancho del
+contenedor de alto, así que por debajo de ~1004px de viewport no llega a cubrir los 1024 y
+quedaría una franja sin pintar; en mobile además va al 75% y deja pasar lo que tenga
+debajo. Es también lo que se ve mientras el arte nuevo todavía no bajó.
+
+**El CTA del hero y "Reclamar" no usan `components/ui/button.tsx`.** El cva de shadcn trae
+`text-sm`, `rounded-lg`, `border` y un `active:translate-y-px` que el diseño no define
+(regla 16). Son elementos nativos con las clases del diseño. La regla 8 sigue en pie: se
+usa el primitive cuando aporta comportamiento, no cuando sólo aporta estilos que hay que
+deshacer.
+
+**El estado del slider del hero va en context y no en props.** Los dos consumidores están
+en ramas distintas del árbol —el fondo es una capa absoluta detrás de todo y el slider vive
+adentro de la fila de contenido—, así que pasarlo por props obligaría a `HeroContent`, que
+es estático, a recibir y reenviar algo que no usa y a volverse client component sin motivo.
+
+**`/styleguide` lee los valores en runtime.** `lib/data/design-tokens.ts` lista sólo
+nombres y utilities; el valor sale del CSS ya compilado con `getComputedStyle`. Duplicarlo
+haría que la página pueda mentir si alguien edita `globals.css`. Por eso el `@theme` es
+**`static`**: sin eso Tailwind poda los tokens sin uso y la página los leería vacíos.
+
+**Puntajes y fechas van como string ya formateado.** Formatear en runtime arriesga un
+desajuste de hidratación por locale y no aporta nada en Fase 1.
+
+**`homeSections` es constante de módulo.** El scroll-spy la recibe estable y no re-suscribe
+el `IntersectionObserver` en cada render.
+
+**`dark:` está atado a una clase, no a `prefers-color-scheme`.** El diseño es dark-only y
+no hay ninguna `.dark` en el proyecto, así que las utilities `dark:` que arrastran los
+primitives de shadcn quedan inertes y hay un solo camino de render.
+
+**Ninguna imagen se selecciona ni se arrastra**: son assets del diseño, no contenido.
+
+**Las guardas vivas.** `AGENTS.md` regla 19 habilita una línea de `no tocar` donde una
+edición local y aparentemente inocente rompe algo no local y en silencio. Son estas, y la
+lista se mantiene acá para que no se expanda sola:
+
+| Dónde | Qué protege |
+|---|---|
+| `hero.tsx` · `hero-background.tsx` | El apilado del fondo: nada de `isolate`, `z-*`, `transform` u `opacity` en la `<section>`; el `-z-10` y el `overflow-hidden` viven en la capa |
+| `hero.tsx` · `leaderboard.tsx` · `sura-news.tsx` · `juegos.tsx` · `footer.tsx` | `overflow-x-clip`: es lo único que evita el scroll lateral entre 391 y 860 |
+| `card-slider.tsx` · `sura-news.tsx` · `misiones.tsx` | El aire de la sombra del hover de elevación —24px en los dos ejes— y el `lift-clip` que evita que ese aire muestre la card siguiente |
+| `leaderboard-podium-mobile.tsx` | `items-end`, que hace el escalonado; `h-full` lo anula |
+| `event-card.tsx` | El piso del personaje en `bottom-px`; con `bottom-0` pisa el borde de la card |
+| `globals.css` | `@theme static` (sin él `/styleguide` lee vacío), el `border-box` del shorthand de las cards de Eventos y el `1ms` del cruce con `prefers-reduced-motion` |
+| `next.config.ts` | `images.unoptimized` y `devIndicators: false` |
+
+**Dos se encodearon en vez de comentarse**, que es lo que la regla pide intentar primero:
+el aire de la sombra pasó a `@utility lift-room` —el nombre dice para qué está, así que
+borrarlo deja de parecer limpieza— y el margen de subpíxel del carrusel a la constante
+`SUBPIXEL_SLACK`. En Misiones eso además separó las dos cosas que el `-my-5 py-8` mezclaba:
+`lift-room` es aire de pintura y el `py-3` del contenedor es el espaciado real.
+
+**El `Tooltip` se aparta de lo que genera el CLI de shadcn** en cuatro cosas: `cn` sale de
+`@/lib/utils` y no del paquete `cn`, los colores y la geometría pasan a nuestros tokens, no
+lleva flecha (el elemento de referencia no tiene; queda disponible con `arrow`) y la
+transición es sólo fade de 200ms, sin zoom ni slide.
 
 ### Política de normalización de valores
 

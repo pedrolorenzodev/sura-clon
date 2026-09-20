@@ -257,6 +257,23 @@ Clon **pixel-perfect** de una UI, maquetado desde Figma. El target está en `PRD
     Si algo del código sólo se entiende con un párrafo al lado, el problema es el código:
     primero se intenta un nombre mejor o partirlo en dos.
 
+    **Única excepción: la guarda.** Una línea, y sólo donde una edición local y aparentemente
+    inocente rompe algo **no local** y **en silencio** — sin error de tipos, sin test que
+    falle, sin nada raro en la pantalla que se está editando.
+
+    ```tsx
+    /* no tocar: isolate, z-*, transform u opacity acá rompen el apilado del fondo */   // ✅
+    /* El borde va como ring porque en Figma el stroke se dibuja hacia adentro. */      // ❌
+    ```
+
+    La guarda **no explica**: avisa que hay un cable. El porqué sigue yendo a `PRD.md`, y las
+    guardas vivas están listadas en § 6, *Notas de arquitectura*.
+
+    Antes de escribir una, intentar que la restricción **no se pueda romper**: un nombre que
+    la diga (`lift-room`, `SUBPIXEL_SLACK`) es mejor que una línea que pida no tocar. La
+    guarda es para lo que CSS o el lenguaje no pueden expresar — un contexto de apilado, un
+    margen negativo que es aire de pintura, un `1ms` que existe para que dispare un evento.
+
 ## Navegación
 
 **No asumir cómo navega el diseño.** Un ícono de menú puede llevar a una ruta propia o

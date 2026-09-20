@@ -1,5 +1,3 @@
-/** Sección Sura News del Home. Fase 1: hardcodeada (AGENTS regla 9). */
-
 export type NewsItem = {
   id: string;
   title: string;

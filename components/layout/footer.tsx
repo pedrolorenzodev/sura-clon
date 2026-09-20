@@ -56,6 +56,7 @@ function StoreButton({ store }: { store: StoreBadge }) {
 
 export function Footer() {
   return (
+    /* no tocar: overflow-x-clip evita el scroll lateral entre 391 y 860 */
     <footer className="flex flex-col items-center gap-6 overflow-x-clip px-gutter pt-section-gap-mobile pb-nav-clearance desktop:gap-4 desktop:px-0 desktop:pt-16 desktop:pb-5">
       <div className="flex flex-col items-center gap-6 desktop:flex-row desktop:gap-12">
         <Image

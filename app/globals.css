@@ -2,27 +2,18 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* `dark:` queda atado a una clase, no a prefers-color-scheme. El diseño de SURA
-   es dark-only: no hay clase `.dark` en ningún lado, así que las utilities `dark:`
-   que traen los primitives de shadcn quedan inertes y hay un solo camino de render. */
 @custom-variant dark (&:is(.dark *));
 
-/* `static` fuerza a emitir todos los tokens aunque no estén en uso: /styleguide los
-   lee en runtime con getComputedStyle y con el pruning default leería vacío. */
+/* no tocar: sin `static`, Tailwind poda los tokens sin uso y /styleguide los lee vacíos */
 @theme static {
   /* ============================================================
-     BREAKPOINTS — un solo prefijo responsive: desktop:
-     Se maqueta mobile-first; `desktop:` es el override.
-
-     El diseño mobile es EXCLUSIVO del frame de 390: de 391px para
-     arriba manda el diseño desktop, se vea en la pantalla que se vea.
-     Por eso el corte está en 391 y no en el ancho del frame desktop.
+     BREAKPOINTS
      ============================================================ */
   --breakpoint-*: initial;
   --breakpoint-desktop: 391px;
 
   /* ============================================================
-     TIPOGRAFÍA — tres familias.
+     TIPOGRAFÍA
      ============================================================ */
   --font-display: var(--font-monument), ui-sans-serif, system-ui, sans-serif;
 
@@ -31,15 +22,13 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, monospace;
 
-  /* --- Escala. La familia la pone el call site (font-display / font-techno /
-         font-sans); acá van tamaño, interlineado y tracking. --- */
+  /* --- Escala --- */
   --text-*: initial;
 
   /* display */
   --text-display: 64px;
   --text-display--line-height: 64px;
-  /* -4px sobre 64. Va en em, así que el título mobile (28px) recibe el
-     equivalente proporcional. */
+
   --text-display--letter-spacing: -0.0625em;
   --text-display-sm: 40px;
   --text-display-sm--line-height: 40px;
@@ -71,19 +60,13 @@
   --text-legal--line-height: 18px;
   --text-legal--letter-spacing: 0.02em;
 
-  /* Copy del hero. `leading-normal` de Tailwind es 1.5 (=24px), NO el `normal`
-     de CSS: el nodo de Figma mide 38px para 2 líneas, o sea 19 exactos. */
   --text-copy: 16px;
   --text-copy--line-height: 19px;
   --text-copy-sm: 12px;
   --text-copy-sm--line-height: 14px;
 
   /* sans — Inter */
-  /* No sale del diseño: lo exige `components/ui/button.tsx` (shadcn lo tiene
-     hardcodeado en su clase base). Se marca como tal en /styleguide. */
-  /* Premio de una misión: 14 sin aire. `--text-sm` trae interlineado 20 y le
-     agregaba 4px de alto al badge; `--text-cta`, que sí es 14/14, arrastra peso
-     500 y tracking que el diseño no le pone acá. */
+
   --text-reward: 14px;
   --text-reward--line-height: 14px;
   --text-sm: 14px;
@@ -102,9 +85,6 @@
 
   /* ============================================================
      COLOR
-     Se resetea la paleta default de Tailwind: `bg-zinc-800` y
-     compañía dejan de compilar, así que un color fuera del DS
-     falla a la vista en vez de pasar desapercibido.
      ============================================================ */
   --color-*: initial;
 
@@ -117,39 +97,23 @@
   /* --- Marca --- */
   --color-brand: #a5e04a;
   --color-brand-deep: #091900;
-  /* Verde de marca aclarado 12% con blanco. No sale del Figma: el diseño no
-     define ningún hover (PRD § 6). Lo consumen los dos verdes accionables del
-     Home — el CTA del hero y el label de Reclamar —, que ya son de marca: en
-     un elemento que ya usa el color, aclararlo es la única señal de hover que
-     no le cambia el peso en la jerarquía. */
+
   --color-brand-bright: #b0e460;
-  /* Verde del diseño ANTERIOR. Sobrevive en dos lugares del rediseño, que quedó
-     a medio aplicar: el borde de la miniatura activa del hero (a full) y el de
-     las cards de Torneos (al 20%). Se replica tal cual, medido sobre el render:
-     el borde de la miniatura da 160,229,0 exacto. */
+
   --color-brand-legacy: #a0e500;
   --color-brand-faint: rgb(160 229 0 / 0.2);
 
   /* --- Superficies --- */
-  /* Muestreado en los dos frames compuestos del Home (desktop y mobile), seis
-     puntos cada uno. El #0C0C0C anterior salía de la variable publicada
-     `Sura/Negro`, que es del diseño viejo. El scrim del hero se funde a este
-     color, así que tiene que ser el mismo. */
+
   --color-background: #202020;
   --color-surface: #222222;
   --color-surface-2: #303030;
   --color-surface-3: #282828;
   --color-overlay: rgb(34 34 34 / 0.9);
-  /* Menú flotante del Home: casi transparente, el efecto lo hace el backdrop-blur. */
   --color-nav-glass: rgb(255 255 255 / 0.01);
-  /* Tooltip del menú flotante. No sale del Figma: es el valor del elemento real
-     en app.suragaming.com, la única referencia que existe (ver PRD § 6). */
+
   --color-tooltip: #1a1a1a;
-  /* Fondo bajo las miniaturas NO seleccionadas del slider del hero, que van
-     atenuadas: la portada al 40% sobre este color. Sale del frame mobile; en
-     desktop se aplica el mismo tratamiento por decisión del usuario. Es el
-     negro del diseño viejo: como --color-brand-legacy, sobrevive en el
-     rediseño. */
+
   --color-thumb-dim: #0c0c0c;
 
   /* --- Bordes --- */
@@ -157,8 +121,7 @@
   --color-border-muted: #a5a5a5;
   --color-border-light: #dddddd;
   --color-border-dim: #444444;
-  /* Íconos de la bottom bar mobile: un gris azulado, no blanco. Los del riel
-     desktop sí son blancos — son dos sets distintos en el Figma. */
+
   --color-nav-icon: #abb7c2;
 
   /* --- Texto --- */
@@ -166,33 +129,21 @@
   --color-muted-foreground: #a5a5a5;
   --color-subtle-foreground: #dddddd;
 
-  /* --- Familia dorada: premios, podio y medallas --- */
+  /* --- Familia dorada --- */
   --color-gold: #ffa600;
   --color-gold-deep: #714900;
   --color-gold-bright: #fbbc04;
 
-  /* --- Plata y bronce: los otros dos puestos del podio. Misma estructura de
-         nombres que la dorada: `-bright` es el borde de la card y el anillo del
-         avatar, `-deep` el fondo del pill, y el base el borde del pill.
-         El bronce no lleva `-deep` propio para el fondo del pill: el Figma usa
-         ahí el mismo #714900 de `--color-gold-deep`, así que se reusa. --- */
-  /* Verde vivo: borde y glow del CTA del banner de Juegos. Es el mismo #97F300
-     que ya vivía sin nombre dentro de `--shadow-cta-mobile`. */
+  /* --- Plata y bronce --- */
+
   --color-brand-vivid: #97f300;
-  /* Violeta del banner de Juegos: borde, scrim y texto del CTA. */
   --color-promo: #6c38b5;
   --color-promo-foreground: #2d184b;
 
-  /* Texto del badge de puntos, sobre el verde. */
   --color-sp-foreground: #354619;
 
-  /* Panel de Medallas. Mismo caso que `--color-thumb-dim`: `--color-tooltip`
-     (#1a1a1a) está a 1 nivel, pero es el fondo de otro componente y reusarlo
-     por el valor ataría dos cosas que no tienen nada que ver. */
   --color-surface-deep: #191919;
-  /* Label de una medalla bloqueada. */
   --color-locked-foreground: #5a5a5a;
-  /* Velo que apaga la medalla bloqueada, en `mix-blend-darken`. */
   --color-medal-veil: rgb(54 54 54 / 0.7);
 
   --color-silver: #bcbcbc;
@@ -201,7 +152,7 @@
   --color-bronze: #df882e;
   --color-bronze-deep: #62401f;
 
-  /* --- Alias de shadcn: los consumen button.tsx y cualquier primitive futuro --- */
+  /* --- Alias de shadcn --- */
   --color-primary: var(--color-brand);
   --color-primary-foreground: #0c0c0c;
   --color-secondary: var(--color-surface-2);
@@ -215,8 +166,7 @@
   --color-popover-foreground: #ffffff;
   --color-input: var(--color-surface-2);
   --color-ring: var(--color-brand);
-  /* Sin origen en el diseño: el Home no tiene estado de error. Marcado como tal
-     en /styleguide. */
+
   --color-destructive: oklch(0.704 0.191 22.216);
   --color-destructive-foreground: #ffffff;
 
@@ -233,39 +183,24 @@
   --radius-pill: 30px;
 
   /* ============================================================
-     SOMBRA — se suman a las de Tailwind, no las reemplazan.
+     SOMBRA
      ============================================================ */
   --shadow-bar: 0 4px 12px rgb(13 10 44 / 0.06);
   --shadow-gold-glow: 0 0 15px rgb(251 188 4 / 0.55);
   --shadow-nav: 0 0 8px rgb(39 82 108 / 0.3);
   --drop-shadow-claim: 0 4px 15px rgb(0 0 0 / 0.3);
-  /* Las dos sombras del CTA del hero van como box-shadow y no como drop-shadow:
-     el botón es un pill opaco, así que se ven igual, pero drop-shadow NO admite
-     varias capas en un token (Tailwind envuelve el valor entero en un solo
-     drop-shadow() y el CSS queda inválido). Con box-shadow además el override
-     de desktop cae sobre la misma propiedad. */
+
   --shadow-cta: 0 4px 2px rgb(0 0 0 / 0.25);
-  /* El CTA mobile suma un glow verde. Usa #97F300: un TERCER verde legacy,
-     distinto del #A0E500 de --color-brand-faint. Ver deuda en PRD § 6. */
+
   --shadow-cta-mobile: 0 0 4px rgb(151 243 0 / 0.5), 0 4px 4px rgb(0 0 0 / 0.25);
-  /* Hover de los dos verdes accionables del Home. El glow no sale del Figma
-     —no hay hover en el diseño— pero el color sí: es el #97F300 con el que el
-     propio diseño ilumina el CTA mobile. Así el hover no inventa una luz
-     nueva, intensifica la que la página ya tiene. */
+
   --shadow-brand-glow: 0 0 12px rgb(151 243 0 / 0.35);
-  /* El CTA en hover suma el glow a su caída. Va como token propio y no
-     apilando dos clases porque box-shadow no se acumula: gana la última. */
+
   --shadow-cta-hover: 0 0 12px rgb(151 243 0 / 0.45), 0 4px 2px rgb(0 0 0 / 0.25);
-  /* El badge de nivel es un PNG con alpha: la sombra tiene que seguir la silueta,
-     así que va como drop-shadow y no como box-shadow. */
+
   --drop-shadow-badge: 0 2px 5px rgb(12 12 12 / 0.3);
   --drop-shadow-link-hover: 0 0 4px rgb(151 243 0 / 0.25);
-  /* Miniaturas del slider del hero. La sombra del diseño escala con la
-     miniatura: 4 en desktop (60px) y 2.133 en mobile (32px), que redondea a 2
-     por la política de normalización (PRD § 6). */
-  /* Misiones: la card y el badge de puntos. En Figma son `drop-shadow`, pero las
-     dos cajas son opacas y con radio, así que se ven igual como `box-shadow` —
-     que además es la política del proyecto desde el CTA del hero. */
+
   --text-shadow-banner: 0 1px 4px rgb(0 0 0 / 0.75);
 
   --shadow-card-hover: 0 8px 24px rgb(0 0 0 / 0.55);
@@ -279,71 +214,50 @@
   --shadow-thumb-mobile: 0 2px 2px rgb(0 0 0 / 0.25);
 
   /* ============================================================
-     BLUR — el namespace default de Tailwind sigue vivo; esto se suma.
+     BLUR
      ============================================================ */
   --blur-nav: 10px;
   --blur-card: 2px;
 
   /* ============================================================
      MOVIMIENTO
-     El diseño no define curvas: el vocabulario de la app lo
-     fuimos armando nosotros. El pill del menú viaja con
-     `ease-in-out` porque va y vuelve; una entrada, en cambio,
-     quiere desacelerar y no volver nunca, así que lleva una
-     curva de salida marcada.
      ============================================================ */
   --ease-reveal: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* ============================================================
-     LAYOUT — la grilla del rediseño cierra exacta:
-     4 × 268 + 3 × 24 = 1144
+     LAYOUT
      ============================================================ */
   --container-page: 1144px;
   --spacing-gutter: 24px;
   --spacing-gutter-desktop: 148px;
   --spacing-nav-x: 40px;
-  /* Alto real del header desktop (medido sobre el render, coincide con el
-     diseño). Lo consume el menú flotante para arrancar justo debajo, y las
-     secciones para su scroll-margin-top. */
+
   --spacing-header-desktop: 106px;
-  /* Altos del hero. Son constantes entre bloques: el 1024 define dónde la
-     sección siguiente empieza a solaparse con el fondo. */
+
   --spacing-hero-desktop: 1024px;
   --spacing-hero-mobile: 524px;
   --spacing-hero-content-desktop: 720px;
   --spacing-hero-gap: 137px;
   --spacing-section-gap: 80px;
   --spacing-title-gap: 16px;
-  /* Card de Eventos. El alto es el de la SUPERFICIE redondeada, no el del
-     frame del Figma: el personaje se sale por arriba y no cuenta como caja.
-     Mobile es el mismo diseño al 57.4% — ver la nota de normalización. */
+
   --spacing-event-card: 365px;
   --spacing-event-card-mobile: 210px;
   --spacing-event-surface: 291px;
   --spacing-event-surface-mobile: 167px;
-  /* Leaderboard. El diseño lo arma como una fila de dos columnas:
-     657 + gap 120 + 367 (Medallas) = 1144. El alto vive en la fila y no en la
-     columna, para que Medallas lo herede sin declararlo. */
-  /* Ancho de la card de misión en el carrusel mobile. En desktop las cuatro se
-     reparten los 1144 y no hace falta fijarlas. */
+
   --spacing-mission-card-mobile: 261px;
   --spacing-leaderboard-col: 657px;
-  /* Alto de la card del podio. Se fija porque nuestro nombre de usuario mide
-     16 de interlineado contra los 15 del diseño: sin esto la card da 98 y la
-     tabla se queda con 328 en vez de 329. */
+
   --spacing-podium-card: 97px;
   --spacing-leaderboard-row: 486px;
-  /* Separación entre secciones en mobile. No hay frame compuesto que la defina:
-     es decisión del usuario (2026-09-19), la mitad de los 80 de desktop. */
+
   --spacing-section-gap-mobile: 40px;
   --spacing-nav-bar: 80px;
 }
 
 /* ============================================================
    GRADIENTES
-   Tailwind v4 no tiene namespace de gradientes, así que van como
-   custom properties + @utility: la clase sigue en el elemento y el
-   valor sigue saliendo de un token (AGENTS reglas 5 y 6).
    ============================================================ */
 :root {
   --gradient-gold-text: linear-gradient(
@@ -354,14 +268,7 @@
     #ba8d00 73%,
     #f9be08 100%
   );
-  /* Podio. El mismo fill da distinto ángulo en cada tamaño porque Figma lo
-     define en el espacio normalizado de la caja, y al cambiar la proporción de
-     la card cambia la diagonal. Sólo desktop le superpone un negro al 20%.
-     Los ángulos salen de **medir el render**, no del MCP: para desktop el MCP
-     devolvió 170.7° y el valor que reproduce el diseño es 162° (con 170.7 la
-     esquina inferior izquierda se iba 11 niveles). En mobile sus 140/132° sí
-     dieron bien. Medido punto por punto sobre el fondo de las tres cards:
-     ≤2 niveles en desktop, 2,4 de media en mobile. */
+
   --gradient-podium-gold: linear-gradient(rgb(0 0 0 / 0.2), rgb(0 0 0 / 0.2)),
     linear-gradient(162deg, #ba8d31 7.69%, #c19438 39.42%, #895c00 89.42%);
   --gradient-podium-silver: linear-gradient(rgb(0 0 0 / 0.2), rgb(0 0 0 / 0.2)),
@@ -385,11 +292,9 @@
   );
   --gradient-promo-cta: linear-gradient(#bcff55 40.39%, #6c932f);
 
-  /* Badge de puntos de una misión: el verde de marca con un negro al 20% encima. */
   --gradient-sp-badge: linear-gradient(rgb(48 48 48 / 0.2), rgb(48 48 48 / 0.2)),
     linear-gradient(165.56deg, #456215 1.62%, #a5e04a 52.4%, #456215 109.4%);
-  /* Brillo diagonal de la medalla. El verde es el legacy (#A0E500), igual que
-     el borde de la miniatura activa del hero: el Figma lo sigue usando acá. */
+
   --gradient-medal-sheen: linear-gradient(
     -52.74deg,
     rgb(160 229 0 / 0) 0.11%,
@@ -411,15 +316,7 @@
     rgb(123 123 123 / 0.4) 49%,
     rgb(40 40 40 / 0.8) 97%
   );
-  /* Borde de la bottom bar mobile: el Figma lo dibuja con un degradé vertical,
-     no con un color plano. Medido sobre el render: #494949 arriba → #2E2E2E
-     abajo, lineal. El stop inferior se resuelve con --color-surface-2 (#303030),
-     que queda a 2 niveles del medido — ver política de normalización, PRD § 6. */
-  /* Borde de la fila del Leaderboard: el mismo gris del resto, pero apagándose
-     hacia abajo. Medido sobre el render del nodo `6008:26530`, muestreando el
-     borde izquierdo cada 2px: arriba 0.95, a media altura 0.59 y abajo 0.18 — el de abajo se subió a 0.25 por
-     pedido del usuario (2026-09-20).
-     El MCP lo devuelve plano, como con la bottom bar y el podio. */
+
   --gradient-row-border: linear-gradient(
     180deg,
     rgb(73 73 73 / 0.95) 0%,
@@ -427,9 +324,6 @@
     rgb(73 73 73 / 0.25) 100%
   );
 
-  /* Borde de la fila con el puntero encima: el mismo gris de siempre, un
-     escalón más presente. Es el gris claro del DS a opacidad baja, con el mismo
-     desvanecido hacia abajo — no cambia el color, sólo sube el contraste. */
   --gradient-row-border-active: linear-gradient(
     180deg,
     rgb(165 165 165 / 0.52) 0%,
@@ -456,11 +350,7 @@
     var(--color-border) 0%,
     var(--color-surface-2) 100%
   );
-  /* El riel de desktop es alto y angosto, así que un borde sólido se lee duro.
-     Arranca con una luz tenue arriba (--color-border-muted al 30%, como si la
-     luz cayera desde arriba), pasa a --color-border y se va desvaneciendo, más
-     rápido en el último tramo — pero sin llegar a desaparecer. Los valores van
-     literales porque llevan alfa; son los dos tokens de borde. */
+
   --gradient-nav-border-desktop: linear-gradient(
     180deg,
     rgb(165 165 165 / 0.3) 0%,
@@ -468,18 +358,13 @@
     rgb(73 73 73 / 0.45) 80%,
     rgb(73 73 73 / 0.28) 100%
   );
-  /* Scrim del hero. El stop transparente va como rgb(32 32 32 / 0) y no como
-     `transparent`: `transparent` es negro transparente y al interpolar ensucia
-     el degradé con un tiro a negro. */
+
   --gradient-hero-scrim: linear-gradient(
     180deg,
     rgb(32 32 32 / 0) 0%,
     var(--color-background) 89.904%
   );
-  /* Mobile tiene scrim arriba Y abajo. Los stops del Figma están sobre una caja
-     de 553px que arranca 29px más arriba que el fondo; acá van reexpresados
-     sobre la caja de 524, que da lo mismo dentro de lo visible y evita tener
-     que posicionar la capa en negativo. */
+
   --gradient-hero-scrim-mobile: linear-gradient(
     180deg,
     var(--color-background) 2.584%,
@@ -487,19 +372,13 @@
     rgb(32 32 32 / 0.15) 74.124%,
     var(--color-background) 93.912%
   );
-  /* Scrim de la card de Eventos: funde el arte hacia abajo para que el texto
-     se lea. La variante fuerte es la de la card de fondo claro, que necesita
-     más caída. */
+
   --gradient-event-scrim: linear-gradient(180deg, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 0.8) 90.865%);
   --gradient-event-scrim-strong: linear-gradient(180deg, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 0.9) 73.077%);
   --gradient-claim: linear-gradient(90deg, rgb(48 48 48 / 0.4) 0%, rgb(48 48 48 / 0.4) 100%),
     linear-gradient(90deg, #091900 0%, #091900 100%);
 }
 
-
-/* Tiempos del revelado del slider. Tailwind no tiene namespace de duración ni
-   de desplazamiento de keyframe, así que van como custom properties y se
-   referencian desde el @utility, igual que los gradientes. */
 :root {
   --thumb-reveal-duration: 420ms;
   --thumb-reveal-stagger: 90ms;
@@ -549,14 +428,10 @@
 @utility bg-badge {
   background-image: var(--gradient-badge);
 }
-/* Borde con degradé: no existe `border-image` con radio, así que el anillo se
-   dibuja en un ::before enmascarado. Hace falta porque la barra es casi
-   transparente y un fondo en dos capas taparía el backdrop-blur. */
+
 @utility border-gradient-row {
   position: relative;
 
-  /* El anillo verde va en un segundo pseudo-elemento y no cambiando el fondo
-     del primero: un `background` con degradé no transiciona, y la opacidad sí. */
   &::after {
     content: "";
     position: absolute;
@@ -683,9 +558,6 @@
   }
 }
 
-/* Mismo anillo enmascarado que el de mobile, con otro degradé. Va como
-   ::before y no como `border` porque el riel mide 60px justos: un borde real
-   lo llevaría a 62. */
 @utility border-gradient-nav-desktop {
   position: relative;
 
@@ -716,16 +588,6 @@
   background-image: var(--gradient-hero-scrim-mobile);
 }
 
-/* Arte del hero: un solo encuadre por tamaño, con la imagen que elija el
-   slider. La URL entra como `--hero-art` desde el componente — es un valor de
-   runtime, o sea la excepción de AGENTS regla 6, igual que `--nav-index`.
-
-   El tamaño va en PORCENTAJE del contenedor y no en px: así el recorte es
-   idéntico a cualquier ancho de pantalla. Desktop 181.25% = 2610/1440; mobile
-   254.17% = 991.28/390. El 31.7% horizontal de mobile sale de
-   -190.63 / (390 - 991.28), y por ser porcentaje también es invariante a la
-   escala. Los cuatro artes tienen la misma relación de aspecto que el del
-   Figma, así que el encuadre vale para los cuatro. */
 @utility hero-art-mobile {
   background: var(--hero-art) 31.704% 0 / 254.174% auto no-repeat;
 }
@@ -733,24 +595,14 @@
   background: var(--hero-art) left top / 181.25% auto no-repeat;
 }
 
-/* Encuadre de los artes que NO son el del diseño. El de arriba está medido
-   sobre el Figma y sólo le queda bien al arte que compuso para él; a las
-   portadas de los otros juegos, que están centradas en su logo, ese 181% las
-   parte al medio. Centradas y a `cover` cada una muestra su composición. */
 @utility hero-art-cover {
   background: var(--hero-art) center / cover no-repeat;
 }
 
-/* Al cambiar de juego el arte nuevo entra fundido ENCIMA del anterior, que se
-   queda opaco debajo hasta que el cruce termina: así en el medio de la
-   transición no se ve el fondo de la página. En la carga inicial no corre: el
-   arte es el LCP y no se le pone un fade adelante. */
 @utility hero-art-fade {
   animation: hero-art-fade var(--hero-art-fade-duration) ease-in-out backwards;
 
-  /* Con movimiento reducido el cruce es instantáneo, pero sigue siendo una
-     animación: si fuera `none` no habría `animationend` y la capa saliente
-     quedaría montada para siempre. */
+  /* no tocar: con `none` no hay animationend y la capa saliente no se desmonta nunca */
   @media (prefers-reduced-motion: reduce) {
     animation-duration: 1ms;
   }
@@ -774,36 +626,34 @@
 }
 
 /* ============================================================
-   CARD DE EVENTOS — superficies y personajes
-
-   Las dos superficies van a `cover`. El Figma pone un degradé
-   lineal debajo de la foto del joystick, pero la foto es opaca y
-   lo tapa entero; además sus stops salen desordenados del export
-   (188%, 75%, 35%, 102%), así que no se replica.
-
-   Los personajes NO van acá: su recorte vive en el call site, en
-   porcentajes, porque el Figma lo expresa como offset del borde de
-   la imagen y `background-position` lo expresa como alineación de
-   puntos homólogos. Convertir de uno al otro divide por (1 - tamaño),
-   que en el personaje de la card 2 vale 0.0056: cualquier redondeo
-   en el tamaño se amplifica 180 veces. Con una ventana recortada y
-   la imagen adentro, los números son los del Figma sin conversión.
+   CARD DE EVENTOS
    ============================================================ */
-/* `border-box` al final del shorthand no es decorativo: fija `background-origin`
-   y `background-clip` en la caja del borde. Sin eso `cover` escala la imagen a
-   la caja de padding, el anillo de 1px del borde queda sin fondo y el verde al
-   20% termina componiendo contra el fondo de página en vez de contra la propia
-   card — que es lo que hace el Figma, donde el stroke va por dentro y encima
-   del fill. Se nota en la card de fondo claro: su borde tiene que tomar el
-   naranja y el turquesa del degradé, no quedar verde plano. */
+
+/* no tocar: el `border-box` del shorthand es lo que lleva el fondo bajo el borde de la card */
 @utility event-surface-gamepad {
   background: url("/assets/home/eventos/card-surface.png") center / cover no-repeat border-box;
 }
 @utility event-surface-sunset {
   background: url("/assets/home/eventos/card-surface-sunset.png") center / cover no-repeat border-box;
 }
-/* El slider se scrollea con el dedo en mobile y con las flechas en desktop; la
-   barra nativa no aporta nada y taparía el borde inferior de las cards. */
+
+/* Aire para que un contenedor con overflow no recorte la sombra del hover de
+   elevación; el margen negativo lo devuelve, así el layout no se mueve. */
+@utility lift-room {
+  padding-block: calc(var(--spacing) * 8);
+  margin-block: calc(var(--spacing) * -8);
+}
+
+/* Recorta el viewport en el borde de la columna, salvo del lado donde el
+   carrusel llegó a la punta: ahí deja salir la sombra del hover. Recorta sin
+   pintar, así lo que haya detrás —el arte del hero bajo Eventos— sigue a la vista. */
+@utility lift-clip {
+  clip-path: inset(
+    0 var(--clip-end, calc(var(--spacing) * 6)) 0
+      var(--clip-start, calc(var(--spacing) * 6))
+  );
+}
+
 @utility no-scrollbar {
   scrollbar-width: none;
 
@@ -814,14 +664,6 @@
 
 /* ============================================================
    ÍCONOS DEL MENÚ FLOTANTE
-   El SVG del diseño se usa como MÁSCARA y el color lo pone un token
-   (bg-foreground en default, bg-background en el pill verde). Así un
-   solo export sirve para los dos estados: el archivo no se toca ni se
-   redibuja, se referencia por URL igual que en un <img>.
-
-   Van como @utility y no como clase dinámica porque Tailwind necesita
-   ver la clase escrita para compilarla, y porque la URL no puede salir
-   de un token (mismo patrón que los gradientes de arriba).
    ============================================================ */
 @utility icon-clock {
   mask: url("/assets/home/icon-clock.svg") center / contain no-repeat;
@@ -850,26 +692,16 @@
 
 /* ============================================================
    PILL ACTIVO DEL MENÚ
-   Una sola capa que se DESPLAZA al ítem seleccionado en vez de
-   desaparecer y reaparecer. El paso es el tamaño de una celda
-   (100% de la capa, que mide lo mismo) más el gap de 2px.
-   `--nav-index` (y `--nav-count` en mobile) los pone el componente:
-   son los únicos valores que no se pueden saber en CSS.
    ============================================================ */
 @utility nav-pill-y {
   transform: translateY(calc(var(--nav-index) * (100% + var(--spacing) * 0.5)));
 }
 
-/* En mobile los ítems van pegados (`justify-between` sin gap, como el Figma),
-   así que el paso es una celda justa. */
 @utility nav-pill-x {
   width: calc(100% / var(--nav-count));
   transform: translateX(calc(var(--nav-index) * 100%));
 }
 
-/* El menú mobile va fijo abajo: sobre el gutter se suma el área segura del
-   dispositivo, si no en un iPhone queda debajo del home indicator. En el
-   navegador de escritorio `env()` vale 0 y no cambia nada. */
 @utility bottom-nav-safe {
   bottom: calc(var(--spacing-gutter) + env(safe-area-inset-bottom));
 }
@@ -882,35 +714,11 @@
 
 /* ============================================================
    REVELADO DEL SLIDER DEL HERO
-   Las portadas son los assets más pesados de la página — hasta
-   2,5 MB — y van con `loading="lazy"` (el default de next/image)
-   y `fetchPriority="low"`, así que el navegador las trae después
-   del arte del hero. Pueden llegar tarde y desordenadas.
-
-   En vez de que aparezcan de golpe, cada miniatura entra en
-   orden: sube 8px y se funde, escalonada 90ms respecto de la
-   anterior. La última cierra a los 690ms, que es el colchón que
-   les queda a las imágenes para llegar; hasta entonces lo que se
-   ve es el fondo de la miniatura, que hace de placeholder.
-
-   `backwards` es lo que sostiene el estado inicial durante el
-   delay: sin eso las cuatro se verían desde el primer frame y
-   recién después empezarían a animarse.
-
-   Sólo se animan `opacity` y `transform`, que el compositor
-   resuelve sin recalcular layout — importa porque esto corre
-   justo mientras el navegador decodifica las portadas.
-
-   El índice es el único dato que CSS no puede saber, así que
-   entra como custom property (AGENTS regla 6, igual que
-   `--nav-index`).
    ============================================================ */
 @utility thumb-reveal {
   animation: thumb-reveal var(--thumb-reveal-duration) var(--ease-reveal) backwards;
   animation-delay: calc(var(--thumb-index) * var(--thumb-reveal-stagger));
 
-  /* Va acá y no como `motion-reduce:` en el call site: así la utility no se
-     puede usar mal. Sin movimiento, las miniaturas ya están en su lugar. */
   @media (prefers-reduced-motion: reduce) {
     animation: none;
   }
@@ -938,8 +746,7 @@
   body::-webkit-scrollbar {
     display: none;
   }
-  /* La navegación del Home scrollea a secciones (PRD § 5). El scroll suave se
-     desactiva solo si el sistema pide menos movimiento. */
+
   @media (prefers-reduced-motion: no-preference) {
     html {
       scroll-behavior: smooth;
@@ -948,9 +755,7 @@
   body {
     @apply bg-background text-foreground;
   }
-  /* Ninguna imagen del proyecto se selecciona ni se arrastra: son assets del
-     diseño, no contenido que el usuario manipule. El highlight azul al pasar el
-     mouse sobre una card y el fantasma de drag rompen la ilusión del clon. */
+
   img {
     -webkit-user-drag: none;
     user-select: none;

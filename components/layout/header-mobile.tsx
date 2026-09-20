@@ -4,7 +4,6 @@ import { UserAvatar } from "@/components/layout/user-avatar";
 import { currentUser } from "@/lib/data/user";
 import { cn } from "@/lib/utils";
 
-/** Contador del header mobile: sin chip interno, con borde en vez de relleno. */
 function Counter({
   iconSrc,
   value,

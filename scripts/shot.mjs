@@ -1,14 +1,3 @@
-/**
- * Screenshots de verificación pixel-perfect.
- *
- * Levantá el dev server aparte (`npm run dev`) y después:
- *   node scripts/shot.mjs /                 -> mobile + desktop
- *   node scripts/shot.mjs / desktop         -> solo desktop
- *   node scripts/shot.mjs /styleguide mobile
- *
- * Los widths salen de VIEWPORTS y tienen que coincidir exactamente con los
- * frames de Figma. Se actualizan cuando se confirmen (ver PRD.md, sección 4).
- */
 import { chromium } from "playwright";
 import { mkdir } from "node:fs/promises";
 
@@ -48,7 +37,6 @@ for (const name of targets) {
     process.exit(1);
   }
 
-  // Las fuentes tienen que estar cargadas o las medidas de texto mienten.
   await page.evaluate(() => document.fonts.ready);
 
   const path = `${OUT_DIR}/${slug}.${name}.png`;

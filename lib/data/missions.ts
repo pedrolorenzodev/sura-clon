@@ -1,31 +1,11 @@
-/** Sección Misiones del Home. Fase 1: hardcodeada (AGENTS regla 9). */
-
 export type Mission = {
   id: string;
-  /** Título de la misión, tal cual el diseño. */
   title: string;
   description: string;
-  /** Sura Points que paga, ya formateado como lo muestra el badge. */
   reward: string;
-  /** Portada del juego. */
   imageSrc: string;
 };
 
-/**
- * Seis misiones. El Figma trae cuatro; las dos últimas las agregó el usuario
- * (2026-09-20) para que el carrusel tenga recorrido, y toman su portada de la
- * sección Juegos. Reusarlas acá no es repetir arte: en una misión la portada
- * **identifica el juego**, así que encontrar Minecraft en el catálogo y en una
- * misión es coherente. La card las recorta a 229.456/128 y las dos originales
- * son 16:9, o sea que entran sin recorte visible.
- *
- * El frame mobile repite "Conecta tu cuenta de X" en sus tres cards, que es
- * placeholder: se unifica en las de desktop, con el mismo criterio que el podio
- * del Leaderboard (PRD § 6, deuda).
- *
- * La descripción es la misma en las cuatro, y así está en el diseño — es el
- * mismo texto que ya aparecía en las cards de Eventos.
- */
 const DESCRIPTION =
   "Para completar esta misión, debes hacer clic en el botón de abajo para visitar la página requerida.";
 

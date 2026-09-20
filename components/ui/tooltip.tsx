@@ -4,19 +4,6 @@ import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 
 import { cn } from "@/lib/utils";
 
-/**
- * Tooltip de shadcn (estilo base-nova, sobre Base UI) re-estilado con nuestros
- * tokens. Los valores salen del tooltip del menú lateral de
- * `app.suragaming.com`: es el único lugar donde existe el elemento, porque el
- * Figma del rediseño no lo tiene (ver PRD § 6).
- *
- * Diferencias con lo que genera el CLI:
- * - `cn` se importa de `@/lib/utils`, no del paquete `cn`.
- * - Colores y geometría pasan a tokens del proyecto.
- * - Sin flecha: el tooltip de referencia no tiene. Se puede pedir con `arrow`.
- * - Solo fade: es la transición del elemento real (200ms), sin zoom ni slide.
- */
-
 function TooltipProvider({ delay = 0, ...props }: TooltipPrimitive.Provider.Props) {
   return <TooltipPrimitive.Provider data-slot="tooltip-provider" delay={delay} {...props} />;
 }

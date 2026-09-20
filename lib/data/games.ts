@@ -1,11 +1,8 @@
-/** Sección Juegos del Home. Fase 1: hardcodeada (AGENTS regla 9). */
-
 export type Game = {
   id: string;
   title: string;
   badges: string[];
   imageSrc: string;
-  /** Recorte del Figma, cuando el arte no llena la card. */
   imageClass?: string;
 };
 
