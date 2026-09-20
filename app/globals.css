@@ -780,6 +780,14 @@
   html {
     @apply font-sans;
   }
+  html,
+  body {
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
   /* La navegación del Home scrollea a secciones (PRD § 5). El scroll suave se
      desactiva solo si el sistema pide menos movimiento. */
   @media (prefers-reduced-motion: no-preference) {
