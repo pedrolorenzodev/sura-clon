@@ -94,7 +94,7 @@ export default function StyleguidePage() {
         <h1 className="font-display text-display-xs uppercase text-foreground">
           Design System · Sura Gaming
         </h1>
-        <p className="font-techno text-note uppercase text-muted-foreground">
+        <p className="text-base text-muted-foreground">
           Derivado del Home del rediseño, desktop y mobile. Los valores se leen en runtime
           desde <code>app/globals.css</code>: esta página no puede desincronizarse del CSS.
         </p>

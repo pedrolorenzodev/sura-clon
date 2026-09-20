@@ -41,25 +41,6 @@ export function HeroContent() {
           </p>
         </div>
 
-        {/* Los dos tamaños tienen el alto fijo y el ancho lo pone el texto,
-            que con la fuente sustituta no mide lo mismo que en el diseño.
-
-            En mobile el botón del Figma es 133 × 30 y el nuestro da 143.4 de
-            ancho: la tinta de Tektur mide 111.4 contra los 101 de KH
-            Interference. A 30 de alto el botón se veía chato, así que el alto
-            sube a 32, que es lo que conserva la proporción del diseño
-            (143.4 / (133/30) = 32.35).
-
-            En desktop el botón mide 181 porque su nodo de texto tiene un ancho
-            fijo de 141, mientras que en mobile se ajusta al texto. Ajustarse
-            daba 157.6, así que se fija un punto intermedio en 168.
-
-            Las dos decisiones son del usuario y están en la deuda, PRD § 6.
-
-            El hover no está en el diseño (PRD § 6): el verde se aclara y el
-            botón se enciende con el mismo glow que el Figma ya le pone al CTA
-            mobile. El `desktop:hover:` está escrito aparte a propósito — sin
-            él, `desktop:shadow-cta` le gana al hover dentro del breakpoint. */}
         <a
           href={hero.cta.href}
           className="inline-flex h-7.5 items-center self-start rounded-pill bg-brand px-4 font-techno text-cta-sm uppercase text-black shadow-cta-mobile transition duration-200 hover:bg-brand-bright hover:shadow-cta-hover motion-reduce:transition-none desktop:h-11.5 desktop:min-w-45.25 desktop:justify-center desktop:px-5 desktop:text-cta desktop:shadow-cta desktop:hover:shadow-cta-hover"

@@ -35,7 +35,7 @@
          font-sans); acá van tamaño, interlineado y tracking. --- */
   --text-*: initial;
 
-  /* display — Anybody, siempre en mayúsculas */
+  /* display */
   --text-display: 64px;
   --text-display--line-height: 64px;
   /* -4px sobre 64. Va en em, así que el título mobile (28px) recibe el
@@ -47,7 +47,7 @@
   --text-display-xs--line-height: 28px;
   --text-display-xs--letter-spacing: -0.0625em;
 
-  /* techno — Tektur */
+  /* techno */
   --text-title: 24px;
   --text-title--line-height: 32px;
   --text-title-sm: 18px;
