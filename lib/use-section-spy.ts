@@ -18,11 +18,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const HEADER_OFFSET = 106;
 
 /**
- * Borde inferior: la franja termina al 30% del viewport. Achicar la zona de
- * decisión a la parte de arriba es lo que evita que dos secciones estén activas
- * a la vez; entre las que intersectan gana la más alta.
+ * Borde inferior: la franja termina a esta fracción del viewport. Achicar la
+ * zona de decisión a la parte de arriba es lo que evita que dos secciones estén
+ * activas a la vez; entre las que la tocan gana la más alta.
  */
-const DECISION_BAND_BOTTOM = "-70%";
+const BAND_BOTTOM_RATIO = 0.3;
 
 /** Margen para comparar contra el fondo de la página, en px. */
 const BOTTOM_TOLERANCE = 4;
@@ -52,8 +52,19 @@ export function useSectionSpy(ids: readonly string[], defaultId: string) {
     if (sections.length === 0) return;
 
     const last = sections[sections.length - 1];
-    const inBand = new Set<string>();
     let lastIsFullyVisible = false;
+
+    /**
+     * La banda se mide acá y no se acumula desde los callbacks: cuando una
+     * sección se queda tocando el borde exacto, el observer no vuelve a
+     * disparar y un `Set` guardaría el estado viejo (PRD § 6).
+     */
+    const touchesBand = (section: HTMLElement) => {
+      const rect = section.getBoundingClientRect();
+      return (
+        rect.bottom > HEADER_OFFSET && rect.top < window.innerHeight * BAND_BOTTOM_RATIO
+      );
+    };
 
     /**
      * La última sección puede no llegar nunca a la franja de arriba si la página
@@ -79,23 +90,14 @@ export function useSectionSpy(ids: readonly string[], defaultId: string) {
       const doc = document.documentElement;
       if (doc.scrollHeight - window.innerHeight <= BOTTOM_TOLERANCE) return;
 
-      const next = tailWins()
-        ? last.id
-        : sections.find((section) => inBand.has(section.id))?.id;
+      const next = tailWins() ? last.id : sections.find(touchesBand)?.id;
       if (next) setActiveId(next);
     };
     resolveRef.current = resolve;
 
-    const band = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) inBand.add(entry.target.id);
-          else inBand.delete(entry.target.id);
-        }
-        resolve();
-      },
-      { rootMargin: `-${HEADER_OFFSET}px 0px ${DECISION_BAND_BOTTOM} 0px` },
-    );
+    const band = new IntersectionObserver(resolve, {
+      rootMargin: `-${HEADER_OFFSET}px 0px -${(1 - BAND_BOTTOM_RATIO) * 100}% 0px`,
+    });
     for (const section of sections) band.observe(section);
 
     /**
