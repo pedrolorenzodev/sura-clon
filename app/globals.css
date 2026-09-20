@@ -23,22 +23,10 @@
 
   /* ============================================================
      TIPOGRAFÍA — tres familias.
-     display y techno son SUSTITUTOS LIBRES de fuentes comerciales:
-       Monument Extended  → Anybody      (wdth 120, wght 900)
-       KH Interference    → Tektur
-     Los ejes se eligieron midiendo el ancho de tinta del render de
-     Figma: el título queda a +3% y el copy a 3% de error medio.
-     Ver PRD § 6.
      ============================================================ */
-  --font-display: var(--font-anybody), ui-sans-serif, system-ui, sans-serif;
-  --font-display--font-variation-settings: "wdth" 120, "wght" 900;
+  --font-display: var(--font-monument), ui-sans-serif, system-ui, sans-serif;
 
-  --font-techno: var(--font-tektur), ui-sans-serif, system-ui, sans-serif;
-  /* Tektur topea el eje en 100 y ahí es donde mejor calza: medido contra la
-     tinta del render de Figma, el error medio queda en 3%. OJO: KH Interference
-     es una fuente TODO MAYÚSCULAS y Tektur tiene minúsculas, así que cada texto
-     en font-techno necesita `uppercase` para verse como el diseño. */
-  --font-techno--font-variation-settings: "wdth" 100;
+  --font-techno: var(--font-kh), ui-sans-serif, system-ui, sans-serif;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, monospace;
@@ -70,37 +58,25 @@
   --text-link--line-height: 24px;
   --text-cta: 14px;
   --text-cta--line-height: 14px;
-  --text-cta--letter-spacing: 0.0357em;
-  --text-cta--font-weight: 500;
-  /* Mismo tamaño que --text-copy-sm pero con su propio tracking: el CTA lleva
-     0.5px y el copy 1px, así que no pueden compartir token. */
   --text-cta-sm: 12px;
   --text-cta-sm--line-height: 14px;
-  --text-cta-sm--letter-spacing: 0.0417em;
-  --text-cta-sm--font-weight: 500;
   --text-note: 12px;
   --text-note--line-height: 16px;
   --text-note--letter-spacing: -0.02em;
 
   --text-news-copy: 12px;
   --text-news-copy--line-height: 16px;
-  --text-news-copy--letter-spacing: 0.0833em;
 
   --text-legal: 12px;
   --text-legal--line-height: 18px;
   --text-legal--letter-spacing: 0.02em;
 
   /* Copy del hero. `leading-normal` de Tailwind es 1.5 (=24px), NO el `normal`
-     de CSS: el nodo de Figma mide 38px para 2 líneas, o sea 19 exactos. El
-     tracking va en em para que dé 1px en los dos tamaños (PRD § 6). */
+     de CSS: el nodo de Figma mide 38px para 2 líneas, o sea 19 exactos. */
   --text-copy: 16px;
   --text-copy--line-height: 19px;
-  --text-copy--letter-spacing: 0.0625em;
-  --text-copy--font-weight: 500;
   --text-copy-sm: 12px;
   --text-copy-sm--line-height: 14px;
-  --text-copy-sm--letter-spacing: 0.0833em;
-  --text-copy-sm--font-weight: 500;
 
   /* sans — Inter */
   /* No sale del diseño: lo exige `components/ui/button.tsx` (shadcn lo tiene

@@ -1,22 +1,19 @@
 import type { Metadata } from "next";
-import { Anybody, Inter, Tektur } from "next/font/google";
+import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-/* Sustituto libre de Monument Extended. El eje wdth se fija en el token
-   --font-display de globals.css (wdth 120, wght 900). */
-const anybody = Anybody({
-  variable: "--font-anybody",
-  subsets: ["latin"],
-  axes: ["wdth"],
+const monument = localFont({
+  src: "./fonts/MonumentExtended-Ultrabold.ttf",
+  variable: "--font-monument",
+  weight: "900",
   display: "swap",
 });
 
-/* Sustituto libre de KH Interference. El eje wdth se fija en el token
-   --font-techno de globals.css. */
-const tektur = Tektur({
-  variable: "--font-tektur",
-  subsets: ["latin"],
-  axes: ["wdth"],
+const khInterference = localFont({
+  src: "./fonts/KHInterferenceTRIAL-Regular.otf",
+  variable: "--font-kh",
+  weight: "400",
   display: "swap",
 });
 
@@ -35,7 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={`${anybody.variable} ${tektur.variable} ${inter.variable} h-full antialiased`}
+      className={`${monument.variable} ${khInterference.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

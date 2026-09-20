@@ -27,8 +27,8 @@ export type TokenGroup = {
 /* ---------------------------------------------------------------- fuentes */
 
 export type FontToken = Token & {
-  /** Fuente comercial del Figma que este token sustituye. */
-  replaces: string;
+  /** Nombre de la familia tal cual la nombra el Figma. */
+  designName: string;
   specimen: string;
 };
 
@@ -37,21 +37,21 @@ export const fontTokens: FontToken[] = [
     name: "--font-display",
     utility: "font-display",
     usage: "Título del hero y de Sura News. Siempre en mayúsculas.",
-    replaces: "Monument Extended Ultrabold",
+    designName: "Monument Extended Ultrabold",
     specimen: "Bienvenidos a la comunidad de Sura",
   },
   {
     name: "--font-techno",
     utility: "font-techno",
     usage: "Títulos de sección, títulos de card, links, botones, fechas.",
-    replaces: "KH Interference TRIAL",
+    designName: "KH Interference",
     specimen: "Unite a Sura, desbloqueá niveles completando misiones",
   },
   {
     name: "--font-sans",
     utility: "font-sans",
     usage: "Números de la nav, descripciones de card, badges, títulos de Juegos.",
-    replaces: "— (Inter ya está en el diseño)",
+    designName: "Inter",
     specimen: "RocketMan1989 · Nivel: Novato · 473",
   },
 ];
@@ -180,15 +180,15 @@ export const textTokens: TextToken[] = [
   { name: "--text-title-sm", utility: "text-title-sm", family: "font-techno", usage: "Título de sección, mobile", specimen: "Eventos" },
   { name: "--text-card-title", utility: "text-card-title", family: "font-techno", usage: "Título de card de Torneos", specimen: "Valorant Champions Tour" },
   { name: "--text-link", utility: "text-link", family: "font-techno", usage: '"VER todo", "ir a sura news"', specimen: "Ver todo" },
-  { name: "--text-cta", utility: "text-cta", family: "font-techno", usage: "Botón del hero, desktop — 14/14, tracking 0.5px", specimen: "Comenzar ahora" },
-  { name: "--text-cta-sm", utility: "text-cta-sm", family: "font-techno", usage: "Botón del hero, mobile — 12/14, tracking 0.5px", specimen: "Comenzar ahora" },
+  { name: "--text-cta", utility: "text-cta", family: "font-techno", usage: "Botón del hero, desktop — 14/14", specimen: "Comenzar ahora" },
+  { name: "--text-cta-sm", utility: "text-cta-sm", family: "font-techno", usage: "Botón del hero, mobile — 12/14", specimen: "Comenzar ahora" },
   { name: "--text-note", utility: "text-note", family: "font-techno", usage: "Fechas y valores de las cards", specimen: "Nov 28, 8:00 PM" },
   { name: "--text-news-copy", utility: "text-news-copy", family: "font-techno", usage: "Bajada de Sura News en desktop", specimen: "Todo lo que está pasando" },
   { name: "--text-reward", utility: "text-reward", family: "font-techno", usage: "Premio de una misión", specimen: "+120" },
   { name: "--text-legal", utility: "text-legal", family: "font-sans", usage: "Copyright del footer — 12/18, tracking 0.24px", specimen: "© 2026 Sura GG Corp." },
   { name: "--text-sm", utility: "text-sm", family: "font-sans", usage: "Nombre de usuario en el header mobile", specimen: "RocketMan1989" },
-  { name: "--text-copy", utility: "text-copy", family: "font-techno", usage: "Copy del hero desktop — 16/19, tracking 1px", specimen: "Unite a Sura, desbloqueá niveles" },
-  { name: "--text-copy-sm", utility: "text-copy-sm", family: "font-techno", usage: "Copy del hero mobile — 12/14, tracking 1px", specimen: "Unite a Sura, desbloqueá niveles" },
+  { name: "--text-copy", utility: "text-copy", family: "font-techno", usage: "Copy del hero desktop — 16/19", specimen: "Unite a Sura, desbloqueá niveles" },
+  { name: "--text-copy-sm", utility: "text-copy-sm", family: "font-techno", usage: "Copy del hero mobile — 12/14", specimen: "Unite a Sura, desbloqueá niveles" },
   { name: "--text-base", utility: "text-base", family: "font-sans", usage: "Nav, título de card de Juegos", specimen: "Wagmi Defense" },
   { name: "--text-ui", utility: "text-ui", family: "font-sans", usage: "Nombre de usuario", specimen: "RocketMan1989" },
   { name: "--text-xs", utility: "text-xs", family: "font-sans", usage: "Usuario del podio", specimen: "DesenfrenadO_" },

@@ -39,7 +39,7 @@ function Section({
   return (
     <section className="flex flex-col gap-6 border-t border-border-dim pt-8">
       <header className="flex flex-col gap-2">
-        <h2 className="font-techno text-title text-foreground">{title}</h2>
+        <h2 className="font-techno text-title uppercase text-foreground">{title}</h2>
         {description ? (
           <p className="text-base text-muted-foreground">{description}</p>
         ) : null}
@@ -94,7 +94,7 @@ export default function StyleguidePage() {
         <h1 className="font-display text-display-xs uppercase text-foreground">
           Design System · Sura Gaming
         </h1>
-        <p className="font-techno text-note text-muted-foreground">
+        <p className="font-techno text-note uppercase text-muted-foreground">
           Derivado del Home del rediseño, desktop y mobile. Los valores se leen en runtime
           desde <code>app/globals.css</code>: esta página no puede desincronizarse del CSS.
         </p>
@@ -102,14 +102,14 @@ export default function StyleguidePage() {
 
       <Section
         title="Familias"
-        description="Dos de las tres son sustitutos libres de fuentes comerciales del Figma. Los ejes se eligieron midiendo el ancho de tinta contra el render del diseño."
+        description="Las tres familias del diseño, con sus archivos reales."
       >
         <div className="flex flex-col gap-8">
           {fontTokens.map((font) => (
             <div key={font.name} className="flex flex-col gap-2">
               <div className="flex flex-wrap items-baseline gap-3">
                 <code className="text-xs text-foreground">{font.name}</code>
-                <span className="text-2xs text-brand">sustituye a {font.replaces}</span>
+                <span className="text-2xs text-brand">{font.designName}</span>
               </div>
               <TokenValue name={font.name} />
               <p

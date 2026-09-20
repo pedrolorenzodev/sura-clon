@@ -42,7 +42,7 @@ Orden: primero lo que cambia la base sobre la que se mide todo (fuentes); despu�
 de comentarios al final porque toca todos los archivos; el video del hero último porque es
 experimental y depende del upscale.
 
-- [ ] **1 · Fuentes reales** (Monument + KH) y vuelta a los valores del Figma — `app/layout.tsx`, `app/fonts/`, `app/globals.css`, `hero-content.tsx`, `styleguide/page.tsx`, `design-tokens.ts`, `PRD.md`
+- [x] **1 · Fuentes reales** (Monument + KH) y vuelta a los valores del Figma — `app/layout.tsx`, `app/fonts/`, `app/globals.css`, `hero-content.tsx`, `styleguide/page.tsx`, `design-tokens.ts`, `PRD.md`
 - [ ] **2 · Ocultar la barra de scroll** de la página — `globals.css`
 - [ ] **3 · Bug del pill** (Eventos medido; Juegos a confirmar en el navegador del usuario) — `lib/use-section-spy.ts`
 - [ ] **4 · Scroll-spy más intuitivo**: activa al cruzar el 40% del viewport — `lib/use-section-spy.ts`

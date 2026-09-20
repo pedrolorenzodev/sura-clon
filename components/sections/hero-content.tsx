@@ -62,7 +62,7 @@ export function HeroContent() {
             él, `desktop:shadow-cta` le gana al hover dentro del breakpoint. */}
         <a
           href={hero.cta.href}
-          className="inline-flex h-8 items-center self-start rounded-pill bg-brand px-4 font-techno text-cta-sm text-black shadow-cta-mobile transition duration-200 hover:bg-brand-bright hover:shadow-cta-hover motion-reduce:transition-none desktop:h-11.5 desktop:min-w-42 desktop:justify-center desktop:px-5 desktop:text-cta desktop:shadow-cta desktop:hover:shadow-cta-hover"
+          className="inline-flex h-7.5 items-center self-start rounded-pill bg-brand px-4 font-techno text-cta-sm uppercase text-black shadow-cta-mobile transition duration-200 hover:bg-brand-bright hover:shadow-cta-hover motion-reduce:transition-none desktop:h-11.5 desktop:min-w-45.25 desktop:justify-center desktop:px-5 desktop:text-cta desktop:shadow-cta desktop:hover:shadow-cta-hover"
         >
           {hero.cta.label}
         </a>
