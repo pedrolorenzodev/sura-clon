@@ -363,7 +363,7 @@ Con `prefers-reduced-motion: reduce` no hay transición: el pill salta. Verifica
 
 | Ruta | Descripción | Estado |
 |---|---|---|
-| `/` | Home | 👀 Todos los bloques maquetados; el Footer espera aprobación |
+| `/` | Home | 👀 Los 14 bloques maquetados y el lote de ajustes post-maquetado cerrado. Falta la aprobación del Footer |
 | `/styleguide` | Referencia visual del Design System (solo dev) | 👀 Implementada |
 
 **Secciones del Home desktop**, en orden:
@@ -552,6 +552,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Cuarto título mobile equivocado** | El frame mobile de Sura News dice "EVENTOS". Van cuatro: Eventos, Leaderboard, Misiones y este. | Se maquetó "Sura News". |
 | **Las cards de Juegos no coinciden con su arte** | La titulada "Assassin's Creed Syndicate" muestra la portada de **Mario**; otra muestra **Minecraft**; una "Call of Duty Modern Warfare" muestra un juego de **carreras**. Además dos títulos se repiten y una card lleva el badge "Free-To-Play" **dos veces**. | Se replicó tal cual (regla 10) y los archivos se nombraron por lo que muestran (`mario.png`, `minecraft.png`, `racing.png`). Es data de relleno: confirmar el catálogo real. |
 | **Los badges de tienda no se pueden exportar** | Los componentes `Footer/Google Play` y `Footer/App Store` (`91:7253`, `91:7262`) viven fuera de la página visible y su export vuelve **en blanco** (PNG 384 × 128 vacío, SVG sin salida). Están armados con texto en **SF Compact** y **Product Sans**, que no son libres. | Se compusieron en código con los SVG que sí exporta el nodo (ícono de cada tienda y el wordmark de Google Play) y el texto en Inter. Como Inter es más ancha que SF Compact, "App Store" no entraba centrado en los 96 × 32 del diseño (quedaba a 3px del borde): por decisión del usuario (2026-09-19) los dos badges pasaron a **104 × 36** con el contenido centrado. Si diseño exporta los dos badges como asset entero, se reemplazan y vuelven a 96 × 32. |
+| **Hero en video: dos modelos no pudieron con una ilustración estática** | Se probó animar el arte del hero como cinemagraph con los créditos gratis de Higgsfield (Veo 3.1 Lite, dos tiradas, 8 créditos). El primero dejó la cámara quieta y el logo intacto (Δ 4,85 sobre 255) pero llenó el cuadro de partículas blancas que se acumulan. El segundo sacó las partículas y metió un **push de cámara** descentrado (Δ del logo: 22,80). Ninguno cierra el loop. El patrón es el mismo: **el modelo necesita mover algo, y si se le cierra una puerta entra por otra.** Kling queda fuera del MCP —su plan free no habilita ningún modelo de video— y la web estaba saturada. | Queda **en pausa**, no descartado. El prompt para Kling 3.0 está redactado y validado contra su UI real — ver **Hero en video — brief en pausa**, en esta misma sección —, con la jugada que no se pudo probar: **cargar la misma imagen como primer y último frame**, que fuerza el loop por construcción. Dato útil para cualquier intento futuro: **el logo de Valorant no se ve nunca** en el hero (empieza en el 60,4 % del ancho y el recorte llega hasta 58,6 %), así que no hay que gastar instrucciones ni descartar clips por él. Mientras tanto el hero se queda con la imagen, que es lo que define el diseño. |
 | **El banner de Juegos no navega** | La card y su CTA "Jugar ahora" son una sola acción, pero el destino no está ni en el Figma ni en el mapa de rutas. | Van como dos `<button>` sin handler, el mismo criterio que el footer y "Ver todo". Cuando exista la ruta, los dos pasan a `<Link href>` al mismo destino y nada más cambia. |
 | **El footer no navega** | Los cuatro links, las redes y los badges no tienen destino ni en el Figma ni en el mapa de rutas; las URLs de las redes tampoco se conocen. | Van como `<button>` sin handler, el mismo criterio que "Ver todo" en `section-header.tsx`. Cuando existan las rutas y los handles, pasan a `<a href>`. |
 | **Footer mobile adaptado del desktop** | No hay frame mobile. | Decisión del usuario (2026-09-19), mismo criterio que Medallas y Juegos: ver § 5. |
@@ -566,6 +567,99 @@ resuelven de una sola pasada cuando el Home esté terminado, o más adelante.
 |---|---|---|
 | **Peso de los assets** | `public/assets/home/` va por **30 MB** (26 antes del upscale del hero), y 7,5 son de Medallas: los PNG son los fills originales del Figma (sprites de 1024², una textura de 1920 × 1080) y el diseño los muestra a 86px. Lo mismo pasa con las portadas del slider del hero (4,2 MB para tres miniaturas de 60px). | Pedirle a diseño un lote de exports a tamaño de uso. **No se editan los assets** (regla 10) y **no se prende el optimizador** de `next/image`, que se apagó en el bloque 1 porque ensuciaba el alfa de los PNG recortados. |
 | **Accesibilidad** | Ocultar la barra de scroll (2026-09-20) le saca a la página su indicador de progreso y de "hay más abajo"; el scroll sigue funcionando entero, pero la señal visual la tiene que dar otra cosa. Además, se cubrió lo que salía gratis del markup (`sr-only` en los ítems del menú, `aria-current`, listas y encabezados reales). Falta lo que el diseño no dice: el estado bloqueado de una medalla sólo se comunica por color y por un candado decorativo, así que un lector de pantalla anuncia igual una obtenida y una que no. | Una pasada de accesibilidad sobre el Home entero: estados que hoy son sólo visuales, orden de foco y contraste. Bloque por bloque se hace inconsistente. |
+
+### Hero en video — brief en pausa
+
+Idea del usuario (2026-09-20): que el arte del hero sea un **cinemagraph** en loop en vez de una
+imagen fija, con el poster como fallback. Se intentó, no salió, y **queda pendiente con todo lo
+necesario para retomarlo**. El hero mientras tanto sigue con la imagen, que es lo que define el
+diseño.
+
+**Lo que se probó y falló.** Dos tiradas en Higgsfield con **Veo 3.1 Lite** (los 10 créditos
+gratis de la cuenta; Kling está fuera de ese MCP porque el plan free no habilita ningún modelo
+de video):
+
+| Intento | Qué se pidió | Qué pasó |
+|---|---|---|
+| 01 | cinemagraph con *"floating dust particles drift gently"* | Cámara quieta ✓ y logo intacto (Δ **4,85** sobre 255) · llenó el cuadro de partículas blancas que **se acumulan** → el loop no cierra |
+| 02 | sin partículas, *"every character frozen"* | Partículas fuera ✓ · apareció un **push de cámara descentrado** → todo crece y se corre (Δ del logo: **22,80**) |
+
+**El patrón, que es lo que hay que recordar: el modelo necesita mover algo.** Si se le cierra una
+puerta, entra por otra. Por eso el prompt final no sólo prohíbe — le da un movimiento permitido,
+chico y concreto, para que lo gaste ahí.
+
+**Dos datos que ahorran trabajo la próxima:**
+
+1. **El logo de Valorant no se ve nunca.** Empieza en el 60,4 % del ancho del arte y el hero
+   recorta en 58,6 % (mobile) / 55,2 % (desktop). No hay que gastar instrucciones en él ni
+   descartar un clip porque se deforme. Por lo mismo, una marca de agua en la esquina inferior
+   derecha queda holgadamente fuera de cuadro.
+2. **La jugada que quedó sin probar es el *end frame*.** Kling admite cargar primer y último
+   frame; poniendo **la misma imagen en los dos** el loop queda forzado por construcción, en vez
+   de pedirlo por prompt. Veo sólo aceptó `start_image`, y de ahí que ninguno de los dos cerrara.
+
+#### El pedido, listo para pegar
+
+**Imagen de entrada:** `public/assets/home/hero-art@2x.jpg` (2880 × 1622, 16:9) — el upscaleado,
+no el original de 1440.
+
+| Campo | Valor |
+|---|---|
+| Modelo | Kling **VIDEO 3.0**, pestaña *Video Generation* |
+| Primer frame | `hero-art@2x.jpg` |
+| **Último frame** | **la misma imagen** |
+| Duración | 5 s |
+| Multi-Shot · Native Audio | apagados |
+| Number of Outputs | 1 (2–4 son VIP) |
+| Calidad | **720p** para probar el prompt · **1080p** para la definitiva (VIP, 3 trials, 40 créditos) |
+
+> A 2D painted video-game illustration, filmed as a still. The camera is locked on a tripod and
+> the framing stays exactly the same from the first frame to the last: no zoom, no pan, no drift.
+> Every character holds their exact pose, expression and gaze the entire time, frozen mid-action
+> like a painting. The only motion in the scene: a few loose strands of the white-haired girl's
+> hair sway very slightly in a faint breeze, and the blue energy glow on the left pulses softly
+> and slowly. Everything else is perfectly still. The air is clear and empty; nothing floats,
+> drifts or falls through the frame, and nothing new appears. Flat red background unchanged. Very
+> subtle, slow, seamless loop: the video ends exactly as it begins.
+
+**Kling 3.0 no tiene negative prompt ni slider de creatividad** — eran de las versiones 1.x y 2.x.
+Por eso las prohibiciones van dentro del prompt y **sin nombrar lo prohibido**: si se escribe
+"no snow, no sparks", el modelo lee *snow* y *sparks*. Se reescriben como afirmaciones de lo que
+sí pasa ("the air is clear and empty"). *Bind elements* tampoco hace falta: sirve para
+consistencia entre generaciones distintas y acá el end frame ya ancla todo.
+
+**Por qué está redactado así.** *"2D painted illustration"* y *"filmed as a still"* para que no lo
+vuelva 3D ni realista. *"Frozen mid-action"* porque la pose de Jett es de acción y sin eso el
+modelo quiere completar el lanzamiento de los cuchillos. El movimiento permitido —mechones y
+resplandor azul— es la válvula, y los dos están en el tercio izquierdo-centro, que es lo único
+que se ve en el hero; son además los únicos elementos que se mueven *en la ficción* sin que
+cambie la composición. La llama naranja se descartó a propósito: animar fuego invita humo y
+chispas.
+
+**Protocolo con los 66 créditos diarios de Kling:** una tirada en 720p con el prompt tal cual, y
+revisar cuatro cosas — ¿el último frame es el primero?, ¿nada creció ni se corrió?, ¿la cara de
+Jett no cambió?, ¿no aparece nada flotando? Si pasa, una en 1080p con los ajustes idénticos: esa
+es la que se usa. Si falla, se itera el prompt al día siguiente con los 66 nuevos. **No gastar los
+40 del 1080p hasta ver una de 720p que cierre.**
+
+#### Lo que falta hacer cuando el clip exista
+
+1. Cerrar el loop con un crossfade de ~0,5 s entre cola y cabeza (`ffmpeg`, ya instalado).
+2. Si vino a 720p, subir los frames a 2× con Real-ESRGAN y re-encodear, para que el arranque no
+   se vea más blando que el poster. Salida `.mp4` (H.264, `-movflags +faststart`) + `.webm` (VP9).
+3. En `hero-background.tsx`, la capa `design` pasa a `<video autoPlay muted loop playsInline
+   poster={artSrc}>` con el mismo encuadre de las utilities `hero-art-desktop` /
+   `hero-art-mobile`, el scrim encima y el fade al cambiar de slide. Con
+   `prefers-reduced-motion: reduce` no se monta el `<video>`: queda el poster. `preload="metadata"`,
+   porque el LCP es el poster y no el video.
+4. Verificar: que el loop no salte (grabar dos ciclos y comparar el frame de cierre con el de
+   apertura), que no aparezca scroll horizontal, que el LCP no empeore, y que en mobile siga
+   viéndose la imagen si el navegador bloquea el autoplay.
+5. Anotar acá la herramienta usada, la versión del modelo, el prompt final y el costo.
+
+**Go / no-go:** si el modelo vuelve a deformar rostros o el loop no cierra, se corta y el hero se
+queda con la imagen. No se insiste con una tercera herramienta ni se paga ninguna — decisión del
+usuario, 2026-09-20.
 
 ### Notas de implementación que salieron del maquetado
 
@@ -846,7 +940,7 @@ Más:
 |---|---|---|---|
 | Setup (skills, PRD, reglas, shadcn, Playwright) | — | — | ✅ Listo |
 | Design System | — | — | 📦 Aprobado y commiteado |
-| Home | 🚧 | 🚧 | 🚧 En progreso — 13 bloques commiteados; el Footer espera aprobación. Después viene la pasada de cierre (deuda técnica) |
+| Home | 🚧 | 🚧 | 👀 14 bloques maquetados y el **lote de ajustes post-maquetado cerrado** (2026-09-20): carrusel del hero, seis cards en Eventos y Misiones, links y hovers en todas las secciones, fuentes reales y la limpieza de comentarios. Falta la aprobación del Footer. Queda abierta la deuda técnica (peso de los assets, accesibilidad) y el hero en video, en pausa |
 
 **Leyenda:** ⏳ Pendiente · 🚧 En progreso · 👀 Esperando aprobación · ✅ Aprobada · 📦 Commiteada · 🚫 Bloqueada
 
