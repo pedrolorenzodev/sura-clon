@@ -63,10 +63,10 @@ experimental y depende del upscale.
 - [x] **12 · Sura News: cards como link** a `/news/:id` + hover con zoom — `news-card.tsx`, `news-card-wide.tsx`
 
 ### Bloque 4 · Juegos
-- [ ] **13 · Scrim violeta** del banner al ~40% del eje X — `globals.css`
-- [ ] **14 · Hover del CTA** "Jugar ahora" y sombra violeta on hover del banner — `game-banner.tsx`, `globals.css`
-- [ ] **15 · Cards como link** a `/games/:id` + hover; hover de los badges — `game-card.tsx`
-- [ ] **16 · Borde inferior atenuado** del panel de la card — `game-card.tsx`, `globals.css`
+- [x] **13 · Scrim violeta** del banner al ~40% del eje X — **cerrada sin cambio**: se implementó en desktop, el usuario lo descartó y el scrim vuelve al diseño en los dos tamaños
+- [x] **14 · Hover del CTA** "Jugar ahora" y sombra violeta on hover del banner — `game-banner.tsx`, `globals.css`. Suma: el banner entero es un solo destino (pedido del usuario)
+- [x] **15 · Cards como link** a `/games/:id` + **hover de elevación** (sin verde, pedido del usuario); hover de los badges — `game-card.tsx`
+- [x] **16 · Borde inferior atenuado** del panel de la card — `game-card.tsx`, `globals.css`. No hizo falta compensar 1px: el `min-h` ya mandaba
 
 ### Bloque 5 · Limpieza
 - [ ] **17 · Comentarios** (ts/tsx, `scripts/shot.mjs`, `globals.css`) → lo útil migra al PRD — todos

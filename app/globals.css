@@ -267,8 +267,11 @@
      que además es la política del proyecto desde el CTA del hero. */
   --text-shadow-banner: 0 1px 4px rgb(0 0 0 / 0.75);
 
+  --shadow-card-hover: 0 8px 24px rgb(0 0 0 / 0.55);
   --shadow-promo: 0 0 15px rgb(168 130 217 / 0.2);
+  --shadow-promo-hover: 0 0 24px rgb(168 130 217 / 0.4);
   --shadow-promo-cta: 0 1px 6px rgb(151 243 0 / 0.5);
+  --shadow-promo-cta-hover: 0 0 14px rgb(151 243 0 / 0.55), 0 1px 6px rgb(151 243 0 / 0.5);
   --shadow-mission-card: 0 2px 2.5px rgb(0 0 0 / 0.15);
   --shadow-sp-badge: 0 2px 5px rgb(0 0 0 / 0.15);
   --shadow-thumb: 0 4px 4px rgb(0 0 0 / 0.25);
@@ -433,6 +436,20 @@
     rgb(165 165 165 / 0.16) 100%
   );
 
+  --gradient-card-border: linear-gradient(
+    180deg,
+    rgb(161 161 161 / 0.5) 0%,
+    rgb(161 161 161 / 0.5) 40%,
+    rgb(161 161 161 / 0.1) 100%
+  );
+
+  --gradient-card-border-active: linear-gradient(
+    180deg,
+    rgb(221 221 221 / 0.6) 0%,
+    rgb(221 221 221 / 0.6) 40%,
+    rgb(221 221 221 / 0.15) 100%
+  );
+
   --gradient-nav-border-mobile: linear-gradient(
     180deg,
     var(--color-border) 0%,
@@ -577,6 +594,59 @@
     border-radius: inherit;
     padding: 1px;
     background: var(--gradient-row-border);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+@utility border-gradient-card {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-card-border-active);
+    opacity: 0;
+    transition: opacity 200ms;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  .group:hover &::after,
+  .group:focus-visible &::after {
+    opacity: 1;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-card-border);
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
