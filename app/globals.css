@@ -464,7 +464,7 @@
   --thumb-reveal-duration: 420ms;
   --thumb-reveal-stagger: 90ms;
   --thumb-reveal-shift: 8px;
-  --hero-art-fade-duration: 320ms;
+  --hero-art-fade-duration: 500ms;
 }
 
 @utility bg-gold-text {
@@ -593,16 +593,18 @@
   background: var(--hero-art) center / cover no-repeat;
 }
 
-/* Al cambiar de juego el arte nuevo se funde en vez de aparecer de golpe. No
-   se puede transicionar `background-image`, así que la capa se remonta con
-   `key` y repite este keyframe. El `to` lo pone la clase del elemento, que en
-   mobile es 75% y en desktop 100%. En la carga inicial no corre: el arte es el
-   LCP de la página y no se le pone un fade adelante. */
+/* Al cambiar de juego el arte nuevo entra fundido ENCIMA del anterior, que se
+   queda opaco debajo hasta que el cruce termina: así en el medio de la
+   transición no se ve el fondo de la página. En la carga inicial no corre: el
+   arte es el LCP y no se le pone un fade adelante. */
 @utility hero-art-fade {
-  animation: hero-art-fade var(--hero-art-fade-duration) var(--ease-reveal) backwards;
+  animation: hero-art-fade var(--hero-art-fade-duration) ease-in-out backwards;
 
+  /* Con movimiento reducido el cruce es instantáneo, pero sigue siendo una
+     animación: si fuera `none` no habría `animationend` y la capa saliente
+     quedaría montada para siempre. */
   @media (prefers-reduced-motion: reduce) {
-    animation: none;
+    animation-duration: 1ms;
   }
 }
 

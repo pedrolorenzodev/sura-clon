@@ -1,8 +1,36 @@
 "use client";
 
+import { useState } from "react";
+
 import { useHeroSlide } from "@/components/sections/hero-slide-context";
 import { hero } from "@/lib/data/hero";
 import { cn } from "@/lib/utils";
+
+function HeroArt({
+  index,
+  entering,
+  onArrived,
+}: {
+  index: number;
+  entering?: boolean;
+  onArrived?: () => void;
+}) {
+  const slide = hero.slides[index];
+
+  return (
+    <div
+      style={{ "--hero-art": `url("${slide.artSrc}")` } as React.CSSProperties}
+      onAnimationEnd={onArrived}
+      className={cn(
+        "absolute inset-0",
+        slide.framing === "design"
+          ? "hero-art-mobile desktop:hero-art-desktop"
+          : "hero-art-cover",
+        entering && "hero-art-fade",
+      )}
+    />
+  );
+}
 
 /**
  * Fondo del hero: tres capas dentro de una caja que se desborda por debajo del
@@ -33,29 +61,35 @@ import { cn } from "@/lib/utils";
  * cubrir los 1024 y quedaría una franja sin pintar. Y en mobile el arte va al
  * 75%, o sea que deja pasar lo que tenga debajo. Es también lo que se ve
  * mientras el arte nuevo todavía no bajó.
+ *
+ * La atenuación de mobile vive en el contenedor y no en cada capa: durante el
+ * cruce hay dos, y si cada una llevara su propio 75% el fondo se colaría entre
+ * las dos.
  */
 export function HeroBackground() {
-  const { activeSlide, hasSwitched } = useHeroSlide();
-  const slide = hero.slides[activeSlide];
+  const { activeSlide } = useHeroSlide();
+  const [shown, setShown] = useState(activeSlide);
+  const [leaving, setLeaving] = useState<number | null>(null);
+
+  if (activeSlide !== shown) {
+    setLeaving(shown);
+    setShown(activeSlide);
+  }
 
   return (
     <div
       aria-hidden
       className="absolute inset-x-0 top-4 -z-10 h-hero-mobile overflow-hidden bg-background desktop:top-0 desktop:h-hero-desktop"
     >
-      {/* `key` remonta la capa en cada cambio, que es lo que hace repetir el
-          fade: `background-image` no se puede transicionar. */}
-      <div
-        key={activeSlide}
-        style={{ "--hero-art": `url("${slide.artSrc}")` } as React.CSSProperties}
-        className={cn(
-          "absolute inset-0 opacity-75 desktop:opacity-100",
-          slide.framing === "design"
-            ? "hero-art-mobile desktop:hero-art-desktop"
-            : "hero-art-cover",
-          hasSwitched && "hero-art-fade",
-        )}
-      />
+      <div className="absolute inset-0 opacity-75 desktop:opacity-100">
+        {leaving !== null && <HeroArt key={leaving} index={leaving} />}
+        <HeroArt
+          key={shown}
+          index={shown}
+          entering={leaving !== null}
+          onArrived={() => setLeaving(null)}
+        />
+      </div>
       <div className="bg-hero-scrim-mobile absolute inset-0 desktop:bg-hero-scrim" />
     </div>
   );
