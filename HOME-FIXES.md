@@ -46,7 +46,7 @@ experimental y depende del upscale.
 - [x] **2 · Ocultar la barra de scroll** de la página — `globals.css`
 - [x] **3 · Bug del pill** (Eventos medido; Juegos a confirmar en el navegador del usuario) — `lib/use-section-spy.ts`
 - [x] **4 · Scroll-spy más intuitivo**: activa al cruzar el 40% del viewport — `lib/use-section-spy.ts`
-- [ ] **5 · Hero: resolución del arte** (upscale 2× con Real-ESRGAN, los cuatro artes) — `public/assets/home/`, `lib/data/hero.ts`, `PRD.md`
+- [x] **5 · Hero: resolución del arte** (upscale 2× con Real-ESRGAN, los cuatro artes) — `public/assets/home/`, `lib/data/hero.ts`, `PRD.md`
 - [ ] **6 · Hero: slider → carrusel con flechas** (vertical en desktop, horizontal en mobile) + autoplay cada 3 s — `hero-slider.tsx`, `hero-slide-context.tsx`, `lib/data/hero.ts`
 - [ ] **7 · Eventos: 6 cards** alternando Domino / Squad — `lib/data/events.ts`
 - [ ] **8 · Misiones: 6 cards + carrusel con flechas** (slider compartido con Eventos) — `events-slider.tsx` → `card-slider.tsx`, `misiones.tsx`, `mission-card.tsx`, `lib/data/missions.ts`
