@@ -185,19 +185,27 @@ el DOM. Nada de listener de scroll — el observer sólo dispara cuando una secc
 umbral, así que no hay trabajo por píxel ni re-render de más.
 
 ```
-rootMargin: "-106px 0px -70% 0px"   // el top es --spacing-header-desktop
+rootMargin: "0px 0px -60% 0px"   // la franja llega al 40% del viewport
 ```
 
-El inset de arriba descuenta el header fijo, para que una sección cuente como activa recién
-cuando lo pasa. El de abajo achica la zona de decisión a la franja superior del viewport, que
-es lo que evita que dos secciones estén activas a la vez. Gana la más alta de las que
-intersectan. Verificado sobre una página artificialmente larga: con Eventos arrancando en 826,
-el relevo cae exactamente en `scrollY = 720` = 826 − 106, o sea cuando cruza la línea del
-header.
+**El criterio se reescribió el 2026-09-20** porque el pill cambiaba tarde: con la regla
+anterior —franja al 30% y gana la más alta— la sección nueva recién tomaba el pill cuando la
+anterior terminaba de salir por arriba, y para entonces ya ocupaba el **80-89% de la
+pantalla**. Medido en las cinco transiciones.
 
-El único valor del viewport es ese 106, que es el header de desktop; en mobile el header mide
-56 y la franja arranca 50px más abajo de lo estricto. No se duplicó el valor por breakpoint:
-la franja igual termina al 30% del viewport y la decisión no cambia.
+Ahora la franja llega al **40% del viewport** y entre las que la tocan gana la **última**, o
+sea la que acaba de entrar. Con eso el relevo cae cuando la sección nueva ocupa el **60-62%**,
+y es simétrico: bajando y subiendo el umbral es el mismo (Δ ≤ 43px, que es el paso del
+muestreo).
+
+El borde de arriba ya no es una constante: sale del `scroll-margin-top` de cada sección, que
+es exactamente donde el ancla la deja. Así vale 106 en desktop y 56 en mobile sin duplicar
+nada.
+
+**Una sección posada en su ancla gana sobre la banda.** Es lo que hace que el click siga
+mandando: en mobile las secciones son más cortas que la franja del 40%, así que al clickear
+Eventos la sección de abajo entraba a la banda y le robaba el pill. Si el scroll está a ±2px
+del ancla de una sección, esa gana.
 
 **Cómo quedaron las cuatro cosas que había que resolver:**
 

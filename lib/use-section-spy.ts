@@ -10,19 +10,23 @@ import { useCallback, useEffect, useRef, useState } from "react";
  */
 
 /**
- * Borde superior de la franja de decisión: el alto del header fijo
- * (`--spacing-header-desktop`). Una sección cuenta como activa recién cuando lo
- * pasa. En mobile el header mide 56, o sea que la franja arranca 50px más abajo
- * de lo estricto — sin consecuencia práctica, porque abajo la corta el 70%.
+ * Borde superior de la franja: el `scroll-margin-top` de la propia sección, que
+ * es donde el ancla la deja al clickearla. Sale del CSS y no de una constante,
+ * así el valor es el del breakpoint en curso — 106 en desktop, 56 en mobile.
  */
-const HEADER_OFFSET = 106;
+const anchorOffset = (section: HTMLElement) =>
+  Number.parseFloat(getComputedStyle(section).scrollMarginTop) || 0;
+
+/** Margen para dar una sección por posada en su ancla, en px. */
+const ANCHOR_TOLERANCE = 2;
 
 /**
- * Borde inferior: la franja termina a esta fracción del viewport. Achicar la
- * zona de decisión a la parte de arriba es lo que evita que dos secciones estén
- * activas a la vez; entre las que la tocan gana la más alta.
+ * Borde inferior: la franja termina a esta fracción del viewport, y entre las
+ * secciones que la tocan gana la **última** — la que acaba de entrar. Así el
+ * pill cambia cuando la sección nueva cruza el 40% de la pantalla, en vez de
+ * esperar a que la anterior termine de salir (PRD § 5).
  */
-const BAND_BOTTOM_RATIO = 0.3;
+const BAND_BOTTOM_RATIO = 0.4;
 
 /** Margen para comparar contra el fondo de la página, en px. */
 const BOTTOM_TOLERANCE = 4;
@@ -62,9 +66,19 @@ export function useSectionSpy(ids: readonly string[], defaultId: string) {
     const touchesBand = (section: HTMLElement) => {
       const rect = section.getBoundingClientRect();
       return (
-        rect.bottom > HEADER_OFFSET && rect.top < window.innerHeight * BAND_BOTTOM_RATIO
+        rect.bottom > anchorOffset(section) &&
+        rect.top < window.innerHeight * BAND_BOTTOM_RATIO
       );
     };
+
+    /**
+     * El scroll está posado justo en el ancla de esta sección, que es donde lo
+     * deja un click del menú. Manda sobre la banda: en mobile las secciones son
+     * más cortas que la franja y la de abajo entraría a robarle el pill.
+     */
+    const isAnchored = (section: HTMLElement) =>
+      Math.abs(section.getBoundingClientRect().top - anchorOffset(section)) <=
+      ANCHOR_TOLERANCE;
 
     /**
      * La última sección puede no llegar nunca a la franja de arriba si la página
@@ -90,13 +104,15 @@ export function useSectionSpy(ids: readonly string[], defaultId: string) {
       const doc = document.documentElement;
       if (doc.scrollHeight - window.innerHeight <= BOTTOM_TOLERANCE) return;
 
-      const next = tailWins() ? last.id : sections.find(touchesBand)?.id;
+      const next =
+        sections.find(isAnchored)?.id ??
+        (tailWins() ? last.id : sections.findLast(touchesBand)?.id);
       if (next) setActiveId(next);
     };
     resolveRef.current = resolve;
 
     const band = new IntersectionObserver(resolve, {
-      rootMargin: `-${HEADER_OFFSET}px 0px -${(1 - BAND_BOTTOM_RATIO) * 100}% 0px`,
+      rootMargin: `0px 0px -${(1 - BAND_BOTTOM_RATIO) * 100}% 0px`,
     });
     for (const section of sections) band.observe(section);
 
