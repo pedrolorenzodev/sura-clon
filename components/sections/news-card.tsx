@@ -10,7 +10,7 @@ export function NewsCard({ item }: { item: NewsItem }) {
       <Link
         href={`/news/${item.id}`}
         prefetch={false}
-        className="group flex w-full flex-col gap-3 rounded-xl bg-surface-3 p-3 transition-shadow duration-200 hover:shadow-brand-glow focus-visible:shadow-brand-glow motion-reduce:transition-none desktop:gap-4 desktop:bg-background"
+        className="group flex w-full flex-col gap-3 rounded-xl bg-surface-3 p-3 transition-[translate,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:bg-surface-2 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:bg-surface-2 focus-visible:shadow-card-hover motion-reduce:transition-none desktop:gap-4 desktop:bg-background desktop:hover:bg-surface-3 desktop:focus-visible:bg-surface-3"
       >
         <div className="relative aspect-[256/193] w-full shrink-0 overflow-hidden rounded-lg">
           <Image
@@ -22,7 +22,7 @@ export function NewsCard({ item }: { item: NewsItem }) {
           />
         </div>
 
-        <h3 className="line-clamp-2 font-techno text-xs uppercase text-foreground transition-colors duration-200 group-hover:text-brand group-focus-visible:text-brand motion-reduce:transition-none desktop:text-sm">
+        <h3 className="line-clamp-2 font-techno text-xs uppercase text-foreground desktop:text-sm">
           {item.title}
         </h3>
 

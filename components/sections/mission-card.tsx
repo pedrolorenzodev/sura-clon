@@ -28,7 +28,7 @@ export function MissionCard({ mission }: { mission: Mission }) {
       <Link
         href={`/missions/${mission.id}`}
         prefetch={false}
-        className="group flex w-full flex-col gap-4 rounded-lg bg-surface px-4 pb-6 pt-4 shadow-mission-card ring-1 ring-inset ring-border transition-shadow duration-200 hover:shadow-brand-glow focus-visible:shadow-brand-glow motion-reduce:transition-none"
+        className="group flex w-full flex-col gap-4 rounded-lg bg-surface px-4 pb-6 pt-4 shadow-mission-card ring-1 ring-inset ring-border transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-card-hover hover:ring-border-muted/60 focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover focus-visible:ring-border-muted/60 motion-reduce:transition-none"
       >
         <div className="relative aspect-[229.456/128] w-full overflow-hidden rounded-sm ring-1 ring-inset ring-border-muted/50">
           <Image
@@ -60,7 +60,7 @@ export function MissionCard({ mission }: { mission: Mission }) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <h3 className="h-4.5 truncate font-techno text-sm uppercase text-foreground transition-colors duration-200 group-hover:text-brand group-focus-visible:text-brand motion-reduce:transition-none">
+          <h3 className="h-4.5 truncate font-techno text-sm uppercase text-foreground">
             {mission.title}
           </h3>
           <p className="text-2xs text-muted-foreground">

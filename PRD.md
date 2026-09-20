@@ -467,6 +467,8 @@ public/assets/<pantalla>/   assets exportados de Figma
 | 2026-09-20 | `--shadow-promo-hover` y `--shadow-promo-cta-hover` | Juegos | Hover del banner y de su CTA. Ninguno sale del Figma. El violeta es el de `--shadow-promo` más extendido y al doble de opacidad (15px/0.2 → **24px/0.4**); el verde apila un glow de 14px al 0.55 sobre la caída que el CTA ya tenía, que es la receta de `--shadow-cta-hover`. El banner no es link: el hover es del contenedor y el CTA mantiene el suyo. |
 | 2026-09-20 | `--gradient-card-border` + `@utility border-gradient-card` | Juegos | El borde del panel de la card también se apaga hacia abajo. Medido sobre el render del nodo `6008:26683`: `rgba(161,161,161,.5)` arriba, que se sostiene hasta el **40% de la altura** y cae a **0,1** abajo. Mismo anillo enmascarado que la fila del Leaderboard y el menú. |
 | 2026-09-20 | **El banner de Juegos es un solo destino** | Juegos | Pedido del usuario: la card entera lleva al mismo lado que "Jugar ahora". Como no hay ruta todavía, los dos van como `<button>` sin handler — el criterio del footer y de "Ver todo". El CTA sigue siendo el control real, focusable y con su propio hover; la card suma un segundo botón estirado (`absolute inset-0`), `aria-hidden` y `tabIndex={-1}`, que es sólo comodidad de puntero y no agrega una parada de tabulación. El contenido va `pointer-events-none` sobre él, con el CTA de vuelta en `auto`: así el click en el título cae en el botón estirado y el del CTA en el CTA. |
+| 2026-09-20 | `--drop-shadow-link-hover` | Todas las secciones | Los links "Ver todo" e "Ir a Sura News" no tenían ningún hover. Pedido del usuario. `0 0 4px` del `#97F300` al 0,25 — la misma familia de luz que `--shadow-brand-glow`. Arrancó en `0 0 8px` al 0,45 y el usuario lo bajó: a ese tamaño era una nube alrededor del texto. A 4px el halo queda pegado a la letra, que es lo que se pedía. Se comparó también con `0 0 3px` al 0,2, que ya casi no se ve. Va como `drop-shadow` y no `text-shadow` porque la flecha es un `<img>` y quedaría apagada. |
+| 2026-09-20 | **Misiones y Sura News pasan al hover de elevación** | Misiones · Sura News | Pedido del usuario: las dos usaban el glow verde y el título a verde, y querían el efecto de Juegos. Sin tokens nuevos — reusan `--shadow-card-hover` y los grises que ya existen. Misiones sube su anillo de `--color-border` a `--color-border-muted` al 60%; Sura News no tiene borde, así que el escalón lo da la superficie: `--color-background` → `--color-surface-3` en desktop y `--color-surface-3` → `--color-surface-2` en mobile, los dos de 8 niveles. Los títulos dejan de teñirse. |
 | 2026-09-20 | Cards de Juegos → `<Link href="/games/:id">`, con `--shadow-card-hover` y `--gradient-card-border-active` | Juegos | Arrancaron con el vocabulario verde de Misiones y Sura News (glow de marca + título a verde) y el usuario lo descartó (2026-09-20): lo quería **oscuro y sutil**. El verde se fue entero. Queda el zoom de la portada, la card **sube 2px** con `translate` —el mismo recurso que las cards del podio, que no toca el layout—, una sombra negra de elevación (`0 8px 24px` al 0,55) y el borde del panel un escalón más presente, con el mismo desvanecido hacia abajo: medido, de 100 a **175** a media altura. El título se queda blanco y los badges van de `--color-muted-foreground` a `--color-subtle-foreground`. Es el mismo criterio que la fila del Leaderboard: **el movimiento es la señal fuerte, el color sólo acompaña.** |
 | 2026-09-20 | `--gradient-row-border` + `@utility border-gradient-row` | Leaderboard | El borde de la fila se apaga hacia abajo, como en el diseño. Medido sobre el render del nodo `6008:26530` muestreando el borde izquierdo cada 2px: **0,95 arriba, 0,59 a media altura y 0,18 abajo**, lineal. El MCP lo devolvía plano, como ya había pasado con la bottom bar, el podio y la card de Juegos. Reusa el anillo enmascarado del menú, que no agrega tamaño: la fila sigue midiendo 59,4 en desktop y 56 en mobile. |
 | 2026-09-20 | `components/sections/events-slider.tsx` → **`card-slider.tsx`**, compartido | Eventos · Misiones | Las dos secciones pasan a **6 cards** (pedido del usuario) y comparten el carrusel. Lo que cambia entre ellas entra por prop: paso, recorte del viewport y altura de las flechas. Eventos conserva su `padding-top`, que no es decorativo — es el aire del personaje que se sale por arriba. En Misiones las cards pasan de repartirse los 1144 a los **268 fijos del diseño**: con seis, la fila ya no entra. Los personajes de Eventos ahora **alternan** Domino/Squad en vez de repetirse pegados. |
@@ -568,6 +570,7 @@ resuelven de una sola pasada cuando el Home esté terminado, o más adelante.
 
 | Tema | Qué pasó | Cómo se resolvió |
 |---|---|---|
+| **La sombra de elevación necesita más aire que el glow, y el aire no puede mover el layout** | `--shadow-card-hover` es `0 8px 24px`: pide 18px por arriba (con los 2 del salto) y 30 por abajo, contra los 12 que difundía el glow verde. Los dos carruseles recortan —`overflow-x-auto` obliga al eje Y— así que la sombra se cortaba con una línea dura. | Se le da el aire con padding y se devuelve con margen negativo, el mismo truco que el `-mx-3 px-3` que ya tenía `card-slider`. **Ojo con cuánto se devuelve:** el viewport de Misiones tenía `py-3` sin compensar, o sea 12px de alto real que el bloque aprobado ya incluía. Compensarlo entero (`-my-8 py-8`) subía todo lo de abajo 24px. Va `-my-5 py-8`: 32 de aire para pintar y los mismos 12 netos de antes. Verificado: el banner de Juegos vuelve a y=2403,328125 en mobile y 2869,640625 en desktop, al subpíxel. El `<ul>` de Sura News mobile no tenía padding, así que ahí sí se compensa entero. |
 | **Un overlay clickeable se come el `hover` de lo que tapa** | Con la card entera cubierta por un botón estirado, el CTA quedaba fuera del hit-test: `:hover` sólo alcanza al target y a sus ancestros, así que el glow verde no se encendía nunca por sí solo y hubo que dispararlo con `group-hover` — o sea que hoverear el CTA y hoverear la card se volvían indistinguibles. Lo vio el usuario. | El overlay baja a `z-10` y el contenido sube a `z-20` con `pointer-events-none`; el CTA vuelve a `pointer-events-auto` y así hit-testea él. Medido: sobre la card se enciende sólo el violeta, sobre el CTA se encienden los dos, y el click del título lo toma el overlay y el del CTA el CTA. **Un overlay que cubre una card anula el hover de todo lo que hay debajo: si algo adentro necesita estado propio, tiene que hit-testearse.** |
 | **El scrim del banner no se puede correr sin perder el copy** | Se pidió apagar el violeta al 40% del ancho para ver más el arte. | En desktop el copy vive en una caja de 530 sobre 1144 y termina en el 49%, así que el violeta puede morir en el 40%; en mobile es **de borde a borde** y no hay ningún x que sirva. Se implementó desktop, se miró y el usuario lo revirtió: **el scrim queda como el diseño en los dos tamaños**. Si el tema vuelve, la salida no es el degradé sino el texto — darle al título la sombra que hoy sólo tiene la bajada. |
 | **El panel de la card no necesitó compensar el píxel del borde** | Al pasar de `border` a anillo enmascarado se esperaba perder 2px de alto y había que devolverlos. | No hizo falta: el `min-h` ya era el que mandaba. Medido antes y después, el panel da **126 en desktop y 94 en mobile** en las ocho cards, y la card sigue en 357 / 219,78. El contenido más padding entra en 124, así que el borde nunca estuvo definiendo el alto. |
@@ -636,12 +639,20 @@ El diseño no define ningún hover: todos son decisión nuestra. Para que no hay
 por sección, hay **dos recetas con nombre**. Cuando se pide "un hover como el de X", es una
 de estas dos.
 
-**Hover de elevación** — cards de Juegos. El default para una card con imagen.
+**Hover de elevación** — cards de Juegos, Misiones y Sura News. El default para una card
+con imagen.
 
 1. La card **sube 2px** con `translate`. Nunca con margin ni con alto: no toca el layout.
 2. Sombra **negra** de profundidad (`--shadow-card-hover`), no un glow de color.
-3. El borde sube **un escalón en su propio gris**, con el mismo desvanecido que en reposo
-   (`--gradient-card-border` → `-active`). No cambia de tono.
+3. La card sube **un escalón en su propio gris**, sin cambiar de tono. Dónde depende de
+   lo que la card tenga:
+   - **con borde** → sube el borde, con el mismo desvanecido que en reposo
+     (Juegos: `--gradient-card-border` → `-active`; Misiones: `ring-border` →
+     `ring-border-muted/60`).
+   - **sin borde** → sube la **superficie**, un nivel del DS (Sura News: `--color-background`
+     → `--color-surface-3` en desktop, `--color-surface-3` → `--color-surface-2` en mobile).
+     Los dos saltos son de 8 niveles, que es el mismo que el diseño usa para separar la card
+     de su panel.
 4. La imagen hace **zoom 1.05** con `--ease-reveal`, dentro del `overflow-hidden` que ya existe.
 5. **Cero color**: ni el título ni los badges cambian de hue; a lo sumo suben de gris
    (`--color-muted-foreground` → `--color-subtle-foreground`).
@@ -652,7 +663,18 @@ elevar una fila entre otras pegadas no se lee.
 La fila **crece y empuja a las de abajo** sin que la tabla cambie de alto (`flex-1`), y el
 borde sube un escalón de contraste. Tampoco hay color.
 
-**Lo que las dos comparten**, y vale para cualquier hover nuevo:
+**Glow de link** — "Ver todo" de cada sección e "Ir a Sura News".
+
+Es la excepción a la regla del verde, y por eso está acotada: son links de texto **que ya
+son verdes**, o sea lo accionable explícito. Una sombra negra sobre texto verde en fondo
+oscuro no se vería, y moverlo se leería como un salto. Se enciende con
+`--drop-shadow-link-hover`, el mismo `#97F300` de la familia de glows.
+
+Va como **`drop-shadow` y no `text-shadow`** porque la flecha es un `<img>`: `text-shadow`
+la dejaría apagada mientras el texto brilla. Un solo valor, que es todo lo que `drop-shadow`
+admite (ver notas de implementación).
+
+**Lo que las tres comparten**, y vale para cualquier hover nuevo:
 
 - **El movimiento es la señal fuerte; el color sólo acompaña.** Un cambio de color solo se
   lee plano — está probado tres veces en este proyecto.

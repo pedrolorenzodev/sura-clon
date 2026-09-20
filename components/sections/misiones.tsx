@@ -28,7 +28,7 @@ export function Misiones() {
         <CardSlider
           step={{ mobile: 261 + 12, desktop: 268 + 24 }}
           labels={{ prev: "Ver misiones anteriores", next: "Ver más misiones" }}
-          viewportClassName="gap-3 py-3 desktop:gap-6"
+          viewportClassName="-my-5 gap-3 py-8 desktop:gap-6"
           arrowClassName="top-1/2"
         >
           {missions.map((mission) => (

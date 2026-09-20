@@ -211,6 +211,7 @@ export const radiusTokens: Token[] = [
 export const shadowTokens: Token[] = [
   { name: "--shadow-bar", utility: "shadow-bar", usage: 'Bottom bar mobile — es la variable "Shadow 3" del Figma' },
   { name: "--drop-shadow-badge", utility: "drop-shadow-badge", usage: "Badge de nivel en el header (PNG con alpha)" },
+  { name: "--drop-shadow-link-hover", utility: "drop-shadow-link-hover", usage: "\"Ver todo\" con el puntero encima — no sale del diseño", offDesign: true },
   { name: "--shadow-gold-glow", utility: "shadow-gold-glow", usage: "Glow del primer puesto del podio" },
   { name: "--shadow-nav", utility: "shadow-nav", usage: "Menú flotante desktop" },
   { name: "--drop-shadow-claim", utility: "drop-shadow-claim", usage: "Botón Reclamar" },

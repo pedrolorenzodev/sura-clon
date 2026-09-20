@@ -26,7 +26,7 @@ export function SectionHeader({
       {action && (
         <button
           type="button"
-          className="flex cursor-pointer items-center gap-1 font-techno text-2xs uppercase text-brand desktop:text-link"
+          className="flex cursor-pointer items-center gap-1 font-techno text-2xs uppercase text-brand transition-[filter] duration-200 hover:drop-shadow-link-hover focus-visible:drop-shadow-link-hover motion-reduce:transition-none desktop:text-link"
         >
           Ver todo
           <Image

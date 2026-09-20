@@ -10,7 +10,7 @@ export function NewsCardWide({ item }: { item: NewsItem }) {
       <Link
         href={`/news/${item.id}`}
         prefetch={false}
-        className="group flex w-full items-center gap-4 rounded-xl bg-background py-3 pl-3 pr-4 transition-shadow duration-200 hover:shadow-brand-glow focus-visible:shadow-brand-glow motion-reduce:transition-none"
+        className="group flex w-full items-center gap-4 rounded-xl bg-background py-3 pl-3 pr-4 transition-[translate,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:bg-surface-3 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:bg-surface-3 focus-visible:shadow-card-hover motion-reduce:transition-none"
       >
         <div className="relative aspect-[129/97] shrink-0 self-stretch overflow-hidden rounded-xl">
           <Image
@@ -23,7 +23,7 @@ export function NewsCardWide({ item }: { item: NewsItem }) {
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-4">
-          <h3 className="line-clamp-3 font-techno text-xs uppercase text-foreground transition-colors duration-200 group-hover:text-brand group-focus-visible:text-brand motion-reduce:transition-none">
+          <h3 className="line-clamp-3 font-techno text-xs uppercase text-foreground">
             {item.title}
           </h3>
           <NewsMeta item={item} />

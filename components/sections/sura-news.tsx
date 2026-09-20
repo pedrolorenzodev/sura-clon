@@ -13,7 +13,7 @@ export function SuraNews() {
     >
       <div className="flex flex-col gap-title-gap desktop:hidden">
         <SectionHeader title={newsIntro.title} />
-        <ul className="no-scrollbar flex gap-3 overflow-x-auto">
+        <ul className="no-scrollbar -mx-6 -my-8 flex gap-3 overflow-x-auto overflow-y-hidden px-6 py-8">
           {news.map((item) => (
             <li key={item.id} className="flex">
               <NewsCard item={item} />
@@ -40,7 +40,7 @@ export function SuraNews() {
 
           <button
             type="button"
-            className="flex cursor-pointer items-center gap-1 self-start font-techno text-link uppercase text-brand"
+            className="flex cursor-pointer items-center gap-1 self-start font-techno text-link uppercase text-brand transition-[filter] duration-200 hover:drop-shadow-link-hover focus-visible:drop-shadow-link-hover motion-reduce:transition-none"
           >
             {newsIntro.cta}
             <Image

@@ -259,6 +259,7 @@
   /* El badge de nivel es un PNG con alpha: la sombra tiene que seguir la silueta,
      así que va como drop-shadow y no como box-shadow. */
   --drop-shadow-badge: 0 2px 5px rgb(12 12 12 / 0.3);
+  --drop-shadow-link-hover: 0 0 4px rgb(151 243 0 / 0.25);
   /* Miniaturas del slider del hero. La sombra del diseño escala con la
      miniatura: 4 en desktop (60px) y 2.133 en mobile (32px), que redondea a 2
      por la política de normalización (PRD § 6). */
