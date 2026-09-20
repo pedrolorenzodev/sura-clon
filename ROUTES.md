@@ -17,11 +17,13 @@ no rutas, y conviven sin conflicto.
 | `/tournaments/:id` | Detalle de evento | ⏳ Pendiente |
 | `/leaderboard` | Leaderboard | ⏳ Pendiente |
 | `/missions` | Misiones | ⏳ Pendiente |
+| `/missions/:id` | Detalle de misión | ⏳ Pendiente ❓ a confirmar |
 | `/news` | Lista de Sura News | ⏳ Pendiente |
 | `/news/:id` | Detalle de noticia | ⏳ Pendiente |
 | `/games` | Lista de juegos | ⏳ Pendiente |
 | `/games/:id` | Detalle de juego | ⏳ Pendiente ❓ a confirmar |
 | `/profile` | Perfil propio | ⏳ Pendiente ❓ a confirmar |
+| `/profile/:id` | Perfil de otro usuario | ⏳ Pendiente ❓ a confirmar |
 | `/styleguide` | Referencia visual del DS (solo dev) | ✅ Implementada |
 | `not-found` | 404 | ⏳ Pendiente |
 

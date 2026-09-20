@@ -1,3 +1,4 @@
+import { CardSlider } from "@/components/sections/card-slider";
 import { MissionCard } from "@/components/sections/mission-card";
 import { SectionHeader } from "@/components/sections/section-header";
 import { missions } from "@/lib/data/missions";
@@ -5,10 +6,11 @@ import { missions } from "@/lib/data/missions";
 /**
  * Sección Misiones del Home y destino del ancla `#misiones`.
  *
- * Desktop: las cuatro cards en fila, repartiendo los 1144 de la columna.
- * Mobile: las mismas cuatro en un carrusel horizontal con el ancho fijo del
- * diseño — se ve una entera y el asomo de la siguiente, que es la señal de que
- * hay más. Sin flechas: el frame desktop no las tiene y en mobile se arrastra.
+ * Son seis cards en un carrusel, con el mismo componente que Eventos (usuario,
+ * 2026-09-20). El Figma pone cuatro fijas en desktop, repartiendo los 1144 de
+ * la columna; con seis la fila ya no entra, así que las cards pasan a ancho
+ * fijo —los mismos 268 del diseño— y las dos que sobran se alcanzan con las
+ * flechas. En mobile no cambia nada: ya era un carrusel de ancho fijo.
  *
  * El título del frame mobile dice "eventos", que es un typo: repite el de la
  * sección de más arriba. Va "Misiones" en los dos, igual que se resolvió en
@@ -23,11 +25,16 @@ export function Misiones() {
       <div className="mx-auto flex max-w-page flex-col gap-title-gap">
         <SectionHeader title="Misiones" />
 
-        <ul className="no-scrollbar flex gap-3 overflow-x-auto desktop:grid desktop:grid-cols-4 desktop:gap-6 desktop:overflow-visible">
+        <CardSlider
+          step={{ mobile: 261 + 12, desktop: 268 + 24 }}
+          labels={{ prev: "Ver misiones anteriores", next: "Ver más misiones" }}
+          viewportClassName="gap-3 py-3 desktop:gap-6"
+          arrowClassName="top-1/2"
+        >
           {missions.map((mission) => (
             <MissionCard key={mission.id} mission={mission} />
           ))}
-        </ul>
+        </CardSlider>
       </div>
     </section>
   );

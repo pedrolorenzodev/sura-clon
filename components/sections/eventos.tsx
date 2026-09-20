@@ -1,5 +1,5 @@
 import { EventCard } from "@/components/sections/event-card";
-import { EventsSlider } from "@/components/sections/events-slider";
+import { CardSlider } from "@/components/sections/card-slider";
 import { SectionHeader } from "@/components/sections/section-header";
 import { events } from "@/lib/data/events";
 
@@ -19,11 +19,16 @@ export function Eventos() {
       <div className="mx-auto max-w-page">
         <SectionHeader title="Eventos" />
 
-        <EventsSlider>
+        <CardSlider
+          step={{ mobile: 210 + 24, desktop: 365 + 24 }}
+          labels={{ prev: "Ver eventos anteriores", next: "Ver más eventos" }}
+          viewportClassName="gap-6 pb-px pt-4.25 desktop:pb-0.5 desktop:pt-7"
+          arrowClassName="top-50.5"
+        >
           {events.map((event) => (
             <EventCard key={event.id} event={event} />
           ))}
-        </EventsSlider>
+        </CardSlider>
       </div>
     </section>
   );

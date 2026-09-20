@@ -53,7 +53,7 @@ const BADGE_ICON = {
  * diseño: la cabeza asoma sobre el borde superior. Por eso el `<article>` mide
  * lo que mide la superficie redondeada y el arte se posiciona con un alto
  * mayor al 100% — el recorte de arriba lo hace el viewport del slider, no la
- * card (ver `events-slider.tsx`).
+ * card (ver `card-slider.tsx`).
  *
  * El orden de apilado importa y es el del Figma: superficie → personaje →
  * scrim → texto. Si el scrim quedara debajo del personaje, el texto no se

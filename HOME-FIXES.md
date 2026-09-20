@@ -53,9 +53,9 @@ experimental y depende del upscale.
 - [x] **6 · Slider → carrusel con flechas** (vertical en desktop, horizontal en mobile) + autoplay cada 3 s — `hero-slider.tsx`, `hero-slide-context.tsx`, `lib/data/hero.ts`
 
 ### Bloque 2 · Eventos y Misiones
-- [ ] **7 · Eventos: 6 cards** alternando Domino / Squad — `lib/data/events.ts`
-- [ ] **8 · Misiones: 6 cards + carrusel con flechas** (slider compartido con Eventos) — `events-slider.tsx` → `card-slider.tsx`, `misiones.tsx`, `lib/data/missions.ts`
-- [ ] **11 · Misiones: cards como link** + hover con zoom de la imagen — `mission-card.tsx`
+- [x] **7 · Eventos: 6 cards** alternando Domino / Squad — `lib/data/events.ts`
+- [x] **8 · Misiones: 6 cards + carrusel con flechas** (slider compartido con Eventos) — `events-slider.tsx` → `card-slider.tsx`, `misiones.tsx`, `lib/data/missions.ts`
+- [x] **11 · Misiones: cards como link** + hover con zoom de la imagen — `mission-card.tsx`
 
 ### Bloque 3 · Leaderboard y Sura News
 - [ ] **9 · Leaderboard: borde inferior atenuado** en las filas — `leaderboard-row.tsx`, `globals.css`

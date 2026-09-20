@@ -6,26 +6,38 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 /** Ancho de card + gap, por tamaño. Es lo que avanza cada click. */
-const STEP = { mobile: 210 + 24, desktop: 365 + 24 };
+export type SliderStep = { mobile: number; desktop: number };
 
 /**
- * Viewport scrolleable de la sección Eventos.
+ * Viewport scrolleable con flechas. Lo comparten Eventos y Misiones.
  *
  * Es client component por las flechas y nada más: las cards llegan como
  * `children` y se siguen renderizando en el servidor.
  *
- * **El recorte de arriba lo hace este contenedor.** Las cards dejan que el
- * personaje se salga por arriba y acá se lo recorta con `overflow-hidden` más
- * un `padding-top` que deja el aire justo — 28px en desktop y 17 en mobile, que
- * es lo que mide el asomo menos los 2px que el propio frame corta.
+ * Lo que cambia entre secciones son el paso, el recorte del viewport y la
+ * altura de las flechas, así que los tres entran por prop. El recorte de
+ * Eventos no es decorativo: sus cards dejan que el personaje se salga por
+ * arriba y el `padding-top` del viewport es lo que deja el aire justo.
  *
- * **Las flechas sí están en el diseño**, aunque no dentro del nodo de la
- * sección: viven en el frame compuesto del Home, apoyadas en los gutters. Se
- * midieron sobre el render a resolución completa (posición, tamaño de tinta y
- * los dos colores). En mobile no hay: ahí se scrollea con el dedo y la card
+ * **Las flechas sí están en el diseño** de Eventos, aunque no dentro del nodo
+ * de la sección: viven en el frame compuesto del Home, apoyadas en los gutters.
+ * Se midieron sobre el render a resolución completa (posición, tamaño de tinta
+ * y los dos colores). En mobile no hay: ahí se scrollea con el dedo y la card
  * siguiente ya asoma.
  */
-export function EventsSlider({ children }: { children: React.ReactNode }) {
+export function CardSlider({
+  step,
+  labels,
+  viewportClassName,
+  arrowClassName,
+  children,
+}: {
+  step: SliderStep;
+  labels: { prev: string; next: string };
+  viewportClassName: string;
+  arrowClassName: string;
+  children: React.ReactNode;
+}) {
   const viewport = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
@@ -44,8 +56,10 @@ export function EventsSlider({ children }: { children: React.ReactNode }) {
   const scrollByCard = (direction: 1 | -1) => {
     const el = viewport.current;
     if (!el) return;
-    const step = window.matchMedia("(min-width: 391px)").matches ? STEP.desktop : STEP.mobile;
-    el.scrollBy({ left: direction * step, behavior: "smooth" });
+    const amount = window.matchMedia("(min-width: 391px)").matches
+      ? step.desktop
+      : step.mobile;
+    el.scrollBy({ left: direction * amount, behavior: "smooth" });
   };
 
   return (
@@ -53,13 +67,33 @@ export function EventsSlider({ children }: { children: React.ReactNode }) {
       <div
         ref={viewport}
         onScroll={sync}
-        className="no-scrollbar flex gap-6 overflow-x-auto overflow-y-hidden pb-px pt-4.25 desktop:pb-0.5 desktop:pt-7"
+        /* El `px` no es aire de diseño: un viewport con `overflow` recorta lo
+           que se sale del área scrolleable, y el glow del hover de la primera y
+           la última card caía justo ahí. El margen negativo lo devuelve, así
+           las cards quedan donde el diseño las pone. El aire de arriba y abajo
+           lo declara cada sección, que es la que sabe cuánto necesita. */
+        className={cn(
+          "no-scrollbar -mx-3 flex overflow-x-auto overflow-y-hidden px-3",
+          viewportClassName,
+        )}
       >
         {children}
       </div>
 
-      <SliderButton side="left" disabled={atStart} onClick={() => scrollByCard(-1)} />
-      <SliderButton side="right" disabled={atEnd} onClick={() => scrollByCard(1)} />
+      <SliderButton
+        side="left"
+        label={labels.prev}
+        className={arrowClassName}
+        disabled={atStart}
+        onClick={() => scrollByCard(-1)}
+      />
+      <SliderButton
+        side="right"
+        label={labels.next}
+        className={arrowClassName}
+        disabled={atEnd}
+        onClick={() => scrollByCard(1)}
+      />
     </div>
   );
 }
@@ -80,10 +114,14 @@ export function EventsSlider({ children }: { children: React.ReactNode }) {
  */
 function SliderButton({
   side,
+  label,
+  className,
   disabled,
   onClick,
 }: {
   side: "left" | "right";
+  label: string;
+  className: string;
   disabled: boolean;
   onClick: () => void;
 }) {
@@ -94,10 +132,11 @@ function SliderButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      aria-label={side === "left" ? "Ver eventos anteriores" : "Ver más eventos"}
+      aria-label={label}
       className={cn(
-        "absolute top-50.5 hidden size-10 -translate-y-1/2 cursor-pointer items-center justify-center transition-colors duration-200 motion-reduce:transition-none desktop:flex",
+        "absolute hidden size-10 -translate-y-1/2 cursor-pointer items-center justify-center transition-colors duration-200 motion-reduce:transition-none desktop:flex",
         side === "left" ? "-left-13.25" : "-right-13.25",
+        className,
         disabled
           ? "cursor-default text-border-dim"
           : "text-foreground hover:text-brand focus-visible:text-brand",

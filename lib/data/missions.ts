@@ -12,9 +12,16 @@ export type Mission = {
 };
 
 /**
- * Las cuatro del Home. El frame mobile repite "Conecta tu cuenta de X" en sus
- * tres cards, que es placeholder: se unifica en las de desktop, con el mismo
- * criterio que el podio del Leaderboard (PRD § 6, deuda).
+ * Seis misiones. El Figma trae cuatro; las dos últimas las agregó el usuario
+ * (2026-09-20) para que el carrusel tenga recorrido, y toman su portada de la
+ * sección Juegos. Reusarlas acá no es repetir arte: en una misión la portada
+ * **identifica el juego**, así que encontrar Minecraft en el catálogo y en una
+ * misión es coherente. La card las recorta a 229.456/128 y las dos originales
+ * son 16:9, o sea que entran sin recorte visible.
+ *
+ * El frame mobile repite "Conecta tu cuenta de X" en sus tres cards, que es
+ * placeholder: se unifica en las de desktop, con el mismo criterio que el podio
+ * del Leaderboard (PRD § 6, deuda).
  *
  * La descripción es la misma en las cuatro, y así está en el diseño — es el
  * mismo texto que ya aparecía en las cards de Eventos.
@@ -50,5 +57,19 @@ export const missions: Mission[] = [
     description: DESCRIPTION,
     reward: "+120",
     imageSrc: "/assets/home/misiones/mario.png",
+  },
+  {
+    id: "minecraft",
+    title: "Construye tu primera base en Minecraft",
+    description: DESCRIPTION,
+    reward: "+120",
+    imageSrc: "/assets/home/juegos/minecraft.png",
+  },
+  {
+    id: "wagmi-defense",
+    title: "Defiende 3 oleadas en Wagmi Defense",
+    description: DESCRIPTION,
+    reward: "+120",
+    imageSrc: "/assets/home/juegos/wagmi.png",
   },
 ];
