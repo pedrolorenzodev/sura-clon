@@ -1,3 +1,4 @@
+import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { Nav } from "@/components/layout/nav";
 import { Eventos } from "@/components/sections/eventos";
@@ -24,6 +25,7 @@ export default function Home() {
         <SuraNews />
         <Juegos />
       </main>
+      <Footer />
     </>
   );
 }

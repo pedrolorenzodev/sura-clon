@@ -86,6 +86,10 @@
   --text-news-copy--line-height: 16px;
   --text-news-copy--letter-spacing: 0.0833em;
 
+  --text-legal: 12px;
+  --text-legal--line-height: 18px;
+  --text-legal--letter-spacing: 0.02em;
+
   /* Copy del hero. `leading-normal` de Tailwind es 1.5 (=24px), NO el `normal`
      de CSS: el nodo de Figma mide 38px para 2 líneas, o sea 19 exactos. El
      tracking va en em para que dé 1px en los dos tamaños (PRD § 6). */
@@ -352,6 +356,7 @@
   /* Separación entre secciones en mobile. No hay frame compuesto que la defina:
      es decisión del usuario (2026-09-19), la mitad de los 80 de desktop. */
   --spacing-section-gap-mobile: 40px;
+  --spacing-nav-bar: 80px;
 }
 
 /* ============================================================
@@ -741,6 +746,12 @@
    navegador de escritorio `env()` vale 0 y no cambia nada. */
 @utility bottom-nav-safe {
   bottom: calc(var(--spacing-gutter) + env(safe-area-inset-bottom));
+}
+
+@utility pb-nav-clearance {
+  padding-bottom: calc(
+    var(--spacing-gutter) * 2 + var(--spacing-nav-bar) + env(safe-area-inset-bottom)
+  );
 }
 
 /* ============================================================

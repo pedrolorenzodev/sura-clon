@@ -185,6 +185,7 @@ export const textTokens: TextToken[] = [
   { name: "--text-note", utility: "text-note", family: "font-techno", usage: "Fechas y valores de las cards", specimen: "Nov 28, 8:00 PM" },
   { name: "--text-news-copy", utility: "text-news-copy", family: "font-techno", usage: "Bajada de Sura News en desktop", specimen: "Todo lo que está pasando" },
   { name: "--text-reward", utility: "text-reward", family: "font-techno", usage: "Premio de una misión", specimen: "+120" },
+  { name: "--text-legal", utility: "text-legal", family: "font-sans", usage: "Copyright del footer — 12/18, tracking 0.24px", specimen: "© 2026 Sura GG Corp." },
   { name: "--text-sm", utility: "text-sm", family: "font-sans", usage: "Nombre de usuario en el header mobile", specimen: "RocketMan1989" },
   { name: "--text-copy", utility: "text-copy", family: "font-techno", usage: "Copy del hero desktop — 16/19, tracking 1px", specimen: "Unite a Sura, desbloqueá niveles" },
   { name: "--text-copy-sm", utility: "text-copy-sm", family: "font-techno", usage: "Copy del hero mobile — 12/14, tracking 1px", specimen: "Unite a Sura, desbloqueá niveles" },
@@ -284,4 +285,5 @@ export const layoutTokens: Token[] = [
   { name: "--spacing-leaderboard-col", utility: "w-leaderboard-col", usage: "Ancho de la columna del Leaderboard (657 + 120 + 367 = 1144)" },
   { name: "--spacing-podium-card", utility: "h-podium-card", usage: "Alto de la card del podio desktop" },
   { name: "--spacing-leaderboard-row", utility: "h-leaderboard-row", usage: "Alto de la fila Leaderboard + Medallas" },
+  { name: "--spacing-nav-bar", utility: "h-nav-bar", usage: "Alto de la bottom bar mobile; el footer le deja ese aire abajo" },
 ];

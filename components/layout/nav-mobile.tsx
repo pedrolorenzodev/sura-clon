@@ -33,7 +33,7 @@ export function NavMobile({
       aria-label="Secciones del Home"
       className="pointer-events-none fixed inset-x-0 bottom-nav-safe z-40 flex justify-center px-2 desktop:hidden"
     >
-      <div className="border-gradient-nav-mobile pointer-events-auto h-20 w-full rounded-2xl bg-nav-glass px-2.5 shadow-bar backdrop-blur-nav">
+      <div className="border-gradient-nav-mobile pointer-events-auto h-nav-bar w-full rounded-2xl bg-nav-glass px-2.5 shadow-bar backdrop-blur-nav">
         <div className="relative h-full">
           <span
             aria-hidden
