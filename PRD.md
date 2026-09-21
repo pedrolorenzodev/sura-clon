@@ -359,6 +359,66 @@ Con `prefers-reduced-motion: reduce` no hay transición: el pill salta. Verifica
 > CSS puro no llegan al umbral de calidad que la propia skill `find-skills` recomienda
 > (1K+ instalaciones). No se instaló ninguna.
 
+### La ruta `/tournaments`: UX del diseño viejo, UI nuestra
+
+Los dos frames de esta pantalla (`407:10565` / `407:11651`) son del **diseño anterior**, el mismo
+que § 3 declara obsoleto. Decisión del usuario (2026-09-20): se toma de ellos la **UX** —la
+arquitectura de información y el flujo— y **nada de la UI**. O sea que entran la cabecera con
+título y buscador, el contrato de datos de la card (juego · título · fecha + premio · badges de
+modalidad, formato y cupo · *Hosted by*), la grilla de 4 columnas y el paginador al pie; y
+quedan afuera su sidebar de 12 ítems, su bottom bar de 5 destinos, sus colores, radios y
+tipografías. La grilla es la nuestra: 1144 con gutters de 148, no los 1276/1368 de ese frame.
+
+**Fuera del Home el menú flotante no marca nada.** En ese diseño el ítem del trofeo está activo
+porque **rutea** acá; nosotros decidimos que el menú scrollea a secciones del Home y el
+2026-09-19 fijamos que el pill significa una sola cosa: *dónde estás*. `/tournaments` no es una
+sección del Home, así que marcarla mentiría dos veces — el pill diría "estás en Eventos" y el
+click te sacaría de la página. Decisión del usuario (2026-09-20):
+
+- En `/tournaments` **no hay pill**: `Nav` deriva el activo de `usePathname()` y pasa `null`
+  fuera del Home. Se derivó en vez de setearlo en un efecto del scroll-spy — el lint de React lo
+  rechaza y además así no hay un frame con el pill en Home antes de que corra el efecto.
+- Los ítems siguen siendo links de verdad y pasan a `/#seccion` (`hrefBase`), con `next/link`
+  para que la vuelta al Home sea navegación de cliente y no recarga. Verificado que en el Home
+  los `href` siguen siendo `#seccion` y que el click sigue scrolleando y moviendo el pill.
+- El hover, el tooltip y el `sr-only` no cambian.
+
+### El chrome de una ruta interna
+
+Sale de los **dos únicos frames del rediseño de una ruta interna** que existen: Misiones
+(`6008:29000` / `6008:29689`) y Mi Perfil (`6140:118274` / `6140:117864`). Los dos definen los
+mismos valores al píxel, así que se implementó **una vez y reusable** en
+`components/layout/route-shell.tsx`, para las 13 rutas que faltan.
+
+| | Desktop | Mobile |
+|---|---|---|
+| Header | 106 | 56 |
+| Header → H1 | **24** | **16** |
+| H1 | Monument uppercase **32 / 28** | **24 / 29** |
+| H1 → contenido | **40** | **24** |
+| Columna | **x=155, ancho 1245** (borde derecho a 40) | gutter **16** |
+| Contenido → footer | **40** | **40** |
+
+**La grilla de ruta no es la del Home**, y es a propósito: el Home usa 1144 centrado con gutters
+de 148, y una ruta interna usa una columna **fluida** que arranca en 155 —donde termina el
+gutter del riel— y muere a 40 del borde derecho. A 1440 da los 1245 del diseño; arriba de eso
+estira, que es lo que se desprende del frame. Decisión del usuario, 2026-09-20.
+
+**Dos valores normalizados**, porque los frames no coinciden entre sí:
+
+- El gutter mobile es 16 en Misiones y 18 en Mi Perfil → se unifica en **16**, que además es el
+  `px-4` del header mobile, así el contenido de ruta le queda alineado.
+- El header → H1 mobile: Mi Perfil deja 12 hasta su contenedor y Misiones 16 de padding interno.
+  Va **16**. No hay frame mobile compuesto de una ruta, así que queda para confirmar.
+
+**El interlineado del H1 mobile va fijo en 29 y no en `normal`.** El Figma declara `normal` pero
+calcula 29; el browser, con Monument, da 35. Eran 6px que corrían todo el contenido hacia abajo.
+
+**Sin banner de cabecera.** No hay frame del rediseño para esta ruta y el usuario descartó
+(2026-09-20) traer el arte de trofeos del diseño viejo. Como no hay hero, el header fijo tomaría
+el contenido por debajo: gana la variante `<Header solid />`, que le pone `bg-background`. En el
+Home el header sigue transparente sobre el hero, sin cambios.
+
 ### Mapa de rutas
 
 > Absorbido desde `ROUTES.md` el 2026-09-20, que era temporal y ya cumplió su condición de merge.
@@ -371,7 +431,7 @@ no rutas, y conviven sin conflicto.
 | Ruta | Pantalla | Estado |
 |---|---|---|
 | `/` | Home | ✅ Aprobada (2026-09-20) |
-| `/tournaments` | Lista de eventos | ⏳ Pendiente |
+| `/tournaments` | Lista de eventos | 👀 Esperando aprobación (bloques 15–20) |
 | `/tournaments/:id` | Detalle de evento | ⏳ Pendiente |
 | `/leaderboard` | Leaderboard | ⏳ Pendiente |
 | `/missions` | Misiones | ⏳ Pendiente |
@@ -574,6 +634,15 @@ public/assets/<pantalla>/   assets exportados de Figma
 | 2026-09-20 | `--hero-art-fade-duration` de 320ms a **500ms**, y la curva de `--ease-reveal` a **`ease-in-out`** | Hero | El cambio de arte se sentía brusco (usuario). Eran dos cosas: no había cruce real (ver notas de implementación) y la curva era de entrada, no de cruce. Medido sobre el render: con `--ease-reveal` la capa nueva llegaba al **75% de opacidad en los primeros 177ms** de los 320, así que el cambio pasaba casi entero en un cuarto del tiempo y el resto era arrastre invisible. Con `ease-in-out` a 500ms el reparto es simétrico: 23% a los 170ms, 50% a los 252, 81% a los 353. Se probó 700 y 600; los 500 son pedido del usuario, que los quería \"ligeramente más rápidos\". |
 | 2026-09-20 | **Arte del hero y de los tres juegos, upscaleado 2×** | Hero | Pedido del usuario, que autorizó el desvío de la regla 10. Real-ESRGAN (`realesrgan-ncnn-vulkan`, binario oficial, local y gratis) con el modelo **`realesrgan-x4plus`**: se probó también `-anime` y aplana las pinceladas del arte, que es justo lo que hay que conservar. Se sube 4× y se baja al doble del tamaño de uso, en JPEG calidad 85 — comparado contra 70, 80 y 90, arriba de 85 no se gana nada visible. Los originales **quedan en el repo** y siguen siendo la miniatura del slider: el `@2x` entra sólo en `artSrc`, así el cuadradito de 60px no carga el archivo grande. |
 | 2026-09-20 | **La barra de scroll de la página se oculta** | Home | Pedido del usuario. `scrollbar-width: none` + `::-webkit-scrollbar { display: none }` sobre `html` y `body` en la capa base, la misma receta que ya usaba `@utility no-scrollbar` en los carruseles. No se hereda: una `<section>` cualquiera sigue en `auto`. La página scrollea igual con rueda, teclado (`PageDown`, `End`, `Home`) y touch — verificado. En macOS la barra ya se oculta sola salvo que el sistema esté en "Mostrar siempre", así que el cambio se nota sobre todo con mouse, en Windows y en Linux. |
+| 2026-09-21 | **Se saca el `FILTRAR` de mobile** | `/tournaments` | Lo levantó el usuario: estaba maquetado y nadie había definido qué abre. Mirando el rediseño se ve qué **es**: Misiones tiene tabs + chips en desktop y en mobile sólo `FILTRAR`, o sea que no es un control propio sino **el colapso mobile de los filtros de desktop**. Eventos no tiene filtros en desktop, así que acá no colapsa nada — no tiene referente. Además `AGENTS.md` regla 12 ya decidía el caso: ante un conflicto irreconciliable entre tamaños gana desktop. Se fueron el componente, el `filter.svg` y el slot `action` del `RouteShell`, que quedaba sin uso (regla 15: no se extiende preventivamente). Verificado que el H1 no se movió: caja de texto en y=130 / 72, con los mismos 24 / 16 al header. |
+| 2026-09-20 | **La card de torneo traduce cuatro cosas del Eventos viejo** | `/tournaments` | Sin tokens nuevos. Los badges pasan de pill **blancos** con texto oscuro a los oscuros de Eventos; el premio, de texto verde inline a nuestro pill dorado con borde `--color-gold`; el nombre del juego, de blanco semibold a `--color-muted-foreground`, que es lo que es —una etiqueta, no un dato—; y el título, de Inter 18 a `font-techno` uppercase, como todas nuestras cards. La base es `mission-card.tsx`, que ya era portada arriba + texto abajo con el **hover de elevación** de § 6; se reusan también los tres íconos de badge, el trofeo y el pill dorado de la card de Eventos del Home. |
+| 2026-09-20 | **El título de la card lleva caja fija de 2 líneas** | `/tournaments` | Con el título en una o dos líneas las cuatro cards de una fila se desalineaban por dentro: fecha, badges y *Hosted by* caían a distinta altura. El Figma ya lo resolvía con una caja fija de 50 y centrado vertical. Va `h-14` (2 × 28) **sólo en desktop**: en mobile las cards van en una columna, así que ahí la caja fija no alinea nada y sólo agrega aire muerto. |
+| 2026-09-20 | **El botón de limpiar del buscador es nuestro, no el nativo** | `/tournaments` | Lo detectó el usuario: la "x" no tenía hover y desaparecía al sacar el foco aunque el texto siguiera. Es el `::-webkit-search-cancel-button` de Chrome, que además **no existe en Firefox ni Safari** —ahí no habría forma de borrar— y no toma nuestros tokens. Se apaga con `appearance-none` y se pone uno propio: `<X>` de `lucide-react` (ya es dependencia y ya lo usan los carruseles), visible **siempre que haya texto**, de `--color-muted-foreground` a `--color-foreground` en 200ms. Es lo único de la ruta que necesita estado de cliente. |
+| 2026-09-20 | **Paginador del rediseño, sin tokens nuevos** | `/tournaments` | Reemplaza a los círculos `1 2 3` del Eventos viejo. Los valores del Figma ya eran todos nuestros: borde `#444` = `--color-border-dim`, texto `#a5a5a5` = `--color-muted-foreground`, activo con `--color-surface-2` y borde `--color-border-muted`, radio 4 = `--radius-sm`, texto 14/20 = `--text-sm`. Los chevrons son de `lucide-react` en vez de bajar los de heroicons. Con **3 páginas** mide 337,4 y entra en mobile sin adaptación; con las 5 del frame de Misiones no entraría. El hover no sale del diseño: sube el borde a `--color-border-muted` y el texto a blanco, el mismo escalón que los badges de tienda del footer. |
+| 2026-09-20 | Padding de la card mobile a **16** lateral e inferior, título a **16px** | `/tournaments` | Pedido del usuario. El diseño viejo daba 10 de padding en mobile y un título de 13, que son artefactos del escalado de ese frame (§ 6, *El mobile de Eventos es el desktop al 57.4%*). El tope se queda en 10 para que la portada siga pegada al borde superior. |
+| 2026-09-20 | `--text-page-title` (32/28) y `--text-page-title-sm` (24/**29**) | Chrome de ruta | H1 de una ruta interna, en Monument uppercase. No entraba en ningún token: `--text-display-xs` es 28 y arrastra el tracking del hero. El mobile va con interlineado **fijo**: el Figma dice `normal` pero calcula 29, y el browser con Monument da **35** — 6px que corrían todo el contenido hacia abajo. |
+| 2026-09-20 | `--spacing-route-inset` (155), `--spacing-route-edge` (40), `--spacing-route-gutter` (16) | Chrome de ruta | La grilla de una ruta interna, que **no es la del Home**: columna fluida entre 155 y el borde menos 40, contra los 1144 centrados del Home. Sale de Misiones y Mi Perfil, que coinciden al píxel. El gutter mobile es 16 (Misiones) / 18 (Perfil): se unifica en 16, que además es el `px-4` del header mobile. |
+| 2026-09-20 | `--spacing-header-mobile: 56px` | `/tournaments` | Alto real del header mobile (avatar de 40 + `py-2`). Ya existía escrito como `scroll-mt-14` en las seis secciones del Home: se unificó al token y el render no se movió. Lo consume el tope del contenido en cualquier ruta sin hero. |
 | 2026-09-20 | **Fuentes reales: Anybody → Monument Extended, Tektur → KH Interference** | Home | Los `.ttf`/`.otf` aparecieron en `mateoLorenzo/sura-clans` (la app Expo de la feature de Clanes) y el usuario autorizó usarlos: este proyecto no va a producción y dos de ellos son versión TRIAL. Pasan a `app/fonts/` vía `next/font/local` (`--font-monument`, `--font-kh`); `Inter` sigue en Google. Se borran los dos `--font-*--font-variation-settings`: eran ejes de fuentes variables y las reales son estáticas. Medido contra el Figma, el desvío máximo del bloque hero es **0,4px**. |
 | 2026-09-20 | **Se revierte el tracking y el peso 500** de `--text-copy`, `--text-copy-sm`, `--text-cta`, `--text-cta-sm` y `--text-news-copy` | Hero · Sura News | Con la fuente real el ajuste sobra: "COMENZAR AHORA" en KH a 12px mide **100,8** contra los **101** del nodo de Figma, sin tracking. El peso 500 además era inerte — de KH sólo tenemos Regular y Bold. `--text-display--letter-spacing` (-4px del título) **no** se toca: ése no compensaba nada, es el tracking que el usuario pidió y el título sigue rompiendo en 2 líneas. |
 | 2026-09-19 | **Fuente `techno`: Martian Mono → Tektur** | Home | Sustituto más parecido a KH Interference, propuesto por el usuario. Martian Mono se eliminó del proyecto. El eje queda en `wdth 100` (el tope de Tektur), que es donde mejor calza: medido contra la tinta del render de Figma, **3% de error medio** en las tres líneas del copy y el label del CTA. `--font-mono` vuelve al stack del sistema, porque solo lo usa `/styleguide`. |
@@ -653,6 +722,12 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **El banner de Juegos no navega** | La card y su CTA "Jugar ahora" son una sola acción, pero el destino no está ni en el Figma ni en el mapa de rutas. | Van como dos `<button>` sin handler, el mismo criterio que el footer y "Ver todo". Cuando exista la ruta, los dos pasan a `<Link href>` al mismo destino y nada más cambia. |
 | **El footer no navega** | Los cuatro links, las redes y los badges no tienen destino ni en el Figma ni en el mapa de rutas; las URLs de las redes tampoco se conocen. | Van como `<button>` sin handler, el mismo criterio que "Ver todo" en `section-header.tsx`. Cuando existan las rutas y los handles, pasan a `<a href>`. |
 | **Footer mobile adaptado del desktop** | No hay frame mobile. | Decisión del usuario (2026-09-19), mismo criterio que Medallas y Juegos: ver § 5. |
+| **La grilla del Home no es la de las rutas** | El Home usa 1144 centrado con gutters de 148; una ruta interna usa una columna fluida de 155 a *ancho − 40*, y gutter mobile 16 contra 24. Sale de los frames (Misiones y Mi Perfil coinciden), pero se ven distintas en el mismo sitio. | Confirmar con diseño cuál manda. Si gana una sola, es cambiar tres tokens. |
+| **Arriba de 1440 la columna de ruta estira** | No hay frame de ninguna ruta por encima de 1440 y la columna es fluida, así que a 1920 las cards crecen a ~412. El Home, en cambio, capea en 1144. | Pedir un frame ancho, o decidir un tope. |
+| **Datos de torneos inventados** | Los dos primeros son los del diseño; los otros seis se escribieron para que la grilla no se lea como un duplicado. Las portadas salen de la sección Juegos: no hay arte propio de torneos. | Pedir el listado real y un lote de portadas. |
+| **El buscador y el paginador no hacen nada** | Los dos son maqueta: el input acepta texto y no filtra, y el paginador no cambia de página. Decisión del usuario, alineada con § 1. | Salen de Fase 1. |
+| **Eventos no tiene filtros en ningún tamaño** | Ni el Eventos viejo ni el rediseño ponen filtros en el desktop de esta ruta; el `FILTRAR` de mobile se sacó por eso (ver changelog). Misiones sí los tiene y ya define el patrón: chips en desktop, colapsados en `FILTRAR` en mobile. | Pedir los criterios de filtrado de Eventos. Cuando existan, entran como chips en desktop y `FILTRAR` vuelve en mobile — el shell de ruta recupera su slot de acción en tres líneas. |
+| **`/tournaments/:id` no existe** | Las ocho cards linkean a su destino real (`AGENTS.md` regla 14) y hoy dan 404. | Se destraba cuando lleguen los frames del detalle. |
 | **Resto suelto en el frame de Juegos** | Después de la octava card hay un `Image` de 1 × 0,56px, igual que los dos frames sueltos del slider de Eventos. | No se maquetó. Confirmar que se puede borrar del archivo. |
 
 ### Hero en video — brief en pausa
@@ -898,6 +973,12 @@ admite (ver notas de implementación).
 Decisiones de código que no son medidas del diseño y que el código ya no explica al
 costado (`AGENTS.md` regla 19). Son las que se rompen con un cambio que parece inocente.
 
+**Las rutas del sitio viven en el route group `app/(site)/`.** Su `layout.tsx` monta `Nav` y
+`Footer`, que son idénticos en todas; `/styleguide` queda afuera a propósito, porque no los
+quiere. El `Header`, en cambio, lo monta cada `page.tsx` junto con su `<main>`: la variante
+`solid` depende de la ruta y de este modo el árbol entero sigue siendo server component, sin un
+wrapper cliente que lea el pathname sólo para elegir un fondo.
+
 **El fondo del hero es frágil por diseño.** Se apoya en `-z-10` y eso funciona sólo porque
 su `<section>` **no** crea contexto de apilado: si alguien le agrega `isolate`, `z-*`,
 `transform` u `opacity`, el fondo pasa a pintarse encima del contenido de las secciones
@@ -1076,6 +1157,12 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 12 · Sura News | Home | `components/sections/sura-news.tsx`, `news-card.tsx` | [`6008:26623`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26623&m=dev) | [`6015:78134`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6015-78134&m=dev) | 📦 Aprobado y commiteado. Reemplazan a `3628:75287`. En mobile la card trae **UI vieja** y se adapta la de desktop (usuario, 2026-09-19) |
 | 13 · Juegos | Home | `components/sections/juegos.tsx`, `game-card.tsx`, `game-banner.tsx` | [`6008:26667`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26667&m=dev) | — **no existe**: el mobile se adapta del desktop (usuario, 2026-09-19) | 📦 Aprobado y commiteado. Reemplaza a `3628:75330` |
 | 14 · Footer | Home | `components/layout/footer.tsx` | [`6008:26693`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26693&m=dev) | — **no existe**: el mobile se adapta del desktop (usuario, 2026-09-19), con aire abajo para que la bottom bar no lo tape | 📦 Aprobado y commiteado. Reemplaza a `3628:75356`, copia del escaneo inicial |
+| 15 · Andamiaje de la ruta | Eventos | `app/(site)/layout.tsx`, `app/(site)/tournaments/page.tsx` | [`407:10565`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=407-10565&m=dev) | [`407:11651`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=407-11651&m=dev) | ✅ Aprobado (2026-09-20). Los dos frames son del **diseño viejo**: se toma la UX, no la UI (ver § 5, *La ruta `/tournaments`*) |
+| 16 · Chrome de ruta | Todas las rutas | `components/layout/route-shell.tsx` | Misiones [`6008:29000`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29000&m=dev) · Mi Perfil [`6140:118274`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-118274&m=dev) | Misiones [`6008:29689`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29689&m=dev) · Mi Perfil [`6140:117864`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-117864&m=dev) | ✅ Aprobado (2026-09-20). **No sale del Eventos viejo**: son los dos únicos frames del rediseño de una ruta interna, y definen el mismo chrome al píxel. Es reusable para las 13 rutas que faltan |
+| 17 · Buscador | Eventos | `components/sections/tournaments-search.tsx` | [`407:10565`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=407-10565&m=dev) | [`407:11651`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=407-11651&m=dev) | 👀 Esperando aprobación. Inerte. El `FILTRAR` de mobile se implementó y **se sacó** (ver changelog) |
+| 18 · Card de torneo | Eventos | `components/sections/tournament-card.tsx` | [`407:10565`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=407-10565&m=dev) | [`407:11651`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=407-11651&m=dev) | 👀 Esperando aprobación. Card **nueva**, no reusa la del Home |
+| 19 · Grilla y paginador | Eventos | `components/sections/tournaments-grid.tsx`, `pagination.tsx` | [`407:10565`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=407-10565&m=dev) (grilla) · Misiones [`6008:29000`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29000&m=dev) (paginador) | [`407:11651`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=407-11651&m=dev) | 👀 Esperando aprobación. El paginador es el del **rediseño**, no los círculos del Eventos viejo |
+| 20 · Puerta de entrada desde el Home | Eventos | `components/sections/section-header.tsx` | — | — | 👀 Esperando aprobación. "Ver todo" de Eventos → `/tournaments` |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. El botón de perfil del header ya es su trigger, inerte.
 >

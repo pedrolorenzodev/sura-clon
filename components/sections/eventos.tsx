@@ -7,10 +7,10 @@ export function Eventos() {
   return (
     <section
       id="eventos"
-      className="scroll-mt-14 px-gutter desktop:scroll-mt-header-desktop desktop:px-gutter-desktop"
+      className="scroll-mt-header-mobile px-gutter desktop:scroll-mt-header-desktop desktop:px-gutter-desktop"
     >
       <div className="mx-auto max-w-page">
-        <SectionHeader title="Eventos" />
+        <SectionHeader title="Eventos" href="/tournaments" />
 
         <CardSlider
           step={{ mobile: 210 + 24, desktop: 365 + 24 }}
