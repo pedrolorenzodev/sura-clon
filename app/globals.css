@@ -36,6 +36,11 @@
   --text-display-xs--line-height: 28px;
   --text-display-xs--letter-spacing: -0.0625em;
 
+  --text-page-title: 32px;
+  --text-page-title--line-height: 28px;
+  --text-page-title-sm: 24px;
+  --text-page-title-sm--line-height: 29px;
+
   /* techno */
   --text-title: 24px;
   --text-title--line-height: 32px;
@@ -233,6 +238,11 @@
   --spacing-nav-x: 40px;
 
   --spacing-header-desktop: 106px;
+  --spacing-header-mobile: 56px;
+
+  --spacing-route-inset: 155px;
+  --spacing-route-edge: 40px;
+  --spacing-route-gutter: 16px;
 
   --spacing-hero-desktop: 1024px;
   --spacing-hero-mobile: 524px;

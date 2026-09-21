@@ -7,7 +7,7 @@ export function Misiones() {
   return (
     <section
       id="misiones"
-      className="mt-section-gap-mobile scroll-mt-14 px-gutter desktop:mt-section-gap desktop:scroll-mt-header-desktop desktop:px-gutter-desktop"
+      className="mt-section-gap-mobile scroll-mt-header-mobile px-gutter desktop:mt-section-gap desktop:scroll-mt-header-desktop desktop:px-gutter-desktop"
     >
       <div className="mx-auto flex max-w-page flex-col gap-title-gap">
         <SectionHeader title="Misiones" />

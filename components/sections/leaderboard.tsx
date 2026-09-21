@@ -10,7 +10,7 @@ export function Leaderboard() {
     <section
       id="leaderboard"
       /* no tocar: overflow-x-clip evita el scroll lateral entre 391 y 860 */
-      className="mt-section-gap-mobile scroll-mt-14 overflow-x-clip px-gutter desktop:mt-section-gap desktop:scroll-mt-header-desktop desktop:px-gutter-desktop"
+      className="mt-section-gap-mobile scroll-mt-header-mobile overflow-x-clip px-gutter desktop:mt-section-gap desktop:scroll-mt-header-desktop desktop:px-gutter-desktop"
     >
       <div className="mx-auto max-w-page">
         <div className="flex flex-col gap-section-gap-mobile desktop:h-leaderboard-row desktop:flex-row desktop:gap-30">

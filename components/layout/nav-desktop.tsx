@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { homeSections } from "@/lib/data/navigation";
 import { cn } from "@/lib/utils";
@@ -5,9 +7,11 @@ import { cn } from "@/lib/utils";
 export function NavDesktop({
   activeId,
   onSelect,
+  hrefBase,
 }: {
-  activeId: string;
+  activeId: string | null;
   onSelect: (id: string) => void;
+  hrefBase: string;
 }) {
   const activeIndex = homeSections.findIndex((section) => section.id === activeId);
 
@@ -19,13 +23,15 @@ export function NavDesktop({
       <TooltipProvider>
         <div className="pointer-events-auto border-gradient-nav-desktop rounded-2xl bg-nav-glass py-2 shadow-nav backdrop-blur-nav">
           <div className="relative">
-            <span
-              aria-hidden
-              style={{ "--nav-index": activeIndex } as React.CSSProperties}
-              className="nav-pill-y pointer-events-none absolute inset-x-0 top-0 flex h-10.5 items-center justify-center transition-transform duration-250 ease-in-out motion-reduce:transition-none"
-            >
-              <span className="h-10.5 w-11.5 rounded-xl bg-brand" />
-            </span>
+            {activeIndex >= 0 && (
+              <span
+                aria-hidden
+                style={{ "--nav-index": activeIndex } as React.CSSProperties}
+                className="nav-pill-y pointer-events-none absolute inset-x-0 top-0 flex h-10.5 items-center justify-center transition-transform duration-250 ease-in-out motion-reduce:transition-none"
+              >
+                <span className="h-10.5 w-11.5 rounded-xl bg-brand" />
+              </span>
+            )}
 
             <ul className="relative flex flex-col items-center gap-0.5">
               {homeSections.map((section) => {
@@ -36,15 +42,14 @@ export function NavDesktop({
                     <Tooltip>
                       <TooltipTrigger
                         render={
-                          <a
-                            href={`#${section.id}`}
+                          <Link
+                            href={`${hrefBase}#${section.id}`}
                             onClick={() => onSelect(section.id)}
                             aria-current={isActive ? "true" : undefined}
                             className="group flex size-full items-center justify-center"
                           />
                         }
                       >
-
                         <span
                           className={cn(
                             "block shrink-0 transition-colors duration-75 motion-reduce:transition-none motion-reduce:delay-0",

@@ -1,6 +1,4 @@
-import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
-import { Nav } from "@/components/layout/nav";
 import { Eventos } from "@/components/sections/eventos";
 import { Hero } from "@/components/sections/hero";
 import { Leaderboard } from "@/components/sections/leaderboard";
@@ -12,7 +10,6 @@ export default function Home() {
   return (
     <>
       <Header />
-      <Nav />
       <main className="flex-1">
         <Hero />
         <Eventos />
@@ -21,7 +18,6 @@ export default function Home() {
         <SuraNews />
         <Juegos />
       </main>
-      <Footer />
     </>
   );
 }

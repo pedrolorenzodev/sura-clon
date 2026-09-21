@@ -7,7 +7,7 @@ export function Hero() {
     <section
       id="home"
       /* no tocar: isolate, z-*, transform u opacity acá rompen el apilado del fondo, y overflow-x-clip evita el scroll lateral entre 391 y 860 */
-      className="relative scroll-mt-14 overflow-x-clip pt-28 desktop:scroll-mt-header-desktop desktop:pt-header-desktop"
+      className="relative scroll-mt-header-mobile overflow-x-clip pt-28 desktop:scroll-mt-header-desktop desktop:pt-header-desktop"
     >
       <HeroSlideProvider>
         <HeroBackground />
