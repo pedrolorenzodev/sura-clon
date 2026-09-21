@@ -17,6 +17,8 @@ export function Pagination({
   current: number;
   label: string;
 }) {
+  const windowStart = Math.min(Math.max(current - 1, 1), Math.max(pages - 2, 1));
+
   return (
     <nav aria-label={label} className="flex justify-center pt-3">
       <ul className="flex items-center gap-3">
@@ -36,8 +38,13 @@ export function Pagination({
           </button>
         </li>
 
-        {Array.from({ length: pages }, (_, index) => index + 1).map((page, index) => (
-          <li key={page} className={cn(index > 2 && "hidden desktop:block")}>
+        {Array.from({ length: pages }, (_, index) => index + 1).map((page) => (
+          <li
+            key={page}
+            className={cn(
+              (page < windowStart || page > windowStart + 2) && "hidden desktop:block",
+            )}
+          >
             <button
               type="button"
               aria-current={page === current ? "page" : undefined}

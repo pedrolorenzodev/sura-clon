@@ -713,12 +713,14 @@
   background: url("/assets/home/eventos/card-surface-sunset.png") center / cover no-repeat border-box;
 }
 
-/* Aire para que un contenedor con overflow no recorte la sombra del hover de
-   elevación; el margen negativo lo devuelve, así el layout no se mueve. */
+/* Tres slides por viewport, descontando los dos `gap-6` que los separan.
+   Va atada a ese gap: con otro, la fila desborda. */
 @utility slide-third {
-  width: calc((100% - var(--spacing) * 12) / 3);
+  width: calc((100% - 2 * var(--spacing) * 6) / 3);
 }
 
+/* Aire para que un contenedor con overflow no recorte la sombra del hover de
+   elevación; el margen negativo lo devuelve, así el layout no se mueve. */
 @utility lift-room {
   padding-block: calc(var(--spacing) * 8);
   margin-block: calc(var(--spacing) * -8);

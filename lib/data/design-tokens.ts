@@ -108,6 +108,8 @@ export const missionColors: TokenGroup = {
   description: "Badge del premio de una misión.",
   tokens: [
     { name: "--color-sp-foreground", utility: "text-sp-foreground", usage: "Número del premio, sobre el verde del badge" },
+    { name: "--color-surface-done", utility: "bg-surface-done", usage: "Fondo de una misión completada, y de su badge de SP" },
+    { name: "--color-border-done", utility: "ring-border-done", usage: "Borde de una misión completada" },
   ],
 };
 
@@ -165,7 +167,9 @@ export const textTokens: TextToken[] = [
   { name: "--text-cta-sm", utility: "text-cta-sm", family: "font-techno", usage: "Botón del hero, mobile — 12/14", specimen: "Comenzar ahora" },
   { name: "--text-note", utility: "text-note", family: "font-techno", usage: "Fechas y valores de las cards", specimen: "Nov 28, 8:00 PM" },
   { name: "--text-news-copy", utility: "text-news-copy", family: "font-techno", usage: "Bajada de Sura News en desktop", specimen: "Todo lo que está pasando" },
+  { name: "--text-mission-copy", utility: "text-mission-copy", family: "font-sans", usage: "Bajada de la card destacada de Misiones, desktop", specimen: "Para completar esta misión, debes hacer clic en el botón de abajo." },
   { name: "--text-reward", utility: "text-reward", family: "font-techno", usage: "Premio de una misión", specimen: "+120" },
+  { name: "--text-reward-lg", utility: "text-reward-lg", family: "font-techno", usage: "Premio del badge en la card destacada, desktop", specimen: "+120" },
   { name: "--text-legal", utility: "text-legal", family: "font-sans", usage: "Copyright del footer — 12/18, tracking 0.24px", specimen: "© 2026 Sura GG Corp." },
   { name: "--text-sm", utility: "text-sm", family: "font-sans", usage: "Nombre de usuario en el header mobile", specimen: "RocketMan1989" },
   { name: "--text-copy", utility: "text-copy", family: "font-techno", usage: "Copy del hero desktop — 16/19", specimen: "Unite a Sura, desbloqueá niveles" },
@@ -188,6 +192,7 @@ export const radiusTokens: Token[] = [
 ];
 
 export const shadowTokens: Token[] = [
+  { name: "--shadow-arrow", utility: "shadow-arrow", usage: "Flechas del carrusel de Misiones" },
   { name: "--shadow-bar", utility: "shadow-bar", usage: 'Bottom bar mobile — es la variable "Shadow 3" del Figma' },
   { name: "--drop-shadow-badge", utility: "drop-shadow-badge", usage: "Badge de nivel en el header (PNG con alpha)" },
   { name: "--drop-shadow-link-hover", utility: "drop-shadow-link-hover", usage: "\"Ver todo\" con el puntero encima — no sale del diseño", offDesign: true },
@@ -209,6 +214,10 @@ export const shadowTokens: Token[] = [
 ];
 
 export const gradientTokens: Token[] = [
+  { name: "--gradient-mission-done", utility: "bg-mission-done", usage: "Velo verde sobre la portada de una misión completada" },
+  { name: "--gradient-mission-check", utility: "bg-mission-check", usage: "Círculo del check de una misión completada" },
+  { name: "--gradient-mission-border", utility: "border-gradient-done", usage: "Borde de la portada de una misión completada — seis stops" },
+  { name: "--gradient-mission-highlight", utility: "bg-mission-highlight", usage: "Fondo de la card destacada de Misiones" },
   { name: "--gradient-gold-text", utility: "bg-gold-text", usage: "Texto del premio (con bg-clip-text)" },
   { name: "--gradient-promo-scrim", utility: "bg-promo-scrim", usage: "Scrim del banner de Juegos, desktop" },
   { name: "--gradient-promo-scrim-mobile", utility: "bg-promo-scrim-mobile", usage: "Scrim del banner en mobile — no sale del diseño", offDesign: true },
