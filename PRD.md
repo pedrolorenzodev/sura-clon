@@ -361,10 +361,106 @@ Con `prefers-reduced-motion: reduce` no hay transición: el pill salta. Verifica
 
 ### Mapa de rutas
 
-| Ruta | Descripción | Estado |
+> Absorbido desde `ROUTES.md` el 2026-09-20, que era temporal y ya cumplió su condición de merge.
+**URLs en inglés**, igual que `app.suragaming.com`. La UI va en español y los anchors
+del menú flotante también (`#eventos`, `#misiones`, `#sura-news`): son ids de sección,
+no rutas, y conviven sin conflicto.
+
+#### Rutas del proyecto
+
+| Ruta | Pantalla | Estado |
 |---|---|---|
-| `/` | Home | 👀 Los 14 bloques maquetados y el lote de ajustes post-maquetado cerrado. Falta la aprobación del Footer |
-| `/styleguide` | Referencia visual del Design System (solo dev) | 👀 Implementada |
+| `/` | Home | ✅ Aprobada (2026-09-20) |
+| `/tournaments` | Lista de eventos | ⏳ Pendiente |
+| `/tournaments/:id` | Detalle de evento | ⏳ Pendiente |
+| `/leaderboard` | Leaderboard | ⏳ Pendiente |
+| `/missions` | Misiones | ⏳ Pendiente |
+| `/missions/:id` | Detalle de misión | ⏳ Pendiente ❓ a confirmar |
+| `/news` | Lista de Sura News | ⏳ Pendiente |
+| `/news/:id` | Detalle de noticia | ⏳ Pendiente |
+| `/games` | Lista de juegos | ⏳ Pendiente |
+| `/games/:id` | Detalle de juego | ⏳ Pendiente ❓ a confirmar |
+| `/profile` | Perfil propio | ⏳ Pendiente ❓ a confirmar |
+| `/profile/:id` | Perfil de otro usuario | ⏳ Pendiente ❓ a confirmar |
+| `/styleguide` | Referencia visual del DS (solo dev) | ✅ Implementada |
+| `not-found` | 404 | ⏳ Pendiente |
+
+**Ninguna se maqueta sin sus dos frames de Figma** (`AGENTS.md` regla 2), y ninguna se
+abre hasta que el Home esté aprobado completo (regla 14) — **el Home quedó aprobado el 2026-09-20**, así que las rutas hijas están destrabadas y sólo esperan sus frames.
+
+#### Cómo se entra a cada una
+
+Los 6 ítems del menú flotante **scrollean a las secciones del Home**, no rutean
+(decisión del usuario, 2026-09-18 — ver más arriba en esta misma sección). Así que las rutas necesitan su
+propia puerta de entrada:
+
+- `/tournaments`, `/news`, `/games`, `/leaderboard`, `/missions` → presumiblemente un
+  **"Ver todos"** en el título de cada sección del Home. **Sin confirmar**: hay que
+  mirarlo en el frame de cada bloque a medida que se maquetan.
+- `/tournaments/:id`, `/news/:id`, `/games/:id` → click en la card correspondiente.
+- `/profile` → avatar del header.
+
+Hasta que exista la puerta, el link se maqueta apuntando a su destino real (regla 14).
+
+#### Rutas descartadas a propósito
+
+Existen en `app.suragaming.com` y se decidió **no** hacerlas (usuario, 2026-09-19).
+Quedan acá por si alguna vuelve a entrar en scope.
+
+| Ruta | Qué es | Por qué queda afuera |
+|---|---|---|
+| `/levels` | Niveles | Es el 7º ítem del menú flotante del Figma, ya excluido del menú por no tener sección en el Home. |
+| `/achievements` | **Medallas** | Destino natural de la sección Medallas del Home. Confirmado por la API del live (`/medal/list`, `/medal/claim/`). |
+| `/store` · `/store/:slug` | Tienda | No hay sección de tienda en el Home ni ítem en el menú: no hay por dónde entrar. |
+| `/wallet` · `/wallet/tokens` · `/wallet/nfts` · `/wallet/transactions` | Billetera web3 | Fuera del alcance visual del rediseño. Ojo: el **saldo del header** podría apuntar acá. |
+| `/faq` | Preguntas frecuentes | Link del footer, baja prioridad. |
+| `/privacy-policy` | Política de privacidad | Link del footer, baja prioridad. |
+| `/about` | "Sobre nosotros & Partnerships" | **No es una ruta de la app**: vive en el sitio de marketing, `suragaming.com/es/about`. El link del footer es externo. |
+
+#### Anexo — el mapa real del live
+
+Relevado el 2026-09-19 sobre `app.suragaming.com` (Next.js App Router), enumerando los
+chunks `static/chunks/app/**/page-*.js` que sirve cada página. Es la lista completa, no
+una inferencia por status code.
+
+```
+app/
+  page                          /
+  tournaments/page              /tournaments
+  tournaments/[id]/page         /tournaments/:id
+  leaderboard/page              /leaderboard
+  games/page                    /games
+  games/[id]/page               /games/:id
+  faq/page                      /faq
+  privacy-policy/page           /privacy-policy
+  not-found
+  (protected)/
+    missions/page               /missions
+    profile/page                /profile
+    levels/page                 /levels
+    achievements/page           /achievements
+    store/page                  /store
+    store/[slug]/page           /store/:slug
+    wallet/page                 /wallet
+    wallet/tokens/page          /wallet/tokens
+    wallet/nfts/page            /wallet/nfts
+    wallet/transactions/page    /wallet/transactions
+```
+
+Tres cosas que conviene tener presentes:
+
+1. **`/news` no existe en el live.** Devuelve 200 pero sirve el `not-found` dentro del
+   layout `(protected)`. O sea que la sección Sura News del Home no tiene pantalla
+   propia hoy. Nuestras `/news` y `/news/:id` son una decisión del rediseño, no una
+   réplica — no hay nada upstream contra qué validarlas.
+2. **Nombres de params**: el live usa `[id]` en tournaments y games, y `[slug]` sólo en
+   store. Seguimos `:id`.
+3. **`(protected)`** separa lo público (`/`, tournaments, games, leaderboard, faq,
+   privacy-policy) de lo que pide sesión (missions, profile, levels, achievements,
+   store, wallet). Como auth está fuera de scope (`PRD.md` § 1), **no replicamos el
+   route group**: todas nuestras rutas son públicas.
+4. **No quedó ninguna ruta sin relevar.** Las únicas del live que no están en nuestra
+   lista son las siete descartadas arriba.
 
 **Secciones del Home desktop**, en orden:
 
@@ -559,16 +655,6 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Footer mobile adaptado del desktop** | No hay frame mobile. | Decisión del usuario (2026-09-19), mismo criterio que Medallas y Juegos: ver § 5. |
 | **Resto suelto en el frame de Juegos** | Después de la octava card hay un `Image` de 1 × 0,56px, igual que los dos frames sueltos del slider de Eventos. | No se maquetó. Confirmar que se puede borrar del archivo. |
 
-### Deuda técnica — se encara con el Home completo
-
-Decisión del usuario (2026-09-19): estos dos temas **no se atacan bloque por bloque**. Se
-resuelven de una sola pasada cuando el Home esté terminado, o más adelante.
-
-| Tema | Estado hoy | Qué hacer |
-|---|---|---|
-| **Peso de los assets** | `public/assets/home/` va por **30 MB** (26 antes del upscale del hero), y 7,5 son de Medallas: los PNG son los fills originales del Figma (sprites de 1024², una textura de 1920 × 1080) y el diseño los muestra a 86px. Lo mismo pasa con las portadas del slider del hero (4,2 MB para tres miniaturas de 60px). | Pedirle a diseño un lote de exports a tamaño de uso. **No se editan los assets** (regla 10) y **no se prende el optimizador** de `next/image`, que se apagó en el bloque 1 porque ensuciaba el alfa de los PNG recortados. |
-| **Accesibilidad** | Ocultar la barra de scroll (2026-09-20) le saca a la página su indicador de progreso y de "hay más abajo"; el scroll sigue funcionando entero, pero la señal visual la tiene que dar otra cosa. Además, se cubrió lo que salía gratis del markup (`sr-only` en los ítems del menú, `aria-current`, listas y encabezados reales). Falta lo que el diseño no dice: el estado bloqueado de una medalla sólo se comunica por color y por un candado decorativo, así que un lector de pantalla anuncia igual una obtenida y una que no. | Una pasada de accesibilidad sobre el Home entero: estados que hoy son sólo visuales, orden de foco y contraste. Bloque por bloque se hace inconsistente. |
-
 ### Hero en video — brief en pausa
 
 Idea del usuario (2026-09-20): que el arte del hero sea un **cinemagraph** en loop en vez de una
@@ -661,6 +747,23 @@ es la que se usa. Si falla, se itera el prompt al día siguiente con los 66 nuev
 **Go / no-go:** si el modelo vuelve a deformar rostros o el loop no cierra, se corta y el hero se
 queda con la imagen. No se insiste con una tercera herramienta ni se paga ninguna — decisión del
 usuario, 2026-09-20.
+
+### Diferido hasta que el scope esté maquetado
+
+Decisión del usuario, 2026-09-20, al cerrar el Home: estas tres **no se encaran ahora**. No es
+deuda olvidada — es trabajo que rinde más cuando estén todas las pantallas, o que depende de un
+tercero. Se retoman en la pasada de fixes chicos, con el scope completo.
+
+| Tema | Por qué espera | Qué hace falta para retomarlo |
+|---|---|---|
+| **Accesibilidad de toda la UI** | Hacerla pantalla por pantalla sale inconsistente; de una pasada, no. Lo que salía gratis del markup ya está (`sr-only` en los ítems del menú, `aria-current`, listas y encabezados reales). Falta lo que el diseño no dice: estados que hoy sólo se comunican por color —una medalla bloqueada se anuncia igual que una obtenida, porque el candado es decorativo—, orden de foco, contraste, y el indicador de "hay más abajo" que se perdió al ocultar la barra de scroll | Nada — sólo que el scope esté maquetado |
+| **El pill de puntaje tiene dos fuentes** | Es un fix chico y aislado: el del header quedó en Inter desde el bloque 1 y el del Leaderboard va en `font-techno`. Se ven los dos en la misma pantalla | Nada. Diez minutos cuando toque la pasada de fixes |
+| **Peso de los assets** | `public/assets/home/` va por **30 MB**, y 7,5 son de Medallas: los PNG son los fills originales del Figma —sprites de 1024², una textura de 1920 × 1080— y el diseño los muestra a 86px. Lo mismo con las portadas del slider del hero: 4,2 MB para tres miniaturas de 60px. No se resuelve de nuestro lado: los assets no se editan (regla 10) y el optimizador de `next/image` está apagado desde el bloque 1 porque ensuciaba el alfa de los PNG recortados | Un lote de exports a tamaño de uso, de diseño |
+
+Y una cuarta, que no depende de nosotros ni de diseño: el **hero en video** (ver el brief más
+arriba). Sigue siendo un agregado de peso para la UI, pero está fuera de alcance por ahora.
+Dato práctico para retomarlo: entre las **19 y las 22 hora argentina Kling rechaza los pedidos
+por saturación**, así que conviene probar a la mañana.
 
 ### Notas de implementación que salieron del maquetado
 
@@ -947,7 +1050,7 @@ Más:
 |---|---|---|---|
 | Setup (skills, PRD, reglas, shadcn, Playwright) | — | — | ✅ Listo |
 | Design System | — | — | 📦 Aprobado y commiteado |
-| Home | 🚧 | 🚧 | 👀 14 bloques maquetados y el **lote de ajustes post-maquetado cerrado** (2026-09-20): carrusel del hero, seis cards en Eventos y Misiones, links y hovers en todas las secciones, fuentes reales y la limpieza de comentarios. Falta la aprobación del Footer. Queda abierta la deuda técnica (peso de los assets, accesibilidad) y el hero en video, en pausa |
+| Home | ✅ | ✅ | ✅ **Aprobada el 2026-09-20.** 14 bloques más el lote de ajustes post-maquetado: carrusel del hero, seis cards en Eventos y Misiones, links y hovers en todas las secciones, fuentes reales y la limpieza de comentarios. Lo que queda son mejoras diferidas a propósito, no trabajo pendiente — ver *Diferido hasta que el scope esté maquetado* |
 
 **Leyenda:** ⏳ Pendiente · 🚧 En progreso · 👀 Esperando aprobación · ✅ Aprobada · 📦 Commiteada · 🚫 Bloqueada
 
@@ -972,7 +1075,7 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 11 · Misiones | Home | `components/sections/misiones.tsx`, `mission-card.tsx` | [`6008:26612`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26612&m=dev) | [`6015:78190`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6015-78190&m=dev) | 📦 Aprobado y commiteado. Salen del Home completo — desktop [`6008:26308`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26308&m=dev), mobile [`6009:35214`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6009-35214&m=dev) — y reemplazan a `3628:75275` |
 | 12 · Sura News | Home | `components/sections/sura-news.tsx`, `news-card.tsx` | [`6008:26623`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26623&m=dev) | [`6015:78134`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6015-78134&m=dev) | 📦 Aprobado y commiteado. Reemplazan a `3628:75287`. En mobile la card trae **UI vieja** y se adapta la de desktop (usuario, 2026-09-19) |
 | 13 · Juegos | Home | `components/sections/juegos.tsx`, `game-card.tsx`, `game-banner.tsx` | [`6008:26667`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26667&m=dev) | — **no existe**: el mobile se adapta del desktop (usuario, 2026-09-19) | 📦 Aprobado y commiteado. Reemplaza a `3628:75330` |
-| 14 · Footer | Home | `components/layout/footer.tsx` | [`6008:26693`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26693&m=dev) | — **no existe**: el mobile se adapta del desktop (usuario, 2026-09-19), con aire abajo para que la bottom bar no lo tape | 👀 Esperando aprobación. Reemplaza a `3628:75356`, copia del escaneo inicial |
+| 14 · Footer | Home | `components/layout/footer.tsx` | [`6008:26693`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-26693&m=dev) | — **no existe**: el mobile se adapta del desktop (usuario, 2026-09-19), con aire abajo para que la bottom bar no lo tape | 📦 Aprobado y commiteado. Reemplaza a `3628:75356`, copia del escaneo inicial |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. El botón de perfil del header ya es su trigger, inerte.
 >
