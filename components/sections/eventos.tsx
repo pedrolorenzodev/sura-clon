@@ -13,7 +13,6 @@ export function Eventos() {
         <SectionHeader title="Eventos" href="/tournaments" />
 
         <CardSlider
-          step={{ mobile: 210 + 24, desktop: 365 + 24 }}
           labels={{ prev: "Ver eventos anteriores", next: "Ver más eventos" }}
           viewportClassName="gap-6 pb-px pt-4.25 desktop:pb-0.5 desktop:pt-7"
           arrowClassName="top-50.5"

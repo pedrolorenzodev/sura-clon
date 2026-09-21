@@ -36,8 +36,8 @@ export function Pagination({
           </button>
         </li>
 
-        {Array.from({ length: pages }, (_, index) => index + 1).map((page) => (
-          <li key={page}>
+        {Array.from({ length: pages }, (_, index) => index + 1).map((page, index) => (
+          <li key={page} className={cn(index > 2 && "hidden desktop:block")}>
             <button
               type="button"
               aria-current={page === current ? "page" : undefined}

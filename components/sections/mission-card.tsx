@@ -2,16 +2,40 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { Mission } from "@/lib/data/missions";
+import { cn } from "@/lib/utils";
 
-export function MissionCard({ mission }: { mission: Mission }) {
+export function MissionCard({
+  mission,
+  className,
+  compact,
+}: {
+  mission: Mission;
+  className?: string;
+  compact?: boolean;
+}) {
+  const done = mission.completed;
+
   return (
-    <li className="flex w-mission-card-mobile shrink-0 desktop:w-67">
+    <li className={cn("flex", className)}>
       <Link
         href={`/missions/${mission.id}`}
         prefetch={false}
-        className="group flex w-full flex-col gap-4 rounded-lg bg-surface px-4 pb-6 pt-4 shadow-mission-card ring-1 ring-inset ring-border transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-card-hover hover:ring-border-muted/60 focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover focus-visible:ring-border-muted/60 motion-reduce:transition-none"
+        className={cn(
+          "group flex w-full flex-col rounded-lg transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover motion-reduce:transition-none",
+          compact
+            ? "gap-2 p-2 desktop:gap-4 desktop:px-4 desktop:pb-6 desktop:pt-4"
+            : "gap-4 px-4 pb-6 pt-4",
+          done
+            ? "bg-surface-done ring-1 ring-inset ring-border-done"
+            : "bg-surface shadow-mission-card ring-1 ring-inset ring-border hover:ring-border-muted/60 focus-visible:ring-border-muted/60",
+        )}
       >
-        <div className="relative aspect-[229.456/128] w-full overflow-hidden rounded-sm ring-1 ring-inset ring-border-muted/50">
+        <div
+          className={cn(
+            "relative aspect-[229.456/128] w-full overflow-hidden rounded-sm",
+            done ? "border-gradient-done" : "ring-1 ring-inset ring-border-muted/50",
+          )}
+        >
           <Image
             src={mission.imageSrc}
             alt=""
@@ -20,8 +44,17 @@ export function MissionCard({ mission }: { mission: Mission }) {
             className="size-full object-cover transition-transform duration-250 ease-reveal group-hover:scale-105 group-focus-visible:scale-105 motion-reduce:transition-none"
           />
 
-          <div className="absolute left-0 top-0 flex items-center gap-px overflow-hidden rounded-br-sm rounded-tl-[3px] border-b border-r border-brand bg-sp-badge px-1.5 pb-1.25 pt-1.5 shadow-sp-badge">
-            <span className="pt-0.5 text-center font-techno text-reward uppercase text-sp-foreground">
+          {done && <span aria-hidden className="bg-mission-done absolute inset-0" />}
+
+          <div
+            className={cn(
+              "absolute left-0 top-0 flex items-center gap-px overflow-hidden rounded-br-sm rounded-tl-[3px] px-1.5 pb-1.25 pt-1.5",
+              done
+                ? "bg-surface-done border-b border-r border-border-done text-brand"
+                : "bg-sp-badge border-b border-r border-brand text-sp-foreground shadow-sp-badge",
+            )}
+          >
+            <span className="pt-0.5 text-center font-techno text-reward uppercase">
               {mission.reward}
             </span>
             <span className="relative block h-4 w-[17.455px] shrink-0 overflow-hidden">
@@ -34,13 +67,38 @@ export function MissionCard({ mission }: { mission: Mission }) {
               />
             </span>
           </div>
+
+          {done && (
+            <span className="bg-mission-check absolute left-1/2 top-1/2 flex size-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-brand desktop:size-13.5">
+              <Image
+                src="/assets/missions/check.svg"
+                alt=""
+                width={23}
+                height={16}
+                className="w-3.5 desktop:w-5.75"
+              />
+              <span className="sr-only">Completada</span>
+            </span>
+          )}
         </div>
 
-        <div className="flex flex-col gap-2">
-          <h3 className="h-4.5 truncate font-techno text-sm uppercase text-foreground">
+        <div className={cn("flex flex-col", compact ? "desktop:gap-2" : "gap-2")}>
+          <h3
+            className={cn(
+              "h-4.5 truncate font-techno uppercase",
+              compact ? "text-xs desktop:text-sm" : "text-sm",
+              done ? "text-muted-foreground/67" : "text-foreground",
+            )}
+          >
             {mission.title}
           </h3>
-          <p className="text-2xs text-muted-foreground">
+          <p
+            className={cn(
+              "text-2xs",
+              done ? "text-muted-foreground/67" : "text-muted-foreground",
+              compact && "line-clamp-2 desktop:line-clamp-none",
+            )}
+          >
             {mission.description}
           </p>
         </div>

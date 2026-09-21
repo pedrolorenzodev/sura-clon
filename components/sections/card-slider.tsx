@@ -5,23 +5,21 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-export type SliderStep = { mobile: number; desktop: number };
-
 const SUBPIXEL_SLACK = 1;
 
 export function CardSlider({
-  step,
   labels,
   className,
   viewportClassName,
   arrowClassName,
+  arrowSides = { left: "-left-13.25", right: "-right-13.25" },
   children,
 }: {
-  step: SliderStep;
   labels: { prev: string; next: string };
   className?: string;
   viewportClassName: string;
   arrowClassName: string;
+  arrowSides?: { left: string; right: string };
   children: React.ReactNode;
 }) {
   const viewport = useRef<HTMLDivElement>(null);
@@ -42,9 +40,10 @@ export function CardSlider({
   const scrollByCard = (direction: 1 | -1) => {
     const el = viewport.current;
     if (!el) return;
-    const amount = window.matchMedia("(min-width: 391px)").matches
-      ? step.desktop
-      : step.mobile;
+    const slide = el.firstElementChild;
+    if (!slide) return;
+    const gap = Number.parseFloat(getComputedStyle(el).columnGap) || 0;
+    const amount = slide.getBoundingClientRect().width + gap;
     el.scrollBy({ left: direction * amount, behavior: "smooth" });
   };
 
@@ -71,14 +70,14 @@ export function CardSlider({
       <SliderButton
         side="left"
         label={labels.prev}
-        className={arrowClassName}
+        className={cn(arrowSides.left, arrowClassName)}
         disabled={atStart}
         onClick={() => scrollByCard(-1)}
       />
       <SliderButton
         side="right"
         label={labels.next}
-        className={arrowClassName}
+        className={cn(arrowSides.right, arrowClassName)}
         disabled={atEnd}
         onClick={() => scrollByCard(1)}
       />
@@ -109,7 +108,6 @@ function SliderButton({
       aria-label={label}
       className={cn(
         "absolute hidden size-10 -translate-y-1/2 cursor-pointer items-center justify-center transition-colors duration-200 motion-reduce:transition-none desktop:flex",
-        side === "left" ? "-left-13.25" : "-right-13.25",
         className,
         disabled
           ? "cursor-default text-border-dim"

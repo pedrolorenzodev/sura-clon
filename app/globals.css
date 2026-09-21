@@ -72,8 +72,12 @@
 
   /* sans — Inter */
 
+  --text-mission-copy: 12px;
+  --text-mission-copy--line-height: 18px;
   --text-reward: 14px;
   --text-reward--line-height: 14px;
+  --text-reward-lg: 18px;
+  --text-reward-lg--line-height: 18px;
   --text-sm: 14px;
   --text-sm--line-height: 20px;
 
@@ -114,6 +118,8 @@
   --color-surface: #222222;
   --color-surface-2: #303030;
   --color-surface-3: #282828;
+  --color-surface-done: #1d2518;
+  --color-border-done: #456215;
   --color-overlay: rgb(34 34 34 / 0.9);
   --color-nav-glass: rgb(255 255 255 / 0.01);
 
@@ -213,6 +219,7 @@
   --shadow-promo-hover: 0 0 24px rgb(168 130 217 / 0.4);
   --shadow-promo-cta: 0 1px 6px rgb(151 243 0 / 0.5);
   --shadow-promo-cta-hover: 0 0 14px rgb(151 243 0 / 0.55), 0 1px 6px rgb(151 243 0 / 0.5);
+  --shadow-arrow: 0 4px 4.5px rgb(0 0 0 / 0.5);
   --shadow-mission-card: 0 2px 2.5px rgb(0 0 0 / 0.15);
   --shadow-sp-badge: 0 2px 5px rgb(0 0 0 / 0.15);
   --shadow-thumb: 0 4px 4px rgb(0 0 0 / 0.25);
@@ -304,6 +311,33 @@
 
   --gradient-sp-badge: linear-gradient(rgb(48 48 48 / 0.2), rgb(48 48 48 / 0.2)),
     linear-gradient(165.56deg, #456215 1.62%, #a5e04a 52.4%, #456215 109.4%);
+
+  --gradient-mission-done: linear-gradient(
+    119.2deg,
+    rgb(165 224 74 / 0.1) 0%,
+    rgb(165 224 74 / 0.2) 49.92%,
+    rgb(165 224 74 / 0.1) 99.85%
+  );
+
+  --gradient-mission-check: linear-gradient(#211f25, #1d2c03);
+
+  --gradient-mission-border: linear-gradient(
+    61deg,
+    #a5e04a 0%,
+    #abb58a 18%,
+    #588d00 39%,
+    #bcf363 63%,
+    #abb58a 81%,
+    #a5e04a 100%
+  );
+
+  --gradient-mission-highlight: linear-gradient(
+      168.97deg,
+      rgb(165 224 74 / 0.125) 1.62%,
+      rgb(165 224 74 / 0.25) 52.4%,
+      rgb(165 224 74 / 0.125) 109.4%
+    ),
+    linear-gradient(#141218, #141218);
 
   --gradient-medal-sheen: linear-gradient(
     -52.74deg,
@@ -413,6 +447,38 @@
 }
 @utility bg-sp-badge {
   background-image: var(--gradient-sp-badge);
+}
+@utility bg-mission-done {
+  background-image: var(--gradient-mission-done);
+}
+@utility bg-mission-check {
+  background-image: var(--gradient-mission-check);
+}
+@utility border-gradient-done {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-mission-border);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+@utility bg-mission-highlight {
+  background-image: var(--gradient-mission-highlight);
 }
 @utility bg-medal-sheen {
   background-image: var(--gradient-medal-sheen);
@@ -649,6 +715,10 @@
 
 /* Aire para que un contenedor con overflow no recorte la sombra del hover de
    elevación; el margen negativo lo devuelve, así el layout no se mueve. */
+@utility slide-third {
+  width: calc((100% - var(--spacing) * 12) / 3);
+}
+
 @utility lift-room {
   padding-block: calc(var(--spacing) * 8);
   margin-block: calc(var(--spacing) * -8);
