@@ -12,7 +12,10 @@ import {
 
 function IconButton({ icon }: { icon: FooterIcon }) {
   return (
-    <button type="button" className="flex size-4 shrink-0 cursor-pointer">
+    <button
+      type="button"
+      className="flex size-4 shrink-0 cursor-pointer transition-[filter] duration-200 hover:drop-shadow-link-hover focus-visible:drop-shadow-link-hover motion-reduce:transition-none"
+    >
       <Image src={icon.iconSrc} alt="" width={16} height={16} className="size-4" />
       <span className="sr-only">{icon.label}</span>
     </button>
@@ -20,14 +23,14 @@ function IconButton({ icon }: { icon: FooterIcon }) {
 }
 
 function Divider() {
-  return <span aria-hidden className="hidden h-6 w-px bg-foreground/10 desktop:block" />;
+  return <span aria-hidden className="hidden h-6 w-px shrink-0 bg-foreground/10 desktop:block" />;
 }
 
 function StoreButton({ store }: { store: StoreBadge }) {
   return (
     <button
       type="button"
-      className="flex h-9 w-26 cursor-pointer items-center justify-center gap-1.5 rounded-sm border border-border-muted bg-black text-left text-foreground"
+      className="flex h-9 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-sm desktop:w-26 desktop:flex-none border border-border-muted bg-black text-left text-foreground transition-colors duration-200 hover:border-border-light focus-visible:border-border-light motion-reduce:transition-none"
     >
       <Image
         src={store.iconSrc}
@@ -57,25 +60,35 @@ function StoreButton({ store }: { store: StoreBadge }) {
 export function Footer() {
   return (
     /* no tocar: overflow-x-clip evita el scroll lateral entre 391 y 860 */
-    <footer className="flex flex-col items-center gap-6 overflow-x-clip px-gutter pt-section-gap-mobile pb-nav-clearance desktop:gap-4 desktop:px-0 desktop:pt-16 desktop:pb-5">
-      <div className="flex flex-col items-center gap-6 desktop:flex-row desktop:gap-12">
-        <Image
-          src="/assets/home/footer/logo-mark.svg"
-          alt="Sura Gaming"
-          width={40}
-          height={24}
-          className="h-6 w-10"
-        />
+    <footer className="flex flex-col gap-6 overflow-x-clip px-gutter pt-section-gap-mobile pb-nav-clearance desktop:items-center desktop:gap-4 desktop:px-0 desktop:pt-16 desktop:pb-5">
+      <div className="flex w-full flex-col gap-6 desktop:w-auto desktop:flex-row desktop:items-center desktop:gap-12">
+        <div className="flex items-center gap-4">
+          <Image
+            src="/assets/home/footer/logo-mark.svg"
+            alt="Sura Gaming"
+            width={40}
+            height={24}
+            className="h-6 w-10"
+          />
+          <span className="flex items-center gap-6 desktop:hidden">
+            {communityNetworks.map((network) => (
+              <IconButton key={network.id} icon={network} />
+            ))}
+          </span>
+        </div>
 
         <nav
           aria-label="Enlaces del sitio"
-          className="flex flex-col items-center gap-3 desktop:flex-row desktop:gap-4"
+          className="flex flex-wrap items-center gap-x-6 gap-y-3 desktop:flex-nowrap desktop:gap-4"
         >
           {footerLinks.map((link, index) => (
             <span key={link.id} className="contents">
               {index > 0 && <Divider />}
               <span className="flex items-center gap-4 text-sm text-foreground/80">
-                <button type="button" className="cursor-pointer whitespace-nowrap">
+                <button
+                  type="button"
+                  className="cursor-pointer whitespace-nowrap transition-colors duration-200 hover:text-foreground focus-visible:text-foreground motion-reduce:transition-none"
+                >
                   {link.label}
                 </button>
                 {link.icons?.map((icon) => (
@@ -93,20 +106,24 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+      <div className="flex w-full flex-col gap-3 desktop:w-auto desktop:flex-row desktop:flex-wrap desktop:items-center desktop:justify-center desktop:gap-x-6">
         {socialGroups.map((group, index) => (
           <span key={group.id} className="contents">
             {index > 0 && <Divider />}
             <span className="flex items-center gap-4">
-              <span className="text-2xs leading-4 text-muted-foreground">{group.label}</span>
-              {group.networks.map((network) => (
-                <IconButton key={network.id} icon={network} />
-              ))}
+              <span className="w-18 text-2xs leading-4 text-muted-foreground desktop:w-auto">
+                {group.label}
+              </span>
+              <span className="flex items-center gap-4">
+                {group.networks.map((network) => (
+                  <IconButton key={network.id} icon={network} />
+                ))}
+              </span>
             </span>
           </span>
         ))}
         <Divider />
-        <span className="flex w-full items-center justify-center gap-6 desktop:w-auto">
+        <span className="hidden items-center gap-6 desktop:flex">
           {communityNetworks.map((network) => (
             <IconButton key={network.id} icon={network} />
           ))}
@@ -115,7 +132,7 @@ export function Footer() {
 
       <hr className="-mt-px h-px w-full border-0 bg-foreground/10" />
 
-      <p className="text-legal text-center text-foreground/60">{legalNotice}</p>
+      <p className="text-legal text-foreground/60 desktop:text-center">{legalNotice}</p>
     </footer>
   );
 }
