@@ -106,7 +106,7 @@ export default function StyleguidePage() {
       >
         <div className="flex flex-col gap-8">
           {fontTokens.map((font) => (
-            <div key={font.name} className="flex flex-col gap-2">
+            <div key={font.name} className="flex flex-col gap-2 text-foreground">
               <div className="flex flex-wrap items-baseline gap-3">
                 <code className="text-xs text-foreground">{font.name}</code>
                 <span className="text-2xs text-brand">{font.designName}</span>
@@ -114,7 +114,7 @@ export default function StyleguidePage() {
               <TokenValue name={font.name} />
               <p
                 className={cn(
-                  "text-card-title text-foreground",
+                  "text-card-title",
                   font.utility,
                   font.utility === "font-display" && "uppercase",
                 )}
