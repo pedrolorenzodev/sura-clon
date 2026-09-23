@@ -222,6 +222,7 @@ export const shadowTokens: Token[] = [
   { name: "--shadow-cta", utility: "shadow-cta", usage: "CTA del hero, desktop" },
   { name: "--shadow-cta-mobile", utility: "shadow-cta-mobile", usage: "CTA del hero, mobile — suma un glow verde" },
   { name: "--text-shadow-banner", utility: "text-shadow-banner", usage: "Bajada del banner de Juegos en mobile, que cae sobre la foto", offDesign: true },
+  { name: "--text-shadow-hero-copy", utility: "text-shadow-hero-copy", usage: "Copy del hero sobre el arte, en los dos tamaños", offDesign: true },
   { name: "--shadow-card-hover", utility: "shadow-card-hover", usage: "Card de Juegos con el puntero encima — no sale del diseño", offDesign: true },
   { name: "--shadow-promo", utility: "shadow-promo", usage: "Glow violeta del banner de Juegos" },
   { name: "--shadow-promo-hover", utility: "shadow-promo-hover", usage: "Banner de Juegos con el puntero encima — no sale del diseño", offDesign: true },

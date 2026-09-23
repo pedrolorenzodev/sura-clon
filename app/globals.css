@@ -228,6 +228,7 @@
   --drop-shadow-link-hover: 0 0 4px rgb(151 243 0 / 0.25);
 
   --text-shadow-banner: 0 1px 4px rgb(0 0 0 / 0.75);
+  --text-shadow-hero-copy: 0 0 3px rgb(0 0 0 / 0.9), 0 0 10px rgb(0 0 0 / 0.7);
 
   --shadow-card-hover: 0 8px 24px rgb(0 0 0 / 0.55);
   --shadow-promo: 0 0 15px rgb(168 130 217 / 0.2);

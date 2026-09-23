@@ -12,7 +12,7 @@ export function HeroContent() {
           <h1 className="font-display text-display-xs uppercase text-foreground desktop:text-display">
             {hero.title}
           </h1>
-          <p className="font-techno text-copy-sm uppercase text-foreground desktop:text-copy">
+          <p className="font-techno text-copy-sm uppercase text-foreground text-shadow-hero-copy desktop:text-copy">
             {hero.copy.map((segmento, i) => (
               <Fragment key={segmento.text}>
                 {segmento.text}
