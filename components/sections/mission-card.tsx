@@ -33,7 +33,7 @@ export function MissionCard({
         <div
           className={cn(
             "relative aspect-[229.456/128] w-full overflow-hidden rounded-sm",
-            done ? "border-gradient-done" : "ring-1 ring-inset ring-border-muted/50",
+            done && "border-gradient-done",
           )}
         >
           <Image
