@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { SectionLink } from "@/components/layout/section-link";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { currentUser, dailyClaim } from "@/lib/data/user";
 import { cn } from "@/lib/utils";
@@ -29,7 +30,7 @@ export function HeaderDesktop({ className }: { className?: string }) {
   return (
     <div className={cn("items-center justify-between px-10 py-6", className)}>
 
-      <a href="#home" className="flex">
+      <SectionLink sectionId="home" className="flex">
         <Image
           src="/assets/home/logo-sura.svg"
           alt="Sura Gaming"
@@ -38,7 +39,7 @@ export function HeaderDesktop({ className }: { className?: string }) {
           className="h-10 w-41"
           priority
         />
-      </a>
+      </SectionLink>
 
       <div className="flex items-center gap-3 rounded-xl bg-surface p-2">
 

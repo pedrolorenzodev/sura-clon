@@ -13,7 +13,7 @@ export type HeroSlide = {
 export type Hero = {
   title: string;
   copy: CopySegment[];
-  cta: { label: string; href: string };
+  cta: { label: string; sectionId: string };
   slides: HeroSlide[];
   activeSlide: number;
   autoplayMs: number;
@@ -27,7 +27,7 @@ export const hero: Hero = {
     { text: "misiones. Recolectá", breakAt: "mobile" },
     { text: "recompensas y ganá dinero jugando" },
   ],
-  cta: { label: "COMENZAR AHORA", href: "#eventos" },
+  cta: { label: "COMENZAR AHORA", sectionId: "eventos" },
   slides: [
     {
       game: "Valorant",

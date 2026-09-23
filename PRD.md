@@ -209,7 +209,8 @@ solo cada 3s (`hero.autoplayMs`), y se frena con el puntero o el foco encima, co
 oculta y con `prefers-reduced-motion`. Cualquier cambio manual reinicia la cuenta.
 
 **Estado activo:** arranca en Home y lo escriben el scroll y el click (ver Scroll-spy, abajo).
-Eso hace que `nav.tsx` sea client component — es su única razón de serlo.
+Vive en `SectionNavProvider` (`components/layout/section-nav-context.tsx`), montado en el layout
+`(site)`, que lo comparten el menú, el logo del header y el CTA del hero.
 
 ### Scroll-spy ✅ Implementado (2026-09-19)
 
@@ -275,7 +276,8 @@ del ancla de una sección, esa gana.
 
 **Se llevó puesta una inconsistencia que existía:** el logo del header también apunta a `#home`
 (bloque 1) y antes scrolleaba al hero sin mover el pill. Ahora el pill sigue al scroll venga de
-donde venga, y no hace falta sincronizar el logo con el menú.
+donde venga. Desde el 2026-09-23 el logo además es un `SectionLink` más: ver *La URL no guarda
+la sección*, abajo.
 
 **Tooltip en hover.** No está en el Figma: existe solo en `app.suragaming.com` y se replicó
 midiendo el elemento real (decisión del usuario, 2026-09-18). Abre a la derecha del ítem, sin
@@ -363,7 +365,7 @@ no quedar debajo del home indicator en iOS.
 Figma. Si hace falta que se lea el nombre, la alternativa es que el pill activo se expanda con
 el label — cambia el ancho por ítem, así que se consulta antes de hacerlo.
 
-El estado activo es **compartido** entre los dos menús (`components/layout/nav.tsx`): una sola
+El estado activo es **compartido** entre los dos menús (`SectionNavProvider`): una sola
 fuente de verdad, no dos.
 
 **El menú se centra contra el hero, no contra la pantalla.** `col-izq` mide 720 de alto, que
@@ -407,13 +409,39 @@ porque **rutea** acá; nosotros decidimos que el menú scrollea a secciones del 
 sección del Home, así que marcarla mentiría dos veces — el pill diría "estás en Eventos" y el
 click te sacaría de la página. Decisión del usuario (2026-09-20):
 
-- En `/tournaments` **no hay pill**: `Nav` deriva el activo de `usePathname()` y pasa `null`
-  fuera del Home. Se derivó en vez de setearlo en un efecto del scroll-spy — el lint de React lo
-  rechaza y además así no hay un frame con el pill en Home antes de que corra el efecto.
-- Los ítems siguen siendo links de verdad y pasan a `/#seccion` (`hrefBase`), con `next/link`
-  para que la vuelta al Home sea navegación de cliente y no recarga. Verificado que en el Home
-  los `href` siguen siendo `#seccion` y que el click sigue scrolleando y moviendo el pill.
+- En `/tournaments` **no hay pill**: `SectionNavProvider` deriva el activo de `usePathname()` y
+  expone `null` fuera del Home. Se derivó en vez de setearlo en un efecto del scroll-spy — el lint
+  de React lo rechaza y además así no hay un frame con el pill en Home antes de que corra el efecto.
+- Los ítems siguen siendo links de verdad: `href` a `/#seccion` fuera del Home y a `#seccion`
+  adentro, con `next/link`. El `href` hoy sólo lo usa quien navega sin JS o abre en otra pestaña
+  (ver abajo).
 - El hover, el tooltip y el `sr-only` no cambian.
+
+### La URL no guarda la sección ✅ (2026-09-23)
+
+Pedido del usuario: clickear un ítem escribía `/#eventos` en la URL, y la URL seguía diciendo
+Eventos aunque el usuario ya estuviera en otra sección. **Ahora la URL queda en `/`.**
+
+Todo lo que scrollea a una sección del Home pasa por **`SectionLink`**
+(`components/layout/section-link.tsx`): los seis ítems de los dos menús, el logo del header
+(`home`) y —extensión nuestra, por la misma razón— el CTA "Comenzar ahora" del hero, que
+también escribía `#eventos`. `SectionLink` es un `<Link>` con el `href` de siempre y un
+`onNavigate` que cancela la navegación y llama a `goTo(id)`:
+
+- **En el Home:** fija el pill (`select`) y `scrollIntoView()`, que respeta el
+  `scroll-margin-top` de la sección y el `scroll-behavior` del CSS — o sea que con
+  `prefers-reduced-motion` salta.
+- **Desde otra ruta:** `router.push("/", { scroll: false })` y guarda el destino. Cuando el Home
+  monta, un `useLayoutEffect` salta **instantáneo** a la sección —antes del primer frame, así no
+  se ve la página arriba y después el salto— y un efecto posterior fija el pill. Instantáneo y no
+  suave es decisión nuestra: al llegar de otra pantalla no hay nada que acompañar con la vista.
+- **El logo** es `SectionLink` a `home`: en el Home scrollea al top (el hero tiene
+  `scroll-margin-top` de 106 pero arranca en 0, así que el scroll clampa a 0), y desde otra ruta
+  lleva al Home arriba. Antes, fuera del Home no hacía nada visible y escribía `/tournaments#home`.
+
+`onNavigate` y no `onClick` porque sólo corre en navegación de cliente: **Cmd/Ctrl+click sigue
+abriendo `/#seccion` en otra pestaña**, y **sin JS el `href` sigue funcionando por hash** —
+verificado, `/tournaments` → Eventos cae en `/#eventos` a y=720.
 
 ### El chrome de una ruta interna
 
@@ -936,7 +964,9 @@ por saturación**, así que conviene probar a la mañana.
 
 | Tema | Qué pasó | Cómo se resolvió |
 |---|---|---|
-| **Un anillo enmascarado en `z-0` lo tapa cualquier hermano absoluto que venga después** | El borde degradado del banner de `/games` no se veía: medido, el píxel del borde daba el olivo del scrim (49,73,39) en vez del verde. | El `::before` del anillo estaba en `z-index: 0` y el scrim es un `<span absolute inset-0>` **posterior en el DOM**, con `z-index: auto`: a igual nivel, gana el que se pinta después. Las otras utilities de borde degradado (`-row`, `-card`, `-nav`) no lo sufren porque no tienen un hermano que cubra todo. Acá el anillo sube a **`z-index: 30`**, arriba del contenido (z-20), que además es lo que hace el Figma: el stroke se pinta sobre el scrim. Medido después: el borde reproduce el render del nodo con Δ≤4 en 11 de 14 puntos. || **Una constante exportada desde un módulo `"use client"` llega vacía al server component** | El buscador de `/games` salía sin fondo, sin padding y sin gap. `SearchField` exportaba `SEARCH_FIELD_ROUTE` (un string de clases) y la página lo pasaba por `cn()`. Medido: el `className` final era `"flex items-center rounded-pill min-w-px flex-1"` — las clases del string **no estaban**. | Con el compilador de RSC, **todo** export de un módulo cliente se convierte en una referencia de cliente: lo que llega al server component es un objeto, no el string. `clsx` recorre los objetos como mapas `{clase: booleano}`, no encuentra ninguna clave verdadera y devuelve `""` — **falla en silencio, sin error de tipos ni de runtime**. El chrome por defecto pasó a vivir dentro del propio componente y quien necesita otro lo pisa por `className`. **Ninguna constante de estilo puede cruzar el borde cliente→servidor.** |
+| **El pill no seguía el scroll al volver al Home desde otra ruta** | Desde `/tournaments`, clickear un ítem llevaba al Home, pero al scrollear el pill quedaba clavado. | `Nav` vive en el layout `(site)`, que **no se desmonta al cambiar de ruta**. El efecto del spy dependía sólo de `[ids]`: en `/tournaments` corría una vez, no encontraba ninguna sección y volvía; al llegar al Home no tenía motivo para volver a correr, así que nunca se suscribía a las secciones nuevas. Ahora recibe el `pathname` y lo tiene en las dependencias. **Cualquier hook del layout que mida el DOM de la página tiene que re-suscribirse con el `pathname`.** Verificado en 1440 / 390 / reduced-motion: tras volver desde `/tournaments` y `/missions` el pill sigue a Misiones, Sura News, Eventos y Home. |
+| **Un anillo enmascarado en `z-0` lo tapa cualquier hermano absoluto que venga después** | El borde degradado del banner de `/games` no se veía: medido, el píxel del borde daba el olivo del scrim (49,73,39) en vez del verde. | El `::before` del anillo estaba en `z-index: 0` y el scrim es un `<span absolute inset-0>` **posterior en el DOM**, con `z-index: auto`: a igual nivel, gana el que se pinta después. Las otras utilities de borde degradado (`-row`, `-card`, `-nav`) no lo sufren porque no tienen un hermano que cubra todo. Acá el anillo sube a **`z-index: 30`**, arriba del contenido (z-20), que además es lo que hace el Figma: el stroke se pinta sobre el scrim. Medido después: el borde reproduce el render del nodo con Δ≤4 en 11 de 14 puntos. |
+| **Una constante exportada desde un módulo `"use client"` llega vacía al server component** | El buscador de `/games` salía sin fondo, sin padding y sin gap. `SearchField` exportaba `SEARCH_FIELD_ROUTE` (un string de clases) y la página lo pasaba por `cn()`. Medido: el `className` final era `"flex items-center rounded-pill min-w-px flex-1"` — las clases del string **no estaban**. | Con el compilador de RSC, **todo** export de un módulo cliente se convierte en una referencia de cliente: lo que llega al server component es un objeto, no el string. `clsx` recorre los objetos como mapas `{clase: booleano}`, no encuentra ninguna clave verdadera y devuelve `""` — **falla en silencio, sin error de tipos ni de runtime**. El chrome por defecto pasó a vivir dentro del propio componente y quien necesita otro lo pisa por `className`. **Ninguna constante de estilo puede cruzar el borde cliente→servidor.** |
 | **Figma interpola el alfa de un degradé sin premultiplicar; CSS sí lo premultiplica** | Las filas del podio de `/leaderboard` van de `rgba(c, 0.75)` a `#222`. Traducido literal a CSS, el medio del recorrido quedaba 13 niveles más oscuro que el render del Figma. | Verificado con dos muestras del render: el modelo no premultiplicado clava el valor (Δ ≤1) y el premultiplicado se va 12. Como CSS no permite elegir, el degradé se reescribe **opaco**, compuesto a mano sobre `#222` en cinco stops. Medido después: Δ ≤2 en todo el barrido. **Cualquier degradé con un stop semitransparente tiene este problema; con dos stops opacos no.** |
 | **El render de un nodo se recorta contra el frame que lo contiene** | `get_screenshot` sobre la grilla de `/games` (1245 × 1278) devolvía 1269 × 311. No es un error del MCP: el frame padre mide 1024 de alto y recorta. `contentsOnly: true` tampoco lo destraba. | Los valores se sacaron de `get_design_context` fila por fila, que sí devuelve el subárbol entero. **Para una pantalla larga, el render sirve para la parte de arriba y nada más.** |
 | **Las cards de `/games` reusan los mismos siete archivos del Home** | Las 12 cards del frame parecían necesitar 12 artes nuevos. | Comparados byte a byte, seis de los siete fills del frame son exactamente los de `public/assets/home/juegos/`. El único nuevo es *The Plooshies*. Lo mismo con el banner desktop, que es el `banner.png` del Home; el banner **mobile** sí trae una foto propia. **Antes de bajar un asset, comparar el tamaño en bytes con los que ya están en el repo.** |
@@ -1110,7 +1140,13 @@ haría que la página pueda mentir si alguien edita `globals.css`. Por eso el `@
 desajuste de hidratación por locale y no aporta nada en Fase 1.
 
 **`homeSections` es constante de módulo.** El scroll-spy la recibe estable y no re-suscribe
-el `IntersectionObserver` en cada render.
+el `IntersectionObserver` en cada render. Lo que sí lo re-suscribe es el `pathname`, a propósito
+(ver notas de implementación).
+
+**El estado del menú vive en el layout `(site)`, no en `Nav`.** `SectionNavProvider` envuelve
+`Nav`, las páginas y el footer, porque el logo vive en el `Header` que monta cada `page.tsx` y
+necesita el mismo `goTo` que el menú. El `Header` sigue siendo server component: el único cliente
+es la hoja `SectionLink`.
 
 **`dark:` está atado a una clase, no a `prefers-color-scheme`.** El diseño es dark-only y
 no hay ninguna `.dark` en el proyecto, así que las utilities `dark:` que arrastran los

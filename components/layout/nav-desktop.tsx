@@ -1,18 +1,9 @@
-import Link from "next/link";
-
+import { SectionLink } from "@/components/layout/section-link";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { homeSections } from "@/lib/data/navigation";
 import { cn } from "@/lib/utils";
 
-export function NavDesktop({
-  activeId,
-  onSelect,
-  hrefBase,
-}: {
-  activeId: string | null;
-  onSelect: (id: string) => void;
-  hrefBase: string;
-}) {
+export function NavDesktop({ activeId }: { activeId: string | null }) {
   const activeIndex = homeSections.findIndex((section) => section.id === activeId);
 
   return (
@@ -42,9 +33,8 @@ export function NavDesktop({
                     <Tooltip>
                       <TooltipTrigger
                         render={
-                          <Link
-                            href={`${hrefBase}#${section.id}`}
-                            onClick={() => onSelect(section.id)}
+                          <SectionLink
+                            sectionId={section.id}
                             aria-current={isActive ? "true" : undefined}
                             className="group flex size-full items-center justify-center"
                           />

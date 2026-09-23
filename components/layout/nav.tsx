@@ -1,28 +1,16 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-
 import { NavDesktop } from "@/components/layout/nav-desktop";
 import { NavMobile } from "@/components/layout/nav-mobile";
-import { defaultActiveSectionId, homeSectionIds } from "@/lib/data/navigation";
-import { useSectionSpy } from "@/lib/use-section-spy";
+import { useSectionNav } from "@/components/layout/section-nav-context";
 
 export function Nav() {
-  const { activeId, select } = useSectionSpy(homeSectionIds, defaultActiveSectionId);
-  const isHome = usePathname() === "/";
+  const { activeId } = useSectionNav();
 
   return (
     <>
-      <NavDesktop
-        activeId={isHome ? activeId : null}
-        onSelect={select}
-        hrefBase={isHome ? "" : "/"}
-      />
-      <NavMobile
-        activeId={isHome ? activeId : null}
-        onSelect={select}
-        hrefBase={isHome ? "" : "/"}
-      />
+      <NavDesktop activeId={activeId} />
+      <NavMobile activeId={activeId} />
     </>
   );
 }

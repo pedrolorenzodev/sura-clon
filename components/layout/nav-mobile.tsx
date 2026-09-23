@@ -1,17 +1,8 @@
-import Link from "next/link";
-
+import { SectionLink } from "@/components/layout/section-link";
 import { homeSections } from "@/lib/data/navigation";
 import { cn } from "@/lib/utils";
 
-export function NavMobile({
-  activeId,
-  onSelect,
-  hrefBase,
-}: {
-  activeId: string | null;
-  onSelect: (id: string) => void;
-  hrefBase: string;
-}) {
+export function NavMobile({ activeId }: { activeId: string | null }) {
   const activeIndex = homeSections.findIndex((section) => section.id === activeId);
 
   return (
@@ -42,9 +33,8 @@ export function NavMobile({
 
               return (
                 <li key={section.id} className="h-full flex-1">
-                  <Link
-                    href={`${hrefBase}#${section.id}`}
-                    onClick={() => onSelect(section.id)}
+                  <SectionLink
+                    sectionId={section.id}
                     aria-current={isActive ? "true" : undefined}
                     className="group flex size-full items-center justify-center"
                   >
@@ -59,7 +49,7 @@ export function NavMobile({
                       )}
                     />
                     <span className="sr-only">{section.label}</span>
-                  </Link>
+                  </SectionLink>
                 </li>
               );
             })}

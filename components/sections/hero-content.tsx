@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 
+import { SectionLink } from "@/components/layout/section-link";
 import { HeroSlider } from "@/components/sections/hero-slider";
 import { hero } from "@/lib/data/hero";
 
@@ -23,12 +24,12 @@ export function HeroContent() {
           </p>
         </div>
 
-        <a
-          href={hero.cta.href}
+        <SectionLink
+          sectionId={hero.cta.sectionId}
           className="inline-flex h-7.5 items-center self-start rounded-pill bg-brand px-4 font-techno text-cta-sm uppercase text-black shadow-cta-mobile transition duration-200 hover:bg-brand-bright hover:shadow-cta-hover motion-reduce:transition-none desktop:h-11.5 desktop:min-w-45.25 desktop:justify-center desktop:px-5 desktop:text-cta desktop:shadow-cta desktop:hover:shadow-cta-hover"
         >
           {hero.cta.label}
-        </a>
+        </SectionLink>
       </div>
 
       <HeroSlider />

@@ -13,7 +13,7 @@ const FULLY_VISIBLE_RATIO = 0.99;
 
 const SCROLL_RELEASE_FALLBACK = 700;
 
-export function useSectionSpy(ids: readonly string[], defaultId: string) {
+export function useSectionSpy(ids: readonly string[], defaultId: string, pathname: string) {
   const [activeId, setActiveId] = useState(defaultId);
 
   const presentIdsRef = useRef<readonly string[]>([]);
@@ -81,7 +81,7 @@ export function useSectionSpy(ids: readonly string[], defaultId: string) {
       tail.disconnect();
       resolveRef.current = () => {};
     };
-  }, [ids]);
+  }, [ids, pathname]);
 
   useEffect(() => () => releaseRef.current(), []);
 
