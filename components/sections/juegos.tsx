@@ -11,7 +11,7 @@ export function Juegos() {
       className="mt-section-gap-mobile scroll-mt-header-mobile overflow-x-clip px-gutter desktop:mt-section-gap desktop:scroll-mt-header-desktop desktop:px-gutter-desktop"
     >
       <div className="mx-auto flex max-w-page flex-col gap-6 desktop:gap-12.5">
-        <SectionHeader title="Juegos" />
+        <SectionHeader title="Juegos" href="/games" />
 
         <GameBanner />
 

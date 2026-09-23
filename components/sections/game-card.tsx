@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { Game } from "@/lib/data/games";
 import { cn } from "@/lib/utils";
 
-export function GameCard({ game }: { game: Game }) {
+export function GameCard({ game, largeTitle }: { game: Game; largeTitle?: boolean }) {
   return (
     <li className="flex">
       <Link
@@ -24,7 +24,12 @@ export function GameCard({ game }: { game: Game }) {
         />
 
         <div className="border-gradient-card relative flex min-h-23.5 w-full flex-col justify-between gap-2 desktop:justify-start rounded-xl bg-overlay p-3 backdrop-blur-card desktop:min-h-31.5 desktop:gap-4 desktop:p-5">
-          <p className="relative line-clamp-2 text-sm font-medium text-foreground desktop:text-base">
+          <p
+            className={cn(
+              "relative line-clamp-2 text-sm font-medium text-foreground",
+              largeTitle ? "desktop:text-game-title" : "desktop:text-base",
+            )}
+          >
             {game.title}
           </p>
 
