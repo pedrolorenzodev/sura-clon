@@ -243,6 +243,7 @@
   --shadow-row-gold: 0 0 10px rgb(251 188 4 / 0.15);
   --shadow-row-silver: 0 0 5px rgb(210 210 210 / 0.15);
   --shadow-row-bronze: 0 0 5px rgb(223 136 46 / 0.15);
+  --shadow-row-me: 0 0 10px rgb(151 243 0 / 0.15);
   --shadow-banner: 0 0 15px rgb(151 243 0 / 0.35);
 
   /* ============================================================

@@ -215,6 +215,7 @@ export const shadowTokens: Token[] = [
   { name: "--shadow-row-gold", utility: "shadow-row-gold", usage: "Fila del 1º puesto en la tabla de /leaderboard" },
   { name: "--shadow-row-silver", utility: "shadow-row-silver", usage: "Fila del 2º puesto" },
   { name: "--shadow-row-bronze", utility: "shadow-row-bronze", usage: "Fila del 3º puesto" },
+  { name: "--shadow-row-me", utility: "shadow-row-me", usage: "Hover de la fila \"Tu posición\" en /leaderboard" },
   { name: "--shadow-banner", utility: "shadow-banner", usage: "Glow verde del banner de /games" },
   { name: "--shadow-nav", utility: "shadow-nav", usage: "Menú flotante desktop" },
   { name: "--drop-shadow-claim", utility: "drop-shadow-claim", usage: "Botón Reclamar" },

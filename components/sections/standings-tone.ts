@@ -27,10 +27,10 @@ const TONE: Record<StandingTone, Tone> = {
     rankHover: "",
   },
   me: {
-    row: "bg-surface ring-1 ring-inset ring-brand-vivid",
+    row: "bg-surface ring-1 ring-inset ring-brand-vivid transition-shadow duration-200 hover:shadow-row-me focus-visible:shadow-row-me motion-reduce:transition-none",
     rank: "text-muted-foreground",
     avatar: "border border-border",
-    veil: "bg-surface-2",
+    veil: "inset-px rounded-[calc(var(--radius-lg)-1px)] bg-surface-2",
     rankHover: RANK_LIT,
   },
 };
