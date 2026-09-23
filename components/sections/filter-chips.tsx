@@ -14,7 +14,7 @@ export function FilterChips({
   className?: string;
 }) {
   return (
-    <ul aria-label={label} className={cn("no-scrollbar flex gap-2 overflow-x-auto", className)}>
+    <ul aria-label={label} className={cn("no-scrollbar flex gap-2 overflow-x-auto overscroll-x-none", className)}>
       {items.map((chip) => {
         const isCurrent = chip.id === current;
 

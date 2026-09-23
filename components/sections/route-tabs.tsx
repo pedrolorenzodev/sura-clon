@@ -15,7 +15,7 @@ export function RouteTabs({
     <nav aria-label={label} className="relative">
       <span aria-hidden className="absolute inset-x-0 bottom-0 h-0.5 bg-border-dim" />
 
-      <ul className="no-scrollbar relative flex overflow-x-auto">
+      <ul className="no-scrollbar relative flex overflow-x-auto overscroll-x-none">
         {items.map((tab) => {
           const isCurrent = tab.id === current;
 

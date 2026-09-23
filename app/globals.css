@@ -944,6 +944,7 @@
   html,
   body {
     scrollbar-width: none;
+    overscroll-behavior: none;
   }
   html::-webkit-scrollbar,
   body::-webkit-scrollbar {

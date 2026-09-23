@@ -60,7 +60,7 @@ export function CardSlider({
         }
         /* no tocar: -mx-6/px-6 es aire para la sombra del hover y lift-clip es lo que evita que asome la card siguiente */
         className={cn(
-          "lift-clip no-scrollbar -mx-6 flex overflow-x-auto overflow-y-hidden px-6",
+          "lift-clip no-scrollbar -mx-6 flex overflow-x-auto overscroll-x-none overflow-y-hidden px-6",
           viewportClassName,
         )}
       >

@@ -15,7 +15,7 @@ export function SuraNews() {
       <div className="flex flex-col gap-title-gap desktop:hidden">
         <SectionHeader title={newsIntro.title} />
         {/* no tocar: lift-room y -mx-6/px-6 son aire para la sombra del hover, no espaciado */}
-        <ul className="lift-room no-scrollbar -mx-6 flex gap-3 overflow-x-auto overflow-y-hidden px-6">
+        <ul className="lift-room no-scrollbar -mx-6 flex gap-3 overflow-x-auto overscroll-x-none overflow-y-hidden px-6">
           {news.map((item) => (
             <li key={item.id} className="flex">
               <NewsCard item={item} />
