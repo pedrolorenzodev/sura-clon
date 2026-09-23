@@ -32,7 +32,12 @@ function Counter({
 
 export function HeaderMobile({ className }: { className?: string }) {
   return (
-    <div className={cn("items-center bg-white/1 px-4 py-2", className)}>
+    <div
+      className={cn(
+        "items-center bg-white/1 px-4 py-2 transition-[background-color,backdrop-filter] duration-200 group-data-scrolled:bg-background/60 group-data-scrolled:backdrop-blur-nav motion-reduce:transition-none",
+        className,
+      )}
+    >
       <div className="flex w-full items-center justify-between">
         <div className="flex items-center gap-2 pr-3">
           <UserAvatar src={currentUser.avatarSrc} />

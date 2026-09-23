@@ -169,8 +169,20 @@ La grilla del rediseño cierra exacta, sin asimetrías:
 | **Desktop** | Nav superior (logo + saldo + perfil) **y** menú flotante vertical a la izquierda: 60 de ancho, a 44 px del borde, centrado dentro del gutter (`col-izq`, 148 × 720, nodo `6008:26347`). El Figma trae 7 ítems; se maquetan **6** (ver abajo) |
 | **Mobile** | **Bottom bar del Figma** (`3567:92009`): 375 × 80, radio 16, borde `#494949`, `backdrop-blur`, `px-10` y sombra "Shadow 3". Con **nuestros ítems** (las 6 secciones) y el pill verde de desktop en vez de los destinos de app, ver abajo |
 
-**El header va fijo arriba y siempre visible**, sin tomar fondo al scrollear: queda sobre el
-hero con el fondo casi transparente del diseño. Decisión del usuario, 2026-09-18.
+**El header va fijo arriba y siempre visible.** En el top queda sobre el hero con el fondo casi
+transparente del diseño (decisión del usuario, 2026-09-18). **En mobile, apenas se scrollea, toma
+vidrio**: `backdrop-blur-nav` —el mismo blur de la bottom bar— más `bg-background/60`, con un
+fundido de 200ms (usuario, 2026-09-23). El blur solo no alcanzaba: sobre el arte de Fortnite de
+Sura News el contraste del nombre bajaba a **1,2:1**; con el fondo al 60% el peor punto del Home da
+**4,8:1** (AA), contra 2,8 al 40% y 9,0 al 80%. En el top el header del Home queda **idéntico al
+píxel** al de antes, y desktop no cambia en ningún estado.
+
+**En mobile es el mismo header en todas las rutas** (usuario, 2026-09-23): `solid` pasó a ser
+`desktop:bg-background`, así que en una ruta interna mobile el header también arranca casi
+transparente y toma el vidrio al scrollear. En el top no hay nada debajo más que el `#202020` de la
+página, así que el cambio es el `bg-white/1` del diseño: **2 niveles** más claro que el sólido de
+antes, el mismo que ya tiene el Home. Verificado en `/tournaments`, `/missions`, `/leaderboard` y
+`/games`: el nombre se lee sobre texto, sobre el CTA verde del banner y sobre una portada roja.
 
 > La status bar de iOS y el home indicator del frame mobile son chrome del dispositivo y
 > **no se maquetan**. Tampoco la "Progress bar" que está oculta dentro del header mobile.
@@ -476,7 +488,8 @@ calcula 29; el browser, con Monument, da 35. Eran 6px que corrían todo el conte
 
 **Sin banner de cabecera.** No hay frame del rediseño para esta ruta y el usuario descartó
 (2026-09-20) traer el arte de trofeos del diseño viejo. Como no hay hero, el header fijo tomaría
-el contenido por debajo: gana la variante `<Header solid />`, que le pone `bg-background`. En el
+el contenido por debajo: gana la variante `<Header solid />`, que le pone `bg-background` **sólo en
+desktop** — en mobile lo resuelve el vidrio del header al scrollear (ver § 5, 2026-09-23). En el
 Home el header sigue transparente sobre el hero, sin cambios.
 
 ### Mapa de rutas
@@ -665,6 +678,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-23 | **Header mobile con vidrio al scrollear, en todas las rutas** | Header | Sin tokens nuevos: reusa `--blur-nav` de la bottom bar y `--color-background` al 60%. El estado lo da `data-scrolled` en el `<header>` (`scrollY > 0`) y el div mobile lo lee con `group-data-scrolled:`. El `solid` de las rutas internas pasa a `desktop:bg-background`. Detalle y medidas de contraste en § 5. |
 | 2026-09-23 | `--shadow-row-me` (`0 0 10px` `#97f300` al 15 %) y **el velo de "Tu posición" ya no tapa su borde** | Leaderboard | Bug que levantó el usuario: en hover el borde verde de la fila desaparecía y sólo quedaban unos píxeles verdes en las esquinas. El borde es `ring-1 ring-inset` —un `box-shadow` de la propia fila— y el velo de hover es un `<span>` opaco (`bg-surface-2`) en `inset-0`: se pinta encima del anillo y lo tapa entero, salvo el antialias de las esquinas, que el velo recto no llega a cubrir. Medido: el borde pasaba de `151,243,0` a `48,48,48`. **Sólo le pasaba a esta fila**: las comunes dibujan el borde en un `::after` que queda arriba del velo, y las del podio tienen un velo translúcido (`white/4`) que deja ver su anillo. Ahora el velo de esta fila va `inset-px` con el radio concéntrico (`calc(var(--radius-lg) - 1px)`), así que llena el interior sin pisar el borde. Primero se probó llevar el anillo a una capa encima del velo, pero las esquinas quedaban antialiaseadas dos veces —por el radio de la capa y por el `overflow-hidden` de la fila— y el reposo cambiaba hasta Δ52. Con el velo achicado, **el reposo queda idéntico al píxel** y el hover mantiene el verde en los cuatro bordes. Como señal extra de hover, pedida "sutil", la fila suma un glow verde con la receta del glow de la fila dorada (10px al 15 %): el borde ya es verde, así que es el mismo criterio que el *glow de link* de § 6 — iluminar lo que ya es verde. Las filas común y dorada no se movieron un píxel ni en reposo ni en hover. Aplica también a la fila mobile, que comparte `standings-tone`. |
 | 2026-09-23 | **Sin over-scroll en ningún eje** | Todas las rutas | Pedido del usuario: la página rebotaba en los bordes (Y) y se podía arrastrar de costado (X). `overscroll-behavior: none` en `html` y `body`, en la misma regla base que ya oculta la barra de scroll, y **`overscroll-x-none` en los cuatro scrollers horizontales** (`card-slider`, la galería mobile de Sura News, `route-tabs` y `filter-chips`) para que al llegar a la punta de un carrusel el gesto no se encadene a la página: en Chrome eso dispara el *swipe* de atrás/adelante. En los scrollers se apaga sólo el eje X: la rueda vertical sobre un carrusel sigue scrolleando la página (medido, +300px por muesca en los dos tamaños). Consecuencia aceptada: en Chrome Android se pierde el *pull-to-refresh*. El rebote y el swipe no se pueden reproducir en Playwright headless: lo verificado es el valor computado en `html`, `body` y los siete scrollers de `/`, `/missions` y `/leaderboard`. |
 | 2026-09-21 | `--gradient-banner-border` + `@utility border-gradient-banner` | Juegos | El borde del banner **no es el `#97f300` plano** que devolvió el MCP: lo levantó el usuario del panel de Figma y se reconstruyó muestreando el render del nodo, borde por borde. Es un degradé de **siete stops a 160,7°** con el verde puro en el medio y las puntas apagadas: `#b7e369 → #acbd81 → #a1d148 → #97f300 (50%) → #a7ba79 → #7d9e3e → #68951c`. El eje salió de que dos esquinas opuestas —arriba a la derecha y abajo a la izquierda— dan el mismo `#97f300`: eso fija la iso-línea, y la perpendicular es el eje. Medido contra el render en 14 puntos del perímetro: **11 dentro de Δ≤4** y el peor caso Δ15 en el azul, en un tramo de transición. **Es la sexta vez que el MCP aplana un degradé.** |
@@ -1148,8 +1162,10 @@ el `IntersectionObserver` en cada render. Lo que sí lo re-suscribe es el `pathn
 
 **El estado del menú vive en el layout `(site)`, no en `Nav`.** `SectionNavProvider` envuelve
 `Nav`, las páginas y el footer, porque el logo vive en el `Header` que monta cada `page.tsx` y
-necesita el mismo `goTo` que el menú. El `Header` sigue siendo server component: el único cliente
-es la hoja `SectionLink`.
+necesita el mismo `goTo` que el menú. El `Header` sigue siendo server component: los únicos clientes
+son la hoja `SectionLink` y `HeaderShell`, el `<header>` que escribe `data-scrolled` (con
+`useScrolled`, un `useSyncExternalStore` sobre el evento `scroll`) y recibe los dos headers como
+`children`, así que ellos no se vuelven cliente.
 
 **`dark:` está atado a una clase, no a `prefers-color-scheme`.** El diseño es dark-only y
 no hay ninguna `.dark` en el proyecto, así que las utilities `dark:` que arrastran los
