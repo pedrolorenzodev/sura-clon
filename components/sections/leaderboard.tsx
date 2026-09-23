@@ -3,7 +3,7 @@ import { LeaderboardPodiumMobile } from "@/components/sections/leaderboard-podiu
 import { Medallas } from "@/components/sections/medallas";
 import { LeaderboardRow } from "@/components/sections/leaderboard-row";
 import { SectionHeader } from "@/components/sections/section-header";
-import { leaderboardRows } from "@/lib/data/leaderboard";
+import { leaderboardRows, podium } from "@/lib/data/leaderboard";
 
 export function Leaderboard() {
   return (
@@ -15,17 +15,23 @@ export function Leaderboard() {
       <div className="mx-auto max-w-page">
         <div className="flex flex-col gap-section-gap-mobile desktop:h-leaderboard-row desktop:flex-row desktop:gap-30">
           <div className="flex flex-col gap-title-gap desktop:w-leaderboard-col">
-            <SectionHeader title="Leaderboard" />
+            <SectionHeader title="Leaderboard" href="/leaderboard" />
 
             <div className="flex flex-col gap-6 desktop:flex-1 desktop:gap-3">
               <LeaderboardPodiumDesktop className="hidden desktop:flex" />
-              <LeaderboardPodiumMobile className="desktop:hidden" />
+              <LeaderboardPodiumMobile entries={podium} className="desktop:hidden" />
 
               <ul className="flex flex-col gap-2 desktop:flex-1">
                 {leaderboardRows.map((entry, index) => (
                   <LeaderboardRow
                     key={entry.id}
-                    entry={entry}
+                    href={`/profile/${entry.id}`}
+                    rank={String(entry.rank).padStart(2, "0")}
+                    name={entry.name}
+                    levelLabel={entry.levelLabel}
+                    points={entry.points}
+                    avatarSrc={entry.avatarSrc}
+                    elastic
                     className={index === leaderboardRows.length - 1 ? "hidden desktop:flex" : undefined}
                   />
                 ))}

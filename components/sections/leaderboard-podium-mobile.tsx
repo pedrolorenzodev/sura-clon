@@ -8,7 +8,6 @@ import {
   type PodiumRank,
 } from "@/components/sections/leaderboard-podium-style";
 import { ValuePill } from "@/components/sections/value-pill";
-import { podium } from "@/lib/data/leaderboard";
 import { cn } from "@/lib/utils";
 
 const GRADIENT: Record<PodiumRank, string> = {
@@ -23,12 +22,25 @@ const ORDER: Record<PodiumRank, string> = {
   3: "order-3",
 };
 
-export function LeaderboardPodiumMobile({ className }: { className?: string }) {
+export type PodiumEntry = {
+  id: string;
+  name: string;
+  points: string;
+  avatarSrc: string;
+};
+
+export function LeaderboardPodiumMobile({
+  entries,
+  className,
+}: {
+  entries: PodiumEntry[];
+  className?: string;
+}) {
   return (
     /* no tocar: items-end hace el escalonado; h-full en las cards lo anula */
     <ul className={cn("flex w-full items-end gap-2", className)}>
-      {podium.map((entry) => {
-        const rank = entry.rank as PodiumRank;
+      {entries.map((entry, index) => {
+        const rank = (index + 1) as PodiumRank;
         const style = PODIUM_STYLE[rank];
         const isFirst = rank === 1;
 
