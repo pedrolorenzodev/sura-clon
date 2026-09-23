@@ -1,15 +1,15 @@
 import Image from "next/image";
-import Link from "next/link";
 
+import { CardLink } from "@/components/layout/card-link";
 import type { Game } from "@/lib/data/games";
+import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 export function GameCard({ game, largeTitle }: { game: Game; largeTitle?: boolean }) {
   return (
     <li className="flex">
-      <Link
-        href={`/games/${game.id}`}
-        prefetch={false}
+      <CardLink
+        href={detailHref("games", game.id)}
         className="group relative flex aspect-[268/357] w-full flex-col justify-end overflow-hidden rounded-xl transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover motion-reduce:transition-none"
       >
         <Image
@@ -47,7 +47,7 @@ export function GameCard({ game, largeTitle }: { game: Game; largeTitle?: boolea
             ))}
           </ul>
         </div>
-      </Link>
+      </CardLink>
     </li>
   );
 }

@@ -1,6 +1,7 @@
 import { LeaderboardRow } from "@/components/sections/leaderboard-row";
 import { StandingsRow } from "@/components/sections/standings-row";
 import { levels, standings, standingsColumns } from "@/lib/data/leaderboard";
+import { detailHref } from "@/lib/routes";
 
 export function StandingsTable() {
   return (
@@ -28,7 +29,7 @@ export function StandingsTable() {
         {standings.map((entry) => (
           <LeaderboardRow
             key={entry.id}
-            href={`/profile/${entry.id}`}
+            href={detailHref("profile", entry.id)}
             rank={entry.rank}
             name={entry.name}
             levelLabel={`Nivel: ${levels[entry.level].label}`}

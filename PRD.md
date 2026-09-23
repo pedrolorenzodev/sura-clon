@@ -535,6 +535,8 @@ propia puerta de entrada:
 
 Hasta que exista la puerta, el link se maqueta apuntando a su destino real (regla 14).
 
+**Excepción (usuario, 2026-09-23):** con el sitio público en Vercel, las cards de los **detalles** (`/tournaments/:id`, `/missions/:id`, `/games/:id`, `/news/:id`) y el perfil (`/profile/:id`) **dejaron de linkear** para no mandar a nadie a un 404. `/news` tampoco se va a implementar por ahora. Ver *Rutas de detalle apagadas*, § 6.
+
 #### Rutas descartadas a propósito
 
 Existen en `app.suragaming.com` y se decidió **no** hacerlas (usuario, 2026-09-19).
@@ -815,7 +817,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **"Racha de 0 días" es un encabezado de columna con un dato adentro** | Así lo escribe el frame desktop, al lado de valores por fila que dicen "3 días" / "0 días". El tab de la misma pantalla se llama sólo "Racha". | Se replicó tal cual. Parece error de copy: confirmar. |
 | **Las dos primeras filas del podio del Figma no miden igual** | La card del 2º puesto usa gap 12 en su columna de texto y las del 1º y 3º usan 8, así que la del 2º sale 3px más alta y arranca 3px más arriba. | Se unificó en 8 (mayoría), así el 2º y el 3º quedan a la misma altura y sólo el 1º sobresale. |
 | **Datos de `/leaderboard` y catálogo de `/games` inventados** | Los diez jugadores y el "+40" salen del frame desktop; el mobile trae otros tres nombres y 473 puntos en todas las filas. El catálogo de Juegos son 12 cards sobre **7 artes**, cuatro de ellas repetidas del frame. | Se unificó en los del desktop, mismo criterio que el podio del Home. Pedir la data real. |
-| **`/profile/:id` y `/games/:id` no existen** | Las 11 filas y los 3 puestos del podio linkean al perfil; las 12 cards de Juegos a su detalle. Hoy dan 404. | `AGENTS.md` regla 14. Se destraba con los frames del detalle. |
+| **`/profile/:id` y `/games/:id` no existen** | Las filas y el podio del leaderboard apuntan al perfil; las cards de Juegos a su detalle. Desde el 2026-09-23 **no linkean** (ver *Rutas de detalle apagadas*, § 6): no hay 404 en producción. | Sin fecha: el usuario no sabe todavía si se van a implementar. Se enciende en `lib/routes.ts`. |
 | **Los assets de `/leaderboard` pesan 4,5 MB para íconos de 12 y 16px** | Las tres medallitas son PNG de 2048² (425–667 KB) mostradas a **12 × 12** en cada una de las 11 filas, y los cuatro íconos de nivel son de ~1080² mostrados a **16 × 16**. Es la peor relación tamaño/uso del repo. | Misma familia que la deuda de *Peso de los assets*: los assets no se editan (regla 10) y el optimizador de `next/image` está apagado. Pedir exports al tamaño de uso. |
 | **La franja sin diseño recorta más que de costumbre en `/leaderboard`** | El podio necesita 927px y la fila de la tabla ~706 de ancho fijo, pero los dos aparecen desde 391px porque `desktop:` es `min-width: 391`. Verificado que **no hay scroll lateral** en 390 / 500 / 700 / 860 / 1440, pero abajo de ~1000px el podio se recorta de los dos lados. | Es la consecuencia conocida de § 4. Queda anotado por si esta pantalla justifica un breakpoint intermedio. |
 | ~~**Fuentes comerciales sustituidas**~~ | El diseño usa **Monument Extended**, **KH Interference TRIAL** y **TT Firs Neue Trl**, ninguna libre. | **Resuelta** (2026-09-20): los archivos estaban en `mateoLorenzo/sura-clans` y se trajeron los dos que usamos. **TT Firs Neue no se trajo**: el diseño lo usa en una sola card de Eventos y esa mezcla ya se había unificado en KH. Queda la licencia como riesgo si el proyecto alguna vez sale a producción. |
@@ -860,9 +862,9 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Datos de torneos inventados** | Los dos primeros son los del diseño; los otros seis se escribieron para que la grilla no se lea como un duplicado. Las portadas salen de la sección Juegos: no hay arte propio de torneos. | Pedir el listado real y un lote de portadas. |
 | **El buscador y el paginador no hacen nada** | Los dos son maqueta: el input acepta texto y no filtra, y el paginador no cambia de página. Decisión del usuario, alineada con § 1. | Salen de Fase 1. |
 | **Eventos no tiene filtros en ningún tamaño** | Ni el Eventos viejo ni el rediseño ponen filtros en el desktop de esta ruta; el `FILTRAR` de mobile se sacó por eso (ver changelog). Misiones sí los tiene y ya define el patrón: chips en desktop, colapsados en `FILTRAR` en mobile. | Pedir los criterios de filtrado de Eventos. Cuando existan, entran como chips en desktop y `FILTRAR` vuelve en mobile — el shell de ruta recupera su slot de acción en tres líneas. |
-| **`/tournaments/:id` no existe** | Las ocho cards linkean a su destino real (`AGENTS.md` regla 14) y hoy dan 404. | Se destraba cuando lleguen los frames del detalle. |
+| **`/tournaments/:id` no existe** | Las ocho cards no linkean desde el 2026-09-23 (ver *Rutas de detalle apagadas*, § 6). | Se enciende en `lib/routes.ts` cuando lleguen los frames del detalle. Ojo al hacerlo: la portada lleva el mismo `ring-inset` debajo de una imagen con zoom que hizo flashear la de misión (notas de implementación) — revisarlo junto. |
 | **La card de misión describe en dos colores** | La misma instancia de Figma usa `#a5a5a5` en el Home y blanco en `/missions`. Se unificó en gris. | Confirmar cuál es el bueno. |
-| **`/missions/:id` no existe** | Las 19 cards de la ruta linkean a su destino real y hoy dan 404. | Se destraba con los frames del detalle. |
+| **`/missions/:id` no existe** | Las cards de la ruta y del Home no linkean desde el 2026-09-23 (ver *Rutas de detalle apagadas*, § 6). | Se enciende en `lib/routes.ts` cuando lleguen los frames del detalle. |
 | **Tabs y chips de Misiones no filtran** | Los dos son maqueta. Además el diseño no dice qué relación tienen entre sí: los tabs son categorías y los chips estados, pero no está definido si se combinan. | Pedir el comportamiento. |
 | **Misiones de relleno** | Las 16 de la grilla y las 3 destacadas son inventadas, y las portadas salen de las secciones Misiones y Juegos del Home. | Pedir el listado real. |
 | **Resto suelto en el frame de Juegos** | Después de la octava card hay un `Image` de 1 × 0,56px, igual que los dos frames sueltos del slider de Eventos. | No se maquetó. Confirmar que se puede borrar del archivo. |
@@ -1171,6 +1173,16 @@ son la hoja `SectionLink` y `HeaderShell`, el `<header>` que escribe `data-scrol
 **`dark:` está atado a una clase, no a `prefers-color-scheme`.** El diseño es dark-only y
 no hay ninguna `.dark` en el proyecto, así que las utilities `dark:` que arrastran los
 primitives de shadcn quedan inertes y hay un solo camino de render.
+
+**Rutas de detalle apagadas.** `lib/routes.ts` arma la URL de cada detalle y lleva un
+registro de cuáles están vivas (`LIVE_DETAIL_ROUTES`); hoy las cinco están en `false`, así que
+`detailHref()` devuelve `null`. `CardLink` (`components/layout/card-link.tsx`) renderiza un `<Link>`
+si hay destino y un `<div>` con las mismas clases si no. **La UI no cambia** aunque no haya link
+(decisión del usuario, 2026-09-23): el `<div>` conserva el hover y suma `cursor-pointer`, que el
+`<a>` daba solo. Lo único que se pierde es el foco de teclado y la navegación. Encender una ruta es cambiar su `false` a `true` en ese archivo. Verificado: 0 links a
+destinos inexistentes en las cinco rutas, en 390 y 1440, y el reposo idéntico al píxel en nueve
+de las diez capturas de página completa; la décima (`/missions` mobile) difiere Δ3 dentro de una
+sola portada.
 
 **Ninguna imagen se selecciona ni se arrastra**: son assets del diseño, no contenido.
 

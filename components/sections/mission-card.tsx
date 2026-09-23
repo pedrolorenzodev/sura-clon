@@ -1,7 +1,8 @@
 import Image from "next/image";
-import Link from "next/link";
 
+import { CardLink } from "@/components/layout/card-link";
 import type { Mission } from "@/lib/data/missions";
+import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 export function MissionCard({
@@ -17,9 +18,8 @@ export function MissionCard({
 
   return (
     <li className={cn("flex", className)}>
-      <Link
-        href={`/missions/${mission.id}`}
-        prefetch={false}
+      <CardLink
+        href={detailHref("missions", mission.id)}
         className={cn(
           "group flex w-full flex-col rounded-lg transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover motion-reduce:transition-none",
           compact
@@ -102,7 +102,7 @@ export function MissionCard({
             {mission.description}
           </p>
         </div>
-      </Link>
+      </CardLink>
     </li>
   );
 }

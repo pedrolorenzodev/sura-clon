@@ -18,6 +18,7 @@ import {
   myStanding,
   standings,
 } from "@/lib/data/leaderboard";
+import { detailHref } from "@/lib/routes";
 
 export const metadata: Metadata = {
   title: "Leaderboard | Sura Gaming",
@@ -67,7 +68,7 @@ export default function LeaderboardPage() {
 
           <ul className="flex flex-col desktop:hidden">
             <LeaderboardRow
-              href={`/profile/${myStanding.id}`}
+              href={detailHref("profile", myStanding.id)}
               rank={myStanding.rank}
               name={myStanding.name}
               levelLabel={`Nivel: ${levels[myStanding.level].label}`}

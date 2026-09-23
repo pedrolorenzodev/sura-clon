@@ -1,9 +1,10 @@
 import { LeaderboardPodiumDesktop } from "@/components/sections/leaderboard-podium-desktop";
 import { LeaderboardPodiumMobile } from "@/components/sections/leaderboard-podium-mobile";
-import { Medallas } from "@/components/sections/medallas";
 import { LeaderboardRow } from "@/components/sections/leaderboard-row";
+import { Medallas } from "@/components/sections/medallas";
 import { SectionHeader } from "@/components/sections/section-header";
 import { leaderboardRows, podium } from "@/lib/data/leaderboard";
+import { detailHref } from "@/lib/routes";
 
 export function Leaderboard() {
   return (
@@ -25,7 +26,7 @@ export function Leaderboard() {
                 {leaderboardRows.map((entry, index) => (
                   <LeaderboardRow
                     key={entry.id}
-                    href={`/profile/${entry.id}`}
+                    href={detailHref("profile", entry.id)}
                     rank={String(entry.rank).padStart(2, "0")}
                     name={entry.name}
                     levelLabel={entry.levelLabel}

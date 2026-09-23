@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { CardLink } from "@/components/layout/card-link";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import {
   Crown,
@@ -8,6 +7,7 @@ import {
   type PodiumRank,
 } from "@/components/sections/leaderboard-podium-style";
 import { ValuePill } from "@/components/sections/value-pill";
+import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const GRADIENT: Record<PodiumRank, string> = {
@@ -53,9 +53,8 @@ export function LeaderboardPodiumMobile({
               isFirst ? "w-36 shrink-0" : "min-w-0 flex-1",
             )}
           >
-            <Link
-              href={`/profile/${entry.id}`}
-              prefetch={false}
+            <CardLink
+              href={detailHref("profile", entry.id)}
               aria-label={`Ver el perfil de ${entry.name}`}
               className={cn(
                 "flex w-full flex-col items-center justify-end gap-2 rounded-lg p-3 ring-1 ring-inset transition-transform duration-250 ease-reveal hover:-translate-y-0.5 focus-visible:-translate-y-0.5 active:-translate-y-0.5 motion-reduce:transition-none",
@@ -93,7 +92,7 @@ export function LeaderboardPodiumMobile({
                 variant={style.pill}
                 small={!isFirst}
               />
-            </Link>
+            </CardLink>
           </li>
         );
       })}

@@ -1,10 +1,11 @@
 import Image from "next/image";
-import Link from "next/link";
 
+import { CardLink } from "@/components/layout/card-link";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { LevelIcon } from "@/components/sections/level-icon";
 import { toneOf } from "@/components/sections/standings-tone";
 import { levels, medalStack, type Standing } from "@/lib/data/leaderboard";
+import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const CELL = "flex min-w-px flex-1 items-center justify-center";
@@ -16,9 +17,8 @@ export function StandingsRow({ entry }: { entry: Standing }) {
 
   return (
     <li className="flex">
-      <Link
-        href={`/profile/${entry.id}`}
-        prefetch={false}
+      <CardLink
+        href={detailHref("profile", entry.id)}
         aria-label={`Ver el perfil de ${entry.name}`}
         className={cn(
           "group relative flex h-14 w-full items-center gap-6 overflow-hidden rounded-lg p-3",
@@ -113,7 +113,7 @@ export function StandingsRow({ entry }: { entry: Standing }) {
             </>
           )}
         </div>
-      </Link>
+      </CardLink>
     </li>
   );
 }
