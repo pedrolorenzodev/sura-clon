@@ -41,6 +41,13 @@
   --text-page-title-sm: 24px;
   --text-page-title-sm--line-height: 29px;
 
+  --text-banner-title: 40px;
+  --text-banner-title--line-height: 48px;
+  --text-banner-title--letter-spacing: -0.0625em;
+  --text-banner-title-sm: 24px;
+  --text-banner-title-sm--line-height: 28px;
+  --text-banner-title-sm--letter-spacing: -0.0625em;
+
   /* techno */
   --text-title: 24px;
   --text-title--line-height: 32px;
@@ -48,6 +55,8 @@
   --text-title-sm--line-height: 24px;
   --text-card-title: 20px;
   --text-card-title--line-height: 28px;
+  --text-game-title: 20px;
+  --text-game-title--line-height: 24px;
   --text-link: 16px;
   --text-link--line-height: 24px;
   --text-cta: 14px;
@@ -134,6 +143,12 @@
   --color-border-dim: #444444;
 
   --color-nav-icon: #abb7c2;
+
+  --color-search-field: #1c1b1f;
+
+  --color-rank-gold: #ffd658;
+  --color-rank-silver: #e6e6e6;
+  --color-rank-bronze: #ffa951;
 
   /* --- Texto --- */
   --color-foreground: #ffffff;
@@ -224,6 +239,11 @@
   --shadow-sp-badge: 0 2px 5px rgb(0 0 0 / 0.15);
   --shadow-thumb: 0 4px 4px rgb(0 0 0 / 0.25);
   --shadow-thumb-mobile: 0 2px 2px rgb(0 0 0 / 0.25);
+  --shadow-gold-glow-soft: 0 0 7.5px rgb(251 188 4 / 0.35);
+  --shadow-row-gold: 0 0 10px rgb(251 188 4 / 0.15);
+  --shadow-row-silver: 0 0 5px rgb(210 210 210 / 0.15);
+  --shadow-row-bronze: 0 0 5px rgb(223 136 46 / 0.15);
+  --shadow-banner: 0 0 15px rgb(151 243 0 / 0.35);
 
   /* ============================================================
      BLUR
@@ -359,6 +379,64 @@
     rgb(40 40 40 / 0.6) 0%,
     rgb(123 123 123 / 0.4) 49%,
     rgb(40 40 40 / 0.8) 97%
+  );
+
+  --gradient-banner-border: linear-gradient(
+    160.7deg,
+    #b7e369 0%,
+    #acbd81 16%,
+    #a1d148 33%,
+    #97f300 50%,
+    #a7ba79 73%,
+    #7d9e3e 91%,
+    #68951c 100%
+  );
+
+  --gradient-banner-scrim: linear-gradient(
+    244.459deg,
+    rgb(53 70 25 / 0) 31.859%,
+    rgb(53 70 25 / 0.25) 54.041%,
+    rgb(53 70 25 / 0.8) 61.102%,
+    rgb(53 70 25) 80.853%,
+    rgb(53 70 25 / 0.8) 90.725%
+  );
+
+  --gradient-banner-scrim-mobile: linear-gradient(
+    180deg,
+    rgb(53 70 25 / 0) 30%,
+    rgb(53 70 25 / 0.25) 50%,
+    rgb(53 70 25 / 0.8) 60%,
+    rgb(53 70 25) 80%,
+    rgb(53 70 25 / 0.8) 90.075%
+  );
+
+  --gradient-banner-cta: linear-gradient(#97f300 40.385%, #6bad00);
+
+  --gradient-row-gold: linear-gradient(
+    90deg,
+    #c08a0c 0%,
+    #a37610 6.25%,
+    #7e5e15 12.5%,
+    #53421b 18.75%,
+    #222222 25%
+  );
+
+  --gradient-row-silver: linear-gradient(
+    90deg,
+    #909090 0%,
+    #7c7c7c 6.25%,
+    #626262 12.5%,
+    #444444 18.75%,
+    #222222 25%
+  );
+
+  --gradient-row-bronze: linear-gradient(
+    90deg,
+    #9f6c3c 0%,
+    #875e37 6.25%,
+    #6b4d31 12.5%,
+    #49392a 18.75%,
+    #222222 25%
   );
 
   --gradient-row-border: linear-gradient(
@@ -503,6 +581,49 @@
 }
 @utility bg-badge {
   background-image: var(--gradient-badge);
+}
+
+@utility border-gradient-banner {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-banner-border);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+@utility bg-banner-scrim {
+  background-image: var(--gradient-banner-scrim);
+}
+@utility bg-banner-scrim-mobile {
+  background-image: var(--gradient-banner-scrim-mobile);
+}
+@utility bg-banner-cta {
+  background-image: var(--gradient-banner-cta);
+}
+
+@utility bg-row-gold {
+  background-image: var(--gradient-row-gold);
+}
+@utility bg-row-silver {
+  background-image: var(--gradient-row-silver);
+}
+@utility bg-row-bronze {
+  background-image: var(--gradient-row-bronze);
 }
 
 @utility border-gradient-row {

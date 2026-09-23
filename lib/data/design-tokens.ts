@@ -71,6 +71,17 @@ export const surfaceColors: TokenGroup = {
   ],
 };
 
+export const leaderboardColors: TokenGroup = {
+  title: "Leaderboard",
+  description: "El buscador de una ruta y los tres puestos de la tabla de posiciones.",
+  tokens: [
+    { name: "--color-search-field", utility: "bg-search-field", usage: "Fondo del buscador en las rutas internas" },
+    { name: "--color-rank-gold", utility: "text-rank-gold", usage: "Número del 1º puesto en la tabla" },
+    { name: "--color-rank-silver", utility: "text-rank-silver", usage: "Número del 2º puesto" },
+    { name: "--color-rank-bronze", utility: "text-rank-bronze", usage: "Número del 3º puesto" },
+  ],
+};
+
 export const textColors: TokenGroup = {
   title: "Texto",
   tokens: [
@@ -162,6 +173,9 @@ export const textTokens: TextToken[] = [
   { name: "--text-title", utility: "text-title", family: "font-techno", usage: "Título de sección, desktop", specimen: "Eventos" },
   { name: "--text-title-sm", utility: "text-title-sm", family: "font-techno", usage: "Título de sección, mobile", specimen: "Eventos" },
   { name: "--text-card-title", utility: "text-card-title", family: "font-techno", usage: "Título de card de Torneos", specimen: "Valorant Champions Tour" },
+  { name: "--text-game-title", utility: "text-game-title", family: "font-sans", usage: "Título de la card en la grilla de /games — 20/24", specimen: "Wagmi Defense" },
+  { name: "--text-banner-title", utility: "text-banner-title", family: "font-display", usage: "Título del banner de /games, desktop — 40/48, tracking -0.0625em", specimen: "Mundial FIFA 2026" },
+  { name: "--text-banner-title-sm", utility: "text-banner-title-sm", family: "font-display", usage: "Título del banner de /games, mobile — 24/28, tracking -0.0625em", specimen: "Mundial FIFA 2026" },
   { name: "--text-link", utility: "text-link", family: "font-techno", usage: '"VER todo", "ir a sura news"', specimen: "Ver todo" },
   { name: "--text-cta", utility: "text-cta", family: "font-techno", usage: "Botón del hero, desktop — 14/14", specimen: "Comenzar ahora" },
   { name: "--text-cta-sm", utility: "text-cta-sm", family: "font-techno", usage: "Botón del hero, mobile — 12/14", specimen: "Comenzar ahora" },
@@ -197,6 +211,11 @@ export const shadowTokens: Token[] = [
   { name: "--drop-shadow-badge", utility: "drop-shadow-badge", usage: "Badge de nivel en el header (PNG con alpha)" },
   { name: "--drop-shadow-link-hover", utility: "drop-shadow-link-hover", usage: "\"Ver todo\" con el puntero encima — no sale del diseño", offDesign: true },
   { name: "--shadow-gold-glow", utility: "shadow-gold-glow", usage: "Glow del primer puesto del podio" },
+  { name: "--shadow-gold-glow-soft", utility: "shadow-gold-glow-soft", usage: "Glow del 1º puesto en el podio de /leaderboard — más chico que el del Home" },
+  { name: "--shadow-row-gold", utility: "shadow-row-gold", usage: "Fila del 1º puesto en la tabla de /leaderboard" },
+  { name: "--shadow-row-silver", utility: "shadow-row-silver", usage: "Fila del 2º puesto" },
+  { name: "--shadow-row-bronze", utility: "shadow-row-bronze", usage: "Fila del 3º puesto" },
+  { name: "--shadow-banner", utility: "shadow-banner", usage: "Glow verde del banner de /games" },
   { name: "--shadow-nav", utility: "shadow-nav", usage: "Menú flotante desktop" },
   { name: "--drop-shadow-claim", utility: "drop-shadow-claim", usage: "Botón Reclamar" },
   { name: "--shadow-cta", utility: "shadow-cta", usage: "CTA del hero, desktop" },
@@ -225,6 +244,13 @@ export const gradientTokens: Token[] = [
   { name: "--gradient-sp-badge", utility: "bg-sp-badge", usage: "Fondo del badge de premio de una misión" },
   { name: "--gradient-medal-sheen", utility: "bg-medal-sheen", usage: "Brillo diagonal de una medalla obtenida — verde legacy" },
   { name: "--gradient-medal-sheen-locked", utility: "bg-medal-sheen-locked", usage: "Brillo de una medalla bloqueada" },
+  { name: "--gradient-row-gold", utility: "bg-row-gold", usage: "Fila del 1º puesto en /leaderboard — se apaga contra el fondo al 25% del ancho" },
+  { name: "--gradient-row-silver", utility: "bg-row-silver", usage: "Fila del 2º puesto" },
+  { name: "--gradient-row-bronze", utility: "bg-row-bronze", usage: "Fila del 3º puesto" },
+  { name: "--gradient-banner-border", utility: "border-gradient-banner", usage: "Borde del banner de /games — siete stops de verde, el puro al 50%" },
+  { name: "--gradient-banner-scrim", utility: "bg-banner-scrim", usage: "Scrim del banner de /games, desktop" },
+  { name: "--gradient-banner-scrim-mobile", utility: "bg-banner-scrim-mobile", usage: "Scrim del banner de /games, mobile — vertical" },
+  { name: "--gradient-banner-cta", utility: "bg-banner-cta", usage: "Fondo del CTA del banner de /games" },
   { name: "--gradient-podium-gold", utility: "bg-podium-gold", usage: "Fondo del primer puesto del podio, desktop" },
   { name: "--gradient-podium-silver", utility: "bg-podium-silver", usage: "Fondo del segundo puesto, desktop" },
   { name: "--gradient-podium-bronze", utility: "bg-podium-bronze", usage: "Fondo del tercer puesto, desktop" },
