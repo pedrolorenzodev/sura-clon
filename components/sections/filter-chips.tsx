@@ -1,15 +1,25 @@
 import { cn } from "@/lib/utils";
 
-import { missionFilters } from "@/lib/data/missions";
+type ChipOption = { id: string; label: string };
 
-export function MissionFilters({ current }: { current: string }) {
+export function FilterChips({
+  items,
+  current,
+  label,
+  className,
+}: {
+  items: ChipOption[];
+  current: string;
+  label: string;
+  className?: string;
+}) {
   return (
-    <ul className="no-scrollbar flex gap-2 overflow-x-auto">
-      {missionFilters.map((filter) => {
-        const isCurrent = filter.id === current;
+    <ul aria-label={label} className={cn("no-scrollbar flex gap-2 overflow-x-auto", className)}>
+      {items.map((chip) => {
+        const isCurrent = chip.id === current;
 
         return (
-          <li key={filter.id} className="shrink-0">
+          <li key={chip.id} className="shrink-0">
             <button
               type="button"
               aria-pressed={isCurrent}
@@ -20,7 +30,7 @@ export function MissionFilters({ current }: { current: string }) {
                   : "border-border-dim text-muted-foreground hover:border-border-muted hover:text-foreground focus-visible:border-border-muted focus-visible:text-foreground",
               )}
             >
-              {filter.label}
+              {chip.label}
             </button>
           </li>
         );

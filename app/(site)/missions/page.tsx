@@ -3,12 +3,12 @@ import type { Metadata } from "next";
 import { Header } from "@/components/layout/header";
 import { RouteShell } from "@/components/layout/route-shell";
 import { CardSlider } from "@/components/sections/card-slider";
+import { FilterChips } from "@/components/sections/filter-chips";
 import { MissionCard } from "@/components/sections/mission-card";
 import { MissionFeatureCard } from "@/components/sections/mission-feature-card";
-import { MissionFilters } from "@/components/sections/mission-filters";
-import { MissionTabs } from "@/components/sections/mission-tabs";
 import { Pagination } from "@/components/sections/pagination";
-import { allMissions, featuredMissions } from "@/lib/data/missions";
+import { RouteTabs } from "@/components/sections/route-tabs";
+import { allMissions, featuredMissions, missionFilters, missionTabs } from "@/lib/data/missions";
 
 export const metadata: Metadata = {
   title: "Misiones | Sura Gaming",
@@ -20,8 +20,8 @@ export default function MissionsPage() {
     <>
       <Header solid />
       <RouteShell title="Misiones">
-        <MissionTabs current="todas" />
-        <MissionFilters current="disponibles" />
+        <RouteTabs items={missionTabs} current="todas" label="Categorías de misiones" />
+        <FilterChips items={missionFilters} current="disponibles" label="Estado de las misiones" />
 
         <CardSlider
           labels={{ prev: "Ver misiones destacadas anteriores", next: "Ver más misiones destacadas" }}

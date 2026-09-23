@@ -4,11 +4,26 @@ import Image from "next/image";
 import { X } from "lucide-react";
 import { useState } from "react";
 
-export function TournamentsSearch() {
+import { cn } from "@/lib/utils";
+
+export function SearchField({
+  placeholder,
+  className,
+  inputClassName,
+}: {
+  placeholder: string;
+  className?: string;
+  inputClassName?: string;
+}) {
   const [query, setQuery] = useState("");
 
   return (
-    <div className="flex items-center gap-1.5 rounded-pill bg-surface-2 px-4 py-2.5 ring-1 ring-inset ring-border-muted/25 transition-[--tw-ring-color] duration-200 focus-within:ring-border-light motion-reduce:transition-none desktop:max-w-1/2 desktop:py-2">
+    <div
+      className={cn(
+        "flex items-center gap-2 rounded-pill bg-search-field px-4 py-2 transition-[--tw-ring-color] duration-200 focus-within:ring-1 focus-within:ring-inset focus-within:ring-border-light motion-reduce:transition-none desktop:gap-3",
+        className,
+      )}
+    >
       <Image
         src="/assets/tournaments/search.svg"
         alt=""
@@ -21,9 +36,12 @@ export function TournamentsSearch() {
         type="search"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Buscar evento"
-        aria-label="Buscar evento"
-        className="min-w-px flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:appearance-none desktop:text-base"
+        placeholder={placeholder}
+        aria-label={placeholder}
+        className={cn(
+          "min-w-px flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:appearance-none",
+          inputClassName,
+        )}
       />
 
       {query && (

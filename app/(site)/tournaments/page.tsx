@@ -4,7 +4,7 @@ import { Header } from "@/components/layout/header";
 import { RouteShell } from "@/components/layout/route-shell";
 import { Pagination } from "@/components/sections/pagination";
 import { TournamentCard } from "@/components/sections/tournament-card";
-import { TournamentsSearch } from "@/components/sections/tournaments-search";
+import { SearchField } from "@/components/sections/search-field";
 import { tournaments } from "@/lib/data/tournaments";
 
 export const metadata: Metadata = {
@@ -17,7 +17,11 @@ export default function TournamentsPage() {
     <>
       <Header solid />
       <RouteShell title="Eventos">
-        <TournamentsSearch />
+        <SearchField
+          placeholder="Buscar evento"
+          className="gap-1.5 bg-surface-2 px-4 py-2.5 ring-1 ring-inset ring-border-muted/25 transition-[--tw-ring-color] duration-200 focus-within:ring-border-light motion-reduce:transition-none desktop:max-w-1/2 desktop:gap-1.5 desktop:py-2"
+          inputClassName="desktop:text-base"
+        />
 
         <ul className="grid grid-cols-1 gap-6 desktop:grid-cols-4">
           {tournaments.map((tournament) => (
