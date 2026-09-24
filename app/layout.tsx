@@ -23,9 +23,25 @@ const inter = Inter({
   display: "swap",
 });
 
+const description = "Ecosistema gaming de LATAM: torneos, rankings, misiones y noticias.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://sura-clon.vercel.app"),
   title: "Sura Gaming",
-  description: "Ecosistema gaming de LATAM: torneos, rankings, misiones y noticias.",
+  description,
+  openGraph: {
+    type: "website",
+    siteName: "Sura Gaming",
+    title: "Sura Gaming",
+    description,
+    locale: "es_AR",
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sura Gaming",
+    description,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
