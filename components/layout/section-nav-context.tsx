@@ -12,6 +12,7 @@ type SectionNavState = {
   activeId: string | null;
   isHome: boolean;
   goTo: (id: string) => void;
+  goBack: () => void;
 };
 
 const SectionNavContext = createContext<SectionNavState | null>(null);
@@ -24,6 +25,17 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
 
   const pendingRef = useRef<string | null>(null);
   const arrivedRef = useRef<string | null>(null);
+  const firstPathRef = useRef(pathname);
+  const navigatedRef = useRef(false);
+
+  useEffect(() => {
+    if (pathname !== firstPathRef.current) navigatedRef.current = true;
+  }, [pathname]);
+
+  const goBack = useCallback(() => {
+    if (navigatedRef.current) router.back();
+    else router.push(HOME_PATH);
+  }, [router]);
 
   const goTo = useCallback(
     (id: string) => {
@@ -54,8 +66,8 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
   }, [isHome, select]);
 
   const value = useMemo(
-    () => ({ activeId: isHome ? activeId : null, isHome, goTo }),
-    [activeId, isHome, goTo],
+    () => ({ activeId: isHome ? activeId : null, isHome, goTo, goBack }),
+    [activeId, isHome, goTo, goBack],
   );
 
   return <SectionNavContext.Provider value={value}>{children}</SectionNavContext.Provider>;

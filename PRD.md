@@ -483,6 +483,36 @@ también escribía `#eventos`. `SectionLink` es un `<Link>` con el `href` de sie
 abriendo `/#seccion` en otra pestaña**, y **sin JS el `href` sigue funcionando por hash** —
 verificado, `/tournaments` → Eventos cae en `/#eventos` a y=720.
 
+### Fuera del Home la bottom bar se va ✅ (2026-09-24)
+
+Feedback del equipo (Ema): al entrar a una ruta interna la barra de abajo tiene que desaparecer,
+**animada y no de golpe**, y para eso tiene que vivir en el layout persistente. Ya vivía ahí
+—`Nav` se monta en `app/(site)/layout.tsx`, que no se desmonta al navegar—, así que no hizo
+falta refactor ni librería: es una transición de CSS sobre `usePathname()`.
+
+- **Fuera del Home** la barra baja hasta salir de la pantalla y se funde en **300 ms**
+  `ease-in-out` (`nav-bar-away`: su alto + el gutter + la safe-area), y queda `inert`, así ni el
+  teclado ni un lector de pantalla la encuentran. **Al volver al Home** sube igual.
+  Con `prefers-reduced-motion` cambia en el acto.
+- Tiene sentido por lo que la barra es: sus seis ítems son secciones del Home y fuera de él ya no
+  marcaba nada (ver *Fuera del Home el menú flotante no marca nada*, arriba).
+- **El footer deja de reservarle lugar** en esas rutas: `pb-nav-clearance` (128) pasa a
+  `pb-gutter-safe` (24 + safe-area). Lo lee del estado de la barra con `peer/bar`, sin volverse
+  client component — por eso `Nav` tiene que seguir siendo hermano anterior del footer (guarda en
+  el layout).
+- **Desktop no cambia**: el riel flotante sigue en todas las rutas.
+
+**Flecha de volver.** Sin la barra, una ruta interna en mobile quedaba sin salida: el header
+mobile no tiene logo. El header mobile de las rutas internas suma un chevron a la izquierda
+del avatar (`BackButton`, 40 × 40, el `ChevronLeft` de trazo 1,5 de las flechas del hero, hover y
+foco a `--color-brand`). Si se llegó navegando dentro del sitio hace `router.back()`, así vuelve
+a donde estaba, con su scroll; si la ruta se abrió directo, va al Home. Es sólo mobile: desktop
+tiene el riel y el logo.
+
+Para que entre la flecha, **el nombre del usuario se trunca con `…`** cuando no alcanza el ancho:
+a 390 se lee entero; a 375 y menos, en las rutas internas, se corta. Medido de 320 a 430: nada
+se sale del header y el alto sigue en 56.
+
 ### El chrome de una ruta interna
 
 Sale de los **dos únicos frames del rediseño de una ruta interna** que existen: Misiones
@@ -708,6 +738,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-24 | `nav-bar-away`, `pb-gutter-safe`; `BackButton` en el header mobile de las rutas internas | Bottom bar · Header · Footer | Feedback del equipo: la bottom bar se va animada fuera del Home y vuelve al Home. Detalle en § 5, *Fuera del Home la bottom bar se va*. |
 | 2026-09-24 | **El arte del hero de Valorant pasa a video** (`--aspect-hero-loop-mobile` / `-desktop`, utilities `hero-poster-mobile` / `-desktop`); se borran `hero-art-mobile` / `-desktop` y `hero-art@2x.webp` | Hero | Pedido del usuario. Detalle en *Hero en video*, § 6. Desktop cambia de encuadre al **D1** —el arte 17,7 % más arriba— y mobile se queda en el del diseño. Los dos recortes viven en el archivo, así que la caja va al 100 % del ancho con la proporción del recorte. |
 | 2026-09-24 | `hero.autoplayMs` **3000 → `null`** | Slider del hero | Pedido del usuario: que por defecto siempre se vea el slide con el video. El avance automático queda apagado, no borrado. |
 | 2026-09-23 | **Preview al compartir el link** (`app/opengraph-image.png`, `twitter-image.png`, `apple-icon.png`) | Todas las rutas | Lo levantó el usuario: WhatsApp mostraba el triángulo de Vercel. No había ningún `og:image`, así que el preview caía al ícono default que servía antes `/favicon.ico`. Ahora la imagen es el logo SURA GAMING en blanco sobre `--color-background`, 1200 × 630 y centrado para que también entre en el recorte cuadrado de WhatsApp. `metadataBase` queda fijo en `https://sura-clon.vercel.app`: Next compone ahí la URL absoluta, y en dev la muestra con `localhost`, que es lo esperado. Suma `openGraph` y `twitter` en el metadata raíz (título, descripción, `es_AR`). **Si cambia el dominio, se cambia ahí.** |
@@ -1255,6 +1286,7 @@ lista se mantiene acá para que no se expanda sola:
 | `leaderboard-podium-mobile.tsx` | `items-end`, que hace el escalonado; `h-full` lo anula |
 | `event-card.tsx` | El piso del personaje en `bottom-px`; con `bottom-0` pisa el borde de la card |
 | `globals.css` | `@theme static` (sin él `/styleguide` lee vacío), el `border-box` del shorthand de las cards de Eventos y el `1ms` del cruce con `prefers-reduced-motion` |
+| `app/(site)/layout.tsx` | `Nav` tiene que quedar hermano anterior del footer: el footer lee el estado de la bottom bar con `peer/bar` |
 | `next.config.ts` | `images.unoptimized` y `devIndicators: false` |
 
 **Dos se encodearon en vez de comentarse**, que es lo que la regla pide intentar primero:

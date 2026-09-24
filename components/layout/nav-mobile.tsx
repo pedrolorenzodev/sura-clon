@@ -2,13 +2,18 @@ import { SectionLink } from "@/components/layout/section-link";
 import { homeSections } from "@/lib/data/navigation";
 import { cn } from "@/lib/utils";
 
-export function NavMobile({ activeId }: { activeId: string | null }) {
+export function NavMobile({ activeId, away }: { activeId: string | null; away: boolean }) {
   const activeIndex = homeSections.findIndex((section) => section.id === activeId);
 
   return (
     <nav
       aria-label="Secciones del Home"
-      className="pointer-events-none fixed inset-x-0 bottom-nav-safe z-40 mx-auto flex max-w-mobile justify-center px-2 desktop:hidden"
+      inert={away}
+      data-away={away || undefined}
+      className={cn(
+        "peer/bar pointer-events-none fixed inset-x-0 bottom-nav-safe z-40 mx-auto flex max-w-mobile justify-center px-2 transition-[translate,opacity] duration-300 ease-in-out motion-reduce:transition-none desktop:hidden",
+        away && "nav-bar-away opacity-0",
+      )}
     >
       <div className="border-gradient-nav-mobile pointer-events-auto h-nav-bar w-full rounded-2xl bg-nav-glass px-2.5 shadow-bar backdrop-blur-nav">
         <div className="relative h-full">

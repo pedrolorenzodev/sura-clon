@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function GamesPage() {
   return (
     <>
-      <Header solid />
+      <Header solid back />
       <RouteShell title="Juegos">
         <div className="flex flex-col gap-6 desktop:gap-12">
           <div className="flex items-center gap-3 desktop:gap-6">

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function MissionsPage() {
   return (
     <>
-      <Header solid />
+      <Header solid back />
       <RouteShell title="Misiones">
         <RouteTabs items={missionTabs} current="todas" label="Categorías de misiones" />
         <FilterChips items={missionFilters} current="disponibles" label="Estado de las misiones" />

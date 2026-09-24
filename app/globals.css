@@ -934,6 +934,14 @@
   bottom: calc(var(--spacing-gutter) + env(safe-area-inset-bottom));
 }
 
+@utility nav-bar-away {
+  translate: 0 calc(100% + var(--spacing-gutter) + env(safe-area-inset-bottom));
+}
+
+@utility pb-gutter-safe {
+  padding-bottom: calc(var(--spacing-gutter) + env(safe-area-inset-bottom));
+}
+
 @utility pb-nav-clearance {
   padding-bottom: calc(
     var(--spacing-gutter) * 2 + var(--spacing-nav-bar) + env(safe-area-inset-bottom)

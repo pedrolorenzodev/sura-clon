@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function TournamentsPage() {
   return (
     <>
-      <Header solid />
+      <Header solid back />
       <RouteShell title="Eventos">
         <SearchField
           placeholder="Buscar evento"

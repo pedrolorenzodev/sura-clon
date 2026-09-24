@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { BackButton } from "@/components/layout/back-button";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { currentUser } from "@/lib/data/user";
 import { cn } from "@/lib/utils";
@@ -30,7 +31,7 @@ function Counter({
   );
 }
 
-export function HeaderMobile({ className }: { className?: string }) {
+export function HeaderMobile({ back, className }: { back?: boolean; className?: string }) {
   return (
     <div
       className={cn(
@@ -39,9 +40,10 @@ export function HeaderMobile({ className }: { className?: string }) {
       )}
     >
       <div className="flex w-full items-center justify-between">
-        <div className="flex items-center gap-2 pr-3">
+        <div className="flex min-w-0 items-center gap-2 pr-3">
+          {back && <BackButton />}
           <UserAvatar src={currentUser.avatarSrc} />
-          <p className="text-sm font-semibold text-foreground">{currentUser.name}</p>
+          <p className="truncate text-sm font-semibold text-foreground">{currentUser.name}</p>
         </div>
 
         <div className="flex items-center gap-2">

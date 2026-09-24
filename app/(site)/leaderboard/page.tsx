@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 export default function LeaderboardPage() {
   return (
     <>
-      <Header solid />
+      <Header solid back />
       <RouteShell title="Leaderboard">
         <RouteTabs
           items={leaderboardTabs}
