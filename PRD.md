@@ -871,6 +871,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **`/missions/:id` no existe** | Las cards de la ruta y del Home no linkean desde el 2026-09-23 (ver *Rutas de detalle apagadas*, § 6). | Se enciende en `lib/routes.ts` cuando lleguen los frames del detalle. |
 | **Tabs y chips de Misiones no filtran** | Los dos son maqueta. Además el diseño no dice qué relación tienen entre sí: los tabs son categorías y los chips estados, pero no está definido si se combinan. | Pedir el comportamiento. |
 | **Misiones de relleno** | Las 16 de la grilla y las 3 destacadas son inventadas, y las portadas salen de las secciones Misiones y Juegos del Home. | Pedir el listado real. |
+| **El favicon es blanco** | Desde el 2026-09-23 la pestaña usa el mismo ícono que `app.suragaming.com` (`app/icon.svg`, copia de su `faviconsura.svg`) en vez del default de Next, que se borró; el `favicon.ico` del sitio oficial resultó ser ese mismo default. El logo es blanco sobre transparente, así que en una barra de pestañas clara casi no se ve — le pasa igual al sitio oficial. | Si molesta, el SVG admite una `@media (prefers-color-scheme: light)` interna que lo pase a negro. iOS no usa SVG para `apple-touch-icon`: haría falta un PNG. |
 | **Resto suelto en el frame de Juegos** | Después de la octava card hay un `Image` de 1 × 0,56px, igual que los dos frames sueltos del slider de Eventos. | No se maquetó. Confirmar que se puede borrar del archivo. |
 
 ### Hero en video — brief en pausa
