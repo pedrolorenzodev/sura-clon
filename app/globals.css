@@ -288,6 +288,8 @@
   --spacing-hero-mobile: 524px;
   --spacing-hero-content-desktop: 720px;
   --spacing-hero-gap: 137px;
+  --aspect-hero-loop-mobile: 864 / 1236;
+  --aspect-hero-loop-desktop: 1588 / 1336;
   --spacing-section-gap: 80px;
   --spacing-title-gap: 16px;
 
@@ -808,11 +810,11 @@
   background-image: var(--gradient-hero-scrim-mobile);
 }
 
-@utility hero-art-mobile {
-  background: var(--hero-art) 31.704% 0 / 254.174% auto no-repeat;
+@utility hero-poster-mobile {
+  background: var(--hero-poster-mobile) left top / 100% auto no-repeat;
 }
-@utility hero-art-desktop {
-  background: var(--hero-art) left top / 181.25% auto no-repeat;
+@utility hero-poster-desktop {
+  background: var(--hero-poster-desktop) left top / 100% auto no-repeat;
 }
 
 @utility hero-art-cover {

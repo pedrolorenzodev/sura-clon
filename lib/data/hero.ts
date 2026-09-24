@@ -3,12 +3,25 @@ export type CopySegment = {
   breakAt?: "mobile" | "desktop";
 };
 
+export type HeroLoopSource = {
+  src: string;
+  type: string;
+};
+
+export type HeroLoopVariant = {
+  poster: { avif: string; webp: string };
+  sources: HeroLoopSource[];
+};
+
+export type HeroLoop = {
+  mobile: HeroLoopVariant;
+  desktop: HeroLoopVariant;
+};
+
 export type HeroSlide = {
   game: string;
   thumbnailSrc: string;
-  artSrc: string;
-  framing: "design" | "cover";
-};
+} & ({ framing: "loop"; loop: HeroLoop } | { framing: "cover"; artSrc: string });
 
 export type Hero = {
   title: string;
@@ -16,7 +29,7 @@ export type Hero = {
   cta: { label: string; sectionId: string };
   slides: HeroSlide[];
   activeSlide: number;
-  autoplayMs: number;
+  autoplayMs: number | null;
 };
 
 export const hero: Hero = {
@@ -32,8 +45,29 @@ export const hero: Hero = {
     {
       game: "Valorant",
       thumbnailSrc: "/assets/home/hero-art-thumb.jpg",
-      artSrc: "/assets/home/hero-art@2x.webp",
-      framing: "design",
+      framing: "loop",
+      loop: {
+        mobile: {
+          poster: {
+            avif: "/assets/home/hero-loop/mobile-poster.avif",
+            webp: "/assets/home/hero-loop/mobile-poster.webp",
+          },
+          sources: [
+            { src: "/assets/home/hero-loop/mobile-av1.mp4", type: 'video/mp4; codecs="av01.0.08M.08"' },
+            { src: "/assets/home/hero-loop/mobile-h264.mp4", type: "video/mp4" },
+          ],
+        },
+        desktop: {
+          poster: {
+            avif: "/assets/home/hero-loop/desktop-poster.avif",
+            webp: "/assets/home/hero-loop/desktop-poster.webp",
+          },
+          sources: [
+            { src: "/assets/home/hero-loop/desktop-av1.mp4", type: 'video/mp4; codecs="av01.0.08M.08"' },
+            { src: "/assets/home/hero-loop/desktop-h264.mp4", type: "video/mp4" },
+          ],
+        },
+      },
     },
     {
       game: "Fortnite",
@@ -55,5 +89,6 @@ export const hero: Hero = {
     },
   ],
   activeSlide: 0,
-  autoplayMs: 3000,
+  // TODO: volver a 3000 cuando el carrusel del hero deba avanzar solo otra vez
+  autoplayMs: null,
 };

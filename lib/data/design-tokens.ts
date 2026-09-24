@@ -309,6 +309,8 @@ export const layoutTokens: Token[] = [
   { name: "--spacing-hero-mobile", utility: "h-hero-mobile", usage: "Alto del fondo del hero mobile" },
   { name: "--spacing-hero-content-desktop", utility: "h-hero-content-desktop", usage: "Alto de la fila de contenido del hero desktop" },
   { name: "--spacing-hero-gap", utility: "gap-hero-gap", usage: "Contenido del hero ↔ gutter derecho" },
+  { name: "--aspect-hero-loop-mobile", utility: "aspect-hero-loop-mobile", usage: "Caja del video del hero mobile: el recorte M0 del arte, a lo ancho de la columna", offDesign: true },
+  { name: "--aspect-hero-loop-desktop", utility: "aspect-hero-loop-desktop", usage: "Caja del video del hero desktop: el recorte D1 del arte, a lo ancho de la página", offDesign: true },
   { name: "--spacing-section-gap", utility: "gap-section-gap", usage: "Separación entre secciones" },
   { name: "--spacing-title-gap", utility: "gap-title-gap", usage: "Título de sección → contenido" },
   { name: "--spacing-event-card", utility: "w-event-card", usage: "Ancho de la card de Eventos, desktop" },

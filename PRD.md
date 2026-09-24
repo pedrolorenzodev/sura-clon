@@ -242,9 +242,11 @@ Los ítems son solo íconos: el nombre accesible va en un `sr-only` y el activo 
 
 **El slider del hero es un carrusel** desde el 2026-09-20 (pedido del usuario): flechas arriba
 y abajo en desktop, a los lados en mobile, con el chevron de trazo 1.5 de las de Eventos. Acá
-**no se apagan en las puntas**: el carrusel da la vuelta, así que siempre hay destino. Avanza
-solo cada 3s (`hero.autoplayMs`), y se frena con el puntero o el foco encima, con la pestaña
-oculta y con `prefers-reduced-motion`. Cualquier cambio manual reinicia la cuenta.
+**no se apagan en las puntas**: el carrusel da la vuelta, así que siempre hay destino. Avanzaba
+solo cada 3s (`hero.autoplayMs`), frenándose con el puntero o el foco encima, con la pestaña
+oculta y con `prefers-reduced-motion`. **Desde el 2026-09-24 el avance automático está apagado**
+(`autoplayMs: null`, pedido del usuario) para que siempre se vea el slide con el video; el
+código sigue en `hero-slide-context.tsx` y vuelve con volver a poner 3000.
 
 **Estado activo:** arranca en Home y lo escriben el scroll y el click (ver Scroll-spy, abajo).
 Vive en `SectionNavProvider` (`components/layout/section-nav-context.tsx`), montado en el layout
@@ -706,6 +708,8 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-24 | **El arte del hero de Valorant pasa a video** (`--aspect-hero-loop-mobile` / `-desktop`, utilities `hero-poster-mobile` / `-desktop`); se borran `hero-art-mobile` / `-desktop` y `hero-art@2x.webp` | Hero | Pedido del usuario. Detalle en *Hero en video*, § 6. Desktop cambia de encuadre al **D1** —el arte 17,7 % más arriba— y mobile se queda en el del diseño. Los dos recortes viven en el archivo, así que la caja va al 100 % del ancho con la proporción del recorte. |
+| 2026-09-24 | `hero.autoplayMs` **3000 → `null`** | Slider del hero | Pedido del usuario: que por defecto siempre se vea el slide con el video. El avance automático queda apagado, no borrado. |
 | 2026-09-23 | **Preview al compartir el link** (`app/opengraph-image.png`, `twitter-image.png`, `apple-icon.png`) | Todas las rutas | Lo levantó el usuario: WhatsApp mostraba el triángulo de Vercel. No había ningún `og:image`, así que el preview caía al ícono default que servía antes `/favicon.ico`. Ahora la imagen es el logo SURA GAMING en blanco sobre `--color-background`, 1200 × 630 y centrado para que también entre en el recorte cuadrado de WhatsApp. `metadataBase` queda fijo en `https://sura-clon.vercel.app`: Next compone ahí la URL absoluta, y en dev la muestra con `localhost`, que es lo esperado. Suma `openGraph` y `twitter` en el metadata raíz (título, descripción, `es_AR`). **Si cambia el dominio, se cambia ahí.** |
 | 2026-09-23 | `--breakpoint-desktop` **391 → 1100px**, `--container-mobile` (430), `--text-display-fluid`, `--spacing-leaderboard-share` / `-gap-share`; se borra `--spacing-leaderboard-col` | Todas las rutas | Arreglo de los anchos intermedios. Detalle y medidas en § 4, *Breakpoint*. |
 | 2026-09-23 | **Las filas del Leaderboard del Home son los puestos 04–08 de `/leaderboard`** | Home | Pedido del usuario: el Figma repite "NombreUsuario" y el mismo avatar en las cinco filas. `leaderboardRows` se deriva ahora de `standings` (mismo nombre, avatar, nivel y puntaje que la ruta), así el Home y `/leaderboard` no pueden contradecirse. `avatar-row.png` quedó sin uso y se borró. La sección no cambia de alto: 486 en desktop. |
@@ -888,7 +892,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Cuarto título mobile equivocado** | El frame mobile de Sura News dice "EVENTOS". Van cuatro: Eventos, Leaderboard, Misiones y este. | Se maquetó "Sura News". |
 | **Las cards de Juegos no coinciden con su arte** | La titulada "Assassin's Creed Syndicate" muestra la portada de **Mario**; otra muestra **Minecraft**; una "Call of Duty Modern Warfare" muestra un juego de **carreras**. Además dos títulos se repiten y una card lleva el badge "Free-To-Play" **dos veces**. | Se replicó tal cual (regla 10) y los archivos se nombraron por lo que muestran (`mario.png`, `minecraft.png`, `racing.png`). Es data de relleno: confirmar el catálogo real. |
 | **Los badges de tienda no se pueden exportar** | Los componentes `Footer/Google Play` y `Footer/App Store` (`91:7253`, `91:7262`) viven fuera de la página visible y su export vuelve **en blanco** (PNG 384 × 128 vacío, SVG sin salida). Están armados con texto en **SF Compact** y **Product Sans**, que no son libres. | Se compusieron en código con los SVG que sí exporta el nodo (ícono de cada tienda y el wordmark de Google Play) y el texto en Inter. Como Inter es más ancha que SF Compact, "App Store" no entraba centrado en los 96 × 32 del diseño (quedaba a 3px del borde): por decisión del usuario (2026-09-19) los dos badges pasaron a **104 × 36** con el contenido centrado. En mobile van `flex-1` y quedan en 163 × 36 para llenar la fila (2026-09-20); el contenido sigue centrado, así que el ancho no es crítico. Si diseño exporta los dos badges como asset entero, se reemplazan y vuelven a 96 × 32. |
-| **Hero en video: dos modelos no pudieron con una ilustración estática** | Se probó animar el arte del hero como cinemagraph con los créditos gratis de Higgsfield (Veo 3.1 Lite, dos tiradas, 8 créditos). El primero dejó la cámara quieta y el logo intacto (Δ 4,85 sobre 255) pero llenó el cuadro de partículas blancas que se acumulan. El segundo sacó las partículas y metió un **push de cámara** descentrado (Δ del logo: 22,80). Ninguno cierra el loop. El patrón es el mismo: **el modelo necesita mover algo, y si se le cierra una puerta entra por otra.** Kling queda fuera del MCP —su plan free no habilita ningún modelo de video— y la web estaba saturada. | Queda **en pausa**, no descartado. El prompt para Kling 3.0 está redactado y validado contra su UI real — ver **Hero en video — brief en pausa**, en esta misma sección —, con la jugada que no se pudo probar: **cargar la misma imagen como primer y último frame**, que fuerza el loop por construcción. Dato útil para cualquier intento futuro: **el logo de Valorant no se ve nunca** en el hero (empieza en el 60,4 % del ancho y el recorte llega hasta 58,6 %), así que no hay que gastar instrucciones ni descartar clips por él. Mientras tanto el hero se queda con la imagen, que es lo que define el diseño. |
+| ~~**Hero en video**~~ | Veo y Kling no pudieron animar la ilustración sin romperla. | **Resuelta** (2026-09-24): se armó por capas sobre el arte original. Ver *Hero en video*, arriba. |
 | **El banner de Juegos no navega** | La card y su CTA "Jugar ahora" son una sola acción, pero el destino no está ni en el Figma ni en el mapa de rutas. | Van como dos `<button>` sin handler, el mismo criterio que el footer y "Ver todo". Cuando exista la ruta, los dos pasan a `<Link href>` al mismo destino y nada más cambia. |
 | **El footer no navega** | Los cuatro links, las redes y los badges no tienen destino ni en el Figma ni en el mapa de rutas; las URLs de las redes tampoco se conocen. | Van como `<button>` sin handler, el mismo criterio que "Ver todo" en `section-header.tsx`. Cuando existan las rutas y los handles, pasan a `<a href>`. |
 | **Footer mobile adaptado del desktop** | No hay frame mobile. | Decisión del usuario (2026-09-19), mismo criterio que Medallas y Juegos: ver § 5. |
@@ -905,98 +909,72 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **El favicon es blanco** | Desde el 2026-09-23 la pestaña usa el mismo ícono que `app.suragaming.com` (`app/icon.svg`, copia de su `faviconsura.svg`) en vez del default de Next, que se borró; el `favicon.ico` del sitio oficial resultó ser ese mismo default. El logo es blanco sobre transparente, así que en una barra de pestañas clara casi no se ve — le pasa igual al sitio oficial. | Si molesta, el SVG admite una `@media (prefers-color-scheme: light)` interna que lo pase a negro. El `apple-touch-icon` ya existe desde el 2026-09-23 (`app/apple-icon.png`, logo blanco sobre `#202020`). |
 | **Resto suelto en el frame de Juegos** | Después de la octava card hay un `Image` de 1 × 0,56px, igual que los dos frames sueltos del slider de Eventos. | No se maquetó. Confirmar que se puede borrar del archivo. |
 
-### Hero en video — brief en pausa
+### Hero en video ✅ (2026-09-24)
 
-Idea del usuario (2026-09-20): que el arte del hero sea un **cinemagraph** en loop en vez de una
-imagen fija, con el poster como fallback. Se intentó, no salió, y **queda pendiente con todo lo
-necesario para retomarlo**. El hero mientras tanto sigue con la imagen, que es lo que define el
-diseño.
+El arte del slide de Valorant es un **loop de 5 s** en vez de una imagen fija. No salió de un
+modelo de video: se armó **por capas sobre el arte original**, en código, después de que Veo y
+Kling fallaran por el mismo motivo (el modelo necesita mover algo y lo mueve de más). El clip
+de Kling del usuario sirvió para diagnosticar qué molestaba —el pelo se agitaba 6 veces en 5 s,
+de golpe, y era lo único vivo—, no como material.
 
-**Lo que se probó y falló.** Dos tiradas en Higgsfield con **Veo 3.1 Lite** (los 10 créditos
-gratis de la cuenta; Kling está fuera de ese MCP porque el plan free no habilita ningún modelo
-de video):
+**Qué se mueve** (todo cierra exacto a los 150 frames, 30 fps, porque cada movimiento es
+periódico en ciclos enteros del loop):
 
-| Intento | Qué se pidió | Qué pasó |
+| Elemento | Técnica | Detalle |
 |---|---|---|
-| 01 | cinemagraph con *"floating dust particles drift gently"* | Cámara quieta ✓ y logo intacto (Δ **4,85** sobre 255) · llenó el cuadro de partículas blancas que **se acumulan** → el loop no cierra |
-| 02 | sin partículas, *"every character frozen"* | Partículas fuera ✓ · apareció un **push de cámara descentrado** → todo crece y se corre (Δ del logo: **22,80**) |
+| **Pelo de Jett** | Capa recortada (SAM 2.1) sobre un fondo sin pelo (LaMa) + campo de desplazamiento | Tres grupos con raíz propia —cola, flequillo, mechones derechos— que se mecen desde la raíz y se curvan hacia las puntas, con desfase entre grupos. Una ida y vuelta cada 5 s; las puntas llegan a ~26 px |
+| **Orbe de Omen** | Latido de brillo + bandas de luz que recorren la pintura | Las bandas cambian brillo y tono sobre los azules que ya están pintados; nada se deforma. La intensidad cae hacia la derecha (100 % en centro y mano, ~42 % en la cola, 25 % en el animalito, 16 % al borde) |
+| **Flujo del orbe hacia la derecha** | Textura de vetas que se desliza en radial desde el centro | Sólo entre **Y 930 y 1080** del arte, la franja del bloque de energía, con 14 px de desvanecido |
+| **Máscara de Omen** | Vetas verticales que bajan por los cristales + halo | X 160–310 · Y 542–709; el halo acompaña el mismo flujo |
 
-**El patrón, que es lo que hay que recordar: el modelo necesita mover algo.** Si se le cierra una
-puerta, entra por otra. Por eso el prompt final no sólo prohíbe — le da un movimiento permitido,
-chico y concreto, para que lo gaste ahí.
+Se descartaron, y quedaron guardadas por si vuelven: la chaqueta de Phoenix (v26, el usuario
+prefirió sin ella), una deformación real de la pintura del remolino (v13/v14, "muy malo"),
+espirales de luz dibujadas encima (v11, se leían pegadas) y el relevo de dos capas de flow-map
+(v10, se veía a saltos). La lección que dejaron: **con un arte de trazos duros, mover luz
+funciona y mover pintura no.**
 
-**Dos datos que ahorran trabajo la próxima:**
+**Encuadre.** Desktop pasa al encuadre **D1** (el arte 17,7 % más arriba que el diseño, elegido
+por el usuario para que se vea el orbe); mobile se queda en **M0**, el del diseño. Los dos van
+**pre-recortados** en el propio archivo: desktop es la franja `x 0–1588 · y 286–1622` del arte y
+ocupa el 100 % del ancho; mobile, `x 555–1689`, también al 100 % de la columna. Por eso el
+encuadre ya no necesita `background-position` y el video y el poster calzan igual.
 
-1. **El logo de Valorant no se ve nunca.** Empieza en el 60,4 % del ancho del arte y el hero
-   recorta en 58,6 % (mobile) / 55,2 % (desktop). No hay que gastar instrucciones en él ni
-   descartar un clip porque se deforme. Por lo mismo, una marca de agua en la esquina inferior
-   derecha queda holgadamente fuera de cuadro.
-2. **La jugada que quedó sin probar es el *end frame*.** Kling admite cargar primer y último
-   frame; poniendo **la misma imagen en los dos** el loop queda forzado por construcción, en vez
-   de pedirlo por prompt. Veo sólo aceptó `start_image`, y de ahí que ninguno de los dos cerrara.
+**Archivos** (`public/assets/home/hero-loop/`):
 
-#### El pedido, listo para pegar
+| | Desktop 1588 × 1336 | Mobile 864 × 1236 |
+|---|---|---|
+| Video AV1 (principal) | 650 KB | 370 KB |
+| Video H.264 (respaldo) | 676 KB | 360 KB |
+| Poster AVIF 4:4:4 | 252 KB | 152 KB |
+| Poster WebP (respaldo) | 189 KB | 118 KB |
 
-**Imagen de entrada:** `public/assets/home/hero-art@2x.jpg` (2880 × 1622, 16:9) — el upscaleado,
-no el original de 1440.
+Cada tamaño baja **sólo lo suyo** —poster y un video—. Contra lo que había (la imagen de 245 KB),
+el Home suma ~0,65 MB en desktop y ~0,37 MB en mobile. La calidad es la del arte: la densidad
+del recorte desktop es la misma que tenía la imagen, y PSNR 37,8 dB contra el master sin
+pérdida, el techo que pone el 4:2:0 de cualquier video web.
 
-| Campo | Valor |
-|---|---|
-| Modelo | Kling **VIDEO 3.0**, pestaña *Video Generation* |
-| Primer frame | `hero-art@2x.jpg` |
-| **Último frame** | **la misma imagen** |
-| Duración | 5 s |
-| Multi-Shot · Native Audio | apagados |
-| Number of Outputs | 1 (2–4 son VIP) |
-| Calidad | **720p** para probar el prompt · **1080p** para la definitiva (VIP, 3 trials, 40 créditos) |
+**Cómo carga sin tocar el rendimiento:**
 
-> A 2D painted video-game illustration, filmed as a still. The camera is locked on a tripod and
-> the framing stays exactly the same from the first frame to the last: no zoom, no pan, no drift.
-> Every character holds their exact pose, expression and gaze the entire time, frozen mid-action
-> like a painting. The only motion in the scene: a few loose strands of the white-haired girl's
-> hair sway very slightly in a faint breeze, and the blue energy glow on the left pulses softly
-> and slowly. Everything else is perfectly still. The air is clear and empty; nothing floats,
-> drifts or falls through the frame, and nothing new appears. Flat red background unchanged. Very
-> subtle, slow, seamless loop: the video ends exactly as it begins.
+1. El poster es el fondo CSS de siempre (`image-set` AVIF → WebP), así que el primer pintado no
+   cambia. Medido en build de producción: **LCP ~70 ms en desktop** (el H1) y **~78 ms en mobile**
+   (el poster); CLS igual que antes.
+2. El `<video>` recién se monta **después del evento `load`**, así no compite con nada de la
+   primera carga, y aparece recién en `playing`: como el poster *es* su primer frame, el cambio
+   no se ve.
+3. **No se monta** con `prefers-reduced-motion` ni con `Save-Data`: queda el poster.
+4. Se **pausa fuera de pantalla** (`IntersectionObserver`) y se **desmonta** al pasar a otro slide.
+5. Elige el archivo por el breakpoint real —lee `--breakpoint-desktop` del CSS— y cambia si la
+   ventana cruza los 1100.
 
-**Kling 3.0 no tiene negative prompt ni slider de creatividad** — eran de las versiones 1.x y 2.x.
-Por eso las prohibiciones van dentro del prompt y **sin nombrar lo prohibido**: si se escribe
-"no snow, no sparks", el modelo lee *snow* y *sparks*. Se reescriben como afirmaciones de lo que
-sí pasa ("the air is clear and empty"). *Bind elements* tampoco hace falta: sirve para
-consistencia entre generaciones distintas y acá el end frame ya ancla todo.
+**Verificado:** 8 anchos entre 390 y 1920 (archivo correcto, reproduce, sin scroll lateral, sin
+errores de consola); movimiento reducido sin video; pausa al scrollear y reanuda al volver;
+cambio de slide ida y vuelta; el carrusel ya no avanza solo.
 
-**Por qué está redactado así.** *"2D painted illustration"* y *"filmed as a still"* para que no lo
-vuelva 3D ni realista. *"Frozen mid-action"* porque la pose de Jett es de acción y sin eso el
-modelo quiere completar el lanzamiento de los cuchillos. El movimiento permitido —mechones y
-resplandor azul— es la válvula, y los dos están en el tercio izquierdo-centro, que es lo único
-que se ve en el hero; son además los únicos elementos que se mueven *en la ficción* sin que
-cambie la composición. La llama naranja se descartó a propósito: animar fuego invita humo y
-chispas.
-
-**Protocolo con los 66 créditos diarios de Kling:** una tirada en 720p con el prompt tal cual, y
-revisar cuatro cosas — ¿el último frame es el primero?, ¿nada creció ni se corrió?, ¿la cara de
-Jett no cambió?, ¿no aparece nada flotando? Si pasa, una en 1080p con los ajustes idénticos: esa
-es la que se usa. Si falla, se itera el prompt al día siguiente con los 66 nuevos. **No gastar los
-40 del 1080p hasta ver una de 720p que cierre.**
-
-#### Lo que falta hacer cuando el clip exista
-
-1. Cerrar el loop con un crossfade de ~0,5 s entre cola y cabeza (`ffmpeg`, ya instalado).
-2. Si vino a 720p, subir los frames a 2× con Real-ESRGAN y re-encodear, para que el arranque no
-   se vea más blando que el poster. Salida `.mp4` (H.264, `-movflags +faststart`) + `.webm` (VP9).
-3. En `hero-background.tsx`, la capa `design` pasa a `<video autoPlay muted loop playsInline
-   poster={artSrc}>` con el mismo encuadre de las utilities `hero-art-desktop` /
-   `hero-art-mobile`, el scrim encima y el fade al cambiar de slide. Con
-   `prefers-reduced-motion: reduce` no se monta el `<video>`: queda el poster. `preload="metadata"`,
-   porque el LCP es el poster y no el video.
-4. Verificar: que el loop no salte (grabar dos ciclos y comparar el frame de cierre con el de
-   apertura), que no aparezca scroll horizontal, que el LCP no empeore, y que en mobile siga
-   viéndose la imagen si el navegador bloquea el autoplay.
-5. Anotar acá la herramienta usada, la versión del modelo, el prompt final y el costo.
-
-**Go / no-go:** si el modelo vuelve a deformar rostros o el loop no cierra, se corta y el hero se
-queda con la imagen. No se insiste con una tercera herramienta ni se paga ninguna — decisión del
-usuario, 2026-09-20.
+**El master no vive en el repo.** El master sin pérdida (`lossless-v25.mkv`), los scripts del
+pipeline y las máscaras están en `~/Desktop/hero-loop-fuente/` de la máquina del usuario; los
+cuatro videos de la entrega salen de ahí con `final_enc.py`, y los posters son el frame 0 tal
+como lo pinta Chrome (ver notas de implementación). Para regenerar el master hace falta Python
+con `numpy`, `opencv-python-headless`, `ultralytics` (SAM 2.1) y `simple-lama-inpainting`.
 
 ### Diferido hasta que el scope esté maquetado
 
@@ -1010,15 +988,14 @@ tercero. Se retoman en la pasada de fixes chicos, con el scope completo.
 | ~~**El pill de puntaje tiene dos fuentes**~~ | El header lo tenía en Inter y el Leaderboard en `font-techno`. | **Resuelta** (usuario, 2026-09-23): gana la del Leaderboard, que el usuario encontró más copada. Los dos contadores del header —racha y puntos— pasan a `font-techno`, en Regular (de KH no hay Bold y el `font-bold` de la racha sería negrita sintética). Las alturas no cambian: header 106 / 56 y contadores de 40. |
 | ~~**Peso de los assets**~~ | `public/assets/home/` iba por 30 MB y el Home descargaba **22,7 MB**: sprites de medallas de 1024² mostrados a 86px, portadas de 3 MB en cards de 268. Al recargar, los assets pesados aparecían de golpe medio segundo después que el resto. | **Resuelta** (usuario, 2026-09-23), sin fade: se atacó la causa. Los 46 assets de 40 KB o más pasaron a **WebP al doble del tamaño en que se pintan** (medido en las cinco rutas a 390 / 1440 / 1920, teniendo en cuenta el `object-fit` y el zoom de 1,05 del hover), y los que ya se pintaban a su tamaño nativo sólo cambiaron de formato. 26,6 MB → **1,56 MB**; el Home descarga **2,8 MB** en vez de 22,7, `/leaderboard` 0,09 en vez de 4,4. Las diez páginas completas dan Δ medio ≤ 0,63 contra el render anterior. Los originales sin referencias **se borraron** el 2026-09-23 (56 archivos, 35,4 MB), cada uno con su derivado verificado; siguen en el historial de git. `public/assets` pasó de 38 a **3,2 MB**. |
 
-Y una cuarta, que no depende de nosotros ni de diseño: el **hero en video** (ver el brief más
-arriba). Sigue siendo un agregado de peso para la UI, pero está fuera de alcance por ahora.
-Dato práctico para retomarlo: entre las **19 y las 22 hora argentina Kling rechaza los pedidos
-por saturación**, así que conviene probar a la mañana.
 
 ### Notas de implementación que salieron del maquetado
 
 | Tema | Qué pasó | Cómo se resolvió |
 |---|---|---|
+| **Chrome decodifica un AV1 sin etiquetas de color con la matriz bt601** | El video del hero salía más magenta que su poster en los rojos: Δ medio 4 contra la imagen. `ffprobe` decía `bt709`, pero ese dato vivía sólo en el contenedor: SVT-AV1 ignora los `-color_*` de ffmpeg y no los escribe en el bitstream. | Se pasan dentro del encoder (`-svtav1-params color-primaries=1:transfer-characteristics=1:matrix-coefficients=1`) y en x264 con `-x264-params colorprim=…`. **Y el poster se arma desde el frame 0 tal como lo pinta Chrome**, no desde un decode de ffmpeg: la reconstrucción del color del navegador no es la de ffmpeg y en bordes saturados difiere hasta 17 niveles. Con eso el cambio poster → video da Δ medio 0,7 en desktop. En mobile queda ~1 en bordes finos por el reescalado (864 → 390), que es un cambio único al cargar. |
+| **El poster en WebP no alcanzaba para empalmar con el video** | Aun sacado del frame del navegador, el WebP a q85 se iba 14 niveles en el p99: su color va a media resolución y los rojos saturados del arte lo exponen. | AVIF a q80 con **4:4:4**, que pesa lo mismo que la imagen vieja (252 KB) y deja p99 9. El WebP queda de respaldo en el `image-set`. |
+| **El loop de un video web salta en el keyframe** | Al volver al frame 0, el fondo quieto cambiaba hasta 6 niveles (p99,9): el encoder va reescribiendo las zonas quietas durante el clip y el keyframe no las repite igual. | En SVT-AV1, `enable-tf=0` (sin filtrado temporal) baja el salto a p99,9 4, y lo que queda está pegado al borde del pelo, que cambia en cada frame igual. La estructura *low-delay* y el `ipratio` alto de x264 lo empeoraban. |
 | **17 de los `.png` del repo son JPEG, y uno trae orientación EXIF** | Al pasar los assets a WebP, el banner de Juegos salió **espejado** respecto del render aprobado: Δ medio 5,6 en `/games`, con la misma foto recortada distinta. | `juegos/banner.png` es un JPEG con `orientation = 2` (espejo horizontal). El navegador aplica la orientación EXIF por default, así que lo aprobado era la foto espejada; `sharp` no la aplica salvo que se le pida, y el derivado salía derecho. Se regeneró con `.rotate()` (auto-orienta) y el banner volvió a Δ 0,6. Es el único con orientación, pero hay 17 `.png` que son JPEG por dentro. **Cualquier derivado de un asset del diseño se genera con `.rotate()`, y ante una imagen que sale distinta, mirar `file`, no la extensión.** |
 | **Un anillo inset debajo de una imagen asoma cuando la imagen se anima** | En las cards de misión (Home y `/missions`), al sacar el mouse aparecía por menos de un segundo una línea gris de 1px bajo la portada. Medido a DPR 2 sobre la card roja: una fila gris neutra (45,45,45 y 41,41,41) a +22 y +120ms del mouse-out, que no existe ni en reposo ni en hover. | La portada llevaba `ring-1 ring-inset ring-border-muted/50`. Un `ring` es `box-shadow` inset, que se pinta en el fondo del contenedor, **debajo** de la imagen: en reposo la imagen lo tapa y nunca se veía. Mientras la imagen vuelve de `scale-105` y la card baja sus 2px, la imagen va en su propia capa de compositor, que se rasteriza alineada a píxel de dispositivo, mientras que el contenedor está en y fraccionaria (la portada mide 131,64 / 145,73): queda una fila sin tapar y asoma el anillo. **El render del Figma no tiene ningún trazo en la portada** —muestreado en los cuatro bordes, pasa directo de la imagen al `#222`—, así que el anillo se borró en vez de subirlo encima. Medido después: 0 frames con línea en 80 capturas de la card roja, contra 5 antes. En reposo el único cambio es el píxel antialiaseado de los bordes y las esquinas, que queda **más oscuro** porque el anillo también asomaba ahí medio píxel. Home 4156 / 4046 sin cambios. **Un borde decorativo que vive debajo de una imagen animada no es decorativo: o va encima o no va.** |
 | **El pill no seguía el scroll al volver al Home desde otra ruta** | Desde `/tournaments`, clickear un ítem llevaba al Home, pero al scrollear el pill quedaba clavado. | `Nav` vive en el layout `(site)`, que **no se desmonta al cambiar de ruta**. El efecto del spy dependía sólo de `[ids]`: en `/tournaments` corría una vez, no encontraba ninguna sección y volvía; al llegar al Home no tenía motivo para volver a correr, así que nunca se suscribía a las secciones nuevas. Ahora recibe el `pathname` y lo tiene en las dependencias. **Cualquier hook del layout que mida el DOM de la página tiene que re-suscribirse con el `pathname`.** Verificado en 1440 / 390 / reduced-motion: tras volver desde `/tournaments` y `/missions` el pill sigue a Misiones, Sura News, Eventos y Home. |

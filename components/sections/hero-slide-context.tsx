@@ -41,9 +41,10 @@ export function HeroSlideProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (held || tabHidden || reducedMotion) return;
+    const { autoplayMs } = hero;
+    if (autoplayMs === null || held || tabHidden || reducedMotion) return;
 
-    const timer = setInterval(() => select(activeSlide + 1), hero.autoplayMs);
+    const timer = setInterval(() => select(activeSlide + 1), autoplayMs);
     return () => clearInterval(timer);
   }, [activeSlide, held, tabHidden, reducedMotion, select]);
 
