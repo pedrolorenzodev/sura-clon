@@ -31,25 +31,25 @@ export const hero: Hero = {
   slides: [
     {
       game: "Valorant",
-      thumbnailSrc: "/assets/home/hero-art.jpg",
+      thumbnailSrc: "/assets/home/hero-art-thumb.jpg",
       artSrc: "/assets/home/hero-art@2x.jpg",
       framing: "design",
     },
     {
       game: "Fortnite",
-      thumbnailSrc: "/assets/home/slider/fortnite.png",
+      thumbnailSrc: "/assets/home/slider/fortnite-thumb.jpg",
       artSrc: "/assets/home/slider/fortnite@2x.jpg",
       framing: "cover",
     },
     {
       game: "Call of Duty: Black Ops 6",
-      thumbnailSrc: "/assets/home/slider/black-ops-6.png",
+      thumbnailSrc: "/assets/home/slider/black-ops-6-thumb.jpg",
       artSrc: "/assets/home/slider/black-ops-6@2x.jpg",
       framing: "cover",
     },
     {
       game: "Call of Duty: Modern Warfare III",
-      thumbnailSrc: "/assets/home/slider/modern-warfare-3.png",
+      thumbnailSrc: "/assets/home/slider/modern-warfare-3-thumb.jpg",
       artSrc: "/assets/home/slider/modern-warfare-3@2x.jpg",
       framing: "cover",
     },
