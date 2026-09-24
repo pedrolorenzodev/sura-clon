@@ -19,7 +19,7 @@ function Counter({
       <div className="flex items-center justify-center py-1">
         <p
           className={cn(
-            "text-base font-medium text-foreground",
+            "font-techno text-base uppercase text-foreground",
             fixedWidth && "w-6 text-center",
           )}
         >

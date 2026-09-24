@@ -5,20 +5,12 @@ import { UserAvatar } from "@/components/layout/user-avatar";
 import { currentUser, dailyClaim } from "@/lib/data/user";
 import { cn } from "@/lib/utils";
 
-function Counter({
-  iconSrc,
-  value,
-  bold,
-}: {
-  iconSrc: string;
-  value: number;
-  bold?: boolean;
-}) {
+function Counter({ iconSrc, value }: { iconSrc: string; value: number }) {
   return (
     <div className="flex w-29 items-center gap-2 rounded-lg bg-surface-2 py-1 pl-2 pr-1">
       <Image src={iconSrc} alt="" width={28} height={28} className="size-7 shrink-0" />
       <div className="flex min-w-px flex-1 items-center justify-center rounded-md bg-surface-3 px-2 py-1">
-        <p className={cn("text-base text-foreground", bold ? "font-bold" : "font-medium")}>
+        <p className="font-techno text-base uppercase text-foreground">
           {value}
         </p>
       </div>
@@ -68,7 +60,7 @@ export function HeaderDesktop({ className }: { className?: string }) {
           </span>
         </button>
 
-        <Counter iconSrc="/assets/home/fire.png" value={currentUser.streak} bold />
+        <Counter iconSrc="/assets/home/fire.png" value={currentUser.streak} />
         <Counter iconSrc="/assets/home/sp-coin.webp" value={currentUser.points} />
 
         <button
