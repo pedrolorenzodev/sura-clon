@@ -680,7 +680,9 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
-| 2026-09-23 | `--hero-word-*`, `--hero-rise-delay`, `--row-reveal-*` y las utilities `hero-word-mask` / `hero-word` / `hero-rise` / `row-reveal` | Hero · Leaderboard (Home) | Entrada del hero y de las filas del Leaderboard, pedido del usuario sin consulta y con la condición de que no se sienta *AI-slop*. **Son el 4º y 5º desvío consciente de AGENTS regla 16**, con el criterio de los anteriores: cero librerías de motion. Receta y medidas en *Vocabulario de entrada*, § 6. |
+| 2026-09-23 | **Miniaturas del slider livianas** (`*-thumb.jpg`) | Slider del hero | La segunda miniatura, Fortnite, mostraba el placeholder negro antes de cargar: era un PNG de 2,5 MB para un cuadrado de 60px. Detalle en la deuda *Portadas del slider a tamaño completo*, ahora resuelta. |
+| 2026-09-23 | `--thumb-reveal-stagger` de 90ms a **150ms** | Slider del hero | Pedido del usuario: más aire entre la entrada de una miniatura y la siguiente. La duración se queda en 420ms: como es mayor que el stagger, cada una arranca antes de que termine la anterior y la cascada sigue continua, y la última cierra a los **870ms**, dentro del segundo de la entrada del hero. Con 700ms se iba a 1150ms. |
+| 2026-09-23 | `--ease-scan`, `--hud-scan-*`, `--count-up-duration`, `--row-reveal-*` y las utilities `hud-scan` / `row-reveal` | Hero · Leaderboard (Home) | Entrada del hero (escaneo HUD) y de las filas del Leaderboard (puntaje arcade), elegidas por el usuario después de descartar una primera versión genérica. **Son el 4º y 5º desvío consciente de AGENTS regla 16**, con el criterio de los anteriores: cero librerías de motion. Receta y medidas en *Vocabulario de entrada*, § 6. |
 | 2026-09-23 | `--text-shadow-hero-copy` (`0 0 3px` negro al 90% + `0 0 10px` al 70%) | Hero | Pedido del usuario: el copy "Unite a Sura…" se mezclaba con el arte y lo quería "sutil". No sale del Figma. Se midió el contraste del blanco contra cada píxel del contorno de las letras (2px alrededor de la tinta), en los cuatro slides y los dos tamaños. **Sin sombra**, el contorno por debajo de 4,5:1 iba de 2 a 29% en desktop y de 35 a 66% en mobile. `--text-shadow-banner`, que ya existía, resolvía desktop pero dejaba mobile en 31-48%: a 12px una sombra de 4px no alcanza. La de dos capas —un halo corto que recorta la letra y uno ancho que baja el fondo— deja **desktop en 0% en los cuatro slides y mobile en 7-20%**, sin armar un bloque oscuro detrás del texto. Va la misma en los dos tamaños para que el copy tenga una sola receta. Los slides 2 y 3 en mobile (Black Ops 6 y Modern Warfare III, con el logo gris enorme detrás) siguen siendo los peores: no se empujó más para no perder el "sutil". No mueve el layout. |
 | 2026-09-23 | **Header mobile con vidrio al scrollear, en todas las rutas** | Header | Sin tokens nuevos: reusa `--blur-nav` de la bottom bar y `--color-background` al 60%. El estado lo da `data-scrolled` en el `<header>` (`scrollY > 0`) y el div mobile lo lee con `group-data-scrolled:`. El `solid` de las rutas internas pasa a `desktop:bg-background`. Detalle y medidas de contraste en § 5. |
 | 2026-09-23 | `--shadow-row-me` (`0 0 10px` `#97f300` al 15 %) y **el velo de "Tu posición" ya no tapa su borde** | Leaderboard | Bug que levantó el usuario: en hover el borde verde de la fila desaparecía y sólo quedaban unos píxeles verdes en las esquinas. El borde es `ring-1 ring-inset` —un `box-shadow` de la propia fila— y el velo de hover es un `<span>` opaco (`bg-surface-2`) en `inset-0`: se pinta encima del anillo y lo tapa entero, salvo el antialias de las esquinas, que el velo recto no llega a cubrir. Medido: el borde pasaba de `151,243,0` a `48,48,48`. **Sólo le pasaba a esta fila**: las comunes dibujan el borde en un `::after` que queda arriba del velo, y las del podio tienen un velo translúcido (`white/4`) que deja ver su anillo. Ahora el velo de esta fila va `inset-px` con el radio concéntrico (`calc(var(--radius-lg) - 1px)`), así que llena el interior sin pisar el borde. Primero se probó llevar el anillo a una capa encima del velo, pero las esquinas quedaban antialiaseadas dos veces —por el radio de la capa y por el `overflow-hidden` de la fila— y el reposo cambiaba hasta Δ52. Con el velo achicado, **el reposo queda idéntico al píxel** y el hover mantiene el verde en los cuatro bordes. Como señal extra de hover, pedida "sutil", la fila suma un glow verde con la receta del glow de la fila dorada (10px al 15 %): el borde ya es verde, así que es el mismo criterio que el *glow de link* de § 6 — iluminar lo que ya es verde. Las filas común y dorada no se movieron un píxel ni en reposo ni en hover. Aplica también a la fila mobile, que comparte `standings-tone`. |
@@ -834,7 +836,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Diseño mobile incompleto** | Falta el 60% de las secciones (ver sección 5). | Pendiente de que lleguen los frames. |
 | **Íconos del menú en un solo estado** | El Figma exporta cada ícono del menú en un solo color: Home en negro (seleccionado) y los otros seis en blanco (default). | **Resuelto sin pedir assets**: el SVG se usa como máscara y el color lo ponen los tokens (ver Notas de implementación). Ya no hace falta la versión que falta. |
 | ~~**Arte del hero escalado 1.81×**~~ | El asset medía 1440 × 811 y el diseño lo muestra a 2610 de ancho. | **Resuelta** (2026-09-20) con upscale de IA a 2880 × 1622, autorizado por el usuario. Si diseño entrega el arte original en grande, reemplaza al upscaleado: un upscale inventa detalle, no lo recupera. |
-| **Portadas del slider a tamaño completo** | Las miniaturas se muestran a 60px pero cargan las portadas originales: 1920 × 1080 (2,5 MB), 1536 × 864 y 840 × 560. Son 4,2 MB para tres cuadraditos. | Sigue abierta. El upscale del 2026-09-20 **no la toca**: creó archivos aparte para el arte de fondo y la miniatura quedó donde estaba. Ahora que el usuario autorizó editar assets, la salida barata sería generar miniaturas de 120px desde los mismos originales — son ~4 MB de los 30 que pesa `public/assets/home`. |
+| ~~**Portadas del slider a tamaño completo**~~ | Las miniaturas se mostraban a 60px cargando las portadas originales: 4,5 MB entre las cuatro, y la de Fortnite (PNG de 1920 × 1080, 2,5 MB) llegaba última y se veía el placeholder negro antes que la imagen. | **Resuelta** (usuario, 2026-09-23): miniaturas propias `*-thumb.jpg`, a 120px de alto —el doble del tamaño en pantalla— y en la misma proporción que el original, así `object-cover` hace el mismo recorte. Salen de los mismos originales, con el mismo criterio que el `@2x` del arte. Pesan **5–9 KB** cada una y llegan juntas; visualmente idénticas (Δ medio 5, con picos sólo en el reescalado de los logos). Los originales siguen en el repo: son la fuente del `@2x`. |
 | **El slider se aparta del Figma en desktop** | Decisión del usuario (2026-09-19): las no seleccionadas van atenuadas **también en desktop** (el frame las deja a full), el radio de la miniatura pasa de 4.8 a **8px** y el borde de la activa de 1.5 a **2px**. Mobile no se aparta: 1.6 → 2 y 0.8 → 1 caen dentro de la política de normalización. | Confirmar con diseño. |
 | ~~**El slider no navega**~~ | — | **Resuelto** (2026-09-19): clickear una miniatura cambia el arte del hero. Ver las dos filas de abajo, que son lo que quedó abierto. |
 | **Sin arte de hero propio por juego** | El Figma sólo compone el arte de Valorant. Los otros tres usan su propia portada de 16:9 como fondo full-bleed, que no es lo mismo: son portadas centradas en su logo, no key art pensado para tener texto encima. En Black Ops 6 el logo queda detrás del copy. | Pedir a diseño un arte de hero por juego, compuesto con aire a la izquierda como el de Valorant. Mientras tanto van con encuadre `cover`. |
@@ -1036,7 +1038,7 @@ por saturación**, así que conviene probar a la mañana.
 | **Las flechas del slider no estaban donde parecía** | El nodo de la sección (`6008:26364`) no trae ningún control, así que se iban a inventar. | Aparecen en el **frame compuesto del Home**, apoyadas en los gutters: son chevrons pelados, sin círculo ni fondo. Se midieron sobre el render a resolución completa — tinta 10 × 18, centro 33px por fuera de la columna y a 202 del tope del slider, `#FFFFFF` activa y `#444444` inactiva. **Antes de dar por inexistente un elemento, mirar el frame de la pantalla y no sólo el de la sección.** |
 | **El recorte del personaje no podía ir en `background-position`** | Primero se resolvió como el arte del hero, convirtiendo el offset del Figma a posición porcentual con P = offset / (1 − tamaño). El personaje de la card 2 salió corrido: su divisor vale 0.0056, así que amplifica 180 veces cualquier redondeo del tamaño. | Ventana con `overflow-hidden` y la imagen posicionada adentro, con los porcentajes del Figma sin convertir. Como el Figma escala la card entera, los mismos valores sirven para los dos tamaños. |
 | **La línea divisoria del Figma es un degradé degenerado** | `Line 22` se exporta como SVG con un degradé vertical definido **fuera** de la caja de la línea (de y=1 a y=2 sobre una línea de 1px en y=0.5). | Al renderizar queda plano en su primer stop: `#A1A1A1` al 50%. Se resuelve con `--color-border-muted` al 50%, a 4 niveles del medido — imperceptible a media opacidad. |
-| **Revelado escalonado del slider** | Las portadas son los assets más pesados de la página (4,2 MB entre tres) y aparecían de golpe, cada una cuando terminaba de bajar — desordenadas y sin relación con el orden de la lista. | Las tres no activas van con `fetchPriority="low"` para que no compitan con el arte del hero (`loading="lazy"` ya es el default de `next/image`), y el `<li>` entra con un `@utility thumb-reveal`: sube 8px y se funde, escalonado 90ms por índice. La última cierra a los 690ms, que es el colchón de carga; hasta entonces se ve `--color-thumb-dim` de placeholder. Sólo `opacity` y `transform`, que resuelve el compositor sin tocar layout — medido: las posiciones finales son idénticas y el `transform` queda en `none`. Con `prefers-reduced-motion: reduce` no hay animación, y el guard vive dentro de la utility para que no se pueda usar mal. **Es el segundo desvío consciente de AGENTS regla 16**, con el mismo criterio que el pill del menú: cero librerías de motion. |
+| **Revelado escalonado del slider** | Las portadas son los assets más pesados de la página (4,2 MB entre tres) y aparecían de golpe, cada una cuando terminaba de bajar — desordenadas y sin relación con el orden de la lista. | Las tres no activas van con `fetchPriority="low"` para que no compitan con el arte del hero (`loading="lazy"` ya es el default de `next/image`), y el `<li>` entra con un `@utility thumb-reveal`: sube 8px y se funde, escalonado 150ms por índice (90ms hasta el 2026-09-23). La última cierra a los 970ms (desde el 2026-09-23, con 700ms por miniatura; antes 420ms y 690), que es el colchón de carga; hasta entonces se ve `--color-thumb-dim` de placeholder. Sólo `opacity` y `transform`, que resuelve el compositor sin tocar layout — medido: las posiciones finales son idénticas y el `transform` queda en `none`. Con `prefers-reduced-motion: reduce` no hay animación, y el guard vive dentro de la utility para que no se pueda usar mal. **Es el segundo desvío consciente de AGENTS regla 16**, con el mismo criterio que el pill del menú: cero librerías de motion. |
 | **El encuadre del Figma no sirve para las otras portadas** | Al hacer funcional el slider, los cuatro artes arrancaron con el encuadre medido del Figma (181,25% anclado arriba a la izquierda). Valorant y Modern Warfare III quedaron bien; Fortnite mostraba media letra de su logo a pantalla completa y Black Ops 6 un arma gigante. | El encuadre del Figma está compuesto **para el arte del Figma**. Cada entrada declara el suyo en `lib/data/hero.ts`: `design` para el arte del diseño, que conserva el hero aprobado intacto — verificado, `181.25% auto` en `0% 0%` y `254.174%` en `31.704% 0` —, y `cover` centrado para las otras tres, que así muestran su propia composición. |
 | **Chrome trunca `border-width` a píxeles enteros** | El borde de 1.5px de la miniatura activa se pintaba de 1px: medido a `deviceScaleFactor: 2`, 2 píxeles de dispositivo en vez de 3. Pasa igual con un `border: 1.5px` literal. El anillo del avatar del header arrastraba el mismo redondeo desde el bloque 1. | Se probó con `ring` inset (`box-shadow`), que sí respeta el medio píxel, pero la decisión del usuario (2026-09-19) fue al revés: **los strokes de medio píxel se redondean al entero de arriba** y quedan como `border`. Un mecanismo menos que recordar, y un borde entero se pinta como se pide. La miniatura activa queda en 2px en desktop y 1 en mobile (donde el diseño pide 0.8, que redondea a entero igual), y el avatar en 2px. |
 | **El MCP acertó la atenuación, pero igual se midió** | El frame mobile atenúa las miniaturas no seleccionadas (portada al 40% sobre `--color-thumb-dim`) y el desktop no. | Se muestrearon los dos renders antes de decidir, y la diferencia era real. Después el usuario resolvió unificar en el tratamiento de mobile (ver deuda). Misma política que el degradé de la bottom bar: **ante la duda, medir el render.** |
@@ -1120,48 +1122,39 @@ admite (ver notas de implementación).
 
 ### Vocabulario de entrada
 
-Pedido del usuario (2026-09-23), decidido sin consulta. La referencia fueron los *hero reveals* de
-Awwwards y guías de *load-in*. Lo que separa uno bueno de uno que se siente hecho por IA es la
-**contención**: una sola cascada, desplazamientos chicos, todo adentro de su caja, nada que dure
-más de un segundo. Lo que se evitó a propósito: blur-in, rebotes, parallax, un efecto distinto por
-elemento y animar el arte.
+Pedido del usuario (2026-09-23). La primera versión —máscara por palabra en el título más
+*fade-rise* del copy— funcionaba, pero el usuario la encontró genérica, y tenía razón: la puede
+tener cualquier sitio. Se reemplazó por dos recetas que salen de la identidad de la app —la
+tipografía de HUD, el verde neón y el tono arcade de puntos y rankings—, elegidas por el usuario.
+Lo que se sigue evitando a propósito: blur-in, rebotes, parallax, un efecto por elemento y animar
+el arte.
 
-**Entrada del hero** — una sola cascada, tres piezas, cerrada en **~970ms** (medido):
+**Escaneo HUD del hero** (`hud-scan`, sobre el bloque de título + copy + CTA): una línea de
+`--hud-scan-line` (2px) en `--color-brand-vivid`, con `--shadow-brand-glow`, baja por el bloque en
+700ms con `--ease-scan` (un *ease-in-out* mecánico, no de desaceleración) y lo va revelando con
+`clip-path`. La máscara deja `--hud-scan-bleed` (24px) de aire alrededor para no cortar la sombra
+del CTA ni el halo del copy, y la línea viaja 2px por delante del borde de la máscara, así queda
+siempre visible. Se apaga en el último 15%. Las miniaturas conservan su revelado. **No toca el
+LCP** —medido, el H1 sigue pintando a ~165ms en desktop y el arte a ~285ms en mobile—, a diferencia
+de la máscara por palabra, que lo llevaba a ~350ms.
 
-1. **Título, palabra por palabra detrás de una máscara.** Cada palabra es un `inline-block` con
-   `clip-path: inset(0 -0.25em)` (`hero-word-mask`): recorta sólo arriba y abajo, así el tracking
-   negativo de Monument no se corta a los costados. Adentro, la palabra sube desde el 100% con
-   `--ease-reveal`, 600ms y 40ms de stagger (`hero-word`). Va con `clip-path` y no con `overflow`
-   porque un `inline-block` con `overflow` distinto de `visible` cambia su línea base.
-2. **Copy y CTA:** el mismo *fade-rise* de las miniaturas (`thumb-reveal`: 8px, 420ms), a los
-   **120ms** y a los 210ms (`hero-rise`).
-3. **Miniaturas:** su revelado ya aprobado, sin cambios.
-
-El arte no se anima: es el LCP en mobile y la `<section>` tiene la guarda de apilado. La cascada
-no se repite al cambiar de slide —cambia el arte, no el contenido—, pero sí al volver al Home.
-
-**Filas del Leaderboard del Home** — entran al llegar a la sección. `RevealList`
-(`components/sections/reveal-list.tsx`) es el `<ul>` con un `IntersectionObserver` de una sola
-pasada: si al hidratar la lista ya está a la vista, no hace nada; si está fuera, la marca
-`data-reveal="armed"` (filas en opacidad 0, fuera de pantalla, así que no se ve el cambio), y al
-cruzar el 85% del viewport pasa a `shown`, que corre el *fade-rise* con 60ms entre filas. Va con
-`animation` y no `transition` para no pisar la `transition-[flex-grow]` del hover de crecimiento, y
-con fill `backwards`: al terminar no queda ningún `transform`. Sólo las filas: el podio y Medallas
-se quedan quietos. La tabla de `/leaderboard` no lo usa (`revealIndex` es opcional).
+**Puntaje arcade en el Leaderboard del Home**: las filas entran con el *fade-rise* en cascada
+(`row-reveal`, 60ms entre filas) y **los puntos cuentan desde 0 hasta su valor** (`CountUp`, 700ms
+con *ease-out* cúbico, arrancando con el retraso de su fila). `RevealList` es el `<ul>` con un
+`IntersectionObserver` de una sola pasada, y expone su estado por contexto: si al hidratar la lista
+ya está a la vista, o si el usuario pidió *reduced motion*, no hace nada; si está fuera, la marca
+`armed` (filas ocultas, números en 0) y al cruzar el 85% del viewport pasa a `shown`. El número
+animado se apila sobre el valor final invisible en una grilla, así **el ancho del pill no cambia
+durante el conteo** (medido: 21,61px fijo) y la fila no salta. El valor final es el string ya
+formateado de la data, así que no hay riesgo de hidratación; los intermedios se formatean con el
+punto de miles. Sólo las filas: el podio y Medallas se quedan quietos.
 
 **Verificado:**
-- estado final **idéntico al píxel** en el leaderboard. En el título, las palabras quedan corridas
-  **0,03-0,05px**, que es el redondeo de cualquier caja `inline-block`: cambia el antialias del
-  borde de "LA" y "SURA" (Δ≤60 en ese píxel) y a simple vista es idéntico;
-- reduced motion: cero animaciones y filas siempre visibles. Sin JS: filas visibles;
+- estado final **idéntico al píxel** en el hero y el leaderboard, a 390 y 1440;
+- reduced motion: cero animaciones y valores finales. Sin JS: valores finales;
 - recarga con el leaderboard a la vista: no anima. Click del menú a Leaderboard: anima;
-- hover de crecimiento intacto después del reveal (59,4 → 70,7);
+- hover de crecimiento intacto después del reveal;
 - Home 4156 / 4046 y 0 de scroll lateral en los cinco anchos.
-
-**Lo que cuesta:** en desktop el LCP es el título, y con la máscara se pinta recortado. Pasa de
-**~165ms a ~350ms**. Con el copy a los 300ms era ~900ms: por eso entra a los 120ms. En mobile el
-LCP es el arte y no cambia. Si hiciera falta recuperarlo, la salida es sacar la máscara del título
-y dejar sólo el *fade-rise*.
 
 ### Notas de arquitectura
 

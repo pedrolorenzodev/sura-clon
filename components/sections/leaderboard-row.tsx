@@ -77,7 +77,7 @@ export function LeaderboardRow({
           </div>
         </div>
 
-        <ValuePill points={points} className="relative" />
+        <ValuePill points={points} countUpIndex={revealIndex} className="relative" />
       </CardLink>
     </li>
   );

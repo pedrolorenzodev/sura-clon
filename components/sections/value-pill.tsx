@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { CountUp } from "@/components/sections/count-up";
 import { cn } from "@/lib/utils";
 
 export type ValuePillVariant = "neutral" | "gold" | "silver" | "bronze";
@@ -15,11 +16,13 @@ export function ValuePill({
   points,
   variant = "neutral",
   small = false,
+  countUpIndex,
   className,
 }: {
   points: string;
   variant?: ValuePillVariant;
   small?: boolean;
+  countUpIndex?: number;
   className?: string;
 }) {
   return (
@@ -43,7 +46,7 @@ export function ValuePill({
           small ? "text-2xs" : "text-xs",
         )}
       >
-        {points}
+        {countUpIndex === undefined ? points : <CountUp value={points} index={countUpIndex} />}
       </span>
     </div>
   );

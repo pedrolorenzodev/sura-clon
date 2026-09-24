@@ -1,16 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
-type RevealState = "armed" | "shown";
+type RevealState = "armed" | "shown" | null;
+
+const RevealContext = createContext<RevealState>(null);
+
+export const useRevealState = () => useContext(RevealContext);
 
 export function RevealList({ className, children }: { className?: string; children: React.ReactNode }) {
   const ref = useRef<HTMLUListElement>(null);
-  const [state, setState] = useState<RevealState | null>(null);
+  const [state, setState] = useState<RevealState>(null);
 
   useEffect(() => {
     const list = ref.current;
-    if (!list) return;
+    if (!list || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let decided = false;
     const observer = new IntersectionObserver(
@@ -33,8 +37,10 @@ export function RevealList({ className, children }: { className?: string; childr
   }, []);
 
   return (
-    <ul ref={ref} data-reveal={state ?? undefined} className={className}>
-      {children}
-    </ul>
+    <RevealContext.Provider value={state}>
+      <ul ref={ref} data-reveal={state ?? undefined} className={className}>
+        {children}
+      </ul>
+    </RevealContext.Provider>
   );
 }

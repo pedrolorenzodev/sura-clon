@@ -275,12 +275,14 @@ export const gradientTokens: Token[] = [
 
 export const motionTokens: Token[] = [
   { name: "--ease-reveal", utility: "ease-reveal", usage: "Curva de entrada del slider del hero — desacelera y no vuelve", offDesign: true },
+  { name: "--ease-scan", utility: "ease-scan", usage: "Curva del escaneo del hero — arranca y frena parejo, como un barrido mecánico", offDesign: true },
   { name: "--thumb-reveal-duration", utility: "thumb-reveal", usage: "Cuánto tarda en entrar una miniatura del slider", offDesign: true },
   { name: "--thumb-reveal-stagger", utility: "thumb-reveal", usage: "Retraso de cada miniatura respecto de la anterior", offDesign: true },
   { name: "--thumb-reveal-shift", utility: "thumb-reveal", usage: "Cuánto sube la miniatura al entrar", offDesign: true },
-  { name: "--hero-word-duration", utility: "hero-word", usage: "Cuánto tarda cada palabra del título del hero en subir detrás de su máscara", offDesign: true },
-  { name: "--hero-word-stagger", utility: "hero-word", usage: "Retraso de cada palabra del título respecto de la anterior", offDesign: true },
-  { name: "--hero-rise-delay", utility: "hero-rise", usage: "Cuándo entran el copy y el CTA del hero, contado desde el título", offDesign: true },
+  { name: "--hud-scan-duration", utility: "hud-scan", usage: "Cuánto tarda el escaneo que revela el texto del hero", offDesign: true },
+  { name: "--hud-scan-bleed", utility: "hud-scan", usage: "Aire que la máscara del escaneo deja alrededor del bloque, para no cortar la sombra del CTA ni la del copy", offDesign: true },
+  { name: "--hud-scan-line", utility: "hud-scan", usage: "Grosor de la línea verde del escaneo", offDesign: true },
+  { name: "--count-up-duration", utility: "—", usage: "Cuánto tardan los puntos de una fila del Leaderboard en contar hasta su valor", offDesign: true },
   { name: "--row-reveal-duration", utility: "row-reveal", usage: "Cuánto tarda en entrar una fila del Leaderboard del Home", offDesign: true },
   { name: "--row-reveal-stagger", utility: "row-reveal", usage: "Retraso de cada fila respecto de la anterior", offDesign: true },
   { name: "--row-reveal-shift", utility: "row-reveal", usage: "Cuánto sube la fila al entrar", offDesign: true },
