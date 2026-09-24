@@ -50,7 +50,7 @@ export function TournamentCard({ tournament }: { tournament: Tournament }) {
             <span className="font-techno text-note uppercase text-brand">{tournament.date}</span>
             <span className="flex shrink-0 items-center gap-1 rounded-xs border border-gold px-2 py-1">
               <Image
-                src="/assets/home/eventos/trophy.png"
+                src="/assets/home/eventos/trophy.webp"
                 alt=""
                 width={18}
                 height={18}

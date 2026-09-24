@@ -11,13 +11,13 @@ const SURFACE = {
 // no tocar: el piso va en bottom-px, no bottom-0; con 0 el personaje pisa el borde
 const ART = {
   domino: {
-    src: "/assets/home/eventos/char-domino.png",
+    src: "/assets/home/eventos/char-domino.webp",
     size: 1024,
     window: "bottom-px left-[46.85%] h-[110.31%] w-[53.15%]",
     image: "left-[-39.18%] top-[-3.74%] h-[103.74%] w-[172.16%]",
   },
   squad: {
-    src: "/assets/home/eventos/char-squad.png",
+    src: "/assets/home/eventos/char-squad.webp",
     size: 924,
     window: "bottom-px left-[11.78%] h-[122.34%] w-[87.95%] rounded-br-lg desktop:rounded-br-xl",
     image: "left-[-0.95%] top-[0.06%] h-[100.56%] w-[137.4%]",
@@ -106,7 +106,7 @@ export function EventCard({ event }: { event: EventCardData }) {
             </div>
             <div className="flex shrink-0 items-center gap-0.5 rounded-xs border border-gold px-1.25 py-0.75 desktop:gap-1 desktop:rounded-sm desktop:px-2 desktop:py-1.5">
               <Image
-                src="/assets/home/eventos/trophy.png"
+                src="/assets/home/eventos/trophy.webp"
                 alt=""
                 width={18}
                 height={18}

@@ -39,7 +39,7 @@ export function MissionFeatureCard({ mission }: { mission: Mission }) {
             </span>
             <span className="relative block aspect-[17.455/16] h-4 shrink-0 overflow-hidden desktop:h-5">
               <Image
-                src="/assets/home/sp-coin.png"
+                src="/assets/home/sp-coin.webp"
                 alt=""
                 width={2084}
                 height={2084}

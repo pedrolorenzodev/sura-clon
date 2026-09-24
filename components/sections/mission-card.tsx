@@ -59,7 +59,7 @@ export function MissionCard({
             </span>
             <span className="relative block h-4 w-[17.455px] shrink-0 overflow-hidden">
               <Image
-                src="/assets/home/sp-coin.png"
+                src="/assets/home/sp-coin.webp"
                 alt=""
                 width={2084}
                 height={2084}

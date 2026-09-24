@@ -11,43 +11,43 @@ export const games: Game[] = [
     id: "wagmi-defense",
     title: "Wagmi Defense",
     badges: ["Casual", "Free-To-Play"],
-    imageSrc: "/assets/home/juegos/wagmi.png",
+    imageSrc: "/assets/home/juegos/wagmi.webp",
   },
   {
     id: "ac-syndicate-mario",
     title: "Assassin's Creed Syndicate",
     badges: ["Casual", "Free-To-Play"],
-    imageSrc: "/assets/home/juegos/mario.png",
+    imageSrc: "/assets/home/juegos/mario.webp",
   },
   {
     id: "ac-syndicate",
     title: "Assassin's Creed Syndicate",
     badges: ["Casual", "Free-To-Play", "Free-To-Play"],
-    imageSrc: "/assets/home/juegos/minecraft.png",
+    imageSrc: "/assets/home/juegos/minecraft.webp",
   },
   {
     id: "cod-modern-warfare",
     title: "Call of Duty Modern Warfare",
     badges: ["Casual", "Free-To-Play"],
-    imageSrc: "/assets/home/juegos/cod-mw.png",
+    imageSrc: "/assets/home/juegos/cod-mw.webp",
   },
   {
     id: "ac-syndicate-2",
     title: "Assassin's Creed Syndicate",
     badges: ["Casual", "Free-To-Play", "Free-To-Play"],
-    imageSrc: "/assets/home/juegos/minecraft.png",
+    imageSrc: "/assets/home/juegos/minecraft.webp",
   },
   {
     id: "cod-modern-warfare-2",
     title: "Call of Duty Modern Warfare",
     badges: ["Casual", "Free-To-Play"],
-    imageSrc: "/assets/home/juegos/racing.png",
+    imageSrc: "/assets/home/juegos/racing.webp",
   },
   {
     id: "wagmi-defense-2",
     title: "Wagmi Defense",
     badges: ["Casual", "Free-To-Play"],
-    imageSrc: "/assets/home/juegos/wagmi.png",
+    imageSrc: "/assets/home/juegos/wagmi.webp",
   },
   {
     id: "ac-valhalla",
@@ -62,39 +62,39 @@ export const gamesPromo = {
   title: ["Juega y viaja al", "Mundial FIFA 2026"],
   body: ["Para completar esta misión, debes hacer clic en", "el botón de abajo para visitar la página requerida."],
   cta: "Jugar ahora",
-  imageSrc: "/assets/home/juegos/banner.png",
+  imageSrc: "/assets/home/juegos/banner.webp",
 };
 
 export const gamesFilters = ["Género", "Plataforma", "Estado", "Redes"];
 
 const CATALOG: Omit<Game, "id">[] = [
-  { title: "Wagmi Defense", badges: ["Casual", "Free-To-Play"], imageSrc: "/assets/home/juegos/wagmi.png" },
+  { title: "Wagmi Defense", badges: ["Casual", "Free-To-Play"], imageSrc: "/assets/home/juegos/wagmi.webp" },
   {
     title: "Assassin's Creed Syndicate",
     badges: ["Casual", "Free-To-Play"],
-    imageSrc: "/assets/home/juegos/mario.png",
+    imageSrc: "/assets/home/juegos/mario.webp",
   },
   {
     title: "The Plooshies",
     badges: ["Casual Multiplayer"],
-    imageSrc: "/assets/games/plooshies.png",
+    imageSrc: "/assets/games/plooshies.webp",
   },
   {
     title: "Call of Duty Modern Warfare",
     badges: ["Casual", "Free-To-Play"],
-    imageSrc: "/assets/home/juegos/cod-mw.png",
+    imageSrc: "/assets/home/juegos/cod-mw.webp",
   },
   {
     title: "Assassin's Creed Syndicate",
     badges: ["Casual", "Free-To-Play", "Free-To-Play"],
-    imageSrc: "/assets/home/juegos/minecraft.png",
+    imageSrc: "/assets/home/juegos/minecraft.webp",
   },
   {
     title: "Call of Duty Modern Warfare",
     badges: ["Casual", "Free-To-Play"],
-    imageSrc: "/assets/home/juegos/racing.png",
+    imageSrc: "/assets/home/juegos/racing.webp",
   },
-  { title: "Wagmi Defense", badges: ["Casual", "Free-To-Play"], imageSrc: "/assets/home/juegos/wagmi.png" },
+  { title: "Wagmi Defense", badges: ["Casual", "Free-To-Play"], imageSrc: "/assets/home/juegos/wagmi.webp" },
   {
     title: "Assasin's Creed Valhalla",
     badges: ["Casual Multiplayer"],
@@ -113,5 +113,5 @@ export const gamesRoutePromo = {
   label: "¡Novedad!",
   bodyMobile:
     "Para completar esta misión, debes hacer clic en el botón de abajo para visitar la página requerida.",
-  imageSrcMobile: "/assets/games/banner-mobile.png",
+  imageSrcMobile: "/assets/games/banner-mobile.webp",
 };

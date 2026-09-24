@@ -69,7 +69,7 @@ export function HeaderDesktop({ className }: { className?: string }) {
         </button>
 
         <Counter iconSrc="/assets/home/fire.png" value={currentUser.streak} bold />
-        <Counter iconSrc="/assets/home/sp-coin.png" value={currentUser.points} />
+        <Counter iconSrc="/assets/home/sp-coin.webp" value={currentUser.points} />
 
         <button
           type="button"

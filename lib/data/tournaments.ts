@@ -31,7 +31,7 @@ export const tournaments: Tournament[] = [
     ],
     host: "CommunityGaming",
     official: true,
-    imageSrc: "/assets/home/juegos/cod-mw.png",
+    imageSrc: "/assets/home/juegos/cod-mw.webp",
   },
   {
     id: "american-cup",
@@ -46,7 +46,7 @@ export const tournaments: Tournament[] = [
     ],
     host: "CommunityGaming",
     official: true,
-    imageSrc: "/assets/home/juegos/wagmi.png",
+    imageSrc: "/assets/home/juegos/wagmi.webp",
   },
   {
     id: "copa-latam-sura",
@@ -61,7 +61,7 @@ export const tournaments: Tournament[] = [
     ],
     host: "SuraGaming",
     official: true,
-    imageSrc: "/assets/home/juegos/minecraft.png",
+    imageSrc: "/assets/home/juegos/minecraft.webp",
   },
   {
     id: "noche-de-duelos",
@@ -75,7 +75,7 @@ export const tournaments: Tournament[] = [
       { icon: "players", label: "28/32" },
     ],
     host: "CommunityGaming",
-    imageSrc: "/assets/home/juegos/mario.png",
+    imageSrc: "/assets/home/juegos/mario.webp",
   },
   {
     id: "clasificatorio-abierto",
@@ -89,7 +89,7 @@ export const tournaments: Tournament[] = [
       { icon: "players", label: "112/120" },
     ],
     host: "CommunityGaming",
-    imageSrc: "/assets/home/juegos/racing.png",
+    imageSrc: "/assets/home/juegos/racing.webp",
   },
   {
     id: "contenders-training-center-110",
@@ -119,7 +119,7 @@ export const tournaments: Tournament[] = [
     ],
     host: "SuraGaming",
     official: true,
-    imageSrc: "/assets/home/juegos/wagmi.png",
+    imageSrc: "/assets/home/juegos/wagmi.webp",
   },
   {
     id: "torneo-relampago",
@@ -133,6 +133,6 @@ export const tournaments: Tournament[] = [
       { icon: "players", label: "31/40" },
     ],
     host: "CommunityGaming",
-    imageSrc: "/assets/home/juegos/minecraft.png",
+    imageSrc: "/assets/home/juegos/minecraft.webp",
   },
 ];

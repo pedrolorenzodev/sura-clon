@@ -11,7 +11,7 @@ export const currentUser: CurrentUser = {
   name: "RocketMan1989",
   avatarSrc: "/assets/home/avatar.png",
   levelLabel: "Nivel: Novato",
-  levelBadgeSrc: "/assets/home/level-1.png",
+  levelBadgeSrc: "/assets/home/level-1.webp",
   streak: 5,
   points: 473,
 };
@@ -25,5 +25,5 @@ export type DailyClaim = {
 export const dailyClaim: DailyClaim = {
   label: "Reclamar",
   gameIconSrc: "/assets/home/cs2-logo.png",
-  sparkleSrc: "/assets/home/sparkling.png",
+  sparkleSrc: "/assets/home/sparkling.webp",
 };

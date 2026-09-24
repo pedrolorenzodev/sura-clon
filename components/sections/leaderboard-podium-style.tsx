@@ -15,9 +15,9 @@ export const PODIUM_STYLE: Record<
 };
 
 const MEDAL = {
-  1: { src: "/assets/home/leaderboard/medal-1.png", crop: true },
-  2: { src: "/assets/home/leaderboard/medal-2.png", crop: false },
-  3: { src: "/assets/home/leaderboard/medal-3.png", crop: true },
+  1: { src: "/assets/home/leaderboard/medal-1.webp", crop: true },
+  2: { src: "/assets/home/leaderboard/medal-2.webp", crop: false },
+  3: { src: "/assets/home/leaderboard/medal-3.webp", crop: true },
 } as const;
 
 export function PodiumMedal({ rank, className }: { rank: PodiumRank; className?: string }) {
@@ -47,7 +47,7 @@ export function PodiumMedal({ rank, className }: { rank: PodiumRank; className?:
 export function Crown({ className }: { className?: string }) {
   return (
     <Image
-      src="/assets/home/leaderboard/crown.png"
+      src="/assets/home/leaderboard/crown.webp"
       alt=""
       width={254}
       height={150}

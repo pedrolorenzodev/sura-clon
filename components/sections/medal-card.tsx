@@ -5,29 +5,29 @@ import { cn } from "@/lib/utils";
 
 const ART: Record<MedalArt, { src: string; image: string }> = {
   devocion: {
-    src: "/assets/home/medallas/sprite-gold-1.png",
+    src: "/assets/home/medallas/sprite-gold-1.webp",
     image: "left-[-12.29%] top-[-14.38%] size-[244.15%]",
   },
   "first-victory": {
-    src: "/assets/home/medallas/sprite-gold-1.png",
+    src: "/assets/home/medallas/sprite-gold-1.webp",
     image: "left-[-7.87%] top-[-117.04%] h-[226.55%] w-[230.11%]",
   },
   "point-collector": {
-    src: "/assets/home/medallas/sprite-gold-1.png",
+    src: "/assets/home/medallas/sprite-gold-1.webp",
     image: "left-[-121.3%] top-[-118.51%] h-[226.55%] w-[230.11%]",
   },
   "event-master": {
-    src: "/assets/home/medallas/sprite-gold-2.png",
+    src: "/assets/home/medallas/sprite-gold-2.webp",
     image: "left-[-127.8%] top-[-125.93%] size-[239.25%]",
   },
-  ranking: { src: "/assets/home/medallas/ranking.png", image: "inset-0 size-full" },
+  ranking: { src: "/assets/home/medallas/ranking.webp", image: "inset-0 size-full" },
   social: {
-    src: "/assets/home/medallas/social.png",
+    src: "/assets/home/medallas/social.webp",
     image: "inset-0 size-full rotate-90 -scale-y-100",
   },
-  consistencia: { src: "/assets/home/medallas/consistencia.png", image: "inset-0 size-full" },
-  sharpshooter: { src: "/assets/home/medallas/sharpshooter.png", image: "inset-0 size-full" },
-  influencer: { src: "/assets/home/medallas/influencer.png", image: "inset-0 size-full" },
+  consistencia: { src: "/assets/home/medallas/consistencia.webp", image: "inset-0 size-full" },
+  sharpshooter: { src: "/assets/home/medallas/sharpshooter.webp", image: "inset-0 size-full" },
+  influencer: { src: "/assets/home/medallas/influencer.webp", image: "inset-0 size-full" },
 };
 
 export function MedalCard({ medal }: { medal: Medal }) {
@@ -50,7 +50,7 @@ export function MedalCard({ medal }: { medal: Medal }) {
           {!medal.locked && (
             <>
               <Image
-                src="/assets/home/medallas/texture.png"
+                src="/assets/home/medallas/texture.webp"
                 alt=""
                 width={1920}
                 height={1080}
@@ -75,7 +75,7 @@ export function MedalCard({ medal }: { medal: Medal }) {
 
           {medal.sparkle && (
             <Image
-              src="/assets/home/sparkling.png"
+              src="/assets/home/sparkling.webp"
               alt=""
               width={736}
               height={736}

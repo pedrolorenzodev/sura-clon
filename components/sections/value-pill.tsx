@@ -34,7 +34,7 @@ export function ValuePill({
       )}
     >
       <Image
-        src="/assets/home/sp-coin.png"
+        src="/assets/home/sp-coin.webp"
         alt=""
         width={16}
         height={16}

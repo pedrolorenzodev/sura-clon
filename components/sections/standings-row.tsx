@@ -121,7 +121,7 @@ export function StandingsRow({ entry }: { entry: Standing }) {
 function Coin() {
   return (
     <Image
-      src="/assets/home/sp-coin.png"
+      src="/assets/home/sp-coin.webp"
       alt=""
       width={2084}
       height={2084}

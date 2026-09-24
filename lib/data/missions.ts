@@ -17,7 +17,7 @@ export const missions: Mission[] = [
     title: "Juega a Fortnite",
     description: DESCRIPTION,
     reward: "+120",
-    imageSrc: "/assets/home/misiones/fortnite.png",
+    imageSrc: "/assets/home/misiones/fortnite.webp",
   },
   {
     id: "valorant",
@@ -31,28 +31,28 @@ export const missions: Mission[] = [
     title: "Termina Assassin's Creed Syndicate",
     description: DESCRIPTION,
     reward: "+120",
-    imageSrc: "/assets/home/misiones/assassins-creed.png",
+    imageSrc: "/assets/home/misiones/assassins-creed.webp",
   },
   {
     id: "mario-bros",
     title: "Gana una partida de Mario Bros.",
     description: DESCRIPTION,
     reward: "+120",
-    imageSrc: "/assets/home/misiones/mario.png",
+    imageSrc: "/assets/home/misiones/mario.webp",
   },
   {
     id: "minecraft",
     title: "Construye tu primera base en Minecraft",
     description: DESCRIPTION,
     reward: "+120",
-    imageSrc: "/assets/home/juegos/minecraft.png",
+    imageSrc: "/assets/home/juegos/minecraft.webp",
   },
   {
     id: "wagmi-defense",
     title: "Defiende 3 oleadas en Wagmi Defense",
     description: DESCRIPTION,
     reward: "+120",
-    imageSrc: "/assets/home/juegos/wagmi.png",
+    imageSrc: "/assets/home/juegos/wagmi.webp",
   },
 ];
 
@@ -76,14 +76,14 @@ export const missionFilters: MissionOption[] = [
 ];
 
 const ART = [
-  "/assets/home/misiones/fortnite.png",
+  "/assets/home/misiones/fortnite.webp",
   "/assets/home/misiones/valorant.png",
-  "/assets/home/misiones/assassins-creed.png",
-  "/assets/home/misiones/mario.png",
-  "/assets/home/juegos/minecraft.png",
-  "/assets/home/juegos/wagmi.png",
-  "/assets/home/juegos/cod-mw.png",
-  "/assets/home/juegos/racing.png",
+  "/assets/home/misiones/assassins-creed.webp",
+  "/assets/home/misiones/mario.webp",
+  "/assets/home/juegos/minecraft.webp",
+  "/assets/home/juegos/wagmi.webp",
+  "/assets/home/juegos/cod-mw.webp",
+  "/assets/home/juegos/racing.webp",
 ];
 
 const TITLES = [
@@ -123,7 +123,7 @@ export const featuredMissions: Mission[] = [
     description:
       "Vinculá tu cuenta de X con tu perfil de Sura y sumá los puntos apenas se confirme el enlace.",
     reward: "+120",
-    imageSrc: "/assets/home/juegos/cod-mw.png",
+    imageSrc: "/assets/home/juegos/cod-mw.webp",
   },
   {
     id: "conecta-instagram",
@@ -131,7 +131,7 @@ export const featuredMissions: Mission[] = [
     description:
       "Enlazá tu Instagram para desbloquear las misiones sociales y competir en los rankings de la comunidad.",
     reward: "+120",
-    imageSrc: "/assets/home/misiones/fortnite.png",
+    imageSrc: "/assets/home/misiones/fortnite.webp",
     highlighted: true,
   },
   {
@@ -140,7 +140,7 @@ export const featuredMissions: Mission[] = [
     description:
       "Sumate al servidor de Sura y vinculá tu usuario para recibir los avisos de cada torneo.",
     reward: "+120",
-    imageSrc: "/assets/home/juegos/racing.png",
+    imageSrc: "/assets/home/juegos/racing.webp",
   },
   {
     id: "racha-siete-dias",
@@ -156,7 +156,7 @@ export const featuredMissions: Mission[] = [
     description:
       "Compartí tu link de referido. Cada amigo que complete su perfil te suma puntos a vos también.",
     reward: "+300",
-    imageSrc: "/assets/home/misiones/mario.png",
+    imageSrc: "/assets/home/misiones/mario.webp",
   },
   {
     id: "primer-torneo",

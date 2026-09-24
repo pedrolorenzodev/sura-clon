@@ -46,7 +46,7 @@ export function HeaderMobile({ className }: { className?: string }) {
 
         <div className="flex items-center gap-2">
           <Counter iconSrc="/assets/home/fire.png" value={currentUser.streak} fixedWidth />
-          <Counter iconSrc="/assets/home/sp-coin.png" value={currentUser.points} />
+          <Counter iconSrc="/assets/home/sp-coin.webp" value={currentUser.points} />
         </div>
       </div>
     </div>

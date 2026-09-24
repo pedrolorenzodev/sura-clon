@@ -10,14 +10,14 @@ export const news: NewsItem[] = [
   {
     id: "elden-ring",
     title: "Elden Ring: Shadow of the Erdtree Expansion Gets Official Release Dateerint",
-    imageSrc: "/assets/home/news/elden-ring.png",
+    imageSrc: "/assets/home/news/elden-ring.webp",
     readTime: "5 min",
     date: "30/03/25",
   },
   {
     id: "guild-of-guardians",
     title: "Top 3 Guild of Guardians characters highlights",
-    imageSrc: "/assets/home/news/guild-of-guardians.png",
+    imageSrc: "/assets/home/news/guild-of-guardians.webp",
     readTime: "5 min",
     date: "20/03/25",
   },
