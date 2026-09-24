@@ -17,7 +17,7 @@ export function TournamentCard({ tournament }: { tournament: Tournament }) {
         href={detailHref("tournaments", tournament.id)}
         className="group flex w-full flex-col gap-3 rounded-lg bg-surface px-4 pb-4 pt-2.5 shadow-mission-card ring-1 ring-inset ring-border transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-card-hover hover:ring-border-muted/60 focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover focus-visible:ring-border-muted/60 motion-reduce:transition-none desktop:gap-3.5 desktop:px-6 desktop:py-5"
       >
-        <div className="relative aspect-[334/178] w-full shrink-0 overflow-hidden rounded-sm ring-1 ring-inset ring-border-muted/50 desktop:aspect-[257/199]">
+        <div className="relative aspect-[334/178] w-full shrink-0 overflow-hidden rounded-sm desktop:aspect-[257/199]">
           <Image
             src={tournament.imageSrc}
             alt=""
