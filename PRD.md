@@ -1140,7 +1140,11 @@ de la máscara por palabra, que lo llevaba a ~350ms.
 
 **Puntaje arcade en el Leaderboard del Home**: las filas entran con el *fade-rise* en cascada
 (`row-reveal`, 60ms entre filas) y **los puntos cuentan desde 0 hasta su valor** (`CountUp`, 700ms
-con *ease-out* cúbico, arrancando con el retraso de su fila). `RevealList` es el `<ul>` con un
+con *ease-out* cúbico). El conteo arranca **cuando su fila terminó de aparecer** (retraso de la fila +
+`--row-reveal-duration`): la primera versión contaba durante el *fade* y, cuando la fila se veía, el
+número ya estaba en ~90% — el usuario no notaba ningún cambio. Por lo mismo las cinco filas del Home
+dejaron de repetir los 473 del Figma y tienen puntajes descendentes debajo del 3º (6.420 → 4.205):
+contar cinco veces hasta el mismo número se leía como un parpadeo. `RevealList` es el `<ul>` con un
 `IntersectionObserver` de una sola pasada, y expone su estado por contexto: si al hidratar la lista
 ya está a la vista, o si el usuario pidió *reduced motion*, no hace nada; si está fuera, la marca
 `armed` (filas ocultas, números en 0) y al cruzar el 85% del viewport pasa a `shown`. El número

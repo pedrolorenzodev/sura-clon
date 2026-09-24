@@ -32,12 +32,12 @@ export const leaderboard: LeaderboardEntry[] = [
     points: "6.755",
     avatarSrc: "/assets/home/leaderboard/avatar-3.png",
   },
-  ...Array.from({ length: 5 }, (_, i) => ({
+  ...["6.420", "5.980", "5.315", "4.870", "4.205"].map((points, i) => ({
     id: `usuario-${i + 4}`,
     rank: i + 4,
     name: "NombreUsuario",
     levelLabel: "Nivel: Leyenda",
-    points: "473",
+    points,
     avatarSrc: "/assets/home/leaderboard/avatar-row.png",
   })),
 ];

@@ -23,7 +23,8 @@ export function CountUp({ value, index }: { value: string; index: number }) {
 
     const target = Number(value.replace(/\D/g, ""));
     const duration = readMs("--count-up-duration");
-    const start = performance.now() + index * readMs("--row-reveal-stagger");
+    const start =
+      performance.now() + index * readMs("--row-reveal-stagger") + readMs("--row-reveal-duration");
     let frame = 0;
 
     const tick = (now: number) => {
