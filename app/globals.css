@@ -521,6 +521,8 @@
   --thumb-reveal-shift: 8px;
   --hero-art-fade-duration: 500ms;
   --hud-scan-duration: 700ms;
+  --hud-scan-fade-delay: 550ms;
+  --hud-scan-fade-duration: 400ms;
   --hud-scan-bleed: 24px;
   --hud-scan-line: 2px;
   --count-up-duration: 700ms;
@@ -973,7 +975,9 @@
       box-shadow: var(--shadow-brand-glow);
       pointer-events: none;
       opacity: 0;
-      animation: hud-scan-line var(--hud-scan-duration) var(--ease-scan);
+      animation:
+        hud-scan-line var(--hud-scan-duration) var(--ease-scan) forwards,
+        hud-scan-fade var(--hud-scan-fade-duration) var(--ease-scan) var(--hud-scan-fade-delay) both;
     }
   }
 }
@@ -991,15 +995,19 @@
 }
 
 @keyframes hud-scan-line {
-  0% {
+  from {
     top: calc(var(--hud-scan-line) * -1);
-    opacity: 1;
   }
-  85% {
-    opacity: 1;
-  }
-  100% {
+  to {
     top: calc(100% + var(--hud-scan-bleed) - var(--hud-scan-line));
+  }
+}
+
+@keyframes hud-scan-fade {
+  from {
+    opacity: 1;
+  }
+  to {
     opacity: 0;
   }
 }

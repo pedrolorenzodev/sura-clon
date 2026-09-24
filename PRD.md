@@ -1168,7 +1168,7 @@ el arte.
 700ms con `--ease-scan` (un *ease-in-out* mecánico, no de desaceleración) y lo va revelando con
 `clip-path`. La máscara deja `--hud-scan-bleed` (24px) de aire alrededor para no cortar la sombra
 del CTA ni el halo del copy, y la línea viaja 2px por delante del borde de la máscara, así queda
-siempre visible. Se apaga en el último 15%. Las miniaturas conservan su revelado. **No toca el
+siempre visible. **El apagado es una animación aparte** (`hud-scan-fade`, usuario 2026-09-23): arranca a los 550ms (`--hud-scan-fade-delay`), dura 400ms (`--hud-scan-fade-duration`) con `--ease-scan`, y el recorrido termina con `forwards`, así la línea queda quieta en el borde de abajo mientras se funde. Antes se apagaba en el último 15% del recorrido —unos 105ms, todavía en movimiento— y se sentía brusco. El barrido no cambió: misma duración, curva y recorrido. Las miniaturas conservan su revelado. **No toca el
 LCP** —medido, el H1 sigue pintando a ~165ms en desktop y el arte a ~285ms en mobile—, a diferencia
 de la máscara por palabra, que lo llevaba a ~350ms.
 

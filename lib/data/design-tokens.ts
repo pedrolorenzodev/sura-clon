@@ -283,6 +283,8 @@ export const motionTokens: Token[] = [
   { name: "--hud-scan-duration", utility: "hud-scan", usage: "Cuánto tarda el escaneo que revela el texto del hero", offDesign: true },
   { name: "--hud-scan-bleed", utility: "hud-scan", usage: "Aire que la máscara del escaneo deja alrededor del bloque, para no cortar la sombra del CTA ni la del copy", offDesign: true },
   { name: "--hud-scan-line", utility: "hud-scan", usage: "Grosor de la línea verde del escaneo", offDesign: true },
+  { name: "--hud-scan-fade-delay", utility: "hud-scan", usage: "Cuándo empieza a apagarse la línea del escaneo, un poco antes de llegar abajo", offDesign: true },
+  { name: "--hud-scan-fade-duration", utility: "hud-scan", usage: "Cuánto tarda en apagarse la línea, ya quieta en el borde de abajo", offDesign: true },
   { name: "--count-up-duration", utility: "—", usage: "Cuánto tardan los puntos de una fila del Leaderboard en contar hasta su valor", offDesign: true },
   { name: "--row-reveal-duration", utility: "row-reveal", usage: "Cuánto tarda en entrar una fila del Leaderboard del Home", offDesign: true },
   { name: "--row-reveal-stagger", utility: "row-reveal", usage: "Retraso de cada fila respecto de la anterior", offDesign: true },
