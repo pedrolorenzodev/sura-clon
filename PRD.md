@@ -680,6 +680,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-23 | **Las filas del Leaderboard del Home son los puestos 04–08 de `/leaderboard`** | Home | Pedido del usuario: el Figma repite "NombreUsuario" y el mismo avatar en las cinco filas. `leaderboardRows` se deriva ahora de `standings` (mismo nombre, avatar, nivel y puntaje que la ruta), así el Home y `/leaderboard` no pueden contradecirse. `avatar-row.png` quedó sin uso y se borró. La sección no cambia de alto: 486 en desktop. |
 | 2026-09-23 | **Fondos CSS a WebP** | Hero · Eventos | La primera pasada miró sólo los `<img>` y se le escaparon los fondos: los cuatro artes del carrusel (`--hero-art`) y las dos superficies de card de Eventos (`url()` en `globals.css`). Los artes mantienen sus dimensiones —el encuadre del diseño los estira al 181%— y sólo cambian de formato; las superficies van a 730, el doble de la card. 4,45 → **1,08 MB**; el `hero-art@2x`, que es el LCP en mobile, 895 → 240 KB. Δ medio ≤ 0,74 en los cuatro slides y en Eventos. El Home descarga ahora **1,8 MB**. |
 | 2026-09-23 | **La portada de la card de torneo pierde su anillo** | `/tournaments` | Mismo bug que la card de misión (notas de implementación, *Un anillo inset debajo de una imagen asoma cuando la imagen se anima*): el `ring-inset` quedaba debajo de la imagen con zoom y asomaba al salir del hover. Medido en las cards de portada de color: **61 frames con línea gris de 168 → 0**. |
 | 2026-09-23 | **Assets pesados a WebP a tamaño de uso** | Todas las rutas | Pedido del usuario: los assets aparecían de golpe al recargar. Se descartó un fade global —envolvía cada imagen en un cliente y sólo disimulaba— y se bajó el peso. Detalle en la deuda *Peso de los assets*, ahora resuelta. |
@@ -1148,8 +1149,11 @@ de la máscara por palabra, que lo llevaba a ~350ms.
 con *ease-out* cúbico). El conteo arranca **cuando su fila terminó de aparecer** (retraso de la fila +
 `--row-reveal-duration`): la primera versión contaba durante el *fade* y, cuando la fila se veía, el
 número ya estaba en ~90% — el usuario no notaba ningún cambio. Por lo mismo las cinco filas del Home
-dejaron de repetir los 473 del Figma y tienen puntajes descendentes debajo del 3º (6.420 → 4.205):
-contar cinco veces hasta el mismo número se leía como un parpadeo. `RevealList` es el `<ul>` con un
+dejaron de repetir los 473 del Figma: contar cinco veces hasta el mismo número se leía como un
+parpadeo. Desde el 2026-09-23 son **los puestos 04 a 08 de `/leaderboard`** —nombre, avatar,
+nivel y puntos—, derivados de `standings` en `lib/data/leaderboard.ts` en vez de los cinco
+"NombreUsuario" del Figma: una sola fuente de verdad, y el podio del Home ya coincidía con el top 3
+de la ruta. `RevealList` es el `<ul>` con un
 `IntersectionObserver` de una sola pasada, y expone su estado por contexto: si al hidratar la lista
 ya está a la vista, o si el usuario pidió *reduced motion*, no hace nada; si está fuera, la marca
 `armed` (filas ocultas, números en 0) y al cruzar el 85% del viewport pasa a `shown`. El número

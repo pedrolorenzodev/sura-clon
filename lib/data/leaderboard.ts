@@ -32,19 +32,9 @@ export const leaderboard: LeaderboardEntry[] = [
     points: "6.755",
     avatarSrc: "/assets/home/leaderboard/avatar-3.png",
   },
-  ...["6.420", "5.980", "5.315", "4.870", "4.205"].map((points, i) => ({
-    id: `usuario-${i + 4}`,
-    rank: i + 4,
-    name: "NombreUsuario",
-    levelLabel: "Nivel: Leyenda",
-    points,
-    avatarSrc: "/assets/home/leaderboard/avatar-row.png",
-  })),
 ];
 
 export const podium = leaderboard.slice(0, 3);
-
-export const leaderboardRows = leaderboard.slice(3);
 
 export type LevelId = "novato" | "guerrero" | "heroe" | "leyenda";
 
@@ -207,6 +197,15 @@ export const standings: Standing[] = [
     deficit: "111",
   },
 ];
+
+export const leaderboardRows: LeaderboardEntry[] = standings.slice(3, 8).map((entry) => ({
+  id: entry.id,
+  rank: Number(entry.rank),
+  name: entry.name,
+  levelLabel: `Nivel: ${levels[entry.level].label}`,
+  points: entry.points,
+  avatarSrc: entry.avatarSrc,
+}));
 
 export const myStanding: Standing = {
   id: "rocketman1989",
