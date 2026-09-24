@@ -167,6 +167,7 @@ export type TextToken = Token & {
 export const textTokens: TextToken[] = [
   { name: "--text-display", utility: "text-display", family: "font-display", usage: "Título del hero, desktop", specimen: "Bienvenidos a la comunidad" },
   { name: "--text-display-sm", utility: "text-display-sm", family: "font-display", usage: "Título de Sura News", specimen: "Sura News" },
+  { name: "--text-display-fluid", utility: "text-display-fluid", family: "font-display", usage: "Título del hero en desktop: 64px desde 1440, escala con su columna debajo para no pasar de 2 líneas", specimen: "Bienvenidos a la comunidad", offDesign: true },
   { name: "--text-display-xs", utility: "text-display-xs", family: "font-display", usage: "Título del hero, mobile", specimen: "Bienvenidos a la comunidad" },
   { name: "--text-page-title", utility: "text-page-title", family: "font-display", usage: "H1 de una ruta interna, desktop", specimen: "Eventos" },
   { name: "--text-page-title-sm", utility: "text-page-title-sm", family: "font-display", usage: "H1 de una ruta interna, mobile", specimen: "Eventos" },
@@ -314,7 +315,9 @@ export const layoutTokens: Token[] = [
   { name: "--spacing-event-surface-mobile", utility: "h-event-surface-mobile", usage: "Alto de la superficie de la card, mobile" },
   { name: "--spacing-section-gap-mobile", utility: "mt-section-gap-mobile", usage: "Separación entre secciones en mobile — no sale del diseño", offDesign: true },
   { name: "--spacing-mission-card-mobile", utility: "w-mission-card-mobile", usage: "Ancho de la card de misión en el carrusel mobile" },
-  { name: "--spacing-leaderboard-col", utility: "w-leaderboard-col", usage: "Ancho de la columna del Leaderboard (657 + 120 + 367 = 1144)" },
+  { name: "--spacing-leaderboard-share", utility: "w-leaderboard-share", usage: "Ancho de la columna del Leaderboard: 657 / 1144 de la fila, así a 1440 da 657 y escala abajo", offDesign: true },
+  { name: "--spacing-leaderboard-gap-share", utility: "gap-leaderboard-gap-share", usage: "Separación Leaderboard ↔ Medallas: 120 / 1144 de la fila", offDesign: true },
+  { name: "--container-mobile", utility: "max-w-mobile", usage: "Ancho máximo del layout mobile (el iPhone más ancho); entre 431 y 1099 la página es una columna centrada", offDesign: true },
   { name: "--spacing-podium-card", utility: "h-podium-card", usage: "Alto de la card del podio desktop" },
   { name: "--spacing-leaderboard-row", utility: "h-leaderboard-row", usage: "Alto de la fila Leaderboard + Medallas" },
   { name: "--spacing-nav-bar", utility: "h-nav-bar", usage: "Alto de la bottom bar mobile; el footer le deja ese aire abajo" },

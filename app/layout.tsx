@@ -34,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="es"
       className={`${monument.variable} ${khInterference.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="mx-auto flex min-h-full w-full max-w-mobile flex-col desktop:max-w-none">{children}</body>
     </html>
   );
 }

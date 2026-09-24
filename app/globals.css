@@ -10,7 +10,7 @@
      BREAKPOINTS
      ============================================================ */
   --breakpoint-*: initial;
-  --breakpoint-desktop: 391px;
+  --breakpoint-desktop: 1100px;
 
   /* ============================================================
      TIPOGRAFÍA
@@ -32,6 +32,15 @@
   --text-display--letter-spacing: -0.0625em;
   --text-display-sm: 40px;
   --text-display-sm--line-height: 40px;
+  --text-display-fluid: min(
+    var(--text-display),
+    calc(
+      (100vw - var(--spacing-gutter-desktop) * 2 - var(--spacing) * 20 - var(--spacing-hero-gap)) *
+        0.069041
+    )
+  );
+  --text-display-fluid--line-height: 1;
+  --text-display-fluid--letter-spacing: -0.0625em;
   --text-display-xs: 28px;
   --text-display-xs--line-height: 28px;
   --text-display-xs--letter-spacing: -0.0625em;
@@ -263,6 +272,7 @@
      LAYOUT
      ============================================================ */
   --container-page: 1144px;
+  --container-mobile: 430px;
   --spacing-gutter: 24px;
   --spacing-gutter-desktop: 148px;
   --spacing-nav-x: 40px;
@@ -287,7 +297,8 @@
   --spacing-event-surface-mobile: 167px;
 
   --spacing-mission-card-mobile: 261px;
-  --spacing-leaderboard-col: 657px;
+  --spacing-leaderboard-share: calc(100% * 657 / 1144);
+  --spacing-leaderboard-gap-share: calc(100% * 120 / 1144);
 
   --spacing-podium-card: 97px;
   --spacing-leaderboard-row: 486px;

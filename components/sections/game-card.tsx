@@ -33,12 +33,12 @@ export function GameCard({ game, largeTitle }: { game: Game; largeTitle?: boolea
             {game.title}
           </p>
 
-          <ul className="relative flex items-center gap-1 desktop:gap-2">
+          <ul className="relative flex items-center gap-1 desktop:flex-wrap desktop:gap-2">
             {game.badges.map((badge, index) => (
               <li
                 key={`${badge}-${index}`}
                 className={cn(
-                  "flex items-center justify-center rounded-xs border border-muted-foreground px-1.5 py-1 text-2xs leading-2.5 text-muted-foreground transition-colors duration-200 hover:border-border-light hover:text-subtle-foreground motion-reduce:transition-none desktop:px-2 desktop:py-1.5",
+                  "flex items-center justify-center whitespace-nowrap rounded-xs border border-muted-foreground px-1.5 py-1 text-2xs leading-2.5 text-muted-foreground transition-colors duration-200 hover:border-border-light hover:text-subtle-foreground motion-reduce:transition-none desktop:px-2 desktop:py-1.5",
                   index > 1 && "hidden desktop:flex",
                 )}
               >

@@ -131,16 +131,42 @@ Acá van solo los valores, que sí dependen del target.
 
 Los widths de los frames son los de `VIEWPORTS` en `scripts/shot.mjs`: mobile 390 · desktop 1440.
 
-### Breakpoint: 391px, no 1440px
+### Breakpoint: 1100px, con el mobile topado en 430
 
-**El diseño mobile es exclusivo del frame de 390.** De 391px para arriba manda el diseño
-desktop, en la pantalla que sea. Decisión del usuario (2026-09-18), tomada al ver que con el
-corte en 1440 cualquier ventana de 1339px o menos caía al layout mobile.
+**Actualizado el 2026-09-23** (usuario). Antes el corte era **391px** (decisión del 2026-09-18,
+para que una ventana de 1339px no cayera en mobile): de 391 para arriba mandaba desktop, y entre
+391 y ~1300 el layout desktop se recortaba o se aplastaba. Medido: el podio de `/leaderboard`, los
+controles de `/games`, Sura News y los badges del footer se cortaban debajo de ~1000; el título
+del hero desbordaba debajo de ~1100; y Medallas se desarmaba debajo de 1366 (celda de 106px a
+1440, 53 a 1280, 22 debajo de 1200).
 
-`--breakpoint-desktop` en `app/globals.css` → **391px**.
+Ahora son tres tramos, sin un tercer breakpoint (`AGENTS.md` regla 7 sigue en pie):
 
-Consecuencia aceptada: entre 391 y ~860px el header desktop **no entra y se recorta**. No hay
-diseño para esa franja y no se inventa ninguno (`AGENTS.md` regla 7).
+| Ancho | Qué se ve |
+|---|---|
+| ≤ 430 | El diseño mobile, fluido. **390 no cambió un píxel.** |
+| 431 – 1099 | El mismo layout mobile en una **columna centrada de 430** (`--container-mobile`, el iPhone más ancho), con el fondo de página a los costados. Sin tope, a 800–1099 las medallas y las cards de Juegos quedaban gigantes y la bottom bar de borde a borde. El `<body>`, el header fijo y la bottom bar llevan `max-w-mobile`. |
+| ≥ 1100 | El diseño desktop (`--breakpoint-desktop: 1100px`). **1440 no cambió un píxel.** |
+
+Dentro de desktop, dos piezas pasaron de medidas fijas a **proporciones que a 1440 dan exactamente
+el mismo valor**:
+
+- **Título del hero** (`--text-display-fluid`): `min(64px, columna × 64/927)`. La columna mide
+  `100vw − 513` (gutter + padding + gap + columna del slider, todos tokens) y a 1440 son 927, justo lo
+  que ocupa el título en 2 líneas. Queda en **2 líneas en cualquier ancho** (35px a 1100, 53 a 1280).
+- **Leaderboard + Medallas**: la columna del Leaderboard es 657/1144 de la fila y el gap 120/1144
+  (`--spacing-leaderboard-share` / `-gap-share`); Medallas se queda con el resto. A 1144 da 657 / 120
+  / 367. Más angosto escalan juntas: el círculo de la medalla mide 86 a 1440, 69 a 1280 y 50 a 1100.
+  El podio aguanta hasta 1100 sin que el pill se salga de la card —por eso el corte está ahí—; los
+  nombres largos se truncan con `…`, que es para lo que está el `truncate`.
+- Y los badges de las cards de Juegos no parten su texto (`whitespace-nowrap`): si no entran, pasan a
+  una segunda fila.
+
+**Verificado:** 390 y 1440 idénticos al píxel en las cinco rutas; cero desbordes de texto ni recortes
+en 15 anchos entre 400 y 1920; cero scroll lateral en 19 anchos × 6 rutas (salvo `/styleguide`, que
+ya desbordaba a 390 y es de uso interno); menú, scroll-spy, navegación entre rutas, logo, header,
+animaciones de entrada, conteo del leaderboard y carruseles funcionando a 430, 800 y 1100, sin
+errores de consola.
 
 ### Grilla
 
@@ -680,6 +706,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-23 | `--breakpoint-desktop` **391 → 1100px**, `--container-mobile` (430), `--text-display-fluid`, `--spacing-leaderboard-share` / `-gap-share`; se borra `--spacing-leaderboard-col` | Todas las rutas | Arreglo de los anchos intermedios. Detalle y medidas en § 4, *Breakpoint*. |
 | 2026-09-23 | **Las filas del Leaderboard del Home son los puestos 04–08 de `/leaderboard`** | Home | Pedido del usuario: el Figma repite "NombreUsuario" y el mismo avatar en las cinco filas. `leaderboardRows` se deriva ahora de `standings` (mismo nombre, avatar, nivel y puntaje que la ruta), así el Home y `/leaderboard` no pueden contradecirse. `avatar-row.png` quedó sin uso y se borró. La sección no cambia de alto: 486 en desktop. |
 | 2026-09-23 | **Fondos CSS a WebP** | Hero · Eventos | La primera pasada miró sólo los `<img>` y se le escaparon los fondos: los cuatro artes del carrusel (`--hero-art`) y las dos superficies de card de Eventos (`url()` en `globals.css`). Los artes mantienen sus dimensiones —el encuadre del diseño los estira al 181%— y sólo cambian de formato; las superficies van a 730, el doble de la card. 4,45 → **1,08 MB**; el `hero-art@2x`, que es el LCP en mobile, 895 → 240 KB. Δ medio ≤ 0,74 en los cuatro slides y en Eventos. El Home descarga ahora **1,8 MB**. |
 | 2026-09-23 | **La portada de la card de torneo pierde su anillo** | `/tournaments` | Mismo bug que la card de misión (notas de implementación, *Un anillo inset debajo de una imagen asoma cuando la imagen se anima*): el `ring-inset` quedaba debajo de la imagen con zoom y asomaba al salir del hover. Medido en las cards de portada de color: **61 frames con línea gris de 168 → 0**. |
@@ -811,7 +838,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 |---|---|---|
 | **El badge "¡Novedad!" cambia de color de texto entre tamaños** | Es el mismo texto sobre el mismo verde: el frame desktop lo escribe en **negro** y el mobile en **`#456215`** (`--color-border-done`), mientras el CTA del mismo banner usa `#354619`. | Se replicaron los tres tal cual. Parece un desliz: unificar, probablemente en `--color-sp-foreground`. |
 | **El `search.svg` vive en `public/assets/tournaments/`** | El buscador ahora lo comparten tres rutas, así que el ícono quedó bajo la carpeta de la primera que lo usó. | Mover a una carpeta compartida cuando exista una; hoy `public/assets/home/` hace de eso para `sp-coin.png` y `arrow-right.svg`. |
-| **La franja sin diseño de `/games` es más ancha que la del resto** | Los 4 dropdowns son `shrink-0` y necesitan 696px más el gap, así que la fila de controles sólo entra desde ~940px. Abajo de eso el buscador se colapsa a 32px y los pills se recortan contra el borde de la columna. **No hay scroll lateral** en ningún ancho. | Consecuencia conocida de § 4. Si molesta, los pills podrían scrollear como los chips de Misiones. |
+| ~~**La franja sin diseño de `/games` es más ancha que la del resto**~~ | — | **Resuelta** (2026-09-23): el breakpoint pasó a 1100, así que esa franja ya muestra el layout mobile. Ver § 4. |
 | **El H1 de `/leaderboard` y `/games` no es el de `RouteShell`** | Los dos frames escriben el título en **TT Firs Neue** (32/28 desktop, 24 mobile), mientras que Misiones y Mi Perfil —los frames de los que salió el chrome— lo escriben en Monument uppercase con los mismos tamaños. | Se mantuvo `RouteShell` (Monument), por § 6 normalización punto 4: se unifica al valor de la primera. Confirmar con diseño cuál manda; si gana TT Firs Neue son dos líneas en `route-shell.tsx`. |
 | **El buscador cambia de lado el ícono entre frames** | `/leaderboard` mobile lo pone a la **derecha** (gap 24, texto 12, padding 20); `/games` mobile y los dos desktop lo ponen a la **izquierda** (gap 8/12, texto 14, padding 16). | Se unificó en **izquierda** con los valores de `/games`, que son mayoría y coinciden con el desktop. Confirmar. |
 | ~~El título del banner de `/games` queda en otra familia que el mismo banner del Home~~ | El frame lo escribe en TT Firs Neue; el banner del Home, en Monument. | **Resuelta** (usuario, 2026-09-21): va en Monument, como el Home. La consecuencia es que la caja del texto pasó de los 486 del diseño a 530, porque Monument con su tracking necesita 523. |
@@ -826,7 +853,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Datos de `/leaderboard` y catálogo de `/games` inventados** | Los diez jugadores y el "+40" salen del frame desktop; el mobile trae otros tres nombres y 473 puntos en todas las filas. El catálogo de Juegos son 12 cards sobre **7 artes**, cuatro de ellas repetidas del frame. | Se unificó en los del desktop, mismo criterio que el podio del Home. Pedir la data real. |
 | **`/profile/:id` y `/games/:id` no existen** | Las filas y el podio del leaderboard apuntan al perfil; las cards de Juegos a su detalle. Desde el 2026-09-23 **no linkean** (ver *Rutas de detalle apagadas*, § 6): no hay 404 en producción. | Sin fecha: el usuario no sabe todavía si se van a implementar. Se enciende en `lib/routes.ts`. |
 | ~~**Los assets de `/leaderboard` pesan 4,5 MB para íconos de 12 y 16px**~~ | Las medallitas eran PNG de 2048² y los íconos de nivel de ~1080². | **Resuelta** (2026-09-23) con los WebP a tamaño de uso: la ruta baja de 4,4 a **0,09 MB**. Ver *Peso de los assets*. |
-| **La franja sin diseño recorta más que de costumbre en `/leaderboard`** | El podio necesita 927px y la fila de la tabla ~706 de ancho fijo, pero los dos aparecen desde 391px porque `desktop:` es `min-width: 391`. Verificado que **no hay scroll lateral** en 390 / 500 / 700 / 860 / 1440, pero abajo de ~1000px el podio se recorta de los dos lados. | Es la consecuencia conocida de § 4. Queda anotado por si esta pantalla justifica un breakpoint intermedio. |
+| ~~**La franja sin diseño recorta más que de costumbre en `/leaderboard`**~~ | — | **Resuelta** (2026-09-23): el breakpoint pasó a 1100, así que esa franja ya muestra el layout mobile. Ver § 4. |
 | ~~**Fuentes comerciales sustituidas**~~ | El diseño usa **Monument Extended**, **KH Interference TRIAL** y **TT Firs Neue Trl**, ninguna libre. | **Resuelta** (2026-09-20): los archivos estaban en `mateoLorenzo/sura-clans` y se trajeron los dos que usamos. **TT Firs Neue no se trajo**: el diseño lo usa en una sola card de Eventos y esa mezcla ya se había unificado en KH. Queda la licencia como riesgo si el proyecto alguna vez sale a producción. |
 | **KH Interference es todo mayúsculas** | La fuente no tiene minúsculas: dibuja caps aunque el texto del nodo esté en minúscula. | **Cada texto en `font-techno` lleva `uppercase`.** Con la fuente real ya no cambia el render, pero se mantiene: es lo que protege el fallback del sistema mientras la fuente carga, y deja el markup explícito. Al traer la fuente real (2026-09-20) se completaron los tres call sites que no lo tenían: el CTA del hero y dos de `/styleguide`. |
 | **Dos tipografías trial mezcladas** | En la fila de Eventos, 3 cards usan KH Interference y 1 usa TT Firs Neue — en mobile la mezcla cae en otra card. | Se unificó en KH (mayoritaria), o sea `font-techno`. Confirmar con diseño cuál es la definitiva. |
@@ -1245,7 +1272,7 @@ lista se mantiene acá para que no se expanda sola:
 | Dónde | Qué protege |
 |---|---|
 | `hero.tsx` · `hero-background.tsx` | El apilado del fondo: nada de `isolate`, `z-*`, `transform` u `opacity` en la `<section>`; el `-z-10` y el `overflow-hidden` viven en la capa |
-| `hero.tsx` · `leaderboard.tsx` · `sura-news.tsx` · `juegos.tsx` · `footer.tsx` | `overflow-x-clip`: es lo único que evita el scroll lateral entre 391 y 860 |
+| `hero.tsx` · `leaderboard.tsx` · `sura-news.tsx` · `juegos.tsx` · `footer.tsx` | `overflow-x-clip`: la red de seguridad contra el scroll lateral en los anchos sin diseño |
 | `card-slider.tsx` · `sura-news.tsx` · `misiones.tsx` | El aire de la sombra del hover de elevación —24px en los dos ejes— y el `lift-clip` que evita que ese aire muestre la card siguiente |
 | `leaderboard-podium-mobile.tsx` | `items-end`, que hace el escalonado; `h-full` lo anula |
 | `event-card.tsx` | El piso del personaje en `bottom-px`; con `bottom-0` pisa el borde de la card |

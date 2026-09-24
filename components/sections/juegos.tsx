@@ -7,7 +7,7 @@ export function Juegos() {
   return (
     <section
       id="juegos"
-      /* no tocar: overflow-x-clip evita el scroll lateral entre 391 y 860 */
+      /* no tocar: overflow-x-clip evita el scroll lateral en los anchos sin diseño */
       className="mt-section-gap-mobile scroll-mt-header-mobile overflow-x-clip px-gutter desktop:mt-section-gap desktop:scroll-mt-header-desktop desktop:px-gutter-desktop"
     >
       <div className="mx-auto flex max-w-page flex-col gap-6 desktop:gap-12.5">

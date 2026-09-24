@@ -8,7 +8,7 @@ export function NavMobile({ activeId }: { activeId: string | null }) {
   return (
     <nav
       aria-label="Secciones del Home"
-      className="pointer-events-none fixed inset-x-0 bottom-nav-safe z-40 flex justify-center px-2 desktop:hidden"
+      className="pointer-events-none fixed inset-x-0 bottom-nav-safe z-40 mx-auto flex max-w-mobile justify-center px-2 desktop:hidden"
     >
       <div className="border-gradient-nav-mobile pointer-events-auto h-nav-bar w-full rounded-2xl bg-nav-glass px-2.5 shadow-bar backdrop-blur-nav">
         <div className="relative h-full">

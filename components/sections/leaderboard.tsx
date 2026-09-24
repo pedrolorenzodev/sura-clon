@@ -11,12 +11,12 @@ export function Leaderboard() {
   return (
     <section
       id="leaderboard"
-      /* no tocar: overflow-x-clip evita el scroll lateral entre 391 y 860 */
+      /* no tocar: overflow-x-clip evita el scroll lateral en los anchos sin diseño */
       className="mt-section-gap-mobile scroll-mt-header-mobile overflow-x-clip px-gutter desktop:mt-section-gap desktop:scroll-mt-header-desktop desktop:px-gutter-desktop"
     >
       <div className="mx-auto max-w-page">
-        <div className="flex flex-col gap-section-gap-mobile desktop:h-leaderboard-row desktop:flex-row desktop:gap-30">
-          <div className="flex flex-col gap-title-gap desktop:w-leaderboard-col">
+        <div className="flex flex-col gap-section-gap-mobile desktop:h-leaderboard-row desktop:flex-row desktop:gap-leaderboard-gap-share">
+          <div className="flex flex-col gap-title-gap desktop:w-leaderboard-share">
             <SectionHeader title="Leaderboard" href="/leaderboard" />
 
             <div className="flex flex-col gap-6 desktop:flex-1 desktop:gap-3">
