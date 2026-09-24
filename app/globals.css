@@ -838,10 +838,10 @@
 
 /* no tocar: el `border-box` del shorthand es lo que lleva el fondo bajo el borde de la card */
 @utility event-surface-gamepad {
-  background: url("/assets/home/eventos/card-surface.png") center / cover no-repeat border-box;
+  background: url("/assets/home/eventos/card-surface.webp") center / cover no-repeat border-box;
 }
 @utility event-surface-sunset {
-  background: url("/assets/home/eventos/card-surface-sunset.png") center / cover no-repeat border-box;
+  background: url("/assets/home/eventos/card-surface-sunset.webp") center / cover no-repeat border-box;
 }
 
 /* Tres slides por viewport, descontando los dos `gap-6` que los separan.
