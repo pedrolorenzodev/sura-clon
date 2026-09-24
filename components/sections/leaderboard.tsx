@@ -2,6 +2,7 @@ import { LeaderboardPodiumDesktop } from "@/components/sections/leaderboard-podi
 import { LeaderboardPodiumMobile } from "@/components/sections/leaderboard-podium-mobile";
 import { LeaderboardRow } from "@/components/sections/leaderboard-row";
 import { Medallas } from "@/components/sections/medallas";
+import { RevealList } from "@/components/sections/reveal-list";
 import { SectionHeader } from "@/components/sections/section-header";
 import { leaderboardRows, podium } from "@/lib/data/leaderboard";
 import { detailHref } from "@/lib/routes";
@@ -22,7 +23,7 @@ export function Leaderboard() {
               <LeaderboardPodiumDesktop className="hidden desktop:flex" />
               <LeaderboardPodiumMobile entries={podium} className="desktop:hidden" />
 
-              <ul className="flex flex-col gap-2 desktop:flex-1">
+              <RevealList className="flex flex-col gap-2 desktop:flex-1">
                 {leaderboardRows.map((entry, index) => (
                   <LeaderboardRow
                     key={entry.id}
@@ -33,10 +34,11 @@ export function Leaderboard() {
                     points={entry.points}
                     avatarSrc={entry.avatarSrc}
                     elastic
+                    revealIndex={index}
                     className={index === leaderboardRows.length - 1 ? "hidden desktop:flex" : undefined}
                   />
                 ))}
-              </ul>
+              </RevealList>
             </div>
           </div>
 

@@ -680,6 +680,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-23 | `--hero-word-*`, `--hero-rise-delay`, `--row-reveal-*` y las utilities `hero-word-mask` / `hero-word` / `hero-rise` / `row-reveal` | Hero · Leaderboard (Home) | Entrada del hero y de las filas del Leaderboard, pedido del usuario sin consulta y con la condición de que no se sienta *AI-slop*. **Son el 4º y 5º desvío consciente de AGENTS regla 16**, con el criterio de los anteriores: cero librerías de motion. Receta y medidas en *Vocabulario de entrada*, § 6. |
 | 2026-09-23 | `--text-shadow-hero-copy` (`0 0 3px` negro al 90% + `0 0 10px` al 70%) | Hero | Pedido del usuario: el copy "Unite a Sura…" se mezclaba con el arte y lo quería "sutil". No sale del Figma. Se midió el contraste del blanco contra cada píxel del contorno de las letras (2px alrededor de la tinta), en los cuatro slides y los dos tamaños. **Sin sombra**, el contorno por debajo de 4,5:1 iba de 2 a 29% en desktop y de 35 a 66% en mobile. `--text-shadow-banner`, que ya existía, resolvía desktop pero dejaba mobile en 31-48%: a 12px una sombra de 4px no alcanza. La de dos capas —un halo corto que recorta la letra y uno ancho que baja el fondo— deja **desktop en 0% en los cuatro slides y mobile en 7-20%**, sin armar un bloque oscuro detrás del texto. Va la misma en los dos tamaños para que el copy tenga una sola receta. Los slides 2 y 3 en mobile (Black Ops 6 y Modern Warfare III, con el logo gris enorme detrás) siguen siendo los peores: no se empujó más para no perder el "sutil". No mueve el layout. |
 | 2026-09-23 | **Header mobile con vidrio al scrollear, en todas las rutas** | Header | Sin tokens nuevos: reusa `--blur-nav` de la bottom bar y `--color-background` al 60%. El estado lo da `data-scrolled` en el `<header>` (`scrollY > 0`) y el div mobile lo lee con `group-data-scrolled:`. El `solid` de las rutas internas pasa a `desktop:bg-background`. Detalle y medidas de contraste en § 5. |
 | 2026-09-23 | `--shadow-row-me` (`0 0 10px` `#97f300` al 15 %) y **el velo de "Tu posición" ya no tapa su borde** | Leaderboard | Bug que levantó el usuario: en hover el borde verde de la fila desaparecía y sólo quedaban unos píxeles verdes en las esquinas. El borde es `ring-1 ring-inset` —un `box-shadow` de la propia fila— y el velo de hover es un `<span>` opaco (`bg-surface-2`) en `inset-0`: se pinta encima del anillo y lo tapa entero, salvo el antialias de las esquinas, que el velo recto no llega a cubrir. Medido: el borde pasaba de `151,243,0` a `48,48,48`. **Sólo le pasaba a esta fila**: las comunes dibujan el borde en un `::after` que queda arriba del velo, y las del podio tienen un velo translúcido (`white/4`) que deja ver su anillo. Ahora el velo de esta fila va `inset-px` con el radio concéntrico (`calc(var(--radius-lg) - 1px)`), así que llena el interior sin pisar el borde. Primero se probó llevar el anillo a una capa encima del velo, pero las esquinas quedaban antialiaseadas dos veces —por el radio de la capa y por el `overflow-hidden` de la fila— y el reposo cambiaba hasta Δ52. Con el velo achicado, **el reposo queda idéntico al píxel** y el hover mantiene el verde en los cuatro bordes. Como señal extra de hover, pedida "sutil", la fila suma un glow verde con la receta del glow de la fila dorada (10px al 15 %): el borde ya es verde, así que es el mismo criterio que el *glow de link* de § 6 — iluminar lo que ya es verde. Las filas común y dorada no se movieron un píxel ni en reposo ni en hover. Aplica también a la fila mobile, que comparte `standings-tone`. |
@@ -1116,6 +1117,51 @@ admite (ver notas de implementación).
 - Siempre `focus-visible:` en pareja con `hover:`, siempre `motion-reduce:transition-none`.
 - Duraciones: **200 ms** para sombra, color y borde; **250 ms** con `--ease-reveal` para el
   zoom de una imagen.
+
+### Vocabulario de entrada
+
+Pedido del usuario (2026-09-23), decidido sin consulta. La referencia fueron los *hero reveals* de
+Awwwards y guías de *load-in*. Lo que separa uno bueno de uno que se siente hecho por IA es la
+**contención**: una sola cascada, desplazamientos chicos, todo adentro de su caja, nada que dure
+más de un segundo. Lo que se evitó a propósito: blur-in, rebotes, parallax, un efecto distinto por
+elemento y animar el arte.
+
+**Entrada del hero** — una sola cascada, tres piezas, cerrada en **~970ms** (medido):
+
+1. **Título, palabra por palabra detrás de una máscara.** Cada palabra es un `inline-block` con
+   `clip-path: inset(0 -0.25em)` (`hero-word-mask`): recorta sólo arriba y abajo, así el tracking
+   negativo de Monument no se corta a los costados. Adentro, la palabra sube desde el 100% con
+   `--ease-reveal`, 600ms y 40ms de stagger (`hero-word`). Va con `clip-path` y no con `overflow`
+   porque un `inline-block` con `overflow` distinto de `visible` cambia su línea base.
+2. **Copy y CTA:** el mismo *fade-rise* de las miniaturas (`thumb-reveal`: 8px, 420ms), a los
+   **120ms** y a los 210ms (`hero-rise`).
+3. **Miniaturas:** su revelado ya aprobado, sin cambios.
+
+El arte no se anima: es el LCP en mobile y la `<section>` tiene la guarda de apilado. La cascada
+no se repite al cambiar de slide —cambia el arte, no el contenido—, pero sí al volver al Home.
+
+**Filas del Leaderboard del Home** — entran al llegar a la sección. `RevealList`
+(`components/sections/reveal-list.tsx`) es el `<ul>` con un `IntersectionObserver` de una sola
+pasada: si al hidratar la lista ya está a la vista, no hace nada; si está fuera, la marca
+`data-reveal="armed"` (filas en opacidad 0, fuera de pantalla, así que no se ve el cambio), y al
+cruzar el 85% del viewport pasa a `shown`, que corre el *fade-rise* con 60ms entre filas. Va con
+`animation` y no `transition` para no pisar la `transition-[flex-grow]` del hover de crecimiento, y
+con fill `backwards`: al terminar no queda ningún `transform`. Sólo las filas: el podio y Medallas
+se quedan quietos. La tabla de `/leaderboard` no lo usa (`revealIndex` es opcional).
+
+**Verificado:**
+- estado final **idéntico al píxel** en el leaderboard. En el título, las palabras quedan corridas
+  **0,03-0,05px**, que es el redondeo de cualquier caja `inline-block`: cambia el antialias del
+  borde de "LA" y "SURA" (Δ≤60 en ese píxel) y a simple vista es idéntico;
+- reduced motion: cero animaciones y filas siempre visibles. Sin JS: filas visibles;
+- recarga con el leaderboard a la vista: no anima. Click del menú a Leaderboard: anima;
+- hover de crecimiento intacto después del reveal (59,4 → 70,7);
+- Home 4156 / 4046 y 0 de scroll lateral en los cinco anchos.
+
+**Lo que cuesta:** en desktop el LCP es el título, y con la máscara se pinta recortado. Pasa de
+**~165ms a ~350ms**. Con el copy a los 300ms era ~900ms: por eso entra a los 120ms. En mobile el
+LCP es el arte y no cambia. Si hiciera falta recuperarlo, la salida es sacar la máscara del título
+y dejar sólo el *fade-rise*.
 
 ### Notas de arquitectura
 

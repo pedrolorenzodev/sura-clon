@@ -278,6 +278,12 @@ export const motionTokens: Token[] = [
   { name: "--thumb-reveal-duration", utility: "thumb-reveal", usage: "Cuánto tarda en entrar una miniatura del slider", offDesign: true },
   { name: "--thumb-reveal-stagger", utility: "thumb-reveal", usage: "Retraso de cada miniatura respecto de la anterior", offDesign: true },
   { name: "--thumb-reveal-shift", utility: "thumb-reveal", usage: "Cuánto sube la miniatura al entrar", offDesign: true },
+  { name: "--hero-word-duration", utility: "hero-word", usage: "Cuánto tarda cada palabra del título del hero en subir detrás de su máscara", offDesign: true },
+  { name: "--hero-word-stagger", utility: "hero-word", usage: "Retraso de cada palabra del título respecto de la anterior", offDesign: true },
+  { name: "--hero-rise-delay", utility: "hero-rise", usage: "Cuándo entran el copy y el CTA del hero, contado desde el título", offDesign: true },
+  { name: "--row-reveal-duration", utility: "row-reveal", usage: "Cuánto tarda en entrar una fila del Leaderboard del Home", offDesign: true },
+  { name: "--row-reveal-stagger", utility: "row-reveal", usage: "Retraso de cada fila respecto de la anterior", offDesign: true },
+  { name: "--row-reveal-shift", utility: "row-reveal", usage: "Cuánto sube la fila al entrar", offDesign: true },
   { name: "--hero-art-fade-duration", utility: "hero-art-fade", usage: "Fundido del arte del hero al cambiar de juego", offDesign: true },
 ];
 

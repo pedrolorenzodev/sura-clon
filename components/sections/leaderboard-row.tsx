@@ -14,6 +14,7 @@ export function LeaderboardRow({
   avatarSrc,
   tone,
   elastic,
+  revealIndex,
   className,
 }: {
   href: string | null;
@@ -24,14 +25,19 @@ export function LeaderboardRow({
   avatarSrc: string;
   tone?: StandingTone;
   elastic?: boolean;
+  revealIndex?: number;
   className?: string;
 }) {
   const style = toneOf(tone);
 
   return (
     <li
+      style={
+        revealIndex === undefined ? undefined : ({ "--reveal-index": revealIndex } as React.CSSProperties)
+      }
       className={cn(
         "flex",
+        revealIndex !== undefined && "row-reveal",
         elastic &&
           "transition-[flex-grow] duration-250 ease-reveal motion-reduce:transition-none desktop:flex-1 desktop:has-hover:grow-[1.25] desktop:has-focus-visible:grow-[1.25]",
         className,

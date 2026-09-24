@@ -508,6 +508,12 @@
   --thumb-reveal-stagger: 90ms;
   --thumb-reveal-shift: 8px;
   --hero-art-fade-duration: 500ms;
+  --hero-word-duration: 600ms;
+  --hero-word-stagger: 40ms;
+  --hero-rise-delay: 120ms;
+  --row-reveal-duration: 420ms;
+  --row-reveal-stagger: 60ms;
+  --row-reveal-shift: 8px;
 }
 
 @utility bg-gold-text {
@@ -933,6 +939,62 @@
   from {
     opacity: 0;
     transform: translateY(var(--thumb-reveal-shift));
+  }
+}
+
+/* ============================================================
+   ENTRADA DEL HERO
+   ============================================================ */
+@utility hero-word-mask {
+  display: inline-block;
+  clip-path: inset(0 -0.25em);
+}
+
+@utility hero-word {
+  display: inline-block;
+  animation: hero-word var(--hero-word-duration) var(--ease-reveal) backwards;
+  animation-delay: calc(var(--word-index) * var(--hero-word-stagger));
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes hero-word {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@utility hero-rise {
+  animation: thumb-reveal var(--thumb-reveal-duration) var(--ease-reveal) backwards;
+  animation-delay: calc(var(--hero-rise-delay) + var(--rise-index) * var(--thumb-reveal-stagger));
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   ENTRADA DE LAS FILAS DEL LEADERBOARD
+   ============================================================ */
+@utility row-reveal {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-reveal="armed"] > & {
+      opacity: 0;
+    }
+
+    [data-reveal="shown"] > & {
+      animation: row-reveal var(--row-reveal-duration) var(--ease-reveal) backwards;
+      animation-delay: calc(var(--reveal-index) * var(--row-reveal-stagger));
+    }
+  }
+}
+
+@keyframes row-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(var(--row-reveal-shift));
   }
 }
 
