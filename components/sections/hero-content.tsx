@@ -6,7 +6,7 @@ import { hero } from "@/lib/data/hero";
 
 export function HeroContent() {
   return (
-    <div className="flex flex-col gap-8 pb-6 pt-16 desktop:h-hero-content-desktop desktop:flex-row desktop:items-center desktop:gap-hero-gap desktop:pb-6 desktop:pl-gutter-desktop desktop:pt-6">
+    <div className="intro-veil flex flex-col gap-8 pb-6 pt-16 desktop:h-hero-content-desktop desktop:flex-row desktop:items-center desktop:gap-hero-gap desktop:pb-6 desktop:pl-gutter-desktop desktop:pt-6">
       <div className="hud-scan flex flex-col gap-6 px-gutter desktop:min-w-px desktop:flex-1 desktop:justify-center desktop:px-10">
         <div className="flex flex-col gap-3 desktop:gap-6">
           <h1 className="font-display text-display-xs uppercase text-foreground desktop:text-display-fluid">

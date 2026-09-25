@@ -11,7 +11,7 @@ export function NavMobile({ activeId, away }: { activeId: string | null; away: b
       inert={away}
       data-away={away || undefined}
       className={cn(
-        "peer/bar pointer-events-none fixed inset-x-0 bottom-nav-safe z-40 mx-auto flex max-w-mobile justify-center px-2 transition-[translate,opacity] duration-300 ease-in-out motion-reduce:transition-none desktop:hidden",
+        "peer/bar intro-veil pointer-events-none fixed inset-x-0 bottom-nav-safe z-40 mx-auto flex max-w-mobile justify-center px-2 transition-[translate,opacity] duration-300 ease-in-out motion-reduce:transition-none desktop:hidden",
         away && "nav-bar-away opacity-0",
       )}
     >

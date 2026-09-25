@@ -290,6 +290,8 @@ export const motionTokens: Token[] = [
   { name: "--row-reveal-stagger", utility: "row-reveal", usage: "Retraso de cada fila respecto de la anterior", offDesign: true },
   { name: "--row-reveal-shift", utility: "row-reveal", usage: "Cuánto sube la fila al entrar", offDesign: true },
   { name: "--hero-art-fade-duration", utility: "hero-art-fade", usage: "Fundido del arte del hero al cambiar de juego", offDesign: true },
+  { name: "--hero-intro-fade-duration", utility: "hero-intro-fade", usage: "Fundido de entrada del video de la intro del hero", offDesign: true },
+  { name: "--hero-intro-reveal-duration", utility: "intro-veil", usage: "Aparición de la interfaz del Home con el golpe de la intro", offDesign: true },
 ];
 
 export const layoutTokens: Token[] = [

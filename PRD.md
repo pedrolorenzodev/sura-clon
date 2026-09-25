@@ -248,6 +248,10 @@ oculta y con `prefers-reduced-motion`. **Desde el 2026-09-24 el avance automáti
 (`autoplayMs: null`, pedido del usuario) para que siempre se vea el slide con el video; el
 código sigue en `hero-slide-context.tsx` y vuelve con volver a poner 3000.
 
+**Los slides, desde el 2026-09-24:** League of Legends (PROJECT: Yi, **el default**, con intro —
+ver *Intro de PROJECT: Yi*, § 6) · Valorant (el loop de Jett) · Fortnite · Black Ops 6. Modern
+Warfare III se sacó para dejar lugar, y sus dos archivos se borraron.
+
 **Estado activo:** arranca en Home y lo escriben el scroll y el click (ver Scroll-spy, abajo).
 Vive en `SectionNavProvider` (`components/layout/section-nav-context.tsx`), montado en el layout
 `(site)`, que lo comparten el menú, el logo del header y el CTA del hero.
@@ -738,6 +742,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-24 | **Slide default: PROJECT: Yi con intro**; `--hero-intro-fade-duration` (500ms), `--hero-intro-reveal-duration` (600ms), variante `intro-pending`, utilities `intro-veil`, `intro-veil-sections`, `hero-poster-cover-*`, `hero-video-focus-*`, `hero-intro-fade`; se borra Modern Warfare III | Hero · todo el Home | Pedido del usuario. Detalle en *Intro de PROJECT: Yi*, § 6. Jett pasa a segundo slide. |
 | 2026-09-24 | `nav-bar-away`, `pb-gutter-safe`; `BackButton` en el header mobile de las rutas internas | Bottom bar · Header · Footer | Feedback del equipo: la bottom bar se va animada fuera del Home y vuelve al Home. Detalle en § 5, *Fuera del Home la bottom bar se va*. |
 | 2026-09-24 | **El arte del hero de Valorant pasa a video** (`--aspect-hero-loop-mobile` / `-desktop`, utilities `hero-poster-mobile` / `-desktop`); se borran `hero-art-mobile` / `-desktop` y `hero-art@2x.webp` | Hero | Pedido del usuario. Detalle en *Hero en video*, § 6. Desktop cambia de encuadre al **D1** —el arte 17,7 % más arriba— y mobile se queda en el del diseño. Los dos recortes viven en el archivo, así que la caja va al 100 % del ancho con la proporción del recorte. |
 | 2026-09-24 | `hero.autoplayMs` **3000 → `null`** | Slider del hero | Pedido del usuario: que por defecto siempre se vea el slide con el video. El avance automático queda apagado, no borrado. |
@@ -872,6 +877,9 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Tema | Detalle | Qué hacer |
 |---|---|---|
+| **Assets de Riot en el hero** | El login screen de PROJECT: Yi es de Riot Games. Su política *Legal Jibber Jabber* lo permite en proyectos de fans gratuitos y no comerciales, **con un aviso visible** de que se usan assets de Riot y que Riot no avala el proyecto. | Para el clon público: sumar ese aviso (el footer es el lugar natural) o sacar el slide. **Para producción no sirve**: licencia de Riot o video propio de diseño. |
+| ~~**El video de Yi es de 1280 × 800**~~ | Era el único tamaño de la fuente. | **Resuelta** (2026-09-25) con Real-ESRGAN 4×: ver *Intro de PROJECT: Yi*. Si aparece un original más grande, reemplaza al escalado. |
+| **En mobile la intro ocupa sólo la franja del hero** | Durante la intro el video se ve en los 524 px del hero y el resto de la pantalla queda en `#202020`. | Esperando el feedback del usuario al verlo en la web. |
 | **El badge "¡Novedad!" cambia de color de texto entre tamaños** | Es el mismo texto sobre el mismo verde: el frame desktop lo escribe en **negro** y el mobile en **`#456215`** (`--color-border-done`), mientras el CTA del mismo banner usa `#354619`. | Se replicaron los tres tal cual. Parece un desliz: unificar, probablemente en `--color-sp-foreground`. |
 | **El `search.svg` vive en `public/assets/tournaments/`** | El buscador ahora lo comparten tres rutas, así que el ícono quedó bajo la carpeta de la primera que lo usó. | Mover a una carpeta compartida cuando exista una; hoy `public/assets/home/` hace de eso para `sp-coin.png` y `arrow-right.svg`. |
 | ~~**La franja sin diseño de `/games` es más ancha que la del resto**~~ | — | **Resuelta** (2026-09-23): el breakpoint pasó a 1100, así que esa franja ya muestra el layout mobile. Ver § 4. |
@@ -1007,6 +1015,7 @@ cuatro videos de la entrega salen de ahí con `final_enc.py`, y los posters son 
 como lo pinta Chrome (ver notas de implementación). Para regenerar el master hace falta Python
 con `numpy`, `opencv-python-headless`, `ultralytics` (SAM 2.1) y `simple-lama-inpainting`.
 
+### Intro de PROJECT: Yi ✅ (2026-09-24)
 ### Diferido hasta que el scope esté maquetado
 
 Decisión del usuario, 2026-09-20, al cerrar el Home: estas tres **no se encaran ahora**. No es
@@ -1024,6 +1033,8 @@ tercero. Se retoman en la pasada de fixes chicos, con el scope completo.
 
 | Tema | Qué pasó | Cómo se resolvió |
 |---|---|---|
+| **Un plazo que corre desde la hidratación no protege una red lenta** | Con la red a 40 KB/s, la intro esperaba a que React hidratara para empezar a contar su timeout de 1,5 s: la página quedaba en blanco hasta el failsafe de 7 s. | El plazo principal lo pone **el script inline**, que corre con el HTML: si a los 2 s nadie marcó `data-intro-started`, cancela la intro. Medido: con la red lenta la interfaz aparece 2 s después de que llega la página, y con JS bloqueado también. **Cualquier estado que oculte la página tiene que poder deshacerse sin depender del bundle.** |
+| **Bloquear `/_next/static/chunks/` también bloquea el CSS** | La primera prueba "sin JS" mostraba la interfaz visible con la intro pendiente, y parecía que el velo no funcionaba. | En Next 16 el CSS vive en la misma carpeta que los chunks de JS. Para simular "sin JS" hay que bloquear por tipo de recurso (`script`), no por ruta. |
 | **Chrome decodifica un AV1 sin etiquetas de color con la matriz bt601** | El video del hero salía más magenta que su poster en los rojos: Δ medio 4 contra la imagen. `ffprobe` decía `bt709`, pero ese dato vivía sólo en el contenedor: SVT-AV1 ignora los `-color_*` de ffmpeg y no los escribe en el bitstream. | Se pasan dentro del encoder (`-svtav1-params color-primaries=1:transfer-characteristics=1:matrix-coefficients=1`) y en x264 con `-x264-params colorprim=…`. **Y el poster se arma desde el frame 0 tal como lo pinta Chrome**, no desde un decode de ffmpeg: la reconstrucción del color del navegador no es la de ffmpeg y en bordes saturados difiere hasta 17 niveles. Con eso el cambio poster → video da Δ medio 0,7 en desktop. En mobile queda ~1 en bordes finos por el reescalado (864 → 390), que es un cambio único al cargar. |
 | **El poster en WebP no alcanzaba para empalmar con el video** | Aun sacado del frame del navegador, el WebP a q85 se iba 14 niveles en el p99: su color va a media resolución y los rojos saturados del arte lo exponen. | AVIF a q80 con **4:4:4**, que pesa lo mismo que la imagen vieja (252 KB) y deja p99 9. El WebP queda de respaldo en el `image-set`. |
 | **El loop de un video web salta en el keyframe** | Al volver al frame 0, el fondo quieto cambiaba hasta 6 niveles (p99,9): el encoder va reescribiendo las zonas quietas durante el clip y el keyframe no las repite igual. | En SVT-AV1, `enable-tf=0` (sin filtrado temporal) baja el salto a p99,9 4, y lo que queda está pegado al borde del pelo, que cambia en cada frame igual. La estructura *low-delay* y el `ipratio` alto de x264 lo empeoraban. |
@@ -1287,6 +1298,7 @@ lista se mantiene acá para que no se expanda sola:
 | `event-card.tsx` | El piso del personaje en `bottom-px`; con `bottom-0` pisa el borde de la card |
 | `globals.css` | `@theme static` (sin él `/styleguide` lee vacío), el `border-box` del shorthand de las cards de Eventos y el `1ms` del cruce con `prefers-reduced-motion` |
 | `app/(site)/layout.tsx` | `Nav` tiene que quedar hermano anterior del footer: el footer lee el estado de la bottom bar con `peer/bar` |
+| `globals.css` · `intro-veil-sections` | Veila todo hijo de `<main>` salvo `#home`: si el hero cambia de id, la intro esconde el propio hero |
 | `next.config.ts` | `images.unoptimized` y `devIndicators: false` |
 
 **Dos se encodearon en vez de comentarse**, que es lo que la regla pide intentar primero:

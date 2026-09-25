@@ -9,7 +9,7 @@ export function HeaderShell({ solid, children }: { solid?: boolean; children: Re
   return (
     <header
       data-scrolled={scrolled || undefined}
-      className={cn("group fixed inset-x-0 top-0 z-50 mx-auto max-w-mobile desktop:max-w-none", solid && "desktop:bg-background")}
+      className={cn("intro-veil group fixed inset-x-0 top-0 z-50 mx-auto max-w-mobile desktop:max-w-none", solid && "desktop:bg-background")}
     >
       {children}
     </header>

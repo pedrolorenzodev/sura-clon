@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
+import { introBootScript } from "@/lib/hero-intro";
+
 import "./globals.css";
 
 const monument = localFont({
@@ -48,8 +50,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
+      suppressHydrationWarning
       className={`${monument.variable} ${khInterference.variable} ${inter.variable} h-full antialiased`}
     >
+      <head>
+        {introBootScript && <script dangerouslySetInnerHTML={{ __html: introBootScript }} />}
+      </head>
       <body className="mx-auto flex min-h-full w-full max-w-mobile flex-col desktop:max-w-none">{children}</body>
     </html>
   );

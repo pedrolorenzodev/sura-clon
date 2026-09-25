@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className="flex-1">
+      <main className="intro-veil-sections flex-1">
         <Hero />
         <Eventos />
         <Leaderboard />

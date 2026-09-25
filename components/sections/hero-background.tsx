@@ -1,44 +1,51 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useHeroSlide } from "@/components/sections/hero-slide-context";
-import { hero, type HeroLoop, type HeroLoopVariant } from "@/lib/data/hero";
+import { hero, type HeroLoop, type HeroLoopSource, type HeroLoopVariant } from "@/lib/data/hero";
+import { endIntro, markIntroStarted, readIntroPhase, revealIntro } from "@/lib/hero-intro";
+import { useIntroPhase } from "@/lib/use-intro-phase";
 import { cn } from "@/lib/utils";
 
 type NetworkInformation = { saveData?: boolean };
+type Breakpoint = "mobile" | "desktop";
+
+const INTRO_START_TIMEOUT_MS = 1500;
+const SKIP_EVENTS = ["pointerdown", "keydown", "wheel", "touchstart"] as const;
 
 const posterImage = ({ poster }: HeroLoopVariant) =>
   `image-set(url("${poster.avif}") type("image/avif"), url("${poster.webp}") type("image/webp"))`;
 
-function useLoopVariant(loop: HeroLoop) {
-  const [variant, setVariant] = useState<HeroLoopVariant | null>(null);
+function useLoopBreakpoint(eager: boolean) {
+  const [breakpoint, setBreakpoint] = useState<Breakpoint | null>(null);
 
   useEffect(() => {
     const { connection } = navigator as Navigator & { connection?: NetworkInformation };
     if (connection?.saveData) return;
 
-    const breakpoint = getComputedStyle(document.documentElement)
+    const desktopWidth = getComputedStyle(document.documentElement)
       .getPropertyValue("--breakpoint-desktop")
       .trim();
-    const desktop = window.matchMedia(`(min-width: ${breakpoint})`);
+    const desktop = window.matchMedia(`(min-width: ${desktopWidth})`);
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let loaded = false;
+    let started = false;
 
     const sync = () => {
-      if (!loaded || reducedMotion.matches) {
-        setVariant(null);
+      if (!started || reducedMotion.matches) {
+        setBreakpoint(null);
         return;
       }
-      setVariant(desktop.matches ? loop.desktop : loop.mobile);
+      setBreakpoint(desktop.matches ? "desktop" : "mobile");
     };
     const start = () => {
-      loaded = true;
+      started = true;
       sync();
     };
 
-    const timer = document.readyState === "complete" ? window.setTimeout(start) : undefined;
-    if (timer === undefined) window.addEventListener("load", start, { once: true });
+    const ready = eager || document.readyState === "complete";
+    const timer = ready ? window.setTimeout(start) : undefined;
+    if (!ready) window.addEventListener("load", start, { once: true });
     desktop.addEventListener("change", sync);
     reducedMotion.addEventListener("change", sync);
 
@@ -48,18 +55,26 @@ function useLoopVariant(loop: HeroLoop) {
       desktop.removeEventListener("change", sync);
       reducedMotion.removeEventListener("change", sync);
     };
-  }, [loop]);
+  }, [eager]);
 
-  return variant;
+  return breakpoint;
 }
 
-function LoopVideo({ variant }: { variant: HeroLoopVariant }) {
+function LoopVideo({
+  sources,
+  hold,
+  className,
+}: {
+  sources: HeroLoopSource[];
+  hold: boolean;
+  className?: string;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const video = ref.current;
-    if (!video) return;
+    if (!video || hold) return;
 
     video.muted = true;
     const observer = new IntersectionObserver(([entry]) => {
@@ -69,7 +84,7 @@ function LoopVideo({ variant }: { variant: HeroLoopVariant }) {
     observer.observe(video);
 
     return () => observer.disconnect();
-  }, []);
+  }, [hold]);
 
   return (
     <video
@@ -80,9 +95,79 @@ function LoopVideo({ variant }: { variant: HeroLoopVariant }) {
       preload="auto"
       disablePictureInPicture
       onPlaying={() => setPlaying(true)}
-      className={cn("absolute inset-0 size-full opacity-0", playing && "opacity-100")}
+      className={cn("absolute inset-0 size-full opacity-0", className, playing && "opacity-100")}
     >
-      {variant.sources.map((source) => (
+      {sources.map((source) => (
+        <source key={source.src} src={source.src} type={source.type} />
+      ))}
+    </video>
+  );
+}
+
+function IntroVideo({
+  sources,
+  revealAt,
+  onStarted,
+  className,
+}: {
+  sources: HeroLoopSource[];
+  revealAt: number;
+  onStarted: () => void;
+  className?: string;
+}) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+
+    let revealTimer: number | undefined;
+    const startTimer = window.setTimeout(endIntro, INTRO_START_TIMEOUT_MS);
+    const onPlaying = () => {
+      window.clearTimeout(startTimer);
+      if (readIntroPhase() !== "pending") return;
+      markIntroStarted();
+      setVisible(true);
+      onStarted();
+      revealTimer = window.setTimeout(
+        revealIntro,
+        Math.max(0, (revealAt - video.currentTime) * 1000),
+      );
+    };
+    const skip = () => {
+      if (readIntroPhase() === "pending") endIntro();
+    };
+
+    video.muted = true;
+    video.addEventListener("playing", onPlaying, { once: true });
+    video.addEventListener("ended", endIntro);
+    for (const type of SKIP_EVENTS) window.addEventListener(type, skip, { passive: true });
+    video.play().catch(endIntro);
+
+    return () => {
+      window.clearTimeout(startTimer);
+      window.clearTimeout(revealTimer);
+      video.removeEventListener("playing", onPlaying);
+      video.removeEventListener("ended", endIntro);
+      for (const type of SKIP_EVENTS) window.removeEventListener(type, skip);
+    };
+  }, [revealAt, onStarted]);
+
+  return (
+    <video
+      ref={ref}
+      muted
+      playsInline
+      preload="auto"
+      disablePictureInPicture
+      className={cn(
+        "hero-intro-fade absolute inset-0 size-full motion-reduce:transition-none",
+        className,
+        visible ? "opacity-100" : "opacity-0",
+      )}
+    >
+      {sources.map((source) => (
         <source key={source.src} src={source.src} type={source.type} />
       ))}
     </video>
@@ -90,7 +175,15 @@ function LoopVideo({ variant }: { variant: HeroLoopVariant }) {
 }
 
 function HeroLoopArt({ loop }: { loop: HeroLoop }) {
-  const variant = useLoopVariant(loop);
+  const introPhase = useIntroPhase();
+  const introActive = Boolean(loop.intro) && introPhase !== null;
+  const breakpoint = useLoopBreakpoint(introActive);
+  const [introStarted, setIntroStarted] = useState(false);
+  const markIntroStarted = useCallback(() => setIntroStarted(true), []);
+  const cover = loop.fit === "cover";
+  const videoFit = cover
+    ? "object-cover hero-video-focus-mobile desktop:hero-video-focus-desktop"
+    : undefined;
 
   return (
     <div
@@ -98,11 +191,44 @@ function HeroLoopArt({ loop }: { loop: HeroLoop }) {
         {
           "--hero-poster-mobile": posterImage(loop.mobile),
           "--hero-poster-desktop": posterImage(loop.desktop),
+          ...(loop.fit === "cover" && {
+            "--hero-focus-mobile": loop.focus.mobile,
+            "--hero-focus-desktop": loop.focus.desktop,
+          }),
         } as React.CSSProperties
       }
-      className="absolute inset-x-0 top-0 aspect-hero-loop-mobile hero-poster-mobile desktop:aspect-hero-loop-desktop desktop:hero-poster-desktop"
+      className={
+        cover
+          ? "absolute inset-0"
+          : "absolute inset-x-0 top-0 aspect-hero-loop-mobile desktop:aspect-hero-loop-desktop"
+      }
     >
-      {variant && <LoopVideo key={variant.poster.webp} variant={variant} />}
+      <div
+        className={cn(
+          "absolute inset-0",
+          cover
+            ? "hero-poster-cover-mobile desktop:hero-poster-cover-desktop"
+            : "hero-poster-mobile desktop:hero-poster-desktop",
+          loop.intro && "intro-pending:invisible",
+        )}
+      />
+      {breakpoint && (!introActive || introStarted) && (
+        <LoopVideo
+          key={`loop-${breakpoint}`}
+          sources={loop[breakpoint].sources}
+          hold={introActive}
+          className={videoFit}
+        />
+      )}
+      {breakpoint && introActive && loop.intro && (
+        <IntroVideo
+          key={`intro-${breakpoint}`}
+          sources={loop.intro[breakpoint]}
+          revealAt={loop.intro.revealAt}
+          onStarted={markIntroStarted}
+          className={videoFit}
+        />
+      )}
     </div>
   );
 }
@@ -144,6 +270,10 @@ export function HeroBackground() {
     setLeaving(shown);
     setShown(activeSlide);
   }
+
+  useEffect(() => {
+    if (activeSlide !== hero.activeSlide) endIntro();
+  }, [activeSlide]);
 
   return (
     <div
