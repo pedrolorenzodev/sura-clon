@@ -4,6 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 @custom-variant intro-pending (&:where([data-intro="pending"] *));
+@custom-variant rail-hidden (&:is(body:has([data-hide-rail]) *));
 
 /* no tocar: sin `static`, Tailwind poda los tokens sin uso y /styleguide los lee vacíos */
 @theme static {
@@ -312,6 +313,11 @@
 
   --spacing-section-gap-mobile: 40px;
   --spacing-nav-bar: 80px;
+
+  --spacing-map: 592px;
+  --spacing-map-mobile: 232px;
+  --spacing-map-grid: 32px;
+  --spacing-map-grid-desktop: 48px;
 }
 
 /* ============================================================
@@ -560,6 +566,8 @@
   --bracket-duration: 300ms;
   --bracket-stagger: 40ms;
   --title-sweep-duration: 950ms;
+  --route-draw-duration: 450ms;
+  --blip-blink-duration: 1600ms;
   --wipe-duration: 280ms;
   --wipe-slant: 1em;
   --wipe-light: rgb(255 255 255 / 0.2);
@@ -1108,8 +1116,82 @@
     transition-delay: calc(var(--bracket-order) * var(--bracket-stagger));
   }
 
+  .group[data-locked] & {
+    clip-path: inset(0);
+    transition-delay: calc(var(--bracket-lead, 0ms) + var(--bracket-order) * var(--bracket-stagger));
+
+    @starting-style {
+      clip-path: var(--bracket-hidden);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     transition: none;
+  }
+}
+
+/* ============================================================
+   MINIMAPA DE LA 404
+   ============================================================ */
+@utility map-grid {
+  --map-grid-cell: var(--spacing-map-grid);
+  background-image:
+    linear-gradient(to right, --alpha(var(--color-border-dim) / 45%) 1px, transparent 1px),
+    linear-gradient(to bottom, --alpha(var(--color-border-dim) / 45%) 1px, transparent 1px);
+  background-size: var(--map-grid-cell) var(--map-grid-cell);
+  background-position: center;
+
+  @variant desktop {
+    --map-grid-cell: var(--spacing-map-grid-desktop);
+  }
+}
+
+@utility route-draw-y {
+  transform-origin: bottom;
+  animation: route-draw-y calc(var(--route-draw-duration) / 2) var(--ease-lock) var(--route-draw-lead, 0ms) both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility route-draw-x {
+  transform-origin: right;
+  animation: route-draw-x calc(var(--route-draw-duration) / 2) var(--ease-lock)
+    calc(var(--route-draw-lead, 0ms) + var(--route-draw-duration) / 2) both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility route-draw-after-route {
+  --route-draw-lead: var(--route-shutter-duration);
+}
+
+@keyframes route-draw-y {
+  from {
+    scale: 1 0;
+  }
+}
+
+@keyframes route-draw-x {
+  from {
+    scale: 0 1;
+  }
+}
+
+@utility blip-blink {
+  animation: blip-blink var(--blip-blink-duration) steps(1) infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes blip-blink {
+  50% {
+    opacity: 0.25;
   }
 }
 

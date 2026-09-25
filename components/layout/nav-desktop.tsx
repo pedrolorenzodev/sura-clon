@@ -9,7 +9,7 @@ export function NavDesktop({ activeId }: { activeId: string | null }) {
   return (
     <nav
       aria-label="Secciones del Home"
-      className="intro-veil vt-rail pointer-events-none fixed left-0 top-header-desktop z-40 hidden h-hero-content-desktop w-gutter-desktop items-center px-11 desktop:flex"
+      className="intro-veil vt-rail pointer-events-none fixed left-0 top-header-desktop z-40 hidden h-hero-content-desktop w-gutter-desktop items-center px-11 desktop:flex desktop:rail-hidden:hidden"
     >
       <TooltipProvider>
         <div className="pointer-events-auto border-gradient-nav-desktop rounded-2xl bg-nav-glass py-2 shadow-nav backdrop-blur-nav">

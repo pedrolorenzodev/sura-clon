@@ -321,6 +321,8 @@ export const motionTokens: Token[] = [
   { name: "--chrome-fade-duration", utility: "vt-header / vt-rail", usage: "Fundido del header y el riel al arrancar la persiana y al terminar", offDesign: true },
   { name: "--route-shutter-slant", utility: "route-shutter", usage: "Inclinación de la persiana", offDesign: true },
   { name: "--route-shutter-edge", utility: "route-shutter", usage: "Grosor del filo verde de la persiana", offDesign: true },
+  { name: "--route-draw-duration", utility: "route-draw-y / route-draw-x", usage: "Trazado de la línea del minimapa de la 404 hasta el destino: mitad vertical, mitad horizontal", offDesign: true },
+  { name: "--blip-blink-duration", utility: "blip-blink", usage: "Parpadeo lento del punto “Vos” en el minimapa de la 404", offDesign: true },
 ];
 
 export const layoutTokens: Token[] = [
@@ -356,4 +358,8 @@ export const layoutTokens: Token[] = [
   { name: "--spacing-podium-card", utility: "h-podium-card", usage: "Alto de la card del podio desktop" },
   { name: "--spacing-leaderboard-row", utility: "h-leaderboard-row", usage: "Alto de la fila Leaderboard + Medallas" },
   { name: "--spacing-nav-bar", utility: "h-nav-bar", usage: "Alto de la bottom bar mobile; el footer le deja ese aire abajo" },
+  { name: "--spacing-map", utility: "desktop:grid-cols-[…var(--spacing-map)]", usage: "Tope del minimapa de la 404 en desktop: cuadrado de 592, que se achica debajo de ~1280", offDesign: true },
+  { name: "--spacing-map-mobile", utility: "h-map-mobile", usage: "Alto del minimapa de la 404 en mobile", offDesign: true },
+  { name: "--spacing-map-grid", utility: "map-grid", usage: "Celda de la grilla del minimapa, mobile", offDesign: true },
+  { name: "--spacing-map-grid-desktop", utility: "map-grid", usage: "Celda de la grilla del minimapa, desktop", offDesign: true },
 ];

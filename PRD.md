@@ -487,6 +487,37 @@ también escribía `#eventos`. `SectionLink` es un `<Link>` con el `href` de sie
 abriendo `/#seccion` en otra pestaña**, y **sin JS el `href` sigue funcionando por hash** —
 verificado, `/tournaments` → Eventos cae en `/#eventos` a y=720.
 
+### La 404: “Fuera del mapa” 👀 (2026-09-25)
+
+**Excepción a la regla 2 de `AGENTS.md`**, autorizada por el usuario el 2026-09-25: no hay frames de Figma de la 404 y se diseñó acá, en los dos tamaños. Siguiendo la regla 20, antes se publicó una página de propuesta con tres conceptos y demos en vivo dentro del chrome real: **[SURA 404](https://claude.ai/artifact/6G4urUtxnPWsrbxDuLCAyW)**. Ahí también está la investigación: la 404 de emalorenzo.com, 404 premiadas (Marathon, THE FINALS, Kualo, Feldman, MAD, Figma) y lo que se descartó.
+
+**Concepto elegido: A, “Fuera del mapa”** (usuario, 2026-09-25). La ruta que tipeaste no está en el mapa: sos un punto afuera de la zona de juego y la pantalla te muestra dónde reaparecer. **B (“Práctica de puntería”) y C (“Eliminado”) quedan guardados** en la misma página por si se retoman.
+
+| Decisión | Qué se eligió | Por qué |
+|---|---|---|
+| **Dónde vive** | `app/not-found.tsx`, el raíz, que monta el chrome con `SiteChrome` | Atrapa cualquier URL sin ruta, sale completa del servidor y es estática (`○ /_not-found`). El raíz no está dentro del layout `(site)`, así que el chrome se extrajo a `components/layout/site-chrome.tsx` y lo usan los dos. **Primero se hizo con un catch-all `(site)/[...slug]` que llamaba a `notFound()`, y estaba mal**: ver notas de implementación. |
+| **Respuesta** | HTTP **404** real, `noindex` (lo inyecta Next) y título “Página no encontrada \| Sura Gaming” | Verificado en dev y en `next start`. |
+| **Header** | Se queda, sólido y con la flecha de volver en mobile | Su logo lleva al Home y la flecha te devuelve a la página donde estabas, que es lo más útil para un link roto. Además dice que seguís en SURA con tu sesión. |
+| **Riel desktop** | **Oculto sólo en la 404** (usuario, 2026-09-25) | El mapa y la lista ya son la navegación: dos menús de destinos competían. La 404 marca su `<main>` con `data-hide-rail` y el riel se oculta con la variante `rail-hidden`. En la persiana se funde solo, por `vt-rail`. **Es la única ruta sin riel en desktop.** |
+| **Bottom bar mobile** | Escondida, como en cualquier ruta que no es el Home | No hubo que tocar nada. |
+| **“Volver atrás”** | Link secundario al lado del CTA, **sólo en desktop** y **sólo si el navegador tiene una página anterior** (usuario, 2026-09-25) | Hace `router.back()`: vuelve a la página de donde viniste, sea del sitio o no, que es lo que se espera de un link roto. Si la 404 se abrió en una pestaña nueva, `history.length` es 1 y el link no aparece, porque repetiría al CTA. En mobile la flecha del header sigue con su lógica de siempre. |
+| **Grilla** | La del Home, 1144 centrados, pero con gutter de **40** (`--spacing-route-edge`) y no 148 | Sin riel, el gutter de 148 no aloja nada. Con 40, a 1100 el título sigue entero y el mapa se achica a 490. Mobile usa el gutter de ruta (16). |
+| **Minimapa** | Cuadrado de 592 como máximo, al lado de la columna de texto. En mobile, 358 × 232 entre el copy y el CTA | La columna de texto es `minmax(min-content, 1fr)`: el mapa toma lo que queda hasta 592 y nunca aplasta al título. Mide 592 desde ~1280, 570 a 1180 y 490 a 1100. |
+| **La línea** | Sale de tu punto, sube y entra horizontal al destino. Por default apunta al Home; con hover o foco sobre una fila, un nodo o el CTA, se redibuja a ese destino | Son dos `<span>` posicionados con variables CSS en porcentaje, que se animan con `route-draw-y` / `route-draw-x` al remontarse (`key` por destino). No se mide el DOM. Los corchetes del nodo destino se traban con `data-locked` cuando la línea llega (`--bracket-lead`). En touch no hay hover: la línea se queda en el Home y al tocar un destino se redibuja justo antes de navegar. |
+| **Nodos del mapa** | Links con `tabIndex={-1}` y `aria-hidden` | Duplican la lista, que es la navegación accesible. Son comodidad de puntero, el mismo criterio que el botón estirado del banner de Juegos. |
+| **Distancias** | Salen de la posición de cada nodo, así que son coherentes con la barra de “100 M” | Home 747 M, Eventos 1044, Misiones 855, Leaderboard 567, Juegos 450. |
+| **Entrada** | El título hace el barrido de luz, la ruta tipeada se decodifica, tu punto entra con el parpadeo de las medallas bloqueadas y la línea se traza al Home | Llegando navegando, las tres esperan a que pase la persiana (`title-sweep-after-route`, `route-draw-after-route` y el retraso de `ScrambleText`). En una carga directa corren enseguida. Nada entra con fade-up. |
+| **Lo único en loop** | El parpadeo lento de tu punto (`blip-blink`, 1,6 s en `steps`) | Es el “estás acá” de cualquier minimapa. |
+| **Movimiento reducido** | Todo en su estado final desde el primer cuadro: la línea al Home dibujada, el título blanco y el punto quieto | Verificado: cero animaciones a los 150 ms. |
+| **Copy** | De juego y con voseo, como el resto de la UI | “Fuera del mapa”, “ERR 404 · Sector sin señal”, “Puntos de reaparición”. Vive en `lib/data/not-found.ts`. |
+
+**Verificado** (2026-09-25):
+- 390 y 1440 en dev, con capturas.
+- Cero desbordes y cero scroll lateral en 14 anchos entre 320 y 1920.
+- Hover, foco con teclado, toque en mobile, “Volver atrás” (vuelve a `/tournaments`), CTA al Home, filas a su ruta y flecha del header mobile al Home en una carga directa.
+- En `next start`: HTML completo del servidor (también sin JS), HTTP 404, `noindex` y título correcto, para `/pagina-que-no-existe`, `/tournaments/123`, `/styleguide/x`, `/favicon.ico` y assets inexistentes. `/tournaments` y `/icon.svg` siguen en 200.
+- En la consola sólo quedan los `404` del propio documento y de su pedido RSC.
+
 ### Fuera del Home la bottom bar se va ✅ (2026-09-24)
 
 Feedback del equipo (Ema): al entrar a una ruta interna la barra de abajo tiene que desaparecer,
@@ -578,7 +609,7 @@ no rutas, y conviven sin conflicto.
 | `/profile` | Perfil propio | ⏳ Pendiente ❓ a confirmar |
 | `/profile/:id` | Perfil de otro usuario | ⏳ Pendiente ❓ a confirmar |
 | `/styleguide` | Referencia visual del DS (solo dev) | ✅ Implementada |
-| `not-found` | 404 | ⏳ Pendiente |
+| `not-found` | 404 · “Fuera del mapa” | 👀 Esperando aprobación (bloques 35–38). **Sin frames: diseño propio**, ver *La 404*, § 5 |
 
 **Ninguna se maqueta sin sus dos frames de Figma** (`AGENTS.md` regla 2), y ninguna se
 abre hasta que el Home esté aprobado completo (regla 14) — **el Home quedó aprobado el 2026-09-20**, así que las rutas hijas están destrabadas y sólo esperan sus frames.
@@ -742,6 +773,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-25 | **404 “Fuera del mapa”**: `--route-draw-duration` (450ms), `--blip-blink-duration` (1600ms), `--spacing-map` (592), `--spacing-map-mobile` (232), `--spacing-map-grid` (32) / `-desktop` (48); utilities `map-grid`, `route-draw-y`, `route-draw-x`, `route-draw-after-route`, `blip-blink`; variante `rail-hidden`; `card-bracket` suma el estado `data-locked` con `--bracket-lead` y `@starting-style`, así también espera a la línea al montar | 404 | Pantalla sin frames, con diseño propio y excepción a la regla 2. Detalle en *La 404*, § 5. `ScrambleText` suma `decodeOnMount` y ahora deja fijos los caracteres que no son letras ni números (`/`, `-`, `·`); con los labels actuales no cambia nada, porque todos son letras y espacios. |
 | 2026-09-25 | **En desktop, `lift-clip` recorta `--bracket-offset` (5px) más afuera, siempre** | Eventos · Misiones · destacadas de `/missions` | Feedback del usuario: los corchetes de la card pegada al borde de la columna salían cortados, porque `lift-clip` recorta justo ahí para que no asome la card siguiente. Primero se abrió sólo con hover o foco, pero con una card a medio scrollear se veía el recorte crecer y achicarse al pasar el mouse; y a 10px no convencía. Queda fijo en 19px en vez de 24: en reposo no cambia nada, porque la card siguiente está a 24px, y en las puntas sigue en 0. **Mobile no cambia**: ahí la card siguiente siempre asoma y se metería 5px en el gutter, y sin hover los corchetes no aparecen. Verificado: flechas, puntas, scroll y mobile sin cambios. |
 | 2026-09-25 | `--chrome-fade-duration` (220ms), utilities `vt-header` / `vt-rail` | Todas las rutas | Feedback del usuario: el header y el riel aparecían y desaparecían de golpe con la persiana, y al volver al Home el riel mostraba la pill antes de que pasara el panel. Detalle en *Micro-animaciones HUD*, § 6. |
 | 2026-09-25 | **El carrusel de Eventos gana 8px de aire abajo** (`pb-2` con `-mb` que lo compensa) | Eventos | Los corchetes de P1 asoman 5px y el viewport sólo dejaba 1–2px: los de abajo se cortaban en todas las cards. Medido: las secciones siguientes quedan en el mismo píxel a 390 y 1440. |
@@ -885,6 +917,10 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Tema | Detalle | Qué hacer |
 |---|---|---|
+| **La 404 es la única ruta sin riel en desktop** | Decisión del usuario (2026-09-25): el mapa ya es la navegación. | Si se agregan otras pantallas de navegación propia, revisar si también lo ocultan o si se vuelve a la regla de riel en todas. |
+| **Las posiciones del minimapa son inventadas** | Los cinco destinos, tu punto y la zona están ubicados a ojo para que se lea bien en los dos tamaños, no representan nada. A 320 de ancho “Zona de juego” y “Misiones” quedan pegados, sin pisarse. | Si se suma un destino, hay que ubicarlo en `lib/data/not-found.ts` y revisar 320 y 1100. La línea asume que todos los destinos quedan arriba y a la izquierda de tu punto. |
+| **Las rutas de detalle caen en la 404** | `/tournaments/123`, `/games/…` y compañía muestran “Fuera del mapa”. Hoy ningún link de la UI apunta ahí (*Rutas de detalle apagadas*, § 6). | Cuando se implemente un detalle, su ruta existe y deja de caer en la 404 sola. |
+| **Entrar a la 404 navegando vuelve a montar el chrome** | Consecuencia de que la 404 sea el `not-found` raíz (ver *Notas de arquitectura*). El header, el riel y el footer se vuelven a montar, y la flecha del header mobile pierde el historial del sitio: vuelve al Home. | Sólo importa si aparecen links internos a rutas que no existen. |
 | **La flecha de volver no restaura el scroll entre rutas internas** | Si la pantalla anterior no era el Home, `goBack` sigue haciendo `router.back()`: vuelve con su scroll pero sin persiana. Hoy no hay forma de ir de una ruta interna a otra desde la UI, así que sólo pasa con el historial del navegador. | Nada, salvo que aparezcan links entre rutas internas. |
 | **Assets de Riot en el hero** | El login screen de PROJECT: Yi es de Riot Games. Su política *Legal Jibber Jabber* lo permite en proyectos de fans gratuitos y no comerciales, **con un aviso visible** de que se usan assets de Riot y que Riot no avala el proyecto. | **Por ahora no aplica** (usuario, 2026-09-25): el proyecto se comparte sólo entre conocidos y no está previsto publicarlo. **Si se publica**, sumar ese aviso antes (el footer es el lugar natural) o sacar el slide. **Para producción no sirve**: licencia de Riot o video propio de diseño. |
 | ~~**El video de Yi es de 1280 × 800**~~ | Era el único tamaño de la fuente. | **Resuelta** (2026-09-25) con Real-ESRGAN 4×: ver *Intro de PROJECT: Yi*. Si aparece un original más grande, reemplaza al escalado. |
@@ -1164,6 +1200,7 @@ tercero. Se retoman en la pasada de fixes chicos, con el scope completo.
 
 | Tema | Qué pasó | Cómo se resolvió |
 |---|---|---|
+| **Un `notFound()` desde una página devuelve un HTML vacío** | La primera versión de la 404 era un catch-all `(site)/[...slug]` que llamaba a `notFound()`, para heredar el layout `(site)`. Daba 404, pero el servidor mandaba `<html id="__next_error__">` con el `<body>` vacío: la pantalla la dibujaba el JS, sin JS quedaba en blanco y la función corría en cada pedido. De ahí salían también dos síntomas: la pestaña perdía el título al hidratar y en dev aparecía el aviso *Encountered a script tag* (con el badge “1 Issue”), porque React volvía a renderizar el `<head>` entero con el `<script>` de la intro. | Lo encontró la revisión de código y se reprodujo en una app de Next 16.3.5 mínima: pasa con cualquier `notFound()` llamado desde una página. **La 404 de URLs sin ruta va en `app/not-found.tsx`**, que se renderiza completa en el servidor. Con el cambio desaparecieron los dos síntomas. |
 | **React cancela la animación de la captura `root` nueva** | La pill del riel aparecía sobre la ruta antes de que la persiana llegara, y el `::view-transition-new(root)` no figuraba entre las animaciones aunque su estilo computado decía `route-swap-in`. | React cancela esa animación cuando arranca la transición, así que la `root` nueva se pinta a opacidad plena desde el primer cuadro, encima de la vieja. Lo que no esté cubierto por otra captura muestra el estado nuevo de entrada. **Todo lo que tenga que controlar su propio tiempo durante una View Transition necesita su propio `view-transition-name`.** |
 | **`scale: -1` espeja también el `transform` que el navegador le pone al grupo** | La persiana de vuelta se trababa al final y dejaba sin tapar la franja izquierda en el momento del cambio: la pill verde del riel aparecía antes de que pasara el panel. | La vuelta reusaba la ida espejada con `scale: -1 1`. Pero el `::view-transition-group` trae un `transform` propio (la posición del elemento, acá −360px por el `left: -25%`), y el `scale` se aplica encima, alrededor del centro: el −360 se volvía +360. El panel quedaba 360px corrido, así que a la mitad no cubría el borde izquierdo y al final seguía en pantalla hasta que la transición se cortaba. Se reescribió sin espejo, con los polígonos del grupo y del filo invertidos para la vuelta. Medido en video, la cobertura baja de 720 a 48 píxeles de columna sin quedarse quieta, igual que la ida. **En un pseudo-elemento de View Transition, nada de `scale` o `rotate` para reusar una animación.** |
 | **`cn()` borra una utility propia si su nombre empieza con un prefijo de Tailwind** | El barrido de los chips no animaba: el relleno aparecía de golpe. Medido, el `::before` saltaba de `-100%` a `0` sin pasos intermedios, y agregando la clase a mano sí animaba. | Las utilities se llamaban `fill-wipe` y `fill-wipe-on`. tailwind-merge las tomó por dos colores de `fill-*` y, al llegar `fill-wipe-on`, borró `fill-wipe`: el `::before` se quedaba sin `content` y lo que se medía era un pseudo-elemento inexistente. Pasaron a `wipe` / `wipe-on`. Es la misma familia que *`cn()` borra los tokens de tamaño de texto con nombre propio*: **una utility propia no puede empezar con un prefijo que tailwind-merge conozca** (`fill-`, `text-`, `bg-`, `border-`, `shadow-`…) si va a convivir con otra en el mismo `cn()`. |
@@ -1474,6 +1511,8 @@ sola portada.
 
 **Ninguna imagen se selecciona ni se arrastra**: son assets del diseño, no contenido.
 
+**El chrome del sitio vive en `SiteChrome`** (`components/layout/site-chrome.tsx`): provider de navegación, persiana, `Nav` y footer. Lo montan el layout `(site)` y `app/not-found.tsx`, porque el `not-found` raíz no pasa por el layout `(site)`. Consecuencia: si se entra a la 404 navegando dentro del sitio, el chrome se vuelve a montar y el provider arranca de cero. Hoy sólo pasa con atrás y adelante del navegador, porque ningún link apunta a una ruta inexistente.
+
 **Las guardas vivas.** `AGENTS.md` regla 19 habilita una línea de `no tocar` donde una
 edición local y aparentemente inocente rompe algo no local y en silencio. Son estas, y la
 lista se mantiene acá para que no se expanda sola:
@@ -1486,7 +1525,7 @@ lista se mantiene acá para que no se expanda sola:
 | `leaderboard-podium-mobile.tsx` | `items-end`, que hace el escalonado; `h-full` lo anula |
 | `event-card.tsx` | El piso del personaje en `bottom-px`; con `bottom-0` pisa el borde de la card |
 | `globals.css` | `@theme static` (sin él `/styleguide` lee vacío), el `border-box` del shorthand de las cards de Eventos y el `1ms` del cruce con `prefers-reduced-motion` |
-| `app/(site)/layout.tsx` | `Nav` tiene que quedar hermano anterior del footer: el footer lee el estado de la bottom bar con `peer/bar` |
+| `components/layout/site-chrome.tsx` | `Nav` tiene que quedar hermano anterior del footer: el footer lee el estado de la bottom bar con `peer/bar` |
 | `globals.css` · `intro-veil-sections` | Veila todo hijo de `<main>` salvo `#home`: si el hero cambia de id, la intro esconde el propio hero |
 | `next.config.ts` | `images.unoptimized` y `devIndicators: false` |
 
@@ -1594,6 +1633,7 @@ Más:
 | Leaderboard (`/leaderboard`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 26–30 |
 | Juegos (`/games`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 31–34 |
 | Micro-animaciones HUD | ✅ | ✅ | ✅ **Aprobadas el 2026-09-25** — P1 B, P2 C, P3–P9, la tanda 0 y los fixes posteriores |
+| 404 (`not-found`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 35–38. Sin frames: diseño propio (concepto A de [SURA 404](https://claude.ai/artifact/6G4urUtxnPWsrbxDuLCAyW)) |
 
 **Leyenda:** ⏳ Pendiente · 🚧 En progreso · 👀 Esperando aprobación · ✅ Aprobada · 📦 Commiteada · 🚫 Bloqueada
 
@@ -1639,6 +1679,10 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 32 · Grilla de juegos | Juegos | `components/sections/game-card.tsx` | [`6137:82821`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6137-82821&m=dev) | [`6137:82953`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6137-82953&m=dev) | 👀 Esperando aprobación. **Es la card del Home**: sólo cambia el tamaño del título (20/24) vía prop `largeTitle` |
 | 33 · Paginador | Juegos | `components/sections/pagination.tsx` | [`6137:82821`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6137-82821&m=dev) | [`6137:82953`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6137-82953&m=dev) | 👀 Esperando aprobación. 5 páginas, compacto en mobile |
 | 34 · Puerta de entrada desde el Home | Juegos | `components/sections/juegos.tsx` | — | — | 👀 Esperando aprobación. "Ver todo" de Juegos → `/games` |
+| 35 · Andamiaje de la 404 | 404 | `app/not-found.tsx`, `components/layout/site-chrome.tsx`, `components/layout/nav-desktop.tsx` | — **sin frame, diseño propio** | — **sin frame, diseño propio** | 👀 Esperando aprobación. Excepción a la regla 2 autorizada por el usuario (2026-09-25). Propuesta: [SURA 404](https://claude.ai/artifact/6G4urUtxnPWsrbxDuLCAyW) |
+| 36 · Columna de texto y salidas | 404 | `components/sections/off-map.tsx`, `lib/data/not-found.ts` | — **sin frame, diseño propio** | — **sin frame, diseño propio** | 👀 Esperando aprobación. Eyebrow, título, ruta tipeada, copy, CTA y “Volver atrás” |
+| 37 · Puntos de reaparición | 404 | `components/sections/off-map.tsx` | — **sin frame, diseño propio** | — **sin frame, diseño propio** | 👀 Esperando aprobación. Las cuatro rutas, con su distancia en el mapa |
+| 38 · Minimapa | 404 | `components/sections/off-map.tsx`, `app/globals.css` | — **sin frame, diseño propio** | — **sin frame, diseño propio** | 👀 Esperando aprobación. Zona, nodos, tu punto y la línea al destino |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. El botón de perfil del header ya es su trigger, inerte.
 >

@@ -1,15 +1,5 @@
-import { Footer } from "@/components/layout/footer";
-import { Nav } from "@/components/layout/nav";
-import { SectionNavProvider } from "@/components/layout/section-nav-context";
+import { SiteChrome } from "@/components/layout/site-chrome";
 
 export default function SiteLayout({ children }: LayoutProps<"/">) {
-  return (
-    <SectionNavProvider>
-      <div aria-hidden className="route-shutter" />
-      {/* no tocar: Nav tiene que quedar hermano anterior del footer, que lee su estado con peer/bar */}
-      <Nav />
-      {children}
-      <Footer />
-    </SectionNavProvider>
-  );
+  return <SiteChrome>{children}</SiteChrome>;
 }

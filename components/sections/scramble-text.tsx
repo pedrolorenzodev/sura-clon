@@ -2,19 +2,28 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { prefersReducedMotion, readMs } from "@/lib/motion";
+import { isAppReady, prefersReducedMotion, readMs } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const KEPT = /[^\p{L}\p{N}]/u;
 
 const scramble = (text: string, progress: number) =>
   Array.from(text, (char, index) =>
-    char === " " || index / text.length < progress
+    KEPT.test(char) || index / text.length < progress
       ? char
       : GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
   ).join("");
 
-export function ScrambleText({ text, className }: { text: string; className?: string }) {
+export function ScrambleText({
+  text,
+  decodeOnMount,
+  className,
+}: {
+  text: string;
+  decodeOnMount?: boolean;
+  className?: string;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
   const [display, setDisplay] = useState(text);
   const [width, setWidth] = useState<number | null>(null);
@@ -56,12 +65,16 @@ export function ScrambleText({ text, className }: { text: string; className?: st
 
     host.addEventListener("pointerenter", run);
     host.addEventListener("focusin", run);
+    const mountTimer = decodeOnMount
+      ? window.setTimeout(run, isAppReady() ? readMs("--route-shutter-duration") : 0)
+      : 0;
     return () => {
+      window.clearTimeout(mountTimer);
       cancelAnimationFrame(frame);
       host.removeEventListener("pointerenter", run);
       host.removeEventListener("focusin", run);
     };
-  }, [text]);
+  }, [text, decodeOnMount]);
 
   return (
     <>
