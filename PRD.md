@@ -23,7 +23,34 @@
 
 ---
 
-## 0. Decisiones tomadas sin consulta (2026-09-21)
+## 0. Decisiones tomadas sin consulta
+
+### 2026-09-25 · Sonido e íconos del menú
+
+> Corrida autónoma de la implementación del sonido y de los íconos animados, con el usuario
+> ausente. Lo que decidió el usuario antes de irse está en § 5, *Sonido*. Esto es lo que hubo que
+> resolver solo, con la alternativa descartada.
+
+| # | Qué se eligió | Por qué | Qué se descartó |
+|---|---|---|---|
+| 1 | **El listener de sonido vive en `SiteChrome`**, no en el layout `(site)` | La 404 renderiza `SiteChrome` por fuera de `(site)`: con el listener en el layout tenía toggle pero no sonaba ni respondía a la M | Montar un segundo listener en la 404 |
+| 2 | **El hover no suena cuando un elemento pasa debajo de un mouse quieto** | Los tres motores disparan `pointerover` al scrollear: medido, 17 sonidos en 20 pasos de rueda. Se descarta el evento si trae las mismas coordenadas que el último `pointermove` | Dejarlo sonar |
+| 3 | **El foco sólo suena si viene del teclado** (una tecla en los últimos 600ms) | Un foco que devuelve el código, como al cerrar un menú, no es una acción del usuario | Sonar con cualquier `:focus-visible` |
+| 4 | **Cmd/Ctrl/Shift-click y el click del medio en un link son mudos** | Abren otra pestaña: la pantalla no cambia | Sonar la ruta |
+| 5 | **Los sonidos se bajan aunque el sonido esté apagado**, pero el `AudioContext` no se crea hasta prenderlo | Son 21 KB y así prender el toggle suena en el acto | No bajarlos hasta prender |
+| 6 | **El primer gesto también arranca la descarga** si todavía no había empezado | Antes, un click antes del `load` quedaba mudo hasta el segundo. Un gesto real significa que la página ya pintó | Esperar siempre al `load` |
+| 7 | **Los ticks del odómetro suenan también con movimiento reducido** | El sonido no es movimiento. Lo único que cambia con movimiento reducido es la persiana, que suena como un clic porque no hay panel | Silenciarlos |
+| 8 | **El banner entero suena `click`, sin hover** (el botón estirado de "Jugar ahora") | Lleva al mismo destino que el CTA | Dejarlo mudo |
+| 9 | **"Ir a Sura News" y el "Ver todo" que es botón suenan `click`** | Son botones sin destino todavía, igual que el resto de los botones inertes que suenan | Sólo hover |
+| 10 | **Shift+M también silencia** | Con Shift o Bloq Mayús la M sigue siendo la M | Sólo la m minúscula |
+| 11 | **El botón del joystick se aprieta (1 → 0,5 → 1)**, como en la demo aprobada | La spec interna decía 0,5 → 1; manda lo que vio el usuario | Seguir la spec |
+| 12 | **La animación de hover del ícono corre entera** aunque el mouse se vaya (ventana de 900ms, con JS) | Con `:hover` puro, pasar rápido por el riel cortaba cada animación a la mitad | CSS puro |
+| 13 | **El ícono que queda activo no se anima hasta la primera interacción real** | Al recargar a mitad del Home el scroll-spy corregía el activo a los ~200ms y animaba un ícono en la carga | Animar siempre |
+| 14 | **La unión del tallo y la copa del trofeo difiere 5px del render anterior** (Δ ≤ 25) | Tienen que ser dos formas para que la copa se mueva sola sobre la base | Una sola forma y la copa quieta |
+| 15 | **A 320px, en las rutas internas, el nombre del usuario desaparece** | Flecha, avatar, contadores y toggle ocupan la fila entera. A 360 quedan 35px de nombre y a 375, 50. Nada se desborda | Achicar los gaps del header mobile, que es tocar un diseño aprobado |
+| 16 | **El "Ver todo" de Sura News en mobile no se arregló** | Es un bug anterior: el aire de sombra de la lista de cards le tapa el centro al tocarlo. Queda en la deuda | Arreglarlo en esta tanda |
+
+### 2026-09-21 · `/leaderboard` y `/games`
 
 > Corrida autónoma de `/leaderboard` y `/games`, sin nadie del otro lado. Todo lo que había
 > que resolver solo está acá, con la alternativa que se descartó. **Es lo primero que hay que
@@ -545,8 +572,92 @@ a donde estaba, con su scroll; si la ruta se abrió directo, va al Home. Es sól
 tiene el riel y el logo.
 
 Para que entre la flecha, **el nombre del usuario se trunca con `…`** cuando no alcanza el ancho:
-a 390 se lee entero; a 375 y menos, en las rutas internas, se corta. Medido de 320 a 430: nada
+desde el 2026-09-25, con el toggle de sonido al lado, a 390 se corta en el Home ("RocketMan19…") y en las rutas internas ("Rocket…"); a 320, en las rutas internas, desaparece (§ 0). Medido de 320 a 430: nada
 se sale del header y el alto sigue en 56.
+
+### Sonido ✅ implementado · 👀 esperando aprobación (2026-09-25)
+
+Feedback del equipo (Ema): SFX en hovers, clicks y cambios de página, toggleable y prendido por
+defecto, más los íconos del menú animados. Se propuso en **[Sonido SURA](https://claude.ai/artifact/FtyLwp9kX6guF4FCEek39E)**, con demos que se
+escuchan (AGENTS regla 20), y el usuario eligió el 2026-09-25:
+
+- **Paleta Libre**: Kenney, CC0, sin aviso de licencia. La ida y la vuelta de la persiana son el
+  par **Ventana** (maximize / minimize de Kenney), que reemplazó a las puertas sci-fi.
+- **Toggle en el header** (T1), **preferencia guardada** entre visitas y la tecla **M**.
+- **Hover sonoro sólo en lo accionable** (el mapa de la propuesta) y **los íconos del menú "por partes"** (opción D).
+
+La referencia fue **emalorenzo.com**. Sus sonidos son rips de Metal Gear Solid, que no usamos, y de
+ahí salieron las prácticas: hover muy bajo con limitador, carriles que se reemplazan, fundidos
+cortos, desbloqueo al primer gesto y silencio con la pestaña oculta. Lo que hacemos distinto: la
+preferencia se guarda y no hay Howler.
+
+| Evento | Dónde | Volumen |
+|---|---|---|
+| Hover | Ítems del riel, CTA del hero, "Jugar ahora" ×2, Reclamar, tabs de ruta, "Ver todo", "Ir a Sura News", el toggle. También el foco con teclado | 0,16 |
+| Clic | Flechas de carruseles y del hero, chips, paginador, CTAs, "Ver todo" sin ruta, banners, medallas obtenidas | 0,42 |
+| Selección | Ítem del menú, tab de ruta, miniatura del hero | 0,5 |
+| Ida de ruta | Cualquier link a otra ruta que no sea el Home | 0,55 |
+| Vuelta al Home | Links al Home desde una ruta interna, flecha de volver | 0,55 |
+| Reclamar | El botón | 0,8 — lo más fuerte |
+| Odómetro | Un tick por dígito que cambia al reclamar, con la afinación subiendo | 0,2 |
+| Bloqueado | Click en una medalla bloqueada | 0,5 |
+| Sonido on / off | El toggle | 0,45 |
+
+**Mudos a propósito:** el hover de cards, filas, chips y footer (son grillas, y ahí el hover se
+vuelve ráfaga), el scroll-spy, los barridos de títulos, la intro, los conteos al scrollear, el botón
+de perfil y los del footer. Un elemento que ya está seleccionado tampoco suena.
+
+**Límites:**
+- **Hover:** un hover cada 110ms, y ninguno mientras suena el anterior; sólo mouse.
+- **Carriles:** un sonido nuevo del mismo carril funde al anterior en 18ms; tope de 6 voces.
+- **Variación:** ±2–4% de afinación y ±6% de volumen, para que el mismo tick no canse.
+- **Movimiento reducido:** la persiana no corre, así que la ida y la vuelta suenan como un clic.
+
+**El toggle.** Un cuadrado de 40 con la superficie de los contadores: primero en el grupo del header
+desktop, último en el mobile. El ícono es el parlante de Lucide dibujado inline. Al apagar, las
+ondas se retraen y se dibuja una cruz; con cada sonido que sale, las ondas titilan una vez. El
+estado vive en `localStorage` (`sura-sound`) y un script en el `<head>` lo pone en
+`<html data-sound>` antes de pintar, así no hay parpadeo del ícono. Se sincroniza entre pestañas.
+
+**Antes del primer click no suena nada, y no tiene arreglo.** Los navegadores no dejan sonar audio
+hasta un `pointerdown` o una tecla. Hover, movimiento del mouse y focus no cuentan; en Chrome la
+rueda tampoco. Se investigó en el código fuente de Chromium, Firefox y WebKit y se probó en los tres:
+no hay workaround legítimo para una primera visita. Lo único que existe:
+
+- el *Media Engagement* de Chrome, que sólo se gana con más de 7 segundos de audio (sólo la música de fondo lo construiría);
+- el permiso que el usuario le da al sitio;
+- una PWA instalada;
+- una pantalla de entrada, que se descartó porque le agrega un paso a cada visita.
+
+Así que los hovers anteriores al primer click son mudos, igual que en emalorenzo.com.
+
+**Carga.** 10 archivos en `public/assets/sfx/`: Opus en WebM (21 KB en total) con AAC de respaldo
+si el navegador no decodifica WebM. Se bajan después del `load`, en idle, o con el primer gesto si
+llega antes. Se decodifican al crear el `AudioContext`, en ese mismo gesto. Un sonido que no está
+listo en 500ms se descarta: nunca suena tarde. Con la pestaña oculta el contexto se suspende.
+
+### Íconos del menú por partes ✅ implementado · 👀 esperando aprobación (2026-09-25)
+
+Opción D de la misma propuesta. Los íconos del riel y de la bottom bar dejaron de ser máscaras CSS y
+son SVG inline (`components/layout/nav-icon.tsx`) con **la misma geometría de los assets**: cada
+`d` se partió sólo por sus propios comandos `M` y la unión da el original, verificado con un
+script. **Es un desvío consciente de AGENTS regla 10**, aceptado por el usuario, y de la regla 16,
+con el criterio de siempre: cero librerías de motion.
+
+| Ícono | Qué hace | Duración |
+|---|---|---|
+| Home | La casa se presiona | 400ms |
+| Eventos | La copa se sacude sobre su base | 540ms |
+| Leaderboard | Las barras suben desde el piso, en cascada, y el "1" parpadea | 380ms + 60ms de escalón |
+| Misiones | El lápiz escribe | 500ms |
+| Sura News | Las líneas se vuelven a escribir | 260ms + 70ms de escalón |
+| Juegos | El joystick vibra, el botón se aprieta y la cruz parpadea | 280ms |
+
+- **Cuándo se animan:** en desktop, con hover o foco de teclado de un ítem que no está activo, y una vez cuando un ítem queda activo. En mobile, sólo cuando queda activo.
+- **Cuándo no:** el ítem activo en la carga no se anima hasta la primera interacción real.
+- **Movimiento reducido:** nada se mueve.
+- **En reposo** los íconos son los mismos que antes: medido contra la máscara, 4–14 píxeles de antialiasing por estado y la unión del tallo del trofeo (ver § 0).
+- **Assets:** los SVG de `public/assets/home/nav/` siguen en el repo porque la 404 los usa como máscara, salvo el de news, que quedó sin uso.
 
 ### El chrome de una ruta interna
 
@@ -774,6 +885,8 @@ public/assets/<pantalla>/   assets exportados de Figma
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
 | 2026-09-25 | **404 “Fuera del mapa”**: `--route-draw-duration` (450ms), `--blip-blink-duration` (1600ms), `--spacing-map` (592), `--spacing-map-mobile` (232), `--spacing-map-grid` (32) / `-desktop` (48); utilities `map-grid`, `route-draw-y`, `route-draw-x`, `route-draw-after-route`, `blip-blink`; variante `rail-hidden`; `card-bracket` suma el estado `data-locked` con `--bracket-lead` y `@starting-style`, así también espera a la línea al montar | 404 | Pantalla sin frames, con diseño propio y excepción a la regla 2. Detalle en *La 404*, § 5. `ScrambleText` suma `decodeOnMount` y ahora deja fijos los caracteres que no son letras ni números (`/`, `-`, `·`); con los labels actuales no cambia nada, porque todos son letras y espacios. |
+| 2026-09-25 | **Sonido**: `public/assets/sfx/` (10 sonidos, 21 KB), `--sound-morph-duration`, `--sound-wave-fade-duration`, `--sound-cross-delay`, `--sound-live-duration`, `--sound-live-stagger`, `--sound-wave-off-scale`, `--sound-live-dim`; utilities `sound-wave`, `sound-wave-far`, `sound-cross`; variantes `sound-on` / `sound-off` | Todas las rutas · Header | Propuesta *Sonido SURA*, elegida por el usuario. Detalle en § 5, *Sonido*. El sonido no es parte del diseño: todo es `offDesign`. |
+| 2026-09-25 | **Íconos del menú por partes**: `--nav-icon-*` (16 duraciones), utilities `navicon` y `navpart-*`; los íconos pasan de máscara a SVG inline, `--color-nav-icon` se usa como `text-nav-icon` y se borra `nav-icon-news` | Menú flotante · Bottom bar | Opción D de la misma propuesta. Detalle en § 5, *Íconos del menú por partes*. Las otras cinco máscaras `nav-icon-*` siguen porque las usa la 404. |
 | 2026-09-25 | **En desktop, `lift-clip` recorta `--bracket-offset` (5px) más afuera, siempre** | Eventos · Misiones · destacadas de `/missions` | Feedback del usuario: los corchetes de la card pegada al borde de la columna salían cortados, porque `lift-clip` recorta justo ahí para que no asome la card siguiente. Primero se abrió sólo con hover o foco, pero con una card a medio scrollear se veía el recorte crecer y achicarse al pasar el mouse; y a 10px no convencía. Queda fijo en 19px en vez de 24: en reposo no cambia nada, porque la card siguiente está a 24px, y en las puntas sigue en 0. **Mobile no cambia**: ahí la card siguiente siempre asoma y se metería 5px en el gutter, y sin hover los corchetes no aparecen. Verificado: flechas, puntas, scroll y mobile sin cambios. |
 | 2026-09-25 | `--chrome-fade-duration` (220ms), utilities `vt-header` / `vt-rail` | Todas las rutas | Feedback del usuario: el header y el riel aparecían y desaparecían de golpe con la persiana, y al volver al Home el riel mostraba la pill antes de que pasara el panel. Detalle en *Micro-animaciones HUD*, § 6. |
 | 2026-09-25 | **El carrusel de Eventos gana 8px de aire abajo** (`pb-2` con `-mb` que lo compensa) | Eventos | Los corchetes de P1 asoman 5px y el viewport sólo dejaba 1–2px: los de abajo se cortaban en todas las cards. Medido: las secciones siguientes quedan en el mismo píxel a 390 y 1440. |
@@ -921,6 +1034,10 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Las posiciones del minimapa son inventadas** | Los cinco destinos, tu punto y la zona están ubicados a ojo para que se lea bien en los dos tamaños, no representan nada. A 320 de ancho “Zona de juego” y “Misiones” quedan pegados, sin pisarse. | Si se suma un destino, hay que ubicarlo en `lib/data/not-found.ts` y revisar 320 y 1100. La línea asume que todos los destinos quedan arriba y a la izquierda de tu punto. |
 | **Las rutas de detalle caen en la 404** | `/tournaments/123`, `/games/…` y compañía muestran “Fuera del mapa”. Hoy ningún link de la UI apunta ahí (*Rutas de detalle apagadas*, § 6). | Cuando se implemente un detalle, su ruta existe y deja de caer en la 404 sola. |
 | **Entrar a la 404 navegando vuelve a montar el chrome** | Consecuencia de que la 404 sea el `not-found` raíz (ver *Notas de arquitectura*). El header, el riel y el footer se vuelven a montar, y la flecha del header mobile pierde el historial del sitio: vuelve al Home. | Sólo importa si aparecen links internos a rutas que no existen. |
+| **Nada suena antes del primer click o tecla** | Es la política de autoplay de todos los navegadores. Investigado en el código fuente y probado: no hay workaround legítimo para una primera visita (ver § 5, *Sonido*). | Nada. Si vuelve la música de fondo, el *Media Engagement* de Chrome haría que los visitantes frecuentes escuchen desde el primer hover. |
+| **El sonido no se probó en Safari ni Firefox reales** | Sólo en Chrome y en los builds de WebKit y Firefox de Playwright. El respaldo AAC para Safari viejo no se ejercitó. | Probarlo a mano en Safari (macOS e iOS) antes de dar la tanda por cerrada. |
+| **El "Ver todo" de Sura News no se puede tocar en el centro en mobile** | Bug anterior al sonido: el aire que la lista de cards reserva para la sombra del hover queda encima del botón. Hoy el botón no navega, así que sólo se pierden su hover y su sonido. | `pointer-events-none` en la lista y `pointer-events-auto` en sus ítems, verificando que el carrusel siga scrolleando con el dedo. |
+| **A 320px el nombre del usuario desaparece en las rutas internas** | Lo empujan la flecha de volver y el toggle de sonido (§ 0, punto 15). | Si molesta, achicar los gaps del header mobile. |
 | **La flecha de volver no restaura el scroll entre rutas internas** | Si la pantalla anterior no era el Home, `goBack` sigue haciendo `router.back()`: vuelve con su scroll pero sin persiana. Hoy no hay forma de ir de una ruta interna a otra desde la UI, así que sólo pasa con el historial del navegador. | Nada, salvo que aparezcan links entre rutas internas. |
 | **Assets de Riot en el hero** | El login screen de PROJECT: Yi es de Riot Games. Su política *Legal Jibber Jabber* lo permite en proyectos de fans gratuitos y no comerciales, **con un aviso visible** de que se usan assets de Riot y que Riot no avala el proyecto. | **Por ahora no aplica** (usuario, 2026-09-25): el proyecto se comparte sólo entre conocidos y no está previsto publicarlo. **Si se publica**, sumar ese aviso antes (el footer es el lugar natural) o sacar el slide. **Para producción no sirve**: licencia de Riot o video propio de diseño. |
 | ~~**El video de Yi es de 1280 × 800**~~ | Era el único tamaño de la fuente. | **Resuelta** (2026-09-25) con Real-ESRGAN 4×: ver *Intro de PROJECT: Yi*. Si aparece un original más grande, reemplaza al escalado. |
@@ -1201,6 +1318,10 @@ tercero. Se retoman en la pasada de fixes chicos, con el scope completo.
 | Tema | Qué pasó | Cómo se resolvió |
 |---|---|---|
 | **Un `notFound()` desde una página devuelve un HTML vacío** | La primera versión de la 404 era un catch-all `(site)/[...slug]` que llamaba a `notFound()`, para heredar el layout `(site)`. Daba 404, pero el servidor mandaba `<html id="__next_error__">` con el `<body>` vacío: la pantalla la dibujaba el JS, sin JS quedaba en blanco y la función corría en cada pedido. De ahí salían también dos síntomas: la pestaña perdía el título al hidratar y en dev aparecía el aviso *Encountered a script tag* (con el badge “1 Issue”), porque React volvía a renderizar el `<head>` entero con el `<script>` de la intro. | Lo encontró la revisión de código y se reprodujo en una app de Next 16.3.5 mínima: pasa con cualquier `notFound()` llamado desde una página. **La 404 de URLs sin ruta va en `app/not-found.tsx`**, que se renderiza completa en el servidor. Con el cambio desaparecieron los dos síntomas. |
+| **En Chromium, `page.evaluate` cuenta como gesto del usuario** | Los primeros tests del sonido daban el audio habilitado sin haber tocado nada. `page.evaluate()`, `page.hover()` y `page.focus()` de Playwright prenden `userActivation`. | Para probar lo que pasa antes del primer gesto hay que usar sólo `page.mouse` y `page.keyboard` y leer los resultados con `console.log` desde la propia página. **Y el flag `--autoplay-policy=user-gesture-required` no es la política de desktop**: es la vieja de mobile y deja el `AudioContext` corriendo al cargar. La política real es la que viene sin flags. |
+| **El navegador dispara `pointerover` cuando la página scrollea debajo de un mouse quieto** | Con el hover sonoro en elementos que scrollean, la rueda hacía sonar todo lo que pasaba debajo del cursor. | El evento que causa el scroll trae exactamente las coordenadas del último `pointermove`; uno real, no. El listener descarta los que coinciden. |
+| **Un `onPointerEnter` de React se entera del puntero que entra a un portal hijo** | Pasar del ítem del riel a su tooltip volvía a animar el ícono: el contenido del tooltip vive en un portal, pero en React sigue siendo hijo del `<li>`. | El handler ignora el evento si `currentTarget` no contiene de verdad al `target` en el DOM. **Cualquier handler de entrada sobre un elemento con tooltip, popover o menú en portal tiene el mismo problema.** |
+| **Reiniciar una animación con `fill-mode: both` salta a su primer keyframe durante el delay** | Clickear un ítem del riel justo después del hover cortaba la animación: la marca de "activo" la reiniciaba con 140ms de delay y durante ese tiempo el ícono volvía al primer cuadro. | Si la animación de hover sigue corriendo, el cambio a activo no la reinicia. |
 | **React cancela la animación de la captura `root` nueva** | La pill del riel aparecía sobre la ruta antes de que la persiana llegara, y el `::view-transition-new(root)` no figuraba entre las animaciones aunque su estilo computado decía `route-swap-in`. | React cancela esa animación cuando arranca la transición, así que la `root` nueva se pinta a opacidad plena desde el primer cuadro, encima de la vieja. Lo que no esté cubierto por otra captura muestra el estado nuevo de entrada. **Todo lo que tenga que controlar su propio tiempo durante una View Transition necesita su propio `view-transition-name`.** |
 | **`scale: -1` espeja también el `transform` que el navegador le pone al grupo** | La persiana de vuelta se trababa al final y dejaba sin tapar la franja izquierda en el momento del cambio: la pill verde del riel aparecía antes de que pasara el panel. | La vuelta reusaba la ida espejada con `scale: -1 1`. Pero el `::view-transition-group` trae un `transform` propio (la posición del elemento, acá −360px por el `left: -25%`), y el `scale` se aplica encima, alrededor del centro: el −360 se volvía +360. El panel quedaba 360px corrido, así que a la mitad no cubría el borde izquierdo y al final seguía en pantalla hasta que la transición se cortaba. Se reescribió sin espejo, con los polígonos del grupo y del filo invertidos para la vuelta. Medido en video, la cobertura baja de 720 a 48 píxeles de columna sin quedarse quieta, igual que la ida. **En un pseudo-elemento de View Transition, nada de `scale` o `rotate` para reusar una animación.** |
 | **`cn()` borra una utility propia si su nombre empieza con un prefijo de Tailwind** | El barrido de los chips no animaba: el relleno aparecía de golpe. Medido, el `::before` saltaba de `-100%` a `0` sin pasos intermedios, y agregando la clase a mano sí animaba. | Las utilities se llamaban `fill-wipe` y `fill-wipe-on`. tailwind-merge las tomó por dos colores de `fill-*` y, al llegar `fill-wipe-on`, borró `fill-wipe`: el `::before` se quedaba sin `content` y lo que se medía era un pseudo-elemento inexistente. Pasaron a `wipe` / `wipe-on`. Es la misma familia que *`cn()` borra los tokens de tamaño de texto con nombre propio*: **una utility propia no puede empezar con un prefijo que tailwind-merge conozca** (`fill-`, `text-`, `bg-`, `border-`, `shadow-`…) si va a convivir con otra en el mismo `cn()`. |
@@ -1513,6 +1634,15 @@ sola portada.
 
 **El chrome del sitio vive en `SiteChrome`** (`components/layout/site-chrome.tsx`): provider de navegación, persiana, `Nav` y footer. Lo montan el layout `(site)` y `app/not-found.tsx`, porque el `not-found` raíz no pasa por el layout `(site)`. Consecuencia: si se entra a la 404 navegando dentro del sitio, el chrome se vuelve a montar y el provider arranca de cero. Hoy sólo pasa con atrás y adelante del navegador, porque ningún link apunta a una ruta inexistente.
 
+**El sonido se cablea con atributos, no con handlers.** Un único listener delegado
+(`components/layout/sfx-listener.tsx`, montado en `SiteChrome`) lee `data-sfx-hover` y
+`data-sfx="<evento>"` de los elementos, y detecta solo los links a otra ruta para la ida y la vuelta.
+Así ningún componente se volvió cliente por el sonido y cablear un botón nuevo es sumar un
+atributo. El motor (`lib/sfx.ts`) es un módulo sin React, y los volúmenes, carriles y límites son
+data tipada en `lib/data/sfx.ts`. La excepción son los ticks del odómetro, que dependen del
+tiempo de cada dígito y viven en `points-value.tsx`: suenan sólo desde el contador visible, así el
+header mobile oculto no los duplica.
+
 **Las guardas vivas.** `AGENTS.md` regla 19 habilita una línea de `no tocar` donde una
 edición local y aparentemente inocente rompe algo no local y en silencio. Son estas, y la
 lista se mantiene acá para que no se expanda sola:
@@ -1633,6 +1763,7 @@ Más:
 | Leaderboard (`/leaderboard`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 26–30 |
 | Juegos (`/games`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 31–34 |
 | Micro-animaciones HUD | ✅ | ✅ | ✅ **Aprobadas el 2026-09-25** — P1 B, P2 C, P3–P9, la tanda 0 y los fixes posteriores |
+| Sonido e íconos del menú | ✅ | ✅ | 👀 Esperando aprobación — bloques 39–41. Propuesta [Sonido SURA](https://claude.ai/artifact/FtyLwp9kX6guF4FCEek39E) |
 | 404 (`not-found`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 35–38. Sin frames: diseño propio (concepto A de [SURA 404](https://claude.ai/artifact/6G4urUtxnPWsrbxDuLCAyW)) |
 
 **Leyenda:** ⏳ Pendiente · 🚧 En progreso · 👀 Esperando aprobación · ✅ Aprobada · 📦 Commiteada · 🚫 Bloqueada
@@ -1683,6 +1814,9 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 36 · Columna de texto y salidas | 404 | `components/sections/off-map.tsx`, `lib/data/not-found.ts` | — **sin frame, diseño propio** | — **sin frame, diseño propio** | 👀 Esperando aprobación. Eyebrow, título, ruta tipeada, copy, CTA y “Volver atrás” |
 | 37 · Puntos de reaparición | 404 | `components/sections/off-map.tsx` | — **sin frame, diseño propio** | — **sin frame, diseño propio** | 👀 Esperando aprobación. Las cuatro rutas, con su distancia en el mapa |
 | 38 · Minimapa | 404 | `components/sections/off-map.tsx`, `app/globals.css` | — **sin frame, diseño propio** | — **sin frame, diseño propio** | 👀 Esperando aprobación. Zona, nodos, tu punto y la línea al destino |
+| 39 · Motor de sonido y toggle | Todas las rutas | `lib/sfx.ts`, `lib/data/sfx.ts`, `lib/sfx-boot.ts`, `components/layout/sfx-listener.tsx`, `sound-toggle.tsx`, `site-chrome.tsx`, `header-desktop.tsx`, `header-mobile.tsx` | — **sin frame**: [Sonido SURA](https://claude.ai/artifact/FtyLwp9kX6guF4FCEek39E) | — **sin frame**: [Sonido SURA](https://claude.ai/artifact/FtyLwp9kX6guF4FCEek39E) | 👀 Esperando aprobación |
+| 40 · Cableado de los eventos | Todas las rutas | `components/sections/*` (hero, carruseles, tabs, chips, paginador, banners, medallas, headers de sección), `claim-button.tsx`, `back-button.tsx`, `points-value.tsx` | — **sin frame** | — **sin frame** | 👀 Esperando aprobación |
+| 41 · Íconos del menú por partes | Todas las rutas | `components/layout/nav-icon.tsx`, `nav-desktop.tsx`, `nav-mobile.tsx`, `lib/data/navigation.ts` | — **sin frame**: opción D de [Sonido SURA](https://claude.ai/artifact/FtyLwp9kX6guF4FCEek39E) | — **sin frame** | 👀 Esperando aprobación |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. El botón de perfil del header ya es su trigger, inerte.
 >
