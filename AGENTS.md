@@ -274,6 +274,33 @@ Clon **pixel-perfect** de una UI, maquetado desde Figma. El target está en `PRD
     guarda es para lo que CSS o el lenguaje no pueden expresar — un contexto de apilado, un
     margen negativo que es aire de pintura, un `1ms` que existe para que dispare un evento.
 
+20. **UI sin definición precisa: primero una página de propuesta con demos en vivo.**
+    Cuando hay que crear UI que el Figma no define con precisión —animaciones, micro-
+    interacciones, una pantalla sin frames (la 404), un estado que el diseño no dibuja— o el
+    usuario no sabe todavía exactamente qué quiere, **no se implementa directo en la app**.
+    Primero se publica un Artifact de propuesta, y se implementa recién cuando el usuario elige.
+
+    No aplica cuando hay un frame de Figma con valores precisos: ahí se maqueta el diseño.
+
+    La página tiene que:
+
+    - **Mostrar, no describir.** Cada opción es una demo en vivo e interactiva (hover, click,
+      "Repetir"), construida con las fuentes, colores, tokens y curvas reales del proyecto, y
+      que funcione también al tocarla en mobile.
+    - **Dar opciones comparables.** Entre dos y cuatro por pieza, y si existe, lo que hay hoy al
+      lado de la propuesta.
+    - **Explicar cada opción en pocas líneas**: dónde va, de qué referencia sale y cuánto cuesta.
+    - **Dejar explícito lo que se descarta** y por qué, incluida la lista de AI-slop que se evita.
+    - **Terminar con lo que hay que decidir.** Después se frena y se espera la elección.
+
+    **Se itera en la misma página**, no en una nueva: si el usuario pide variantes de una pieza,
+    se suman ahí mismo, con la versión anterior guardada a la izquierda para comparar. La
+    página refleja el estado (qué se aprobó y qué espera elección), y su link queda en `PRD.md`
+    junto con las decisiones.
+
+    Los Artifacts son privados: si el usuario quiere mostrarle la página a alguien, la comparte
+    él desde el menú *Share*.
+
 ## Navegación
 
 **No asumir cómo navega el diseño.** Un ícono de menú puede llevar a una ruta propia o
