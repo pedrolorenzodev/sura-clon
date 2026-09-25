@@ -1453,7 +1453,8 @@ Lockfile: `skills-lock.json`.
 
 `find-skills` · `next-best-practices` · `vercel-react-best-practices` ·
 `vercel-composition-patterns` · `tailwind-design-system` · `typescript-advanced-types` ·
-`shadcn` · `remotion-best-practices` · `git-guardrails-claude-code` · `supabase`
+`shadcn` · `remotion-best-practices` · `git-guardrails-claude-code` · `supabase` ·
+`libraries-dev`
 
 > `remotion-best-practices` y `supabase` no aplican a la Fase 1.
 
