@@ -682,7 +682,12 @@
     }
   }
 
-  &:hover::after,
+  @media (hover: hover) {
+    &:hover::after {
+      opacity: 1;
+    }
+  }
+
   &:focus-visible::after {
     opacity: 1;
   }
@@ -735,7 +740,12 @@
     }
   }
 
-  .group:hover &::after,
+  @media (hover: hover) {
+    .group:hover &::after {
+      opacity: 1;
+    }
+  }
+
   .group:focus-visible &::after {
     opacity: 1;
   }

@@ -90,7 +90,7 @@ export function HeroSlider() {
                   fetchPriority={isActive ? undefined : "low"}
                   className={cn(
                     "size-full object-cover transition-opacity duration-200 motion-reduce:transition-none",
-                    !isActive && "opacity-40 group-hover:opacity-70",
+                    !isActive && "opacity-40 group-hover:opacity-70 group-focus-visible:opacity-70",
                   )}
                 />
                 {isActive ? (

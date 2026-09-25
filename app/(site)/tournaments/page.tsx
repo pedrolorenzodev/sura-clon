@@ -19,7 +19,7 @@ export default function TournamentsPage() {
       <RouteShell title="Eventos">
         <SearchField
           placeholder="Buscar evento"
-          className="gap-1.5 bg-surface-2 px-4 py-2.5 ring-1 ring-inset ring-border-muted/25 transition-[--tw-ring-color] duration-200 focus-within:ring-border-light motion-reduce:transition-none desktop:max-w-1/2 desktop:gap-1.5 desktop:py-2"
+          className="gap-1.5 bg-surface-2 px-4 py-2.5 ring-1 ring-inset ring-border-muted/25 focus-within:ring-border-light desktop:max-w-1/2 desktop:gap-1.5 desktop:py-2"
           inputClassName="desktop:text-base"
         />
 

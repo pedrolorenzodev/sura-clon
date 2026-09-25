@@ -57,7 +57,7 @@ export function LeaderboardPodiumMobile({
               href={detailHref("profile", entry.id)}
               aria-label={`Ver el perfil de ${entry.name}`}
               className={cn(
-                "flex w-full flex-col items-center justify-end gap-2 rounded-lg p-3 ring-1 ring-inset transition-transform duration-250 ease-reveal hover:-translate-y-0.5 focus-visible:-translate-y-0.5 active:-translate-y-0.5 motion-reduce:transition-none",
+                "flex w-full flex-col items-center justify-end gap-2 rounded-lg p-3 ring-1 ring-inset transition-transform duration-200 ease-reveal hover:-translate-y-0.5 focus-visible:-translate-y-0.5 active:-translate-y-0.5 motion-reduce:transition-none",
                 GRADIENT[rank],
                 style.ring,
                 isFirst && "shadow-gold-glow",

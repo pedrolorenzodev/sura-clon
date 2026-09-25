@@ -20,7 +20,7 @@ export function SearchField({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-pill bg-search-field px-4 py-2 transition-[--tw-ring-color] duration-200 focus-within:ring-1 focus-within:ring-inset focus-within:ring-border-light motion-reduce:transition-none desktop:gap-3",
+        "flex items-center gap-2 rounded-pill bg-search-field px-4 py-2 transition-shadow duration-200 focus-within:ring-1 focus-within:ring-inset focus-within:ring-border-light motion-reduce:transition-none desktop:gap-3",
         className,
       )}
     >

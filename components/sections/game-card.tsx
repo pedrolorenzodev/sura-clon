@@ -10,7 +10,7 @@ export function GameCard({ game, largeTitle }: { game: Game; largeTitle?: boolea
     <li className="flex">
       <CardLink
         href={detailHref("games", game.id)}
-        className="group relative flex aspect-[268/357] w-full flex-col justify-end overflow-hidden rounded-xl transition-[translate,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover motion-reduce:transition-none"
+        className="group relative flex aspect-[268/357] w-full flex-col justify-end overflow-hidden rounded-xl transition-[translate,box-shadow,scale] duration-200 ease-reveal hover:-translate-y-0.5 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover active:scale-98 motion-reduce:transition-none"
       >
         <Image
           src={game.imageSrc}
@@ -38,7 +38,7 @@ export function GameCard({ game, largeTitle }: { game: Game; largeTitle?: boolea
               <li
                 key={`${badge}-${index}`}
                 className={cn(
-                  "flex items-center justify-center whitespace-nowrap rounded-xs border border-muted-foreground px-1.5 py-1 text-2xs leading-2.5 text-muted-foreground transition-colors duration-200 hover:border-border-light hover:text-subtle-foreground motion-reduce:transition-none desktop:px-2 desktop:py-1.5",
+                  "flex items-center justify-center whitespace-nowrap rounded-xs border border-muted-foreground px-1.5 py-1 text-2xs leading-2.5 text-muted-foreground transition-colors duration-200 group-hover:border-border-light group-hover:text-subtle-foreground group-focus-visible:border-border-light group-focus-visible:text-subtle-foreground motion-reduce:transition-none desktop:px-2 desktop:py-1.5",
                   index > 1 && "hidden desktop:flex",
                 )}
               >

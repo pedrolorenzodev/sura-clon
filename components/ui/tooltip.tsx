@@ -42,7 +42,7 @@ function TooltipContent({
           data-slot="tooltip-content"
           className={cn(
             "z-50 inline-flex w-fit max-w-xs origin-(--transform-origin) items-center gap-1.5 whitespace-nowrap rounded-xl border border-border bg-tooltip px-3 py-2 text-sm text-foreground shadow-nav",
-            "duration-200 data-closed:animate-out data-closed:fade-out-0 data-open:animate-in data-open:fade-in-0",
+            "duration-200 data-closed:animate-out data-closed:fade-out-0 data-open:animate-in data-open:fade-in-0 motion-reduce:animate-none!",
             className,
           )}
           {...props}

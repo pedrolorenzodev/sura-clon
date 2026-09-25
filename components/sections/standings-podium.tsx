@@ -34,7 +34,7 @@ export function StandingsPodium({ className }: { className?: string }) {
               href={detailHref("profile", entry.id)}
               aria-label={`Ver el perfil de ${entry.name}`}
               className={cn(
-                "flex w-full items-center gap-6 rounded-lg px-6 ring-1 ring-inset transition-transform duration-250 ease-reveal hover:-translate-y-0.5 focus-visible:-translate-y-0.5 motion-reduce:transition-none",
+                "flex w-full items-center gap-6 rounded-lg px-6 ring-1 ring-inset transition-transform duration-200 ease-reveal hover:-translate-y-0.5 focus-visible:-translate-y-0.5 motion-reduce:transition-none",
                 GRADIENT[rank],
                 style.ring,
                 isFirst ? "pb-6 pt-8 shadow-gold-glow-soft" : "py-6",

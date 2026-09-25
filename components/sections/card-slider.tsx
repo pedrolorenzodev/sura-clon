@@ -44,7 +44,8 @@ export function CardSlider({
     if (!slide) return;
     const gap = Number.parseFloat(getComputedStyle(el).columnGap) || 0;
     const amount = slide.getBoundingClientRect().width + gap;
-    el.scrollBy({ left: direction * amount, behavior: "smooth" });
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollBy({ left: direction * amount, behavior: reduce ? "instant" : "smooth" });
   };
 
   return (

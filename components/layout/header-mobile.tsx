@@ -35,7 +35,7 @@ export function HeaderMobile({ back, className }: { back?: boolean; className?: 
   return (
     <div
       className={cn(
-        "items-center bg-white/1 px-4 py-2 transition-[background-color,backdrop-filter] duration-200 group-data-scrolled:bg-background/60 group-data-scrolled:backdrop-blur-nav motion-reduce:transition-none",
+        "items-center bg-white/1 px-4 py-2 transition-[background-color,backdrop-filter] duration-200 group-data-scrolled/header:bg-background/60 group-data-scrolled/header:backdrop-blur-nav motion-reduce:transition-none",
         className,
       )}
     >
