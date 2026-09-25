@@ -551,6 +551,7 @@
   --border-light-size: 180px;
   --border-light-width: 2px;
   --route-shutter-duration: 640ms;
+  --chrome-fade-duration: 220ms;
   --route-shutter-slant: 12%;
   --route-shutter-edge: 3px;
   --bracket-size: 14px;
@@ -951,10 +952,12 @@
    carrusel llegó a la punta: ahí deja salir la sombra del hover. Recorta sin
    pintar, así lo que haya detrás —el arte del hero bajo Eventos— sigue a la vista. */
 @utility lift-clip {
-  clip-path: inset(
-    0 var(--clip-end, calc(var(--spacing) * 6)) 0
-      var(--clip-start, calc(var(--spacing) * 6))
-  );
+  --clip-air: calc(var(--spacing) * 6);
+  clip-path: inset(0 var(--clip-end, var(--clip-air)) 0 var(--clip-start, var(--clip-air)));
+
+  @variant desktop {
+    --clip-air: calc(var(--spacing) * 6 - var(--bracket-offset));
+  }
 }
 
 @utility no-scrollbar {
@@ -1391,6 +1394,40 @@
 ::view-transition-new(root),
 ::view-transition-new(.route-in) {
   animation: route-swap-in var(--route-shutter-duration) linear both;
+}
+
+@utility vt-header {
+  :root:active-view-transition & {
+    view-transition-name: site-header;
+  }
+}
+
+@utility vt-rail {
+  :root:active-view-transition & {
+    view-transition-name: site-rail;
+  }
+}
+
+::view-transition-group(site-header),
+::view-transition-group(site-rail) {
+  z-index: 50;
+  animation: none;
+}
+
+::view-transition-old(site-header),
+::view-transition-old(site-rail) {
+  animation: chrome-fade var(--chrome-fade-duration) ease-out reverse both;
+}
+
+::view-transition-new(site-header),
+::view-transition-new(site-rail) {
+  animation: chrome-fade var(--chrome-fade-duration) ease-in var(--route-shutter-duration) both;
+}
+
+@keyframes chrome-fade {
+  from {
+    opacity: 0;
+  }
 }
 
 ::view-transition-group(route-shutter) {

@@ -12,9 +12,10 @@ export function Eventos() {
       <div className="mx-auto max-w-page">
         <SectionHeader title="Eventos" href="/tournaments" />
 
+        {/* no tocar: pb-2 con su -mb es aire para los corchetes del hover, no espaciado */}
         <CardSlider
           labels={{ prev: "Ver eventos anteriores", next: "Ver más eventos" }}
-          viewportClassName="gap-6 pb-px pt-4.25 desktop:pb-0.5 desktop:pt-7"
+          viewportClassName="gap-6 -mb-1.75 pb-2 pt-4.25 desktop:-mb-1.5 desktop:pb-2 desktop:pt-7"
           arrowClassName="top-50.5"
         >
           {events.map((event) => (

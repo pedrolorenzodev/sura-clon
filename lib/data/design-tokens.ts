@@ -318,6 +318,7 @@ export const motionTokens: Token[] = [
   { name: "--border-light-size", utility: "border-light", usage: "Diámetro de la luz que sigue al cursor por el borde de los banners", offDesign: true },
   { name: "--border-light-width", utility: "border-light", usage: "Grosor del anillo de luz", offDesign: true },
   { name: "--route-shutter-duration", utility: "route-shutter", usage: "Persiana entre rutas; la pantalla cambia en la mitad", offDesign: true },
+  { name: "--chrome-fade-duration", utility: "vt-header / vt-rail", usage: "Fundido del header y el riel al arrancar la persiana y al terminar", offDesign: true },
   { name: "--route-shutter-slant", utility: "route-shutter", usage: "Inclinación de la persiana", offDesign: true },
   { name: "--route-shutter-edge", utility: "route-shutter", usage: "Grosor del filo verde de la persiana", offDesign: true },
 ];
