@@ -1,5 +1,7 @@
 import Image from "next/image";
 
+import { BorderLight } from "@/components/sections/border-light";
+import { ScrambleText } from "@/components/sections/scramble-text";
 import { gamesRoutePromo } from "@/lib/data/games";
 
 export function GamesBanner() {
@@ -20,6 +22,7 @@ export function GamesBanner() {
         className="absolute left-0 top-[-10.19%] hidden h-[175.52%] w-full max-w-none object-cover desktop:block"
       />
       <span aria-hidden className="absolute inset-0 bg-banner-scrim-mobile desktop:bg-banner-scrim" />
+      <BorderLight />
 
       <button
         type="button"
@@ -59,9 +62,9 @@ export function GamesBanner() {
 
         <button
           type="button"
-          className="pointer-events-auto flex h-13.5 w-full cursor-pointer items-center justify-center rounded-pill border border-brand-vivid bg-banner-cta px-4.5 font-techno text-title-sm uppercase text-sp-foreground shadow-promo-cta transition-shadow duration-200 hover:shadow-promo-cta-hover focus-visible:shadow-promo-cta-hover motion-reduce:transition-none desktop:h-12 desktop:w-fit desktop:px-8"
+          className="pointer-events-auto flex h-13.5 w-full cursor-pointer items-center justify-center rounded-pill border border-brand-vivid bg-banner-cta px-4.5 font-techno text-title-sm uppercase text-sp-foreground wipe shadow-promo-cta transition-[box-shadow,translate] duration-200 hover:wipe-on hover:shadow-promo-cta-hover focus-visible:wipe-on focus-visible:shadow-promo-cta-hover active:translate-y-px motion-reduce:transition-none desktop:h-12 desktop:w-fit desktop:px-8"
         >
-          {gamesRoutePromo.cta}
+          <ScrambleText text={gamesRoutePromo.cta} />
         </button>
       </div>
     </div>

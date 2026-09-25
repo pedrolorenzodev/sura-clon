@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 
 import type { Medal, MedalArt } from "@/lib/data/medals";
 import { cn } from "@/lib/utils";
@@ -30,17 +33,32 @@ const ART: Record<MedalArt, { src: string; image: string }> = {
   influencer: { src: "/assets/home/medallas/influencer.webp", image: "inset-0 size-full" },
 };
 
+const TILT_RESET = { "--tilt-x": 0, "--tilt-y": 0 } as React.CSSProperties;
+
 export function MedalCard({ medal }: { medal: Medal }) {
   const art = ART[medal.art];
+  const [tilt, setTilt] = useState(TILT_RESET);
+
+  const follow = (event: React.PointerEvent<HTMLLIElement>) => {
+    if (medal.locked || event.pointerType !== "mouse") return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    setTilt({
+      "--tilt-x": ((event.clientX - rect.left) / rect.width) * 2 - 1,
+      "--tilt-y": 1 - ((event.clientY - rect.top) / rect.height) * 2,
+    } as React.CSSProperties);
+  };
 
   return (
     <li
+      onPointerMove={follow}
+      onPointerLeave={() => setTilt(TILT_RESET)}
+      style={tilt}
       className={cn(
-        "flex flex-col items-center justify-end gap-3 rounded-lg p-2.5",
+        "group/medal flex flex-col items-center justify-end gap-3 rounded-lg p-2.5",
         !medal.locked && "bg-background",
       )}
     >
-      <div className="relative aspect-square w-full">
+      <div className={cn("relative aspect-square w-full", !medal.locked && "transition-transform duration-200 ease-reveal group-hover/medal:medal-tilt motion-reduce:transition-none")}>
         <div
           className={cn(
             "absolute inset-0 overflow-hidden rounded-full",
@@ -57,6 +75,7 @@ export function MedalCard({ medal }: { medal: Medal }) {
                 className="absolute left-[-4.74%] top-0 h-full w-[177.78%] max-w-none object-cover opacity-20"
               />
               <span className="absolute inset-0 bg-medal-sheen" />
+              <span className="medal-glint absolute inset-0 opacity-0 transition-opacity duration-200 group-hover/medal:opacity-100 motion-reduce:transition-none" />
             </>
           )}
 
@@ -90,7 +109,7 @@ export function MedalCard({ medal }: { medal: Medal }) {
             alt=""
             width={22}
             height={22}
-            className="absolute bottom-0 right-0 size-[25.6%]"
+            className="absolute bottom-0 right-0 size-[25.6%] group-hover/medal:deny-shake"
           />
         )}
       </div>
@@ -98,7 +117,7 @@ export function MedalCard({ medal }: { medal: Medal }) {
       <p
         className={cn(
           "w-full truncate text-center text-2xs",
-          medal.locked ? "text-locked-foreground" : "text-foreground",
+          medal.locked ? "text-locked-foreground group-hover/medal:flicker" : "text-foreground",
         )}
       >
         {medal.label}

@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { BackButton } from "@/components/layout/back-button";
+import { PointsValue } from "@/components/layout/points-value";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { currentUser } from "@/lib/data/user";
 import { cn } from "@/lib/utils";
@@ -11,7 +12,7 @@ function Counter({
   fixedWidth,
 }: {
   iconSrc: string;
-  value: number;
+  value: React.ReactNode;
   fixedWidth?: boolean;
 }) {
   return (
@@ -48,7 +49,7 @@ export function HeaderMobile({ back, className }: { back?: boolean; className?: 
 
         <div className="flex items-center gap-2">
           <Counter iconSrc="/assets/home/fire.png" value={currentUser.streak} fixedWidth />
-          <Counter iconSrc="/assets/home/sp-coin.webp" value={currentUser.points} />
+          <Counter iconSrc="/assets/home/sp-coin.webp" value={<PointsValue />} />
         </div>
       </div>
     </div>

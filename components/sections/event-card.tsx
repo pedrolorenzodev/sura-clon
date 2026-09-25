@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { CardBrackets } from "@/components/sections/card-brackets";
 import type { EventCardData } from "@/lib/data/events";
 import { cn } from "@/lib/utils";
 
@@ -35,7 +36,7 @@ export function EventCard({ event }: { event: EventCardData }) {
   const art = ART[event.art];
 
   return (
-    <article className="relative h-event-surface-mobile w-event-card-mobile shrink-0 cursor-pointer desktop:h-event-surface desktop:w-event-card">
+    <article className="group relative h-event-surface-mobile w-event-card-mobile shrink-0 cursor-pointer desktop:h-event-surface desktop:w-event-card">
       <div
         className={cn(
           "absolute inset-0 rounded-lg border border-brand-faint desktop:rounded-xl",
@@ -119,6 +120,7 @@ export function EventCard({ event }: { event: EventCardData }) {
           </div>
         </div>
       </div>
+      <CardBrackets />
     </article>
   );
 }

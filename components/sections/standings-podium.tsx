@@ -8,6 +8,7 @@ import {
 } from "@/components/sections/leaderboard-podium-style";
 import { LevelIcon } from "@/components/sections/level-icon";
 import { ValuePill } from "@/components/sections/value-pill";
+import { PodiumSheen } from "@/components/sections/podium-sheen";
 import { levels, standings } from "@/lib/data/leaderboard";
 import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -34,7 +35,7 @@ export function StandingsPodium({ className }: { className?: string }) {
               href={detailHref("profile", entry.id)}
               aria-label={`Ver el perfil de ${entry.name}`}
               className={cn(
-                "flex w-full items-center gap-6 rounded-lg px-6 ring-1 ring-inset transition-transform duration-200 ease-reveal hover:-translate-y-0.5 focus-visible:-translate-y-0.5 motion-reduce:transition-none",
+                "relative flex w-full items-center gap-6 rounded-lg px-6 ring-1 ring-inset transition-transform duration-200 ease-reveal hover:-translate-y-0.5 focus-visible:-translate-y-0.5 motion-reduce:transition-none",
                 GRADIENT[rank],
                 style.ring,
                 isFirst ? "pb-6 pt-8 shadow-gold-glow-soft" : "py-6",
@@ -64,6 +65,7 @@ export function StandingsPodium({ className }: { className?: string }) {
                 </div>
                 <ValuePill points={entry.points} variant={style.pill} className="self-start" />
               </div>
+              {isFirst && <PodiumSheen />}
             </CardLink>
           </li>
         );

@@ -1,10 +1,12 @@
 import Image from "next/image";
 
+import { BorderLight } from "@/components/sections/border-light";
+import { ScrambleText } from "@/components/sections/scramble-text";
 import { gamesPromo } from "@/lib/data/games";
 
 export function GameBanner() {
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-promo shadow-promo transition-shadow duration-200 hover:shadow-promo-hover has-[:focus-visible]:shadow-promo-hover motion-reduce:transition-none desktop:h-72">
+    <div className="group relative overflow-hidden rounded-xl border border-promo shadow-promo transition-shadow duration-200 has-[:focus-visible]:shadow-promo-hover motion-reduce:transition-none desktop:h-72">
       <Image
         src={gamesPromo.imageSrc}
         alt=""
@@ -13,6 +15,7 @@ export function GameBanner() {
         className="absolute left-0 top-[-24.63%] h-[207.32%] w-full max-w-none object-cover"
       />
       <span className="absolute inset-0 bg-promo-scrim-mobile desktop:bg-promo-scrim" />
+      <BorderLight className="[--border-light-color:var(--color-promo-light)]" />
 
       <button
         type="button"
@@ -41,9 +44,9 @@ export function GameBanner() {
 
         <button
           type="button"
-          className="pointer-events-auto flex h-10 cursor-pointer items-center justify-center self-start rounded-full border border-brand-vivid bg-promo-cta px-6 font-techno text-sm uppercase text-promo-foreground shadow-promo-cta transition-shadow duration-200 hover:shadow-promo-cta-hover focus-visible:shadow-promo-cta-hover motion-reduce:transition-none desktop:h-12 desktop:px-8 desktop:text-title-sm"
+          className="pointer-events-auto flex h-10 cursor-pointer items-center justify-center self-start rounded-full border border-brand-vivid bg-promo-cta px-6 font-techno text-sm uppercase text-promo-foreground wipe shadow-promo-cta transition-[box-shadow,translate] duration-200 hover:wipe-on hover:shadow-promo-cta-hover focus-visible:wipe-on focus-visible:shadow-promo-cta-hover active:translate-y-px motion-reduce:transition-none desktop:h-12 desktop:px-8 desktop:text-title-sm"
         >
-          {gamesPromo.cta}
+          <ScrambleText text={gamesPromo.cta} />
         </button>
       </div>
     </div>

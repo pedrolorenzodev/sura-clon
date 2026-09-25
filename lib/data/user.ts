@@ -18,12 +18,14 @@ export const currentUser: CurrentUser = {
 
 export type DailyClaim = {
   label: string;
+  reward: number;
   gameIconSrc: string;
   sparkleSrc: string;
 };
 
 export const dailyClaim: DailyClaim = {
   label: "Reclamar",
+  reward: 50,
   gameIconSrc: "/assets/home/cs2-logo.png",
   sparkleSrc: "/assets/home/sparkling.webp",
 };

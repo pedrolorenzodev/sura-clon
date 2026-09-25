@@ -98,6 +98,7 @@ export const goldColors: TokenGroup = {
     { name: "--color-gold", utility: "bg-gold", usage: "Borde del premio de una card" },
     { name: "--color-gold-deep", utility: "bg-gold-deep", usage: "Fondo del valor en el podio" },
     { name: "--color-gold-bright", utility: "bg-gold-bright", usage: "Borde y glow del primer puesto" },
+    { name: "--color-sheen-gold", utility: "podium-sheen", usage: "Destello que cruza la card del 1º puesto al entrar en pantalla — no sale del diseño", offDesign: true },
   ],
 };
 
@@ -131,6 +132,7 @@ export const promoColors: TokenGroup = {
     { name: "--color-promo", utility: "border-promo", usage: "Borde del banner y color del scrim" },
     { name: "--color-promo-foreground", utility: "text-promo-foreground", usage: "Texto del CTA, sobre el verde" },
     { name: "--color-brand-vivid", utility: "border-brand-vivid", usage: "Borde y glow del CTA del banner" },
+    { name: "--color-promo-light", utility: "border-light", usage: "Luz que sigue al cursor por el borde del banner violeta — no sale del diseño", offDesign: true },
   ],
 };
 
@@ -141,6 +143,7 @@ export const medalColors: TokenGroup = {
     { name: "--color-surface-deep", utility: "bg-surface-deep", usage: "Fondo del panel de Medallas" },
     { name: "--color-locked-foreground", utility: "text-locked-foreground", usage: "Label de una medalla bloqueada" },
     { name: "--color-medal-veil", utility: "bg-medal-veil", usage: "Velo que apaga la medalla bloqueada (mix-blend-darken)" },
+    { name: "--color-glint", utility: "medal-glint", usage: "Brillo que sigue al cursor sobre una medalla obtenida — no sale del diseño", offDesign: true },
   ],
 };
 
@@ -276,6 +279,7 @@ export const gradientTokens: Token[] = [
 
 export const motionTokens: Token[] = [
   { name: "--ease-reveal", utility: "ease-reveal", usage: "Curva de entrada del slider del hero — desacelera y no vuelve", offDesign: true },
+  { name: "--ease-lock", utility: "ease-lock", usage: "Curva mecánica que frena en seco: barrido de controles y odómetro", offDesign: true },
   { name: "--ease-scan", utility: "ease-scan", usage: "Curva del escaneo del hero — arranca y frena parejo, como un barrido mecánico", offDesign: true },
   { name: "--thumb-reveal-duration", utility: "thumb-reveal", usage: "Cuánto tarda en entrar una miniatura del slider", offDesign: true },
   { name: "--thumb-reveal-stagger", utility: "thumb-reveal", usage: "Retraso de cada miniatura respecto de la anterior", offDesign: true },
@@ -292,6 +296,30 @@ export const motionTokens: Token[] = [
   { name: "--hero-art-fade-duration", utility: "hero-art-fade", usage: "Fundido del arte del hero al cambiar de juego", offDesign: true },
   { name: "--hero-intro-fade-duration", utility: "hero-intro-fade", usage: "Fundido de entrada del video de la intro del hero", offDesign: true },
   { name: "--hero-intro-reveal-duration", utility: "intro-veil", usage: "Aparición de la interfaz del Home con el golpe de la intro", offDesign: true },
+  { name: "--scramble-duration", utility: "—", usage: "Cuánto tarda un label en decodificarse en hover", offDesign: true },
+  { name: "--scramble-step", utility: "—", usage: "Cada cuánto cambian los glifos al azar mientras decodifica", offDesign: true },
+  { name: "--bracket-size", utility: "card-bracket", usage: "Largo de cada brazo de los corchetes de mira de una card", offDesign: true },
+  { name: "--bracket-offset", utility: "card-bracket", usage: "Cuánto se separan los corchetes del borde de la card", offDesign: true },
+  { name: "--bracket-stroke", utility: "card-bracket", usage: "Grosor de los corchetes", offDesign: true },
+  { name: "--bracket-duration", utility: "card-bracket", usage: "Cuánto tarda en trazarse cada esquina", offDesign: true },
+  { name: "--bracket-stagger", utility: "card-bracket", usage: "Retraso entre una esquina y la siguiente, en sentido horario", offDesign: true },
+  { name: "--title-sweep-duration", utility: "title-sweep", usage: "Barrido de luz que enciende un título al entrar en pantalla", offDesign: true },
+  { name: "--wipe-duration", utility: "wipe", usage: "Barrido en diagonal del relleno de CTAs, chips y paginador", offDesign: true },
+  { name: "--wipe-slant", utility: "wipe", usage: "Cuánto se inclina el borde del barrido", offDesign: true },
+  { name: "--wipe-light", utility: "wipe", usage: "Relleno del barrido sobre los CTAs verdes", offDesign: true },
+  { name: "--odometer-duration", utility: "odometer-digit", usage: "Cuánto tarda en rodar un dígito del saldo", offDesign: true },
+  { name: "--odometer-stagger", utility: "odometer-digit", usage: "Retraso de cada dígito respecto del de su derecha", offDesign: true },
+  { name: "--reward-pop-duration", utility: "reward-pop", usage: "El +50 que aparece bajo el saldo al reclamar", offDesign: true },
+  { name: "--sheen-duration", utility: "podium-sheen", usage: "Destello del 1º puesto al entrar en pantalla", offDesign: true },
+  { name: "--medal-tilt", utility: "medal-tilt", usage: "Inclinación máxima de una medalla hacia el cursor", offDesign: true },
+  { name: "--medal-perspective", utility: "medal-tilt", usage: "Profundidad de la inclinación de la medalla", offDesign: true },
+  { name: "--deny-duration", utility: "deny-shake", usage: "Temblor del candado de una medalla bloqueada", offDesign: true },
+  { name: "--flicker-duration", utility: "flicker", usage: "Parpadeo de encendido del label de una medalla bloqueada", offDesign: true },
+  { name: "--border-light-size", utility: "border-light", usage: "Diámetro de la luz que sigue al cursor por el borde de los banners", offDesign: true },
+  { name: "--border-light-width", utility: "border-light", usage: "Grosor del anillo de luz", offDesign: true },
+  { name: "--route-shutter-duration", utility: "route-shutter", usage: "Persiana entre rutas; la pantalla cambia en la mitad", offDesign: true },
+  { name: "--route-shutter-slant", utility: "route-shutter", usage: "Inclinación de la persiana", offDesign: true },
+  { name: "--route-shutter-edge", utility: "route-shutter", usage: "Grosor del filo verde de la persiana", offDesign: true },
 ];
 
 export const layoutTokens: Token[] = [

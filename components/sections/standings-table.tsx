@@ -1,4 +1,5 @@
 import { LeaderboardRow } from "@/components/sections/leaderboard-row";
+import { RevealList } from "@/components/sections/reveal-list";
 import { StandingsRow } from "@/components/sections/standings-row";
 import { levels, standings, standingsColumns } from "@/lib/data/leaderboard";
 import { detailHref } from "@/lib/routes";
@@ -18,15 +19,15 @@ export function StandingsTable() {
           <span aria-hidden className="w-70.25 shrink-0" />
         </div>
 
-        <ul className="flex flex-col gap-2">
-          {standings.map((entry) => (
-            <StandingsRow key={entry.id} entry={entry} />
+        <RevealList className="flex flex-col gap-2">
+          {standings.map((entry, index) => (
+            <StandingsRow key={entry.id} entry={entry} revealIndex={index} />
           ))}
-        </ul>
+        </RevealList>
       </div>
 
-      <ul className="flex flex-col gap-2 desktop:hidden">
-        {standings.map((entry) => (
+      <RevealList className="flex flex-col gap-2 desktop:hidden">
+        {standings.map((entry, index) => (
           <LeaderboardRow
             key={entry.id}
             href={detailHref("profile", entry.id)}
@@ -36,9 +37,10 @@ export function StandingsTable() {
             points={entry.points}
             avatarSrc={entry.avatarSrc}
             tone={entry.tone}
+            revealIndex={index}
           />
         ))}
-      </ul>
+      </RevealList>
     </>
   );
 }

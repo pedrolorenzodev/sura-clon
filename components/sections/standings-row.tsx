@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { CardLink } from "@/components/layout/card-link";
 import { UserAvatar } from "@/components/layout/user-avatar";
+import { CountUp } from "@/components/sections/count-up";
 import { LevelIcon } from "@/components/sections/level-icon";
 import { toneOf } from "@/components/sections/standings-tone";
 import { levels, medalStack, type Standing } from "@/lib/data/leaderboard";
@@ -12,11 +13,16 @@ const CELL = "flex min-w-px flex-1 items-center justify-center";
 const VALUE = "flex items-center gap-1 rounded-sm p-2 text-xs font-medium text-foreground";
 const MEDAL_LAYER = ["z-3", "z-2", "z-1"];
 
-export function StandingsRow({ entry }: { entry: Standing }) {
+export function StandingsRow({ entry, revealIndex }: { entry: Standing; revealIndex?: number }) {
   const tone = toneOf(entry.tone);
 
   return (
-    <li className="flex">
+    <li
+      style={
+        revealIndex === undefined ? undefined : ({ "--reveal-index": revealIndex } as React.CSSProperties)
+      }
+      className={cn("flex", revealIndex !== undefined && "row-reveal")}
+    >
       <CardLink
         href={detailHref("profile", entry.id)}
         aria-label={`Ver el perfil de ${entry.name}`}
@@ -56,7 +62,7 @@ export function StandingsRow({ entry }: { entry: Standing }) {
         <div className={cn(CELL, "relative")}>
           <span className={VALUE}>
             <Coin />
-            {entry.points}
+            {revealIndex === undefined ? entry.points : <CountUp value={entry.points} index={revealIndex} />}
           </span>
         </div>
 

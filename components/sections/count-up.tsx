@@ -3,12 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { useRevealState } from "@/components/sections/reveal-list";
-
-const readMs = (name: string) => {
-  const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  const value = Number.parseFloat(raw);
-  return raw.endsWith("ms") ? value : value * 1000;
-};
+import { readMs } from "@/lib/motion";
 
 const withThousands = (value: number) => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 

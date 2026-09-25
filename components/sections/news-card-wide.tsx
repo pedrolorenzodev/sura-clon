@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { CardLink } from "@/components/layout/card-link";
+import { CardBrackets } from "@/components/sections/card-brackets";
 import { NewsMeta } from "@/components/sections/news-meta";
 import type { NewsItem } from "@/lib/data/news";
 import { detailHref } from "@/lib/routes";
@@ -10,7 +11,7 @@ export function NewsCardWide({ item }: { item: NewsItem }) {
     <article className="flex h-full w-91.25">
       <CardLink
         href={detailHref("news", item.id)}
-        className="group flex w-full items-center gap-4 rounded-xl bg-background py-3 pl-3 pr-4 transition-[translate,box-shadow,background-color,scale] duration-200 ease-reveal hover:-translate-y-0.5 hover:bg-surface-3 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:bg-surface-3 focus-visible:shadow-card-hover active:scale-98 motion-reduce:transition-none"
+        className="group relative flex w-full items-center gap-4 rounded-xl bg-background py-3 pl-3 pr-4 transition-[translate,box-shadow,background-color,scale] duration-200 ease-reveal hover:-translate-y-0.5 hover:bg-surface-3 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:bg-surface-3 focus-visible:shadow-card-hover active:scale-98 motion-reduce:transition-none"
       >
         <div className="relative aspect-[129/97] shrink-0 self-stretch overflow-hidden rounded-xl">
           <Image
@@ -28,6 +29,7 @@ export function NewsCardWide({ item }: { item: NewsItem }) {
           </h3>
           <NewsMeta item={item} />
         </div>
+        <CardBrackets />
       </CardLink>
     </article>
   );

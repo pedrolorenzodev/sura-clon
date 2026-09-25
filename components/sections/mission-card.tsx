@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { CardLink } from "@/components/layout/card-link";
+import { CardBrackets } from "@/components/sections/card-brackets";
 import type { Mission } from "@/lib/data/missions";
 import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -21,7 +22,7 @@ export function MissionCard({
       <CardLink
         href={detailHref("missions", mission.id)}
         className={cn(
-          "group flex w-full flex-col rounded-lg transition-[translate,box-shadow,scale] duration-200 ease-reveal hover:-translate-y-0.5 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover active:scale-98 motion-reduce:transition-none",
+          "group relative flex w-full flex-col rounded-lg transition-[translate,box-shadow,scale] duration-200 ease-reveal hover:-translate-y-0.5 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover active:scale-98 motion-reduce:transition-none",
           compact
             ? "gap-2 p-2 desktop:gap-4 desktop:px-4 desktop:pb-6 desktop:pt-4"
             : "gap-4 px-4 pb-6 pt-4",
@@ -102,6 +103,7 @@ export function MissionCard({
             {mission.description}
           </p>
         </div>
+        <CardBrackets />
       </CardLink>
     </li>
   );

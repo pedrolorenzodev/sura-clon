@@ -2,7 +2,9 @@ import Image from "next/image";
 
 import { NewsCard } from "@/components/sections/news-card";
 import { NewsCardWide } from "@/components/sections/news-card-wide";
+import { ScrambleText } from "@/components/sections/scramble-text";
 import { SectionHeader } from "@/components/sections/section-header";
+import { TitleSweep } from "@/components/sections/title-sweep";
 import { news, newsIntro } from "@/lib/data/news";
 
 export function SuraNews() {
@@ -28,7 +30,7 @@ export function SuraNews() {
         <div className="flex flex-1 flex-col gap-6">
           <div className="flex flex-col gap-4">
             <h2 className="font-display text-display-sm uppercase text-foreground">
-              {newsIntro.title}
+              <TitleSweep>{newsIntro.title}</TitleSweep>
             </h2>
             <p className="font-techno text-news-copy uppercase text-muted-foreground">
               {newsIntro.body.map((line, index) => (
@@ -44,7 +46,7 @@ export function SuraNews() {
             type="button"
             className="flex cursor-pointer items-center gap-1 self-start font-techno text-link uppercase text-brand transition-[filter] duration-200 hover:drop-shadow-link-hover focus-visible:drop-shadow-link-hover motion-reduce:transition-none"
           >
-            {newsIntro.cta}
+            <ScrambleText text={newsIntro.cta} />
             <Image
               src="/assets/home/arrow-right.svg"
               alt=""

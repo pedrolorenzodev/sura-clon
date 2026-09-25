@@ -169,12 +169,15 @@
   --color-gold: #ffa600;
   --color-gold-deep: #714900;
   --color-gold-bright: #fbbc04;
+  --color-sheen-gold: rgb(255 236 170 / 0.38);
+  --color-glint: rgb(255 255 255 / 0.35);
 
   /* --- Plata y bronce --- */
 
   --color-brand-vivid: #97f300;
   --color-promo: #6c38b5;
   --color-promo-foreground: #2d184b;
+  --color-promo-light: #a882d9;
 
   --color-sp-foreground: #354619;
 
@@ -268,6 +271,7 @@
      ============================================================ */
   --ease-reveal: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-scan: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-lock: cubic-bezier(0.2, 0.9, 0.1, 1);
 
   /* ============================================================
      LAYOUT
@@ -534,6 +538,30 @@
   --row-reveal-duration: 420ms;
   --row-reveal-stagger: 60ms;
   --row-reveal-shift: 8px;
+  --scramble-duration: 350ms;
+  --scramble-step: 40ms;
+  --odometer-duration: 700ms;
+  --odometer-stagger: 70ms;
+  --reward-pop-duration: 1100ms;
+  --sheen-duration: 1000ms;
+  --medal-tilt: 6deg;
+  --medal-perspective: 600px;
+  --deny-duration: 320ms;
+  --flicker-duration: 500ms;
+  --border-light-size: 180px;
+  --border-light-width: 2px;
+  --route-shutter-duration: 640ms;
+  --route-shutter-slant: 12%;
+  --route-shutter-edge: 3px;
+  --bracket-size: 14px;
+  --bracket-offset: 5px;
+  --bracket-stroke: 2px;
+  --bracket-duration: 300ms;
+  --bracket-stagger: 40ms;
+  --title-sweep-duration: 950ms;
+  --wipe-duration: 280ms;
+  --wipe-slant: 1em;
+  --wipe-light: rgb(255 255 255 / 0.2);
 }
 
 @utility bg-gold-text {
@@ -1015,6 +1043,451 @@
   from {
     opacity: 0;
     transform: translateY(var(--thumb-reveal-shift));
+  }
+}
+
+/* ============================================================
+   CORCHETES DE MIRA
+   ============================================================ */
+@utility card-bracket {
+  position: absolute;
+  width: var(--bracket-size);
+  height: var(--bracket-size);
+  border: 0 solid var(--color-brand);
+  clip-path: var(--bracket-hidden);
+  transition: clip-path var(--bracket-duration) var(--ease-reveal);
+
+  &[data-corner="tl"] {
+    top: calc(var(--bracket-offset) * -1);
+    left: calc(var(--bracket-offset) * -1);
+    border-top-width: var(--bracket-stroke);
+    border-left-width: var(--bracket-stroke);
+    --bracket-hidden: inset(0 100% 100% 0);
+    --bracket-order: 0;
+  }
+
+  &[data-corner="tr"] {
+    top: calc(var(--bracket-offset) * -1);
+    right: calc(var(--bracket-offset) * -1);
+    border-top-width: var(--bracket-stroke);
+    border-right-width: var(--bracket-stroke);
+    --bracket-hidden: inset(0 0 100% 100%);
+    --bracket-order: 1;
+  }
+
+  &[data-corner="br"] {
+    right: calc(var(--bracket-offset) * -1);
+    bottom: calc(var(--bracket-offset) * -1);
+    border-right-width: var(--bracket-stroke);
+    border-bottom-width: var(--bracket-stroke);
+    --bracket-hidden: inset(100% 0 0 100%);
+    --bracket-order: 2;
+  }
+
+  &[data-corner="bl"] {
+    bottom: calc(var(--bracket-offset) * -1);
+    left: calc(var(--bracket-offset) * -1);
+    border-bottom-width: var(--bracket-stroke);
+    border-left-width: var(--bracket-stroke);
+    --bracket-hidden: inset(100% 100% 0 0);
+    --bracket-order: 3;
+  }
+
+  @media (hover: hover) {
+    .group:hover & {
+      clip-path: inset(0);
+      transition-delay: calc(var(--bracket-order) * var(--bracket-stagger));
+    }
+  }
+
+  .group:focus-visible & {
+    clip-path: inset(0);
+    transition-delay: calc(var(--bracket-order) * var(--bracket-stagger));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   BARRIDO DE LUZ EN TÍTULOS
+   ============================================================ */
+@utility title-sweep {
+  background: linear-gradient(
+    90deg,
+    var(--color-foreground) 0 40%,
+    var(--color-brand-vivid) 47% 53%,
+    var(--color-border-dim) 60% 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: title-sweep var(--title-sweep-duration) var(--ease-scan) both;
+}
+
+@utility title-sweep-after-route {
+  animation-delay: var(--route-shutter-duration);
+}
+
+@keyframes title-sweep {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+/* ============================================================
+   BARRIDO EN DIAGONAL
+   ============================================================ */
+@utility wipe {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 calc(var(--wipe-slant) * -1) 0 0;
+    z-index: -1;
+    background: var(--wipe-fill, var(--wipe-light));
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--wipe-slant)) 100%, 0 100%);
+    translate: -100% 0;
+    transition: translate var(--wipe-duration) var(--ease-lock);
+    pointer-events: none;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+}
+
+@utility wipe-on {
+  &::before {
+    translate: 0 0;
+  }
+}
+
+/* ============================================================
+   PUNTOS
+   ============================================================ */
+@utility odometer-digit {
+  translate: 0 calc(var(--digit) * -1lh);
+  transition: translate var(--odometer-duration) var(--ease-lock);
+  transition-delay: calc(var(--digit-pos) * var(--odometer-stagger));
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@utility reward-pop {
+  animation: reward-pop var(--reward-pop-duration) linear both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+@keyframes reward-pop {
+  0% {
+    opacity: 0;
+    translate: 0 6px;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  14% {
+    opacity: 0;
+  }
+  22% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+}
+
+/* ============================================================
+   RECOMPENSAS
+   ============================================================ */
+@utility podium-sheen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 35%, var(--color-sheen-gold) 50%, transparent 65%);
+    translate: -110% 0;
+  }
+
+  &[data-shine]::after {
+    animation: podium-sheen var(--sheen-duration) var(--ease-scan) 150ms both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+  }
+}
+
+@keyframes podium-sheen {
+  to {
+    translate: 110% 0;
+  }
+}
+
+@utility medal-tilt {
+  transform: perspective(var(--medal-perspective)) rotateX(calc(var(--tilt-y, 0) * var(--medal-tilt)))
+    rotateY(calc(var(--tilt-x, 0) * var(--medal-tilt)));
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none;
+  }
+}
+
+@utility medal-glint {
+  background: radial-gradient(
+    circle at calc(50% + var(--tilt-x, 0) * 50%) calc(50% - var(--tilt-y, 0) * 50%),
+    var(--color-glint),
+    transparent 55%
+  );
+}
+
+@utility deny-shake {
+  animation: deny-shake var(--deny-duration) steps(1) both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes deny-shake {
+  0% {
+    translate: 0 0;
+  }
+  20% {
+    translate: -3px 0;
+  }
+  40% {
+    translate: 3px 0;
+  }
+  60% {
+    translate: -2px 0;
+  }
+  80% {
+    translate: 2px 0;
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+
+@utility flicker {
+  animation: flicker var(--flicker-duration) linear both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  11% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.55;
+  }
+  21% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  41% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   LUZ DE BORDE
+   ============================================================ */
+@utility border-light {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  border-radius: inherit;
+  padding: var(--border-light-width);
+  background: radial-gradient(
+    var(--border-light-size) circle at var(--light-x, 50%) var(--light-y, 50%),
+    var(--border-light-color, var(--color-brand-vivid)),
+    transparent 70%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 250ms;
+  pointer-events: none;
+
+  &[data-lit] {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   PERSIANA ENTRE RUTAS
+   ============================================================ */
+@utility route-shutter {
+  position: fixed;
+  inset-block: 0;
+  left: -25%;
+  width: 150%;
+  opacity: 0;
+  pointer-events: none;
+  view-transition-name: route-shutter;
+}
+
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(root),
+::view-transition-old(.route-out) {
+  animation: route-swap-out var(--route-shutter-duration) linear both;
+}
+
+::view-transition-new(root),
+::view-transition-new(.route-in) {
+  animation: route-swap-in var(--route-shutter-duration) linear both;
+}
+
+::view-transition-group(route-shutter) {
+  z-index: 100;
+  background: var(--color-brand-vivid);
+  clip-path: polygon(
+    var(--route-shutter-slant) 0,
+    100% 0,
+    calc(100% - var(--route-shutter-slant)) 100%,
+    0 100%
+  );
+  animation: route-shutter var(--route-shutter-duration) var(--ease-scan) both;
+}
+
+html:active-view-transition-type(nav-back)::view-transition-group(route-shutter) {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--route-shutter-slant)) 0,
+    100% 100%,
+    var(--route-shutter-slant) 100%
+  );
+  animation-name: route-shutter-back;
+}
+
+::view-transition-image-pair(route-shutter) {
+  background: var(--color-surface-deep);
+  clip-path: polygon(
+    var(--route-shutter-slant) 0,
+    calc(100% - var(--route-shutter-edge)) 0,
+    calc(100% - var(--route-shutter-slant) - var(--route-shutter-edge)) 100%,
+    0 100%
+  );
+}
+
+html:active-view-transition-type(nav-back)::view-transition-image-pair(route-shutter) {
+  clip-path: polygon(
+    var(--route-shutter-edge) 0,
+    calc(100% - var(--route-shutter-slant)) 0,
+    100% 100%,
+    calc(var(--route-shutter-slant) + var(--route-shutter-edge)) 100%
+  );
+}
+
+::view-transition-old(route-shutter),
+::view-transition-new(route-shutter) {
+  display: none;
+}
+
+@keyframes route-swap-out {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes route-swap-in {
+  0%,
+  49% {
+    opacity: 0;
+  }
+  50%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes route-shutter {
+  from {
+    translate: -90% 0;
+  }
+  to {
+    translate: 90% 0;
+  }
+}
+
+@keyframes route-shutter-back {
+  from {
+    translate: 90% 0;
+  }
+  to {
+    translate: -90% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+
+  ::view-transition-group(route-shutter) {
+    display: none;
   }
 }
 

@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { CardLink } from "@/components/layout/card-link";
+import { CardBrackets } from "@/components/sections/card-brackets";
 import type { Mission } from "@/lib/data/missions";
 import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -13,7 +14,7 @@ export function MissionFeatureCard({ mission }: { mission: Mission }) {
       <CardLink
         href={detailHref("missions", mission.id)}
         className={cn(
-          "group flex aspect-[261.456/245.787] w-full flex-col justify-end gap-3 rounded-xl px-4 pb-6 pt-4 shadow-mission-card ring-1 ring-inset transition-[translate,box-shadow,scale] duration-200 ease-reveal hover:-translate-y-0.5 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover active:scale-98 motion-reduce:transition-none desktop:aspect-[399/414] desktop:gap-6 desktop:px-6 desktop:pb-10 desktop:pt-6",
+          "group relative flex aspect-[261.456/245.787] w-full flex-col justify-end gap-3 rounded-xl px-4 pb-6 pt-4 shadow-mission-card ring-1 ring-inset transition-[translate,box-shadow,scale] duration-200 ease-reveal hover:-translate-y-0.5 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover active:scale-98 motion-reduce:transition-none desktop:aspect-[399/414] desktop:gap-6 desktop:px-6 desktop:pb-10 desktop:pt-6",
           highlighted
             ? "bg-mission-highlight ring-brand"
             : "bg-surface-2 ring-border hover:ring-border-muted/60 focus-visible:ring-border-muted/60",
@@ -57,6 +58,7 @@ export function MissionFeatureCard({ mission }: { mission: Mission }) {
             {mission.description}
           </p>
         </div>
+        <CardBrackets />
       </CardLink>
     </li>
   );

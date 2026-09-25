@@ -1,11 +1,13 @@
 import Image from "next/image";
 
+import { ClaimButton } from "@/components/layout/claim-button";
+import { PointsValue } from "@/components/layout/points-value";
 import { SectionLink } from "@/components/layout/section-link";
 import { UserAvatar } from "@/components/layout/user-avatar";
-import { currentUser, dailyClaim } from "@/lib/data/user";
+import { currentUser } from "@/lib/data/user";
 import { cn } from "@/lib/utils";
 
-function Counter({ iconSrc, value }: { iconSrc: string; value: number }) {
+function Counter({ iconSrc, value }: { iconSrc: string; value: React.ReactNode }) {
   return (
     <div className="flex w-29 items-center gap-2 rounded-lg bg-surface-2 py-1 pl-2 pr-1">
       <Image src={iconSrc} alt="" width={28} height={28} className="size-7 shrink-0" />
@@ -35,33 +37,10 @@ export function HeaderDesktop({ className }: { className?: string }) {
 
       <div className="flex items-center gap-3 rounded-xl bg-surface p-2">
 
-        <button
-          type="button"
-          className="group flex cursor-pointer items-center gap-2 rounded-lg bg-claim py-1 pl-3 pr-4 ring-1 ring-inset ring-brand drop-shadow-claim transition-shadow duration-200 hover:shadow-brand-glow focus-visible:shadow-brand-glow motion-reduce:transition-none"
-        >
-          <span className="relative size-8 shrink-0">
-            <Image
-              src={dailyClaim.gameIconSrc}
-              alt=""
-              width={36}
-              height={32}
-              className="absolute -left-0.5 top-0.5 h-8 w-9 max-w-none"
-            />
-            <Image
-              src={dailyClaim.sparkleSrc}
-              alt=""
-              width={12}
-              height={12}
-              className="absolute left-3 top-0 size-3 object-contain"
-            />
-          </span>
-          <span className="text-base font-semibold text-brand transition-colors duration-200 group-hover:text-brand-bright group-focus-visible:text-brand-bright motion-reduce:transition-none">
-            {dailyClaim.label}
-          </span>
-        </button>
+        <ClaimButton />
 
         <Counter iconSrc="/assets/home/fire.png" value={currentUser.streak} />
-        <Counter iconSrc="/assets/home/sp-coin.webp" value={currentUser.points} />
+        <Counter iconSrc="/assets/home/sp-coin.webp" value={<PointsValue />} />
 
         <button
           type="button"

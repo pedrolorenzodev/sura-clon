@@ -742,6 +742,11 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-25 | **P1 B y P2 C**: `--bracket-*`, `--title-sweep-duration`; utilities `card-bracket`, `title-sweep`, `title-sweep-after-route` | Cards · títulos de sección · H1 de ruta | El usuario eligió *Se dibujan* para los corchetes y *Barrido de luz* para los títulos. Detalle en *Micro-animaciones HUD*, § 6. |
+| 2026-09-25 | **Persiana: la vuelta se reescribe sin espejo, y volver al Home desde la flecha también la dispara** | Todas las rutas | Feedback del usuario: la vuelta se trababa al final y la pill verde aparecía antes de que pasara el panel. Causa en notas de implementación. |
+| 2026-09-24 | **Micro-animaciones HUD, tanda 1**: `--ease-lock`, `--scramble-*`, `--wipe-*`, `--odometer-*`, `--reward-pop-duration`, `--sheen-duration`, `--medal-tilt`, `--medal-perspective`, `--deny-duration`, `--flicker-duration`, `--border-light-*`, `--route-shutter-*`, `--color-sheen-gold`, `--color-glint`, `--color-promo-light`; utilities `wipe`, `wipe-on`, `odometer-digit`, `reward-pop`, `podium-sheen`, `medal-tilt`, `medal-glint`, `deny-shake`, `flicker`, `border-light`, `route-shutter` | Todas las rutas | Feedback del equipo (Ema): más micro-animaciones. Siete de las nueve propuestas de la página *Movimiento SURA*, aprobadas por el usuario. Detalle en *Micro-animaciones HUD*, § 6. **Son desvíos conscientes de AGENTS regla 16**, con el criterio de siempre: cero librerías de motion. |
+| 2026-09-24 | **El banner violeta del Home cambia su hover**: la luz de borde reemplaza al glow `--shadow-promo-hover`, que queda sólo para el foco de teclado | Home · Juegos | Pedido del usuario al aprobar P9: la misma receta que el banner de `/games`, en violeta. |
+| 2026-09-24 | **Lift unificado en 200ms con `--ease-reveal`**, y las cards suman `active:scale-98` | Todas las cards · podios | Las cards subían en 200ms con la curva por defecto y los podios en 250ms con `--ease-reveal`. En touch, además, ninguna card daba respuesta al toque. |
 | 2026-09-24 | **Slide default: PROJECT: Yi con intro**; `--hero-intro-fade-duration` (500ms), `--hero-intro-reveal-duration` (600ms), variante `intro-pending`, utilities `intro-veil`, `intro-veil-sections`, `hero-poster-cover-*`, `hero-video-focus-*`, `hero-intro-fade`; se borra Modern Warfare III | Hero · todo el Home | Pedido del usuario. Detalle en *Intro de PROJECT: Yi*, § 6. Jett pasa a segundo slide. |
 | 2026-09-24 | `nav-bar-away`, `pb-gutter-safe`; `BackButton` en el header mobile de las rutas internas | Bottom bar · Header · Footer | Feedback del equipo: la bottom bar se va animada fuera del Home y vuelve al Home. Detalle en § 5, *Fuera del Home la bottom bar se va*. |
 | 2026-09-24 | **El arte del hero de Valorant pasa a video** (`--aspect-hero-loop-mobile` / `-desktop`, utilities `hero-poster-mobile` / `-desktop`); se borran `hero-art-mobile` / `-desktop` y `hero-art@2x.webp` | Hero | Pedido del usuario. Detalle en *Hero en video*, § 6. Desktop cambia de encuadre al **D1** —el arte 17,7 % más arriba— y mobile se queda en el del diseño. Los dos recortes viven en el archivo, así que la caja va al 100 % del ancho con la proporción del recorte. |
@@ -877,6 +882,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Tema | Detalle | Qué hacer |
 |---|---|---|
+| **La flecha de volver no restaura el scroll entre rutas internas** | Si la pantalla anterior no era el Home, `goBack` sigue haciendo `router.back()`: vuelve con su scroll pero sin persiana. Hoy no hay forma de ir de una ruta interna a otra desde la UI, así que sólo pasa con el historial del navegador. | Nada, salvo que aparezcan links entre rutas internas. |
 | **Assets de Riot en el hero** | El login screen de PROJECT: Yi es de Riot Games. Su política *Legal Jibber Jabber* lo permite en proyectos de fans gratuitos y no comerciales, **con un aviso visible** de que se usan assets de Riot y que Riot no avala el proyecto. | Para el clon público: sumar ese aviso (el footer es el lugar natural) o sacar el slide. **Para producción no sirve**: licencia de Riot o video propio de diseño. |
 | ~~**El video de Yi es de 1280 × 800**~~ | Era el único tamaño de la fuente. | **Resuelta** (2026-09-25) con Real-ESRGAN 4×: ver *Intro de PROJECT: Yi*. Si aparece un original más grande, reemplaza al escalado. |
 | **En mobile la intro ocupa sólo la franja del hero** | Durante la intro el video se ve en los 524 px del hero y el resto de la pantalla queda en `#202020`. | Esperando el feedback del usuario al verlo en la web. |
@@ -1016,6 +1022,95 @@ como lo pinta Chrome (ver notas de implementación). Para regenerar el master ha
 con `numpy`, `opencv-python-headless`, `ultralytics` (SAM 2.1) y `simple-lama-inpainting`.
 
 ### Intro de PROJECT: Yi ✅ (2026-09-24)
+
+Idea del usuario, a partir del feedback del equipo ("más dinámico", "tipo el launcher del LoL").
+El slide default es el login screen de **PROJECT: Master Yi** (League of Legends): en la
+primera visita de la sesión se ve **sólo el video** —robots en silueta— y a 1 s Yi los destruye;
+con el destello aparece toda la interfaz del Home, y el video queda en loop sobre el estado final.
+
+**La fuente.** El stream público de Mux que pasó el usuario, a **1280 × 800, 25 fps, 188 s**. No
+existe una versión más grande: 1280 × 800 es la ventana del cliente del LoL de 2014, y la mejor
+subida de YouTube llega a 1280 × 720. **Se escaló 4× con IA** (2026-09-25): Real-ESRGAN
+`realesrgan-x4plus` —el binario oficial, local y gratis, 77 min para los 195 frames que se usan—.
+Se eligió sobre `realesr-animevideov3`, el modelo "de video", porque ése aplana la lluvia y el
+grano del metal; el parpadeo agregado es el mismo en los dos (+7–8 % de cambio entre frames).
+Los originales a 1280 están en `~/Desktop/hero-yi-original-1280/`, con la fuente.
+
+**El análisis frame por frame** (del original):
+
+| Tramo | Frames | Qué pasa |
+|---|---|---|
+| 0 – 1,4 s | 0 – 35 | Fundido desde negro a los robots |
+| 1,4 – 4,0 s | 35 – 100 | Espera: la cámara empuja sola y la luz sube |
+| 4,0 – 4,6 s | 100 – 116 | Entra Yi y ataca |
+| 4,6 – 5,0 s | 116 – 124 | Destello, el frame más brillante |
+| 5,0 – 5,8 s | 124 – 144 | Se asienta el estado final |
+| 5,8 s → | 145 → | Estado final, con un **loop propio de 5 s** (145 – 269) |
+
+**Por qué no hay corte.** En la espera la cámara nunca está quieta —medido con flujo óptico, se
+corre ~22 px y la luz sube— así que saltar del fundido al ataque se veía. En vez de empalmar, la
+intro **arranca en el frame 75** y el fundido lo hace la web: el video entra de opacidad 0 a 1
+en 500 ms sobre el `#202020` de la página. El ataque cae a 1 s del arranque y el movimiento de
+cámara es continuo.
+
+**El loop venía hecho:** el estado final se repite cada 125 frames. El salto del frame 269 al
+145 (Δ 0,82) es menor que el de dos frames seguidos (Δ 1,41), y la intro termina en el 144, así
+que el paso intro → loop es continuo. Codificados: seam del loop Δ 1,95 contra 2,14 de mediana;
+intro → loop Δ 2,91 contra 4,08.
+
+**Archivos** (`public/assets/home/hero-yi/`), AV1 q32 con H.264 de respaldo, etiquetas de color
+dentro del stream y posters del frame 145 tal como lo pinta Chrome (ver notas de implementación):
+
+| | Desktop 1920 × 1200 | Mobile 984 × 1200 |
+|---|---|---|
+| Intro AV1 · H.264 (2,8 s, sólo primera visita) | 642 KB · 1,42 MB | 409 KB · 878 KB |
+| Loop AV1 · H.264 (5 s) | 947 KB · 1,79 MB | 539 KB · 1,01 MB |
+| Poster AVIF · WebP | 144 KB · 115 KB | 83 KB · 68 KB |
+
+AV1 a **q40** (H.264 a 25): contra los frames escalados sin pérdida da 38,1 dB, y comparado a
+tamaño de pantalla no se distingue de q32, que pesaba 70 % más. Contra los 1280 originales, el
+hero suma 23 % en desktop y 17 % en mobile. Empalmes medidos de nuevo: loop Δ 1,96 contra 2,18 de
+mediana; intro → loop Δ 2,92 contra 4,07.
+
+**Encuadre.** Yi usa `fit: "cover"` —a diferencia de Jett, que va pre-recortado al ancho—:
+desktop es el video entero en *cover* anclado al **75 %** horizontal, así Yi queda a la derecha;
+mobile es un recorte vertical de 656 × 800 centrado en el 58 % del original, que deja adentro a
+Yi (55–80 % del ancho) y al ataque (30–70 %). El foco vive en la data (`focus`) y llega al CSS
+como custom property, igual para el poster y para el `object-position` del video.
+
+**Cómo corre** — la decisión se toma **antes del primer pintado**:
+
+1. Un script inline en el `<head>` del layout raíz (`introBootScript`, `lib/hero-intro.ts`) marca
+   `<html data-intro="pending">` sólo si: es `/` sin hash, no hay `prefers-reduced-motion` ni
+   `Save-Data`, y la sesión no la vio (`sessionStorage`). No es `next/script` con
+   `beforeInteractive`: ése no garantiza correr antes de pintar.
+2. Con `pending`, `intro-veil` (header, riel, bottom bar, contenido del hero y footer) e
+   `intro-veil-sections` (las secciones del Home salvo `#home`) quedan en opacidad 0 sin
+   interacción; el poster se oculta (`intro-pending:invisible`) y el escaneo del título y la
+   cascada de miniaturas quedan **pausados** en su primer frame.
+3. Al hidratar se monta la intro (`IntroVideo`). Cuando arranca, el loop empieza a bajar, pausado
+   en su frame 0. A los **1,7 s** de intro —el destello— `data-intro="reveal"` y la interfaz
+   entra en 600 ms (`--hero-intro-reveal-duration`), con el escaneo corriendo encima.
+4. Al terminar la intro se saca el atributo y arranca el loop; el poster, que es su frame 0,
+   cubre el instante del cambio.
+
+**Salidas de emergencia**, todas verificadas:
+
+| Caso | Qué pasa |
+|---|---|
+| Click, tecla, rueda o toque durante la intro | Salta al estado final al instante |
+| La intro no arrancó a los **2 s** de abrir la página (red lenta, JS lento) | El script de arranque la cancela: interfaz visible, sin intro |
+| No arrancó a los 1,5 s de hidratar, o `play()` falla | La cancela el componente |
+| JS no carga nunca | A los 2 s el script inline la cancela; failsafe final a los 7 s |
+| Recarga, vuelta al Home desde otra ruta, ruta interna directa | Sin intro |
+| Movimiento reducido · `Save-Data` | Sin intro ni video: poster |
+| Cambio de slide durante la aparición | Termina la intro; el slide nuevo entra normal |
+
+**El costo, medido en build de producción:** la primera visita de la sesión tiene un LCP de
+**~2,5 s en desktop y ~1,9 s en mobile**, porque el H1 recién aparece con el golpe. Es el
+concepto —la interfaz no está hasta que llega el ataque—, no un problema de carga: la visita
+siguiente vuelve a **~72 ms**. El CLS no cambió.
+
 ### Diferido hasta que el scope esté maquetado
 
 Decisión del usuario, 2026-09-20, al cerrar el Home: estas tres **no se encaran ahora**. No es
@@ -1033,6 +1128,10 @@ tercero. Se retoman en la pasada de fixes chicos, con el scope completo.
 
 | Tema | Qué pasó | Cómo se resolvió |
 |---|---|---|
+| **`scale: -1` espeja también el `transform` que el navegador le pone al grupo** | La persiana de vuelta se trababa al final y dejaba sin tapar la franja izquierda en el momento del cambio: la pill verde del riel aparecía antes de que pasara el panel. | La vuelta reusaba la ida espejada con `scale: -1 1`. Pero el `::view-transition-group` trae un `transform` propio (la posición del elemento, acá −360px por el `left: -25%`), y el `scale` se aplica encima, alrededor del centro: el −360 se volvía +360. El panel quedaba 360px corrido, así que a la mitad no cubría el borde izquierdo y al final seguía en pantalla hasta que la transición se cortaba. Se reescribió sin espejo, con los polígonos del grupo y del filo invertidos para la vuelta. Medido en video, la cobertura baja de 720 a 48 píxeles de columna sin quedarse quieta, igual que la ida. **En un pseudo-elemento de View Transition, nada de `scale` o `rotate` para reusar una animación.** |
+| **`cn()` borra una utility propia si su nombre empieza con un prefijo de Tailwind** | El barrido de los chips no animaba: el relleno aparecía de golpe. Medido, el `::before` saltaba de `-100%` a `0` sin pasos intermedios, y agregando la clase a mano sí animaba. | Las utilities se llamaban `fill-wipe` y `fill-wipe-on`. tailwind-merge las tomó por dos colores de `fill-*` y, al llegar `fill-wipe-on`, borró `fill-wipe`: el `::before` se quedaba sin `content` y lo que se medía era un pseudo-elemento inexistente. Pasaron a `wipe` / `wipe-on`. Es la misma familia que *`cn()` borra los tokens de tamaño de texto con nombre propio*: **una utility propia no puede empezar con un prefijo que tailwind-merge conozca** (`fill-`, `text-`, `bg-`, `border-`, `shadow-`…) si va a convivir con otra en el mismo `cn()`. |
+| **Un `group` sin nombre en un contenedor grande enciende todos los `group-hover` de adentro** | Hacer hover sobre Reclamar encendía el velo del botón de perfil. Pasaba en producción. | El `<header>` llevaba `group` para que el header mobile leyera `data-scrolled`. `group-hover:` es "descendiente de **cualquier** `.group` con hover", así que el header entero actuaba de grupo para el velo del perfil. Pasa a `group/header`. **Un `group` en un contenedor que envuelve a otros grupos va siempre con nombre.** |
+| **Las capturas de Playwright no muestran una View Transition** | Los screenshots tomados durante la persiana mostraban la página nueva sin panel, y parecía que la transición no corría. | `getAnimations()` mostraba las seis animaciones corriendo en orden. Lo que no captura el panel es `page.screenshot()`. Para ver una View Transition hay que **grabar video** (`recordVideo`) y sacar cuadros con ffmpeg. |
 | **Un plazo que corre desde la hidratación no protege una red lenta** | Con la red a 40 KB/s, la intro esperaba a que React hidratara para empezar a contar su timeout de 1,5 s: la página quedaba en blanco hasta el failsafe de 7 s. | El plazo principal lo pone **el script inline**, que corre con el HTML: si a los 2 s nadie marcó `data-intro-started`, cancela la intro. Medido: con la red lenta la interfaz aparece 2 s después de que llega la página, y con JS bloqueado también. **Cualquier estado que oculte la página tiene que poder deshacerse sin depender del bundle.** |
 | **Bloquear `/_next/static/chunks/` también bloquea el CSS** | La primera prueba "sin JS" mostraba la interfaz visible con la intro pendiente, y parecía que el velo no funcionaba. | En Next 16 el CSS vive en la misma carpeta que los chunks de JS. Para simular "sin JS" hay que bloquear por tipo de recurso (`script`), no por ruta. |
 | **Chrome decodifica un AV1 sin etiquetas de color con la matriz bt601** | El video del hero salía más magenta que su poster en los rojos: Δ medio 4 contra la imagen. `ffprobe` decía `bt709`, pero ese dato vivía sólo en el contenedor: SVT-AV1 ignora los `-color_*` de ffmpeg y no los escribe en el bitstream. | Se pasan dentro del encoder (`-svtav1-params color-primaries=1:transfer-characteristics=1:matrix-coefficients=1`) y en x264 con `-x264-params colorprim=…`. **Y el poster se arma desde el frame 0 tal como lo pinta Chrome**, no desde un decode de ffmpeg: la reconstrucción del color del navegador no es la de ffmpeg y en bordes saturados difiere hasta 17 niveles. Con eso el cambio poster → video da Δ medio 0,7 en desktop. En mobile queda ~1 en bordes finos por el reescalado (864 → 390), que es un cambio único al cargar. |
@@ -1091,7 +1190,7 @@ tercero. Se retoman en la pasada de fixes chicos, con el scope completo.
 | **Las flechas del slider no estaban donde parecía** | El nodo de la sección (`6008:26364`) no trae ningún control, así que se iban a inventar. | Aparecen en el **frame compuesto del Home**, apoyadas en los gutters: son chevrons pelados, sin círculo ni fondo. Se midieron sobre el render a resolución completa — tinta 10 × 18, centro 33px por fuera de la columna y a 202 del tope del slider, `#FFFFFF` activa y `#444444` inactiva. **Antes de dar por inexistente un elemento, mirar el frame de la pantalla y no sólo el de la sección.** |
 | **El recorte del personaje no podía ir en `background-position`** | Primero se resolvió como el arte del hero, convirtiendo el offset del Figma a posición porcentual con P = offset / (1 − tamaño). El personaje de la card 2 salió corrido: su divisor vale 0.0056, así que amplifica 180 veces cualquier redondeo del tamaño. | Ventana con `overflow-hidden` y la imagen posicionada adentro, con los porcentajes del Figma sin convertir. Como el Figma escala la card entera, los mismos valores sirven para los dos tamaños. |
 | **La línea divisoria del Figma es un degradé degenerado** | `Line 22` se exporta como SVG con un degradé vertical definido **fuera** de la caja de la línea (de y=1 a y=2 sobre una línea de 1px en y=0.5). | Al renderizar queda plano en su primer stop: `#A1A1A1` al 50%. Se resuelve con `--color-border-muted` al 50%, a 4 niveles del medido — imperceptible a media opacidad. |
-| **Revelado escalonado del slider** | Las portadas son los assets más pesados de la página (4,2 MB entre tres) y aparecían de golpe, cada una cuando terminaba de bajar — desordenadas y sin relación con el orden de la lista. | Las tres no activas van con `fetchPriority="low"` para que no compitan con el arte del hero (`loading="lazy"` ya es el default de `next/image`), y el `<li>` entra con un `@utility thumb-reveal`: sube 8px y se funde, escalonado 150ms por índice (90ms hasta el 2026-09-23). La última cierra a los 970ms (desde el 2026-09-23, con 700ms por miniatura; antes 420ms y 690), que es el colchón de carga; hasta entonces se ve `--color-thumb-dim` de placeholder. Sólo `opacity` y `transform`, que resuelve el compositor sin tocar layout — medido: las posiciones finales son idénticas y el `transform` queda en `none`. Con `prefers-reduced-motion: reduce` no hay animación, y el guard vive dentro de la utility para que no se pueda usar mal. **Es el segundo desvío consciente de AGENTS regla 16**, con el mismo criterio que el pill del menú: cero librerías de motion. |
+| **Revelado escalonado del slider** | Las portadas son los assets más pesados de la página (4,2 MB entre tres) y aparecían de golpe, cada una cuando terminaba de bajar — desordenadas y sin relación con el orden de la lista. | Las tres no activas van con `fetchPriority="low"` para que no compitan con el arte del hero (`loading="lazy"` ya es el default de `next/image`), y el `<li>` entra con un `@utility thumb-reveal`: sube 8px y se funde, escalonado 150ms por índice (90ms hasta el 2026-09-23). La última cierra a los 870ms (420ms por miniatura y 150 de escalón desde el 2026-09-23; antes 690), que es el colchón de carga; hasta entonces se ve `--color-thumb-dim` de placeholder. Sólo `opacity` y `transform`, que resuelve el compositor sin tocar layout — medido: las posiciones finales son idénticas y el `transform` queda en `none`. Con `prefers-reduced-motion: reduce` no hay animación, y el guard vive dentro de la utility para que no se pueda usar mal. **Es el segundo desvío consciente de AGENTS regla 16**, con el mismo criterio que el pill del menú: cero librerías de motion. |
 | **El encuadre del Figma no sirve para las otras portadas** | Al hacer funcional el slider, los cuatro artes arrancaron con el encuadre medido del Figma (181,25% anclado arriba a la izquierda). Valorant y Modern Warfare III quedaron bien; Fortnite mostraba media letra de su logo a pantalla completa y Black Ops 6 un arma gigante. | El encuadre del Figma está compuesto **para el arte del Figma**. Cada entrada declara el suyo en `lib/data/hero.ts`: `design` para el arte del diseño, que conserva el hero aprobado intacto — verificado, `181.25% auto` en `0% 0%` y `254.174%` en `31.704% 0` —, y `cover` centrado para las otras tres, que así muestran su propia composición. |
 | **Chrome trunca `border-width` a píxeles enteros** | El borde de 1.5px de la miniatura activa se pintaba de 1px: medido a `deviceScaleFactor: 2`, 2 píxeles de dispositivo en vez de 3. Pasa igual con un `border: 1.5px` literal. El anillo del avatar del header arrastraba el mismo redondeo desde el bloque 1. | Se probó con `ring` inset (`box-shadow`), que sí respeta el medio píxel, pero la decisión del usuario (2026-09-19) fue al revés: **los strokes de medio píxel se redondean al entero de arriba** y quedan como `border`. Un mecanismo menos que recordar, y un borde entero se pinta como se pide. La miniatura activa queda en 2px en desktop y 1 en mobile (donde el diseño pide 0.8, que redondea a entero igual), y el avatar en 2px. |
 | **El MCP acertó la atenuación, pero igual se midió** | El frame mobile atenúa las miniaturas no seleccionadas (portada al 40% sobre `--color-thumb-dim`) y el desktop no. | Se muestrearon los dos renders antes de decidir, y la diferencia era real. Después el usuario resolvió unificar en el tratamiento de mobile (ver deuda). Misma política que el degradé de la bottom bar: **ante la duda, medir el render.** |
@@ -1142,6 +1241,10 @@ con imagen.
 4. La imagen hace **zoom 1.05** con `--ease-reveal`, dentro del `overflow-hidden` que ya existe.
 5. **Cero color**: ni el título ni los badges cambian de hue; a lo sumo suben de gris
    (`--color-muted-foreground` → `--color-subtle-foreground`).
+6. **Corchetes de mira** (`CardBrackets`, desde el 2026-09-25) en Misiones, destacadas, Sura News,
+   Torneos y Eventos. Es la única excepción al punto 5: cuatro trazos cortos de `--color-brand` por
+   fuera de la card, que marcan el objetivo sin teñirla. Juegos no los lleva: su panel de vidrio con
+   borde degradado ya es la señal de esa card.
 
 **Hover de crecimiento** — filas del Leaderboard. Para ítems de una lista densa, donde
 elevar una fila entre otras pegadas no se lee.
@@ -1171,7 +1274,10 @@ admite (ver notas de implementación).
   CTA del banner. En una card entera lee como alarma.
 - Siempre `focus-visible:` en pareja con `hover:`, siempre `motion-reduce:transition-none`.
 - Duraciones: **200 ms** para sombra, color y borde; **250 ms** con `--ease-reveal` para el
-  zoom de una imagen.
+  zoom de una imagen. El lift de 2px de cards y podios va en **200 ms con `--ease-reveal`**
+  (unificado el 2026-09-24).
+- Al apretar, la card baja a `scale-98`: es la única señal que existe en touch, donde `hover:`
+  no corre.
 
 ### Vocabulario de entrada
 
@@ -1215,6 +1321,50 @@ punto de miles. Sólo las filas: el podio y Medallas se quedan quietos.
 - recarga con el leaderboard a la vista: no anima. Click del menú a Leaderboard: anima;
 - hover de crecimiento intacto después del reveal;
 - Home 4156 / 4046 y 0 de scroll lateral en los cinco anchos.
+
+### Micro-animaciones HUD ✅ (2026-09-24)
+
+Feedback del equipo (Ema): la web necesitaba más micro-animaciones. Se relevó todo lo que se mueve,
+se investigaron 17 referencias (Ink Games, Arknights: Endfield, THE FINALS, Valorant Flashback,
+Tesoro, Igloo Inc) y dos listas de *AI-slop*, y se armó una página de propuestas con demos en vivo:
+**[Movimiento SURA](https://claude.ai/artifact/EAcECZqs8TnnHvYWPFeZsP)**. El criterio de fondo: un
+solo lenguaje, la interfaz como el HUD de un juego que se enciende, apunta y suma puntos; curvas que
+frenan en seco (`--ease-lock`), sin rebotes, y un efecto protagonista por zona.
+
+| # | Qué | Dónde | Cómo |
+|---|---|---|---|
+| P3 | **Decodificado de labels**: en hover o foco las letras giran por glifos al azar y se asientan de izquierda a derecha en 350ms | "Ver todo", "Ir a Sura News", tabs de ruta, CTA del hero y los dos "Jugar ahora" | `ScrambleText`. Fija su ancho mientras corre, así nada se corre; el texto real va en un `sr-only` y el animado es `aria-hidden` |
+| P4 | **Barrido en diagonal**: el relleno entra desde la izquierda con el borde cortado | CTA del hero y los dos "Jugar ahora" (luz blanca al 20%); chips y paginador (`--color-surface-2`) | `wipe` + `wipe-on`. Los CTAs además bajan 1px al apretar. **El CTA del hero estrena `focus-visible`**, que no tenía |
+| P5 | **Subrayado que viaja** entre tabs, como el pill del menú | `route-tabs` | Una capa medida con `ResizeObserver`; antes de medir, el tab activo conserva su borde, así el SSR ya se ve bien |
+| P6 | **Odómetro de puntos** y momento de **Reclamar**: el saldo rueda dígito por dígito y aparece un `+50` con parpadeo | Contadores de SP de los dos headers | `lib/use-daily-claim.ts` (store de módulo: sobrevive a la navegación, se reinicia al recargar) + `Odometer` + `PointsValue`. El `+50` sólo aparece si el reclamo pasó con el header montado |
+| P6 | **Cascada y conteo en `/leaderboard`**, iguales a los del Home | Tabla desktop y mobile | `RevealList` + `CountUp`. Como en el Home, si la tabla ya está a la vista al hidratar no anima |
+| P8 | **Destello del 1º puesto** una sola vez al entrar en pantalla; **medallas obtenidas** que se inclinan hasta 6° hacia el cursor con un brillo que lo sigue; **bloqueadas** con "acceso denegado" (el candado tiembla y el label parpadea) | Podios del Home y de `/leaderboard`; Medallas | `PodiumSheen`, `medal-tilt`, `medal-glint`, `deny-shake`, `flicker`. La inclinación sólo se aplica con el puntero encima: en reposo la medalla no lleva `transform` |
+| P9 | **Luz de borde** que sigue al cursor | Banner de `/games` (verde) y banner del Home (violeta) | `BorderLight`, un anillo enmascarado en z-30 que lee `--light-x/y` |
+| P7 | **Persiana entre rutas**: un panel oscuro con filo verde cruza en diagonal en 640ms y la pantalla cambia a la mitad, tapada. Hacia el Home cruza al revés, con los polígonos invertidos | Todas las navegaciones entre rutas | View Transitions nativas: `<ViewTransition enter="route-in" exit="route-out">` alrededor del `<main>` (Home y `RouteShell`) y un `<div class="route-shutter">` persistente en el layout, que sólo existe para que su `::view-transition-group` dibuje el panel. La dirección sale del tipo `nav-back`, que mandan `goTo` y `goBack` al volver al Home |
+| P1 B | **Corchetes de mira que se dibujan**: en hover o foco, cada esquina se traza desde su vértice en sentido horario (300ms, 40ms entre una y otra), 5px por fuera de la card. El zoom de la imagen se queda | Misiones, destacadas, Sura News, Torneos y las cards de Eventos del Home, que hasta ahora no tenían ningún hover | `CardBrackets`: cuatro `card-bracket` que se revelan con `clip-path: inset()` desde el vértice, así el grosor del trazo no cambia mientras crece. En reposo están recortados a cero: no mueven un píxel |
+| P2 C | **Barrido de luz en los títulos**: el título arranca gris (`--color-border-dim`), pasa una franja `--color-brand-vivid` y queda blanco, una sola vez | Títulos de sección del Home (al entrar scrolleando) y H1 de ruta (al llegar navegando, apenas termina la persiana) | `TitleSweep`, con `background-clip: text`. Un título que ya se ve al cargar no se barre: el SSR lo pintó blanco y pasarlo a gris sería un salto. El H1 de ruta arranca gris desde el primer render, así ya sale gris en la captura de la persiana y se enciende cuando el panel terminó de pasar; en una carga directa no se barre |
+
+**Tabs, chips y paginador ahora cambian de selección al click**, sin filtrar ni paginar nada: sin eso
+el barrido y el subrayado nunca se verían. El contenido de la pantalla no cambia (§ 1, Fase 1).
+
+**El chrome durante la persiana** (usuario, 2026-09-25). El header, el riel y la bottom bar viven en la captura `root`, que queda debajo de las capturas del `<main>`: desaparecen apenas arranca la persiana y vuelven cuando termina. En desktop el usuario lo aprobó como efecto, y desde el arreglo de la vuelta pasa igual en los dos sentidos. La bottom bar se acomoda a eso: **al salir del Home** cambia en el acto mientras dura la transición (`[:root:active-view-transition_&]:transition-none`), así la captura nueva ya no la tiene y no reaparece; **al volver al Home** espera la persiana (`delay-(--route-shutter-duration)`) y sube recién cuando el panel pasó.
+
+**Volver al Home desde la flecha también dispara la persiana.** `router.back()` no la disparaba: Next aplica esas navegaciones de forma síncrona. Si la pantalla anterior era el Home, `goBack` hace un `push` al Home con el tipo `nav-back` y restaura a mano el scroll que tenía (medido: 1945 → 1945). El scroll se guarda en cada click mientras estás en el Home, que es el último momento seguro antes de que Next suba la página nueva al tope. Consecuencia aceptada: el historial suma una entrada en vez de retroceder.
+
+**Arreglos de la tanda 0**, salidos del audit:
+- el anillo de foco del buscador no animaba: transicionaba `--tw-ring-color`, que no es interpolable. Pasa a `transition-shadow`;
+- el tooltip del menú y las flechas del carrusel ignoraban `prefers-reduced-motion`;
+- las miniaturas del hero no tenían estado de foco;
+- el `:hover` crudo de `border-gradient-row` / `-card` quedaba pegado en touch: va dentro de `@media (hover: hover)`;
+- los badges de la card de Juegos reaccionaban a su propio hover y no al de la card;
+- **el header entero era un `group`** (por el vidrio al scrollear), así que hacer hover sobre Reclamar encendía el velo del perfil. Estaba en producción. Pasa a `group/header`.
+
+**Verificado:**
+- `npm run verify` limpio; todos los tokens nuevos resuelven en `/styleguide`;
+- reposo contra producción en las cuatro rutas internas, a 390 y 1440: mismo alto, y las únicas diferencias son de antialiasing (bordes de las pills con relleno, dígitos del odómetro), entre 177 y 828 píxeles por captura. El Home no se puede comparar: producción todavía no tiene la intro de Yi;
+- persiana en video, ida y vuelta; tipos `nav-back` llegando a `startViewTransition`; sin scroll lateral por el panel;
+- movimiento reducido: tooltip sin animación, decodificado y odómetro instantáneos, persiana apagada;
+- mobile: vidrio del header intacto, bottom bar que vuelve después de la persiana.
 
 ### Notas de arquitectura
 
@@ -1404,6 +1554,7 @@ Más:
 | Misiones (`/missions`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 21–25 |
 | Leaderboard (`/leaderboard`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 26–30 |
 | Juegos (`/games`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 31–34 |
+| Micro-animaciones HUD | ✅ | ✅ | 👀 Esperando aprobación — P1 B, P2 C, P3–P9 y la tanda 0 |
 
 **Leyenda:** ⏳ Pendiente · 🚧 En progreso · 👀 Esperando aprobación · ✅ Aprobada · 📦 Commiteada · 🚫 Bloqueada
 
