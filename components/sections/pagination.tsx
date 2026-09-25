@@ -34,14 +34,14 @@ export function Pagination({
     <nav aria-label={label} className={cn("flex justify-center pt-3", className)}>
       {compactOnMobile && (
         <div className="flex items-center justify-center gap-6 desktop:hidden">
-          <button type="button" onClick={() => setPage(page - 1)} disabled={page === 1} aria-label="Página anterior" className={COMPACT}>
+          <button type="button" data-sfx="click" onClick={() => setPage(page - 1)} disabled={page === 1} aria-label="Página anterior" className={COMPACT}>
             <ChevronLeft className="size-8" strokeWidth={2} aria-hidden />
           </button>
           <p className="flex items-center gap-1.5 text-base">
             <span className="font-semibold text-foreground">{page}</span>
             <span className="text-muted-foreground">/ {pages}</span>
           </p>
-          <button type="button" onClick={() => setPage(page + 1)} disabled={page === pages} aria-label="Página siguiente" className={COMPACT}>
+          <button type="button" data-sfx="click" onClick={() => setPage(page + 1)} disabled={page === pages} aria-label="Página siguiente" className={COMPACT}>
             <ChevronRight className="size-8" strokeWidth={2} aria-hidden />
           </button>
         </div>
@@ -51,6 +51,7 @@ export function Pagination({
         <li>
           <button
             type="button"
+            data-sfx="click"
             onClick={() => setPage(page - 1)}
             disabled={page === 1}
             className={cn(
@@ -74,6 +75,7 @@ export function Pagination({
           >
             <button
               type="button"
+              data-sfx="click"
               onClick={() => setPage(number)}
               aria-current={number === page ? "page" : undefined}
               className={cn(
@@ -91,6 +93,7 @@ export function Pagination({
         <li>
           <button
             type="button"
+            data-sfx="click"
             onClick={() => setPage(page + 1)}
             disabled={page === pages}
             className={cn(CONTROL, page === pages ? "cursor-not-allowed border-surface-2 text-border-dim" : IDLE)}

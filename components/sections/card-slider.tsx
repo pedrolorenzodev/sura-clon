@@ -106,6 +106,7 @@ function SliderButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
+      data-sfx="click"
       aria-label={label}
       className={cn(
         "absolute hidden size-10 -translate-y-1/2 cursor-pointer items-center justify-center transition-colors duration-200 motion-reduce:transition-none desktop:flex",

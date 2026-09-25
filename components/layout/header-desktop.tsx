@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ClaimButton } from "@/components/layout/claim-button";
 import { PointsValue } from "@/components/layout/points-value";
 import { SectionLink } from "@/components/layout/section-link";
+import { SoundToggle } from "@/components/layout/sound-toggle";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { currentUser } from "@/lib/data/user";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,7 @@ export function HeaderDesktop({ className }: { className?: string }) {
 
       <div className="flex items-center gap-3 rounded-xl bg-surface p-2">
 
+        <SoundToggle />
         <ClaimButton />
 
         <Counter iconSrc="/assets/home/fire.png" value={currentUser.streak} />

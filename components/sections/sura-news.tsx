@@ -44,6 +44,8 @@ export function SuraNews() {
 
           <button
             type="button"
+            data-sfx-hover
+            data-sfx="click"
             className="flex cursor-pointer items-center gap-1 self-start font-techno text-link uppercase text-brand transition-[filter] duration-200 hover:drop-shadow-link-hover focus-visible:drop-shadow-link-hover motion-reduce:transition-none"
           >
             <ScrambleText text={newsIntro.cta} />

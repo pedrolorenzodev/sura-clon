@@ -27,6 +27,8 @@ export function HeroContent() {
 
         <SectionLink
           sectionId={hero.cta.sectionId}
+          data-sfx-hover
+          data-sfx="click"
           className="wipe inline-flex h-7.5 items-center self-start rounded-pill bg-brand px-4 font-techno text-cta-sm uppercase text-black shadow-cta-mobile transition-[box-shadow,translate] duration-200 hover:wipe-on hover:shadow-cta-hover focus-visible:wipe-on focus-visible:shadow-cta-hover active:translate-y-px motion-reduce:transition-none desktop:h-11.5 desktop:min-w-45.25 desktop:justify-center desktop:px-5 desktop:text-cta desktop:shadow-cta desktop:hover:shadow-cta-hover desktop:focus-visible:shadow-cta-hover"
         >
           <ScrambleText text={hero.cta.label} />

@@ -48,6 +48,8 @@ export function RouteTabs({
                 type="button"
                 onClick={() => setSelected(tab.id)}
                 aria-current={isCurrent ? "page" : undefined}
+                data-sfx-hover
+                data-sfx="select"
                 className={cn(
                   "flex h-11 cursor-pointer items-center justify-center border-b-2 px-4 font-techno text-base uppercase transition-colors duration-200 motion-reduce:transition-none desktop:min-w-40 desktop:px-10",
                   isCurrent

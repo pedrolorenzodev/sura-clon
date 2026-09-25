@@ -997,11 +997,264 @@
 @utility nav-icon-misiones {
   mask: url("/assets/home/nav/misiones.svg") center / contain no-repeat;
 }
-@utility nav-icon-news {
-  mask: url("/assets/home/nav/news.svg") center / contain no-repeat;
-}
 @utility nav-icon-juegos {
   mask: url("/assets/home/nav/juegos.svg") center / contain no-repeat;
+}
+
+/* ============================================================
+   ÍCONOS DEL MENÚ POR PARTES
+   ============================================================ */
+:root {
+  --nav-icon-play-window: 900ms;
+  --nav-icon-select-lead: 140ms;
+  --nav-icon-press-duration: 400ms;
+  --nav-icon-cup-duration: 540ms;
+  --nav-icon-bar-duration: 380ms;
+  --nav-icon-bar-stagger: 60ms;
+  --nav-icon-rank-delay: 160ms;
+  --nav-icon-rank-duration: 420ms;
+  --nav-icon-pen-duration: 500ms;
+  --nav-icon-type-duration: 260ms;
+  --nav-icon-type-stagger: 70ms;
+  --nav-icon-rumble-duration: 280ms;
+  --nav-icon-pop-delay: 200ms;
+  --nav-icon-pop-duration: 300ms;
+  --nav-icon-plus-delay: 60ms;
+  --nav-icon-plus-duration: 360ms;
+}
+
+@utility navicon {
+  --nav-part-lead: 0ms;
+
+  &[data-play="select"] {
+    --nav-part-lead: var(--nav-icon-select-lead);
+  }
+}
+
+@utility navpart-press {
+  transform-box: view-box;
+  transform-origin: 13px 22px;
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-play] & {
+      animation: nav-part-press var(--nav-icon-press-duration) var(--ease-lock) var(--nav-part-lead) both;
+    }
+  }
+}
+
+@utility navpart-cup {
+  transform-box: view-box;
+  transform-origin: 13px 18.4px;
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-play] & {
+      animation: nav-part-cup var(--nav-icon-cup-duration) ease-out var(--nav-part-lead) both;
+    }
+  }
+}
+
+@utility navpart-bar-left {
+  transform-box: view-box;
+  transform-origin: 5.6px 19.5px;
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-play] & {
+      animation: nav-part-rise var(--nav-icon-bar-duration) var(--ease-lock) var(--nav-part-lead) both;
+    }
+  }
+}
+
+@utility navpart-bar-mid {
+  transform-box: view-box;
+  transform-origin: 12px 19.5px;
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-play] & {
+      animation: nav-part-rise var(--nav-icon-bar-duration) var(--ease-lock)
+        calc(var(--nav-part-lead) + var(--nav-icon-bar-stagger)) both;
+    }
+  }
+}
+
+@utility navpart-bar-right {
+  transform-box: view-box;
+  transform-origin: 18.4px 19.5px;
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-play] & {
+      animation: nav-part-rise var(--nav-icon-bar-duration) var(--ease-lock)
+        calc(var(--nav-part-lead) + var(--nav-icon-bar-stagger) * 2) both;
+    }
+  }
+}
+
+@utility navpart-rank {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-play] & {
+      animation: nav-part-lock var(--nav-icon-rank-duration) step-end
+        calc(var(--nav-part-lead) + var(--nav-icon-rank-delay)) both;
+    }
+  }
+}
+
+@utility navpart-pen {
+  transform-box: view-box;
+  transform-origin: 5px 13px;
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-play] & {
+      animation: nav-part-pen var(--nav-icon-pen-duration) ease-out var(--nav-part-lead) both;
+    }
+  }
+}
+
+@utility navpart-line-1 {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-play] & {
+      animation: nav-part-type var(--nav-icon-type-duration) var(--ease-lock) var(--nav-part-lead) both;
+    }
+  }
+}
+
+@utility navpart-line-2 {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-play] & {
+      animation: nav-part-type var(--nav-icon-type-duration) var(--ease-lock)
+        calc(var(--nav-part-lead) + var(--nav-icon-type-stagger)) both;
+    }
+  }
+}
+
+@utility navpart-line-3 {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-play] & {
+      animation: nav-part-type var(--nav-icon-type-duration) var(--ease-lock)
+        calc(var(--nav-part-lead) + var(--nav-icon-type-stagger) * 2) both;
+    }
+  }
+}
+
+@utility navpart-rumble {
+  transform-box: view-box;
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-play] & {
+      animation: nav-part-rumble var(--nav-icon-rumble-duration) steps(1) var(--nav-part-lead) both;
+    }
+  }
+}
+
+@utility navpart-button {
+  transform-box: view-box;
+  transform-origin: 16.3px 10.6px;
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-play] & {
+      animation: nav-part-pop var(--nav-icon-pop-duration) var(--ease-lock)
+        calc(var(--nav-part-lead) + var(--nav-icon-pop-delay)) both;
+    }
+  }
+}
+
+@utility navpart-plus {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-play] & {
+      animation: nav-part-lock var(--nav-icon-plus-duration) step-end
+        calc(var(--nav-part-lead) + var(--nav-icon-plus-delay)) both;
+    }
+  }
+}
+
+@keyframes nav-part-press {
+  35% {
+    transform: translateY(1.4px) scale(0.86);
+  }
+}
+
+@keyframes nav-part-cup {
+  0% {
+    transform: rotate(0);
+  }
+  22% {
+    transform: rotate(-13deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+  76% {
+    transform: rotate(-3deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+
+@keyframes nav-part-rise {
+  from {
+    transform: scaleY(0.2);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes nav-part-pen {
+  28% {
+    transform: rotate(-15deg);
+  }
+  58% {
+    transform: rotate(7deg);
+  }
+}
+
+@keyframes nav-part-type {
+  from {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: -1;
+  }
+  to {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes nav-part-rumble {
+  0%,
+  100% {
+    transform: none;
+  }
+  20% {
+    transform: translateX(-0.9px);
+  }
+  40% {
+    transform: translateX(0.9px);
+  }
+  60% {
+    transform: translateX(-0.6px);
+  }
+  80% {
+    transform: translateX(0.4px);
+  }
+}
+
+@keyframes nav-part-pop {
+  40% {
+    transform: scale(0.5);
+  }
+}
+
+@keyframes nav-part-lock {
+  0%,
+  24%,
+  54% {
+    opacity: 0;
+  }
+  12%,
+  42%,
+  72%,
+  100% {
+    opacity: 1;
+  }
 }
 
 /* ============================================================
@@ -1690,6 +1943,85 @@ html:active-view-transition-type(nav-back)::view-transition-image-pair(route-shu
   from {
     opacity: 0;
     transform: translateY(var(--row-reveal-shift));
+  }
+}
+
+/* ============================================================
+   SONIDO
+   ============================================================ */
+@custom-variant sound-on (&:where(:root:not([data-sound="off"]) *));
+@custom-variant sound-off (&:where([data-sound="off"] *));
+
+:root {
+  --sound-morph-duration: 220ms;
+  --sound-wave-fade-duration: 150ms;
+  --sound-cross-delay: 60ms;
+  --sound-live-duration: 200ms;
+  --sound-live-stagger: 50ms;
+  --sound-wave-off-scale: 0.3;
+  --sound-live-dim: 0.25;
+}
+
+@utility sound-wave {
+  transform-origin: 11px 12px;
+  transition:
+    opacity var(--sound-wave-fade-duration),
+    scale var(--sound-morph-duration) var(--ease-lock);
+
+  [data-sound="off"] & {
+    opacity: 0;
+    scale: var(--sound-wave-off-scale) 1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not([data-sound="off"]) [data-live="a"] & {
+      animation: sound-live-a var(--sound-live-duration) steps(1) var(--sound-wave-lag, 0ms) both;
+    }
+
+    :root:not([data-sound="off"]) [data-live="b"] & {
+      animation: sound-live-b var(--sound-live-duration) steps(1) var(--sound-wave-lag, 0ms) both;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@utility sound-wave-far {
+  --sound-wave-lag: var(--sound-live-stagger);
+}
+
+@utility sound-cross {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--sound-morph-duration) var(--ease-lock);
+
+  [data-sound="off"] & {
+    stroke-dashoffset: 0;
+    transition-delay: var(--sound-cross-delay);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@keyframes sound-live-a {
+  0% {
+    opacity: var(--sound-live-dim);
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes sound-live-b {
+  0% {
+    opacity: var(--sound-live-dim);
+  }
+  50% {
+    opacity: 1;
   }
 }
 

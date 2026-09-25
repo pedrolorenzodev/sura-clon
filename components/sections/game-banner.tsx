@@ -21,6 +21,7 @@ export function GameBanner() {
         type="button"
         aria-hidden
         tabIndex={-1}
+        data-sfx="click"
         className="absolute inset-0 z-10 cursor-pointer rounded-xl"
       />
 
@@ -44,6 +45,8 @@ export function GameBanner() {
 
         <button
           type="button"
+          data-sfx-hover
+          data-sfx="click"
           className="pointer-events-auto flex h-10 cursor-pointer items-center justify-center self-start rounded-full border border-brand-vivid bg-promo-cta px-6 font-techno text-sm uppercase text-promo-foreground wipe shadow-promo-cta transition-[box-shadow,translate] duration-200 hover:wipe-on hover:shadow-promo-cta-hover focus-visible:wipe-on focus-visible:shadow-promo-cta-hover active:translate-y-px motion-reduce:transition-none desktop:h-12 desktop:px-8 desktop:text-title-sm"
         >
           <ScrambleText text={gamesPromo.cta} />

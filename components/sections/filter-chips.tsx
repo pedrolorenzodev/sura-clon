@@ -30,6 +30,7 @@ export function FilterChips({
               type="button"
               onClick={() => setSelected(chip.id)}
               aria-pressed={isCurrent}
+              data-sfx="click"
               className={cn(
                 "wipe flex h-9 cursor-pointer items-center justify-center rounded-pill border-2 px-4 text-sm font-medium transition-[color,border-color,scale] duration-200 [--wipe-fill:var(--color-surface-2)] active:scale-97 motion-reduce:transition-none",
                 isCurrent

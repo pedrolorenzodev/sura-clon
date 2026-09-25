@@ -1,3 +1,4 @@
+import { NavIcon, playNavIconIn } from "@/components/layout/nav-icon";
 import { SectionLink } from "@/components/layout/section-link";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { homeSections } from "@/lib/data/navigation";
@@ -29,25 +30,39 @@ export function NavDesktop({ activeId }: { activeId: string | null }) {
                 const isActive = section.id === activeId;
 
                 return (
-                  <li key={section.id} className="h-10.5 w-15">
+                  <li
+                    key={section.id}
+                    className="h-10.5 w-15"
+                    onPointerEnter={(event) => {
+                      if (!event.currentTarget.contains(event.target as Node)) return;
+                      if (event.pointerType === "mouse" && !isActive) playNavIconIn(event.currentTarget);
+                    }}
+                    onFocus={(event) => {
+                      if (!event.currentTarget.contains(event.target)) return;
+                      if (!isActive && event.target.matches(":focus-visible")) playNavIconIn(event.currentTarget);
+                    }}
+                  >
                     <Tooltip>
                       <TooltipTrigger
                         render={
                           <SectionLink
                             sectionId={section.id}
                             aria-current={isActive ? "true" : undefined}
+                            data-sfx-hover
+                            data-sfx="select"
                             className="group flex size-full items-center justify-center"
                           />
                         }
                       >
-                        <span
+                        <NavIcon
+                          name={section.icon}
+                          active={isActive}
                           className={cn(
-                            "block shrink-0 transition-colors duration-75 motion-reduce:transition-none motion-reduce:delay-0",
-                            section.icon,
+                            "transition-colors duration-75 motion-reduce:transition-none motion-reduce:delay-0",
                             section.iconSize,
                             isActive
-                              ? "bg-primary-foreground delay-150"
-                              : "bg-foreground group-hover:bg-brand group-focus-visible:bg-brand",
+                              ? "text-primary-foreground delay-150"
+                              : "text-foreground group-hover:text-brand group-focus-visible:text-brand",
                           )}
                         />
                         <span className="sr-only">{section.label}</span>

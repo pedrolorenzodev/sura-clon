@@ -25,6 +25,7 @@ function SliderArrow({
     <button
       type="button"
       onClick={onClick}
+      data-sfx="click"
       aria-label={isPrev ? "Ver el juego anterior" : "Ver el juego siguiente"}
       className="flex shrink-0 cursor-pointer items-center justify-center text-muted-foreground transition-colors duration-200 hover:text-brand focus-visible:text-brand motion-reduce:transition-none desktop:w-15"
     >
@@ -79,6 +80,7 @@ export function HeroSlider() {
                 type="button"
                 onClick={() => select(index)}
                 aria-pressed={isActive}
+                data-sfx="select"
                 className="group block size-full cursor-pointer"
               >
                 <span className="sr-only">Ver el arte de </span>

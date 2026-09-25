@@ -13,6 +13,8 @@ export function ClaimButton() {
       type="button"
       onClick={claimDailyReward}
       disabled={claimed}
+      data-sfx="claim"
+      data-sfx-hover
       className="group flex cursor-pointer items-center gap-2 rounded-lg bg-claim py-1 pl-3 pr-4 ring-1 ring-inset ring-brand drop-shadow-claim transition-[box-shadow,opacity,translate] duration-200 enabled:hover:shadow-brand-glow enabled:focus-visible:shadow-brand-glow enabled:active:translate-y-px disabled:cursor-default disabled:opacity-50 motion-reduce:transition-none"
     >
       <span className="relative size-8 shrink-0">

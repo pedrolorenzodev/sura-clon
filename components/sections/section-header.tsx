@@ -36,11 +36,11 @@ export function SectionHeader({
       </h2>
       {action &&
         (href ? (
-          <Link href={href} className={ACTION}>
+          <Link href={href} data-sfx-hover className={ACTION}>
             {label}
           </Link>
         ) : (
-          <button type="button" className={ACTION}>
+          <button type="button" data-sfx-hover data-sfx="click" className={ACTION}>
             {label}
           </button>
         ))}

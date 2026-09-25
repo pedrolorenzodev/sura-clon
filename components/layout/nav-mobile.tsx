@@ -1,3 +1,4 @@
+import { NavIcon } from "@/components/layout/nav-icon";
 import { SectionLink } from "@/components/layout/section-link";
 import { homeSections } from "@/lib/data/navigation";
 import { cn } from "@/lib/utils";
@@ -43,16 +44,19 @@ export function NavMobile({ activeId, away }: { activeId: string | null; away: b
                   <SectionLink
                     sectionId={section.id}
                     aria-current={isActive ? "true" : undefined}
+                    data-sfx-hover
+                    data-sfx="select"
                     className="group flex size-full items-center justify-center"
                   >
-                    <span
+                    <NavIcon
+                      name={section.icon}
+                      active={isActive}
                       className={cn(
-                        "block shrink-0 transition-colors duration-75 motion-reduce:transition-none motion-reduce:delay-0",
-                        section.icon,
+                        "transition-colors duration-75 motion-reduce:transition-none motion-reduce:delay-0",
                         section.iconSize,
                         isActive
-                          ? "bg-primary-foreground delay-150"
-                          : "bg-nav-icon group-active:bg-brand",
+                          ? "text-primary-foreground delay-150"
+                          : "text-nav-icon group-active:text-brand",
                       )}
                     />
                     <span className="sr-only">{section.label}</span>
