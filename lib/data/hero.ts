@@ -17,11 +17,13 @@ export type HeroLoopIntro = {
   revealAt: number;
   mobile: HeroLoopSource[];
   desktop: HeroLoopSource[];
+  desktopHiDpi?: HeroLoopSource[];
 };
 
 export type HeroLoop = {
   mobile: HeroLoopVariant;
   desktop: HeroLoopVariant;
+  desktopHiDpi?: HeroLoopVariant;
   intro?: HeroLoopIntro;
 } & ({ fit: "width" } | { fit: "cover"; focus: { mobile: string; desktop: string } });
 
@@ -76,6 +78,16 @@ export const hero: Hero = {
             { src: "/assets/home/hero-yi/desktop-loop-h264.mp4", type: "video/mp4" },
           ],
         },
+        desktopHiDpi: {
+          poster: {
+            avif: "/assets/home/hero-yi/desktop-2x-poster.avif",
+            webp: "/assets/home/hero-yi/desktop-2x-poster.webp",
+          },
+          sources: [
+            { src: "/assets/home/hero-yi/desktop-2x-loop-av1.mp4", type: 'video/mp4; codecs="av01.0.12M.08"' },
+            { src: "/assets/home/hero-yi/desktop-2x-loop-h264.mp4", type: "video/mp4" },
+          ],
+        },
         intro: {
           revealAt: 1.7,
           mobile: [
@@ -85,6 +97,10 @@ export const hero: Hero = {
           desktop: [
             { src: "/assets/home/hero-yi/desktop-intro-av1.mp4", type: 'video/mp4; codecs="av01.0.08M.08"' },
             { src: "/assets/home/hero-yi/desktop-intro-h264.mp4", type: "video/mp4" },
+          ],
+          desktopHiDpi: [
+            { src: "/assets/home/hero-yi/desktop-2x-intro-av1.mp4", type: 'video/mp4; codecs="av01.0.12M.08"' },
+            { src: "/assets/home/hero-yi/desktop-2x-intro-h264.mp4", type: "video/mp4" },
           ],
         },
       },

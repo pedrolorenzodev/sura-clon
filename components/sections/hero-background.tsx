@@ -9,15 +9,18 @@ import { useIntroPhase } from "@/lib/use-intro-phase";
 import { cn } from "@/lib/utils";
 
 type NetworkInformation = { saveData?: boolean };
-type Breakpoint = "mobile" | "desktop";
+type Breakpoint = "mobile" | "desktop" | "desktopHiDpi";
 
 const INTRO_START_TIMEOUT_MS = 1500;
+const HI_DPI_MIN_DEVICE_WIDTH = 2200;
 const SKIP_EVENTS = ["pointerdown", "keydown", "wheel", "touchstart"] as const;
 
-const posterImage = ({ poster }: HeroLoopVariant) =>
-  `image-set(url("${poster.avif}") type("image/avif"), url("${poster.webp}") type("image/webp"))`;
+const posterImage = ({ poster }: HeroLoopVariant, hiDpi?: HeroLoopVariant) =>
+  hiDpi
+    ? `image-set(url("${poster.avif}") type("image/avif") 1x, url("${hiDpi.poster.avif}") type("image/avif") 2x, url("${poster.webp}") type("image/webp") 1x, url("${hiDpi.poster.webp}") type("image/webp") 2x)`
+    : `image-set(url("${poster.avif}") type("image/avif"), url("${poster.webp}") type("image/webp"))`;
 
-function useLoopBreakpoint(eager: boolean) {
+function useLoopBreakpoint(eager: boolean, hasHiDpi: boolean) {
   const [breakpoint, setBreakpoint] = useState<Breakpoint | null>(null);
 
   useEffect(() => {
@@ -36,7 +39,12 @@ function useLoopBreakpoint(eager: boolean) {
         setBreakpoint(null);
         return;
       }
-      setBreakpoint(desktop.matches ? "desktop" : "mobile");
+      if (!desktop.matches) {
+        setBreakpoint("mobile");
+        return;
+      }
+      const deviceWidth = window.innerWidth * window.devicePixelRatio;
+      setBreakpoint(hasHiDpi && deviceWidth >= HI_DPI_MIN_DEVICE_WIDTH ? "desktopHiDpi" : "desktop");
     };
     const start = () => {
       started = true;
@@ -55,7 +63,7 @@ function useLoopBreakpoint(eager: boolean) {
       desktop.removeEventListener("change", sync);
       reducedMotion.removeEventListener("change", sync);
     };
-  }, [eager]);
+  }, [eager, hasHiDpi]);
 
   return breakpoint;
 }
@@ -177,7 +185,15 @@ function IntroVideo({
 function HeroLoopArt({ loop }: { loop: HeroLoop }) {
   const introPhase = useIntroPhase();
   const introActive = Boolean(loop.intro) && introPhase !== null;
-  const breakpoint = useLoopBreakpoint(introActive);
+  const breakpoint = useLoopBreakpoint(introActive, Boolean(loop.desktopHiDpi));
+  const variant =
+    breakpoint === "desktopHiDpi" ? (loop.desktopHiDpi ?? loop.desktop) : breakpoint && loop[breakpoint];
+  const introSources =
+    loop.intro && breakpoint
+      ? breakpoint === "desktopHiDpi"
+        ? (loop.intro.desktopHiDpi ?? loop.intro.desktop)
+        : loop.intro[breakpoint]
+      : null;
   const [introStarted, setIntroStarted] = useState(false);
   const markIntroStarted = useCallback(() => setIntroStarted(true), []);
   const cover = loop.fit === "cover";
@@ -190,7 +206,7 @@ function HeroLoopArt({ loop }: { loop: HeroLoop }) {
       style={
         {
           "--hero-poster-mobile": posterImage(loop.mobile),
-          "--hero-poster-desktop": posterImage(loop.desktop),
+          "--hero-poster-desktop": posterImage(loop.desktop, loop.desktopHiDpi),
           ...(loop.fit === "cover" && {
             "--hero-focus-mobile": loop.focus.mobile,
             "--hero-focus-desktop": loop.focus.desktop,
@@ -212,18 +228,18 @@ function HeroLoopArt({ loop }: { loop: HeroLoop }) {
           loop.intro && "intro-pending:invisible",
         )}
       />
-      {breakpoint && (!introActive || introStarted) && (
+      {variant && (!introActive || introStarted) && (
         <LoopVideo
           key={`loop-${breakpoint}`}
-          sources={loop[breakpoint].sources}
+          sources={variant.sources}
           hold={introActive}
           className={videoFit}
         />
       )}
-      {breakpoint && introActive && loop.intro && (
+      {introSources && introActive && loop.intro && (
         <IntroVideo
           key={`intro-${breakpoint}`}
-          sources={loop.intro[breakpoint]}
+          sources={introSources}
           revealAt={loop.intro.revealAt}
           onStarted={markIntroStarted}
           className={videoFit}

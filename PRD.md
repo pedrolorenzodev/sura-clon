@@ -886,7 +886,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | Tema | Detalle | Qué hacer |
 |---|---|---|
 | **La flecha de volver no restaura el scroll entre rutas internas** | Si la pantalla anterior no era el Home, `goBack` sigue haciendo `router.back()`: vuelve con su scroll pero sin persiana. Hoy no hay forma de ir de una ruta interna a otra desde la UI, así que sólo pasa con el historial del navegador. | Nada, salvo que aparezcan links entre rutas internas. |
-| **Assets de Riot en el hero** | El login screen de PROJECT: Yi es de Riot Games. Su política *Legal Jibber Jabber* lo permite en proyectos de fans gratuitos y no comerciales, **con un aviso visible** de que se usan assets de Riot y que Riot no avala el proyecto. | Para el clon público: sumar ese aviso (el footer es el lugar natural) o sacar el slide. **Para producción no sirve**: licencia de Riot o video propio de diseño. |
+| **Assets de Riot en el hero** | El login screen de PROJECT: Yi es de Riot Games. Su política *Legal Jibber Jabber* lo permite en proyectos de fans gratuitos y no comerciales, **con un aviso visible** de que se usan assets de Riot y que Riot no avala el proyecto. | **Por ahora no aplica** (usuario, 2026-09-25): el proyecto se comparte sólo entre conocidos y no está previsto publicarlo. **Si se publica**, sumar ese aviso antes (el footer es el lugar natural) o sacar el slide. **Para producción no sirve**: licencia de Riot o video propio de diseño. |
 | ~~**El video de Yi es de 1280 × 800**~~ | Era el único tamaño de la fuente. | **Resuelta** (2026-09-25) con Real-ESRGAN 4×: ver *Intro de PROJECT: Yi*. Si aparece un original más grande, reemplaza al escalado. |
 | **En mobile la intro ocupa sólo la franja del hero** | Durante la intro el video se ve en los 524 px del hero y el resto de la pantalla queda en `#202020`. | Esperando el feedback del usuario al verlo en la web. |
 | **El badge "¡Novedad!" cambia de color de texto entre tamaños** | Es el mismo texto sobre el mismo verde: el frame desktop lo escribe en **negro** y el mobile en **`#456215`** (`--color-border-done`), mientras el CTA del mismo banner usa `#354619`. | Se replicaron los tres tal cual. Parece un desliz: unificar, probablemente en `--color-sp-foreground`. |
@@ -1070,6 +1070,39 @@ dentro del stream y posters del frame 145 tal como lo pinta Chrome (ver notas de
 | Loop AV1 · H.264 (5 s) | 947 KB · 1,79 MB | 539 KB · 1,01 MB |
 | Poster AVIF · WebP | 144 KB · 115 KB | 83 KB · 68 KB |
 
+**Variante retina** (2026-09-25): desktop suma un tercer juego de archivos a **2560 × 1600**
+—intro 917 KB, loop 1,40 MB en AV1; H.264 2,13 / 2,77 MB; poster AVIF 201 KB— sacado de los
+mismos frames escalados. Se elige cuando **ancho de ventana × `devicePixelRatio` ≥ 2200**: una
+MacBook a 1440 @2x, 1100 @2x o un monitor de 2560 @1x la bajan; 1440 @1x sigue con la de 1920 y
+mobile no cambia. El poster desktop pasa a `image-set` con 1x y 2x. Verificado en los cinco casos,
+poster 2x contra video 2x Δ 0,88.
+
+**Limpiar la fuente antes de escalar no suma** (probado el 2026-09-25 en 3 frames): quitar bloques
+con `deblock` + `hqdn3d` deja el detalle igual y apenas limpia zonas planas; `nlmeans` suaviza
+de más y se come la lluvia. `x4plus` ya limpia la compresión él solo. Se descartó.
+
+**El escalado pasa a 4x-UltraSharp** (2026-09-25). Comparado en 3 frames contra `x4plus`, Remacri,
+4xNomos8kSC y NMKD-Siax —modelos ncnn del repo de Upscayl, corren con el mismo binario—: el más
+nítido (+9 % de varianza del laplaciano), el más fiel reducido a 1280 (Δ 1,45 contra 1,97) y sin
+más parpadeo (2,52 contra 2,54). Remacri y Siax salen más blandos. 75 min para los 195 frames.
+La versión `x4plus` quedó en `~/Desktop/hero-yi-x4plus/`.
+
+**El salto al reiniciar el loop era la compresión, no el contenido.** El frame 269 → 145 del
+original cambia lo mismo que dos frames seguidos (Δ 1,86 contra 1,89), y en Chrome el intervalo
+al reiniciar (48–61 ms) cae dentro de la variación normal (33–72 ms). El salto venía de que el
+keyframe del archivo se ve más limpio que los frames que lo siguen: el error sube de 1,40 a ~2,0
+a lo largo del loop y al volver al frame 0 la imagen "se aclara" de golpe, 2,4× un paso normal.
+Se corrige codificando AV1 en **calidad constante con predicción low-delay**
+(`rc=0:qp=38:pred-struct=1`): el salto queda en **0,4–0,7×** en los tres tamaños. H.264 y HEVC
+no lo logran con ninguna configuración razonable (1,5–2,8×), así que el H.264 de respaldo —Safari
+sin AV1— conserva el salto de antes. El paso intro → loop, que ocurre una vez por sesión, baja de
+4,8× a 3,3×: la intro y el loop son archivos distintos y el primer frame del loop no hereda nada
+de la intro.
+
+| AV1 (intro · loop) | Desktop 1920 | Retina 2560 | Mobile 984 |
+|---|---|---|---|
+| UltraSharp, qp 38 low-delay | 937 KB · 1,14 MB | 1,30 · 1,66 MB | 595 · 708 KB |
+
 AV1 a **q40** (H.264 a 25): contra los frames escalados sin pérdida da 38,1 dB, y comparado a
 tamaño de pantalla no se distingue de q32, que pesaba 70 % más. Contra los 1280 originales, el
 hero suma 23 % en desktop y 17 % en mobile. Empalmes medidos de nuevo: loop Δ 1,96 contra 2,18 de
@@ -1122,7 +1155,7 @@ tercero. Se retoman en la pasada de fixes chicos, con el scope completo.
 
 | Tema | Por qué espera | Qué hace falta para retomarlo |
 |---|---|---|
-| **Accesibilidad de toda la UI** | Hacerla pantalla por pantalla sale inconsistente; de una pasada, no. Lo que salía gratis del markup ya está (`sr-only` en los ítems del menú, `aria-current`, listas y encabezados reales). Falta lo que el diseño no dice: estados que hoy sólo se comunican por color —una medalla bloqueada se anuncia igual que una obtenida, porque el candado es decorativo—, orden de foco, contraste, y el indicador de "hay más abajo" que se perdió al ocultar la barra de scroll | Nada — sólo que el scope esté maquetado |
+| **Accesibilidad de toda la UI** | Hacerla pantalla por pantalla sale inconsistente; de una pasada, no. Lo que salía gratis del markup ya está (`sr-only` en los ítems del menú, `aria-current`, listas y encabezados reales). Falta lo que el diseño no dice: estados que hoy sólo se comunican por color —una medalla bloqueada se anuncia igual que una obtenida, porque el candado es decorativo—, orden de foco, contraste, y el indicador de "hay más abajo" que se perdió al ocultar la barra de scroll | Nada — sólo que el scope esté maquetado. **Sigue diferida** por decisión del usuario (2026-09-25), aunque las pantallas actuales ya están maquetadas |
 | ~~**El pill de puntaje tiene dos fuentes**~~ | El header lo tenía en Inter y el Leaderboard en `font-techno`. | **Resuelta** (usuario, 2026-09-23): gana la del Leaderboard, que el usuario encontró más copada. Los dos contadores del header —racha y puntos— pasan a `font-techno`, en Regular (de KH no hay Bold y el `font-bold` de la racha sería negrita sintética). Las alturas no cambian: header 106 / 56 y contadores de 40. |
 | ~~**Peso de los assets**~~ | `public/assets/home/` iba por 30 MB y el Home descargaba **22,7 MB**: sprites de medallas de 1024² mostrados a 86px, portadas de 3 MB en cards de 268. Al recargar, los assets pesados aparecían de golpe medio segundo después que el resto. | **Resuelta** (usuario, 2026-09-23), sin fade: se atacó la causa. Los 46 assets de 40 KB o más pasaron a **WebP al doble del tamaño en que se pintan** (medido en las cinco rutas a 390 / 1440 / 1920, teniendo en cuenta el `object-fit` y el zoom de 1,05 del hover), y los que ya se pintaban a su tamaño nativo sólo cambiaron de formato. 26,6 MB → **1,56 MB**; el Home descarga **2,8 MB** en vez de 22,7, `/leaderboard` 0,09 en vez de 4,4. Las diez páginas completas dan Δ medio ≤ 0,63 contra el render anterior. Los originales sin referencias **se borraron** el 2026-09-23 (56 archivos, 35,4 MB), cada uno con su derivado verificado; siguen en el historial de git. `public/assets` pasó de 38 a **3,2 MB**. |
 
@@ -1560,7 +1593,7 @@ Más:
 | Misiones (`/missions`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 21–25 |
 | Leaderboard (`/leaderboard`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 26–30 |
 | Juegos (`/games`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 31–34 |
-| Micro-animaciones HUD | ✅ | ✅ | 👀 Esperando aprobación — P1 B, P2 C, P3–P9 y la tanda 0 |
+| Micro-animaciones HUD | ✅ | ✅ | ✅ **Aprobadas el 2026-09-25** — P1 B, P2 C, P3–P9, la tanda 0 y los fixes posteriores |
 
 **Leyenda:** ⏳ Pendiente · 🚧 En progreso · 👀 Esperando aprobación · ✅ Aprobada · 📦 Commiteada · 🚫 Bloqueada
 
