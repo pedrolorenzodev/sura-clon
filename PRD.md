@@ -188,6 +188,17 @@ el mismo valor**:
   nombres largos se truncan con `…`, que es para lo que está el `truncate`.
 - Y los badges de las cards de Juegos no parten su texto (`whitespace-nowrap`): si no entran, pasan a
   una segunda fila.
+- **Los carruseles de Eventos y Misiones** (2026-09-26, feedback de un tester con una MacBook 16"):
+  las cards tenían ancho fijo (365 y 268) y debajo de 1440 la columna se achica, así que la tercera
+  de Eventos y la cuarta de Misiones quedaban cortadas. Ahora miden una fracción de la columna:
+  `slide-quarter` en Misiones y `slide-third-capped` en Eventos, con tope en 365, que a 1440 dan
+  exactamente lo mismo que antes. En Eventos el alto sigue fijo en 291, el personaje conserva su
+  proporción (la ventana del arte toma el ancho de su alto) y se recorta a los costados de la card
+  con `overflow-x: clip`, que deja libre el desborde de arriba; el scrim y el texto son un solo
+  bloque que arranca donde siempre y sube sólo si el texto no entra (pasa a 1100, donde la
+  descripción ocupa más líneas). Medido a 1100 / 1200 / 1300 / 1366 / 1440 / 1920: siempre 3 y 4
+  cards enteras, corchetes completos, texto dentro de la card. El Home queda idéntico al píxel a
+  390 y 1440.
 
 **Verificado:** 390 y 1440 idénticos al píxel en las cinco rutas; cero desbordes de texto ni recortes
 en 15 anchos entre 400 y 1920; cero scroll lateral en 19 anchos × 6 rutas (salvo `/styleguide`, que
@@ -533,7 +544,7 @@ verificado, `/tournaments` → Eventos cae en `/#eventos` a y=720.
 | **Dónde vive** | `app/not-found.tsx`, el raíz, que monta el chrome con `SiteChrome` | Atrapa cualquier URL sin ruta, sale completa del servidor y es estática (`○ /_not-found`). El raíz no está dentro del layout `(site)`, así que el chrome se extrajo a `components/layout/site-chrome.tsx` y lo usan los dos. **Primero se hizo con un catch-all `(site)/[...slug]` que llamaba a `notFound()`, y estaba mal**: ver notas de implementación. |
 | **Respuesta** | HTTP **404** real, `noindex` (lo inyecta Next) y título “Página no encontrada \| Sura Gaming” | Verificado en dev y en `next start`. |
 | **Header** | Se queda, sólido y con la flecha de volver en mobile | Su logo lleva al Home y la flecha te devuelve a la página donde estabas, que es lo más útil para un link roto. Además dice que seguís en SURA con tu sesión. |
-| **Riel desktop** | **Oculto sólo en la 404** (usuario, 2026-09-25) | El mapa y la lista ya son la navegación: dos menús de destinos competían. La 404 marca su `<main>` con `data-hide-rail` y el riel se oculta con la variante `rail-hidden`. En la persiana se funde solo, por `vt-rail`. **Es la única ruta sin riel en desktop.** |
+| **Riel desktop** | Oculto, como en todas las rutas que no son el Home (desde el 2026-09-26; hasta ese día era la única) | El mapa y la lista ya son la navegación. Hasta el 2026-09-26 la 404 lo ocultaba con `data-hide-rail` y la variante `rail-hidden`; ahora lo cubre la regla general, ver *Fuera del Home el riel y la bottom bar se van*. |
 | **Bottom bar mobile** | Escondida, como en cualquier ruta que no es el Home | No hubo que tocar nada. |
 | **“Volver atrás”** | Link secundario al lado del CTA, **sólo en desktop** y **sólo si el navegador tiene una página anterior** (usuario, 2026-09-25) | Hace `router.back()`: vuelve a la página de donde viniste, sea del sitio o no, que es lo que se espera de un link roto. Si la 404 se abrió en una pestaña nueva, `history.length` es 1 y el link no aparece, porque repetiría al CTA. En mobile la flecha del header sigue con su lógica de siempre. |
 | **Grilla** | La del Home, 1144 centrados, pero con gutter de **40** (`--spacing-route-edge`) y no 148 | Sin riel, el gutter de 148 no aloja nada. Con 40, a 1100 el título sigue entero y el mapa se achica a 490. Mobile usa el gutter de ruta (16). |
@@ -553,7 +564,7 @@ verificado, `/tournaments` → Eventos cae en `/#eventos` a y=720.
 - En `next start`: HTML completo del servidor (también sin JS), HTTP 404, `noindex` y título correcto, para `/pagina-que-no-existe`, `/tournaments/123`, `/styleguide/x`, `/favicon.ico` y assets inexistentes. `/tournaments` y `/icon.svg` siguen en 200.
 - En la consola sólo quedan los `404` del propio documento y de su pedido RSC.
 
-### Fuera del Home la bottom bar se va ✅ (2026-09-24)
+### Fuera del Home el riel y la bottom bar se van ✅ (bottom bar 2026-09-24 · riel 2026-09-26)
 
 Feedback del equipo (Ema): al entrar a una ruta interna la barra de abajo tiene que desaparecer,
 **animada y no de golpe**, y para eso tiene que vivir en el layout persistente. Ya vivía ahí
@@ -565,12 +576,21 @@ falta refactor ni librería: es una transición de CSS sobre `usePathname()`.
   teclado ni un lector de pantalla la encuentran. **Al volver al Home** sube igual.
   Con `prefers-reduced-motion` cambia en el acto.
 - Tiene sentido por lo que la barra es: sus seis ítems son secciones del Home y fuera de él ya no
-  marcaba nada (ver *Fuera del Home el menú flotante no marca nada*, arriba).
+  marcaba nada (ver *Fuera del Home el menú flotante no marca nada*, arriba; desde el 2026-09-26 directamente no está).
 - **El footer deja de reservarle lugar** en esas rutas: `pb-nav-clearance` (128) pasa a
   `pb-gutter-safe` (24 + safe-area). Lo lee del estado de la barra con `peer/bar`, sin volverse
   client component — por eso `Nav` tiene que seguir siendo hermano anterior del footer (guarda en
   el layout).
-- **Desktop no cambia**: el riel flotante sigue en todas las rutas.
+- **El riel desktop hace lo mismo desde el 2026-09-26** (feedback de un tester: es un indicador
+  de sección del Home y fuera de él no tiene sentido). Fuera del Home queda corrido a la izquierda
+  (`nav-rail-away`, `translate: -100%`), en opacidad 0 e `inert`. Con persiana, la salida la hace
+  su captura (`::view-transition-old(site-rail)`, `rail-away`, 300 ms, `--rail-away-duration`), que
+  se desliza a la izquierda mientras el panel la cubre; a la vuelta entra con su propia transición,
+  demorada lo que dura la persiana, como la bottom bar. Esa captura sólo existe al salir o al llegar
+  al Home, porque `vt-rail` va sólo cuando el riel no está afuera. Con movimiento reducido cambia en
+  el acto. Verificado en video: se va bajo el panel y vuelve cuando el panel terminó de pasar.
+- **Sin riel, la columna de una ruta interna pasa a 40 / 40** (usuario, 2026-09-26): el margen
+  izquierdo de 155 existía sólo para no quedar debajo del riel. Ver *El chrome de una ruta interna*.
 
 **Flecha de volver.** Sin la barra, una ruta interna en mobile quedaba sin salida: el header
 mobile no tiene logo. El header mobile de las rutas internas suma un chevron a la izquierda
@@ -775,13 +795,14 @@ mismos valores al píxel, así que se implementó **una vez y reusable** en
 | Header → H1 | **24** | **16** |
 | H1 | Monument uppercase **32 / 28** | **24 / 29** |
 | H1 → contenido | **40** | **24** |
-| Columna | **x=155, ancho 1245** (borde derecho a 40) | gutter **16** |
+| Columna | **40 a cada lado**: ancho 1360 a 1440 (hasta el 2026-09-26, x=155 y ancho 1245) | gutter **16** |
 | Contenido → footer | **40** | **40** |
 
 **La grilla de ruta no es la del Home**, y es a propósito: el Home usa 1144 centrado con gutters
-de 148, y una ruta interna usa una columna **fluida** que arranca en 155 —donde termina el
-gutter del riel— y muere a 40 del borde derecho. A 1440 da los 1245 del diseño; arriba de eso
-estira, que es lo que se desprende del frame. Decisión del usuario, 2026-09-20.
+de 148, y una ruta interna usa una columna **fluida** a 40 del borde de cada lado. Hasta el
+2026-09-26 arrancaba en 155 —donde terminaba el gutter del riel— y daba los 1245 del diseño a
+1440; ese día el riel dejó de mostrarse fuera del Home y la columna pasó a 40 / 40 (usuario), la
+misma de la 404. Arriba de 1440 estira, que es lo que se desprende del frame.
 
 **Dos valores normalizados**, porque los frames no coinciden entre sí:
 
@@ -988,6 +1009,8 @@ public/assets/<pantalla>/   assets exportados de Figma
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
 | 2026-09-25 | **404 “Fuera del mapa”**: `--route-draw-duration` (450ms), `--blip-blink-duration` (1600ms), `--spacing-map` (592), `--spacing-map-mobile` (232), `--spacing-map-grid` (32) / `-desktop` (48); utilities `map-grid`, `route-draw-y`, `route-draw-x`, `route-draw-after-route`, `blip-blink`; variante `rail-hidden`; `card-bracket` suma el estado `data-locked` con `--bracket-lead` y `@starting-style`, así también espera a la línea al montar | 404 | Pantalla sin frames, con diseño propio y excepción a la regla 2. Detalle en *La 404*, § 5. `ScrambleText` suma `decodeOnMount` y ahora deja fijos los caracteres que no son letras ni números (`/`, `-`, `·`); con los labels actuales no cambia nada, porque todos son letras y espacios. |
+| 2026-09-26 | **Carruseles fluidos en desktop**: utilities `slide-quarter` y `slide-third-capped`; la card de Eventos reordena scrim y texto en un solo bloque | Eventos · Misiones | Feedback de un tester: la tercera card de Eventos y la cuarta de Misiones se cortaban debajo de 1440. Detalle en § 4, *Breakpoint*. |
+| 2026-09-26 | **El riel se va fuera del Home**: utility `nav-rail-away`, `--rail-away-duration` (300ms), keyframe `rail-away`; se borran `--spacing-route-inset`, la variante `rail-hidden` y `data-hide-rail` | Rutas internas · 404 | Feedback de un tester. La columna de las rutas internas pasa a 40 / 40. Verificado: el Home y todo mobile quedan idénticos al píxel; cambian las cuatro rutas internas a 1440. Detalle en § 5, *Fuera del Home el riel y la bottom bar se van*. |
 | 2026-09-26 | **La intro de Yi corre en cada recarga** y **la pill del menú no hace paradas con clicks rápidos** (`lib/hero-intro.ts`, `lib/use-section-spy.ts`) | Home | Pedidos del usuario. Detalle en *Intro de PROJECT: Yi* y en § 5, *Scroll-spy*, punto 1. |
 | 2026-09-26 | **Segunda baja de volumen**: ida 0,55 → 0,3, vuelta 0,55 → 0,26 y Reclamar 0,42 → 0,24 en `lib/data/sfx.ts` | Todas las rutas | El usuario los siguió encontrando fuertes. Unos 5 dB menos cada uno. Niveles en § 5, *Paleta mixta con uisfx*. |
 | 2026-09-26 | **La ida y la vuelta suenan con la persiana**: `routeSwapWaitMs` en `lib/data/sfx.ts`, opción `offset` de `playSfx` | Todas las rutas | Pedido del usuario: el sonido arrancaba con el click y la persiana hasta 260 ms después. Detalle en § 5, *Sonido*, límites. |
@@ -1139,11 +1162,11 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Tema | Detalle | Qué hacer |
 |---|---|---|
-| **La 404 es la única ruta sin riel en desktop** | Decisión del usuario (2026-09-25): el mapa ya es la navegación. | Si se agregan otras pantallas de navegación propia, revisar si también lo ocultan o si se vuelve a la regla de riel en todas. |
+| ~~**La 404 es la única ruta sin riel en desktop**~~ | — | **Resuelta** (2026-09-26): ninguna ruta fuera del Home tiene riel. |
 | **Las posiciones del minimapa son inventadas** | Los cinco destinos, tu punto y la zona están ubicados a ojo para que se lea bien en los dos tamaños, no representan nada. A 320 de ancho “Zona de juego” y “Misiones” quedan pegados, sin pisarse. | Si se suma un destino, hay que ubicarlo en `lib/data/not-found.ts` y revisar 320 y 1100. La línea asume que todos los destinos quedan arriba y a la izquierda de tu punto. |
 | **Las rutas de detalle caen en la 404** | `/tournaments/123`, `/games/…` y compañía muestran “Fuera del mapa”. Hoy ningún link de la UI apunta ahí (*Rutas de detalle apagadas*, § 6). | Cuando se implemente un detalle, su ruta existe y deja de caer en la 404 sola. |
 | **Entrar a la 404 navegando vuelve a montar el chrome** | Consecuencia de que la 404 sea el `not-found` raíz (ver *Notas de arquitectura*). El header, el riel y el footer se vuelven a montar, y la flecha del header mobile pierde el historial del sitio: vuelve al Home. | Sólo importa si aparecen links internos a rutas que no existen. |
-| **Volver al Home desde el riel cancela la persiana** | Encontrado el 2026-09-26 al sincronizar el sonido, anterior a ese cambio. Desde una ruta interna, un ítem del riel que lleva a una sección con scroll (Eventos, Juegos…) cambia de pantalla **sin persiana, siempre**; el ítem Home, si el click llega apenas entra el mouse. El logo y la flecha de volver sí la corren. React cancela la transición (`skipTransition`) cuando se cuela una actualización sincrónica antes de que arranque la animación; el primer caso coincide con el salto de scroll al llegar al Home, que despierta el `useScrolled` del header (un `useSyncExternalStore`, que siempre es sincrónico). El segundo no está identificado: no es el cierre del tooltip, probado. | Confirmar la causa y arreglarlo. Candidato: que el header escriba `data-scrolled` directo en el DOM en vez de pasar por React. El sonido ya se adapta: suena con el cambio de pantalla. |
+| ~~**Volver al Home desde el riel cancela la persiana**~~ | Encontrado el 2026-09-26: desde una ruta interna, los ítems del riel cambiaban de pantalla sin persiana (React la cancelaba por una actualización sincrónica antes de que arrancara). | **Resuelta sin tocarla** (2026-09-26): fuera del Home ya no hay riel, así que ese camino no existe. Si el riel vuelve a las rutas internas, el bug vuelve: el candidato era el `useScrolled` del header. |
 | **Con auriculares Bluetooth baratos el primer sonido después de un rato puede salir bajo o perderse** | Lo probó el usuario (2026-09-26): con cable funciona bien. El auricular apaga su amplificador con casi silencio y la señal de -80 dBFS no lo despierta (ver § 5, *La salida de audio no se duerme*). | Nada por ahora: subir `keepAliveGain` hasta despertarlos haría la señal audible. Falta además ver si Safari muestra el ícono de audio en la pestaña por esa señal. |
 | **Nada suena antes del primer click o tecla** | Es la política de autoplay de todos los navegadores. Investigado en el código fuente y probado: no hay workaround legítimo para una primera visita (ver § 5, *Sonido*). | Nada. Si vuelve la música de fondo, el *Media Engagement* de Chrome haría que los visitantes frecuentes escuchen desde el primer hover. |
 | **El sonido no se probó en Safari ni Firefox reales** | Sólo en Chrome y en los builds de WebKit y Firefox de Playwright. El respaldo AAC para Safari viejo no se ejercitó. | Probarlo a mano en Safari (macOS e iOS) antes de dar la tanda por cerrada. |
@@ -1208,7 +1231,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **El banner de Juegos no navega** | La card y su CTA "Jugar ahora" son una sola acción, pero el destino no está ni en el Figma ni en el mapa de rutas. | Van como dos `<button>` sin handler, el mismo criterio que el footer y "Ver todo". Cuando exista la ruta, los dos pasan a `<Link href>` al mismo destino y nada más cambia. |
 | **El footer no navega** | Los cuatro links, las redes y los badges no tienen destino ni en el Figma ni en el mapa de rutas; las URLs de las redes tampoco se conocen. | Van como `<button>` sin handler, el mismo criterio que "Ver todo" en `section-header.tsx`. Cuando existan las rutas y los handles, pasan a `<a href>`. |
 | **Footer mobile adaptado del desktop** | No hay frame mobile. | Decisión del usuario (2026-09-19), mismo criterio que Medallas y Juegos: ver § 5. |
-| **La grilla del Home no es la de las rutas** | El Home usa 1144 centrado con gutters de 148; una ruta interna usa una columna fluida de 155 a *ancho − 40*, y gutter mobile 16 contra 24. Sale de los frames (Misiones y Mi Perfil coinciden), pero se ven distintas en el mismo sitio. | Confirmar con diseño cuál manda. Si gana una sola, es cambiar tres tokens. |
+| **La grilla del Home no es la de las rutas** | El Home usa 1144 centrado con gutters de 148; una ruta interna usa una columna fluida de 40 a *ancho − 40* (desde el 2026-09-26; antes arrancaba en 155), y gutter mobile 16 contra 24. | Confirmar con diseño cuál manda. |
 | **Arriba de 1440 la columna de ruta estira** | No hay frame de ninguna ruta por encima de 1440 y la columna es fluida, así que a 1920 las cards crecen a ~412. El Home, en cambio, capea en 1144. | Pedir un frame ancho, o decidir un tope. |
 | **Datos de torneos inventados** | Los dos primeros son los del diseño; los otros seis se escribieron para que la grilla no se lea como un duplicado. Las portadas salen de la sección Juegos: no hay arte propio de torneos. | Pedir el listado real y un lote de portadas. |
 | **El buscador y el paginador no hacen nada** | Los dos son maqueta: el input acepta texto y no filtra, y el paginador no cambia de página. Decisión del usuario, alineada con § 1. | Salen de Fase 1. |
@@ -1659,7 +1682,7 @@ el barrido y el subrayado nunca se verían. El contenido de la pantalla no cambi
 
 **El chrome durante la persiana** (usuario, 2026-09-25). El header, el riel y la bottom bar viven en la captura `root`, que queda debajo de las capturas del `<main>`: desaparecen apenas arranca la persiana y vuelven cuando termina. En desktop el usuario lo aprobó como efecto, y desde el arreglo de la vuelta pasa igual en los dos sentidos. La bottom bar se acomoda a eso: **al salir del Home** cambia en el acto mientras dura la transición (`[:root:active-view-transition_&]:transition-none`), así la captura nueva ya no la tiene y no reaparece; **al volver al Home** espera la persiana (`delay-(--route-shutter-duration)`) y sube recién cuando el panel pasó.
 
-**El header y el riel se funden** (usuario, 2026-09-25). Durante la persiana tienen su propia captura (`vt-header` / `vt-rail` les ponen `view-transition-name` sólo mientras `:root:active-view-transition`): la vieja se funde en 220ms al arrancar y la nueva aparece con otros 220ms recién cuando el panel terminó. Antes vivían en la captura `root`, y React cancela la animación de la `root` nueva: el chrome nuevo se veía desde el primer cuadro donde la captura del `<main>` era transparente. Por eso al volver al Home la pill se prendía sobre la ruta antes de que llegara el panel, mientras que a la ida el arte opaco del hero lo tapaba de golpe. El nombre va sólo durante la transición porque un `view-transition-name` permanente convierte al riel en *backdrop root* y le rompe el blur. Los dos grupos van en `z-index: 50`, entre las capturas del `<main>` y el panel (100): las capturas se apilan por su propio orden, no por el `z-index` de la página, y al volver al Home la captura opaca del hero tapaba al riel mientras se fundía, que después aparecía de golpe al terminar la transición.
+**El header y el riel se funden** (usuario, 2026-09-25; desde el 2026-09-26 el riel no se funde: se desliza, ver *Fuera del Home el riel y la bottom bar se van*). Durante la persiana tienen su propia captura (`vt-header` / `vt-rail` les ponen `view-transition-name` sólo mientras `:root:active-view-transition`): la vieja se funde en 220ms al arrancar y la nueva aparece con otros 220ms recién cuando el panel terminó. Antes vivían en la captura `root`, y React cancela la animación de la `root` nueva: el chrome nuevo se veía desde el primer cuadro donde la captura del `<main>` era transparente. Por eso al volver al Home la pill se prendía sobre la ruta antes de que llegara el panel, mientras que a la ida el arte opaco del hero lo tapaba de golpe. El nombre va sólo durante la transición porque un `view-transition-name` permanente convierte al riel en *backdrop root* y le rompe el blur. Los dos grupos van en `z-index: 50`, entre las capturas del `<main>` y el panel (100): las capturas se apilan por su propio orden, no por el `z-index` de la página, y al volver al Home la captura opaca del hero tapaba al riel mientras se fundía, que después aparecía de golpe al terminar la transición.
 
 **Volver al Home desde la flecha también dispara la persiana.** `router.back()` no la disparaba: Next aplica esas navegaciones de forma síncrona. Si la pantalla anterior era el Home, `goBack` hace un `push` al Home con el tipo `nav-back` y restaura a mano el scroll que tenía (medido: 1945 → 1945). El scroll se guarda en cada click mientras estás en el Home, que es el último momento seguro antes de que Next suba la página nueva al tope. Consecuencia aceptada: el historial suma una entrada en vez de retroceder.
 

@@ -948,6 +948,14 @@
   width: calc((100% - 2 * var(--spacing) * 6) / 3);
 }
 
+@utility slide-third-capped {
+  width: min(var(--spacing-event-card), calc((100% - 2 * var(--spacing) * 6) / 3));
+}
+
+@utility slide-quarter {
+  width: calc((100% - 3 * var(--spacing) * 6) / 4);
+}
+
 /* Aire para que un contenedor con overflow no recorte la sombra del hover de
    elevación; el margen negativo lo devuelve, así el layout no se mueve. */
 @utility lift-room {

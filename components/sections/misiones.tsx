@@ -22,7 +22,7 @@ export function Misiones() {
             <MissionCard
               key={mission.id}
               mission={mission}
-              className="w-mission-card-mobile shrink-0 desktop:w-67"
+              className="w-mission-card-mobile shrink-0 desktop:slide-quarter"
             />
           ))}
         </CardSlider>
