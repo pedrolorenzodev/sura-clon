@@ -5,6 +5,7 @@ export type SfxEvent = "state" | "play";
 export type SfxPlayOptions = { rate?: number; stack?: boolean };
 
 type Voice = { source: AudioBufferSourceNode; gain: GainNode; end: number };
+type KeepAlive = { tone: OscillatorNode; level: GainNode };
 type WebkitWindow = Window & { webkitAudioContext?: typeof AudioContext };
 
 const listeners = new Set<(event: SfxEvent) => void>();
@@ -21,6 +22,9 @@ let lastHoverAt = Number.NEGATIVE_INFINITY;
 let preloadScheduled = false;
 let suspendTimer: ReturnType<typeof setTimeout> | undefined;
 let attachments = 0;
+let keepAlive: KeepAlive | null = null;
+let keepAliveTimer: ReturnType<typeof setTimeout> | undefined;
+let lastActivityAt = 0;
 let detachWindow: (() => void) | null = null;
 
 const inBrowser = () => typeof window !== "undefined";
@@ -140,6 +144,42 @@ function resumeContext() {
   if (context && context.state !== "running" && !document.hidden) settle(context.resume());
 }
 
+function stopKeepAlive() {
+  clearTimeout(keepAliveTimer);
+  if (!keepAlive) return;
+  try {
+    keepAlive.tone.stop();
+  } catch {}
+  keepAlive.tone.disconnect();
+  keepAlive.level.disconnect();
+  keepAlive = null;
+}
+
+function watchIdle() {
+  clearTimeout(keepAliveTimer);
+  const left = lastActivityAt + sfxConfig.keepAliveIdleMs - performance.now();
+  if (left <= 0) stopKeepAlive();
+  else keepAliveTimer = setTimeout(watchIdle, left);
+}
+
+function startKeepAlive() {
+  if (!context || keepAlive || !isSfxEnabled()) return;
+  const tone = context.createOscillator();
+  tone.frequency.value = sfxConfig.keepAliveHz;
+  const level = context.createGain();
+  level.gain.value = sfxConfig.keepAliveGain;
+  tone.connect(level);
+  level.connect(context.destination);
+  tone.start();
+  keepAlive = { tone, level };
+  watchIdle();
+}
+
+function onActivity() {
+  lastActivityAt = performance.now();
+  if (!keepAlive) startKeepAlive();
+}
+
 export function unlockSfx() {
   if (!inBrowser() || !isSfxEnabled()) return;
   clearTimeout(suspendTimer);
@@ -163,6 +203,7 @@ export function unlockSfx() {
   }
 
   resumeContext();
+  onActivity();
 }
 
 function fadeOut(voice: Voice, now: number) {
@@ -268,6 +309,7 @@ export function setSfxEnabled(value: boolean) {
   storePreference(false);
   reflectPreference(false);
   emit("state");
+  stopKeepAlive();
   clearTimeout(suspendTimer);
   suspendTimer = setTimeout(() => {
     if (!isSfxEnabled() && context) settle(context.suspend());
@@ -283,12 +325,17 @@ function onStorage(event: StorageEvent) {
   enabled = value;
   reflectPreference(value);
   emit("state");
+  if (value) onActivity();
+  else stopKeepAlive();
 }
 
 function onVisibilityChange() {
   if (!context) return;
   if (document.hidden) settle(context.suspend());
-  else if (isSfxEnabled()) resumeContext();
+  else if (isSfxEnabled()) {
+    resumeContext();
+    onActivity();
+  }
 }
 
 export function attachSfx() {
@@ -298,11 +345,14 @@ export function attachSfx() {
   if (!detachWindow) {
     const gestures = ["pointerdown", "keydown", "touchend"] as const;
     const gestureOptions = { capture: true, passive: true };
+    const activity = ["pointermove", "wheel", "touchstart"] as const;
     gestures.forEach((type) => window.addEventListener(type, unlockSfx, gestureOptions));
+    activity.forEach((type) => window.addEventListener(type, onActivity, gestureOptions));
     document.addEventListener("visibilitychange", onVisibilityChange);
     window.addEventListener("storage", onStorage);
     detachWindow = () => {
       gestures.forEach((type) => window.removeEventListener(type, unlockSfx, gestureOptions));
+      activity.forEach((type) => window.removeEventListener(type, onActivity, gestureOptions));
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("storage", onStorage);
     };

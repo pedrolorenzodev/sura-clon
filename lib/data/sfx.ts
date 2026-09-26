@@ -37,6 +37,9 @@ export type SfxConfig = {
   latePlayMs: number;
   idleTimeoutMs: number;
   suspendAfterOffMs: number;
+  keepAliveGain: number;
+  keepAliveHz: number;
+  keepAliveIdleMs: number;
 };
 
 export const sfxSlots: Record<SfxSlot, SfxSlotConfig> = {
@@ -66,6 +69,9 @@ export const sfxConfig: SfxConfig = {
   latePlayMs: 500,
   idleTimeoutMs: 2000,
   suspendAfterOffMs: 1500,
+  keepAliveGain: 0.0001,
+  keepAliveHz: 30,
+  keepAliveIdleMs: 300000,
 };
 
 export const isSfxSlot = (value: string | null): value is SfxSlot =>
