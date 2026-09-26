@@ -10,6 +10,7 @@ import Image from "next/image";
 
 import { useHeroSlide } from "@/components/sections/hero-slide-context";
 import { hero } from "@/lib/data/hero";
+import { requestSlide } from "@/lib/hero-preload";
 import { cn } from "@/lib/utils";
 
 function SliderArrow({
@@ -79,6 +80,9 @@ export function HeroSlider() {
               <button
                 type="button"
                 onClick={() => select(index)}
+                onPointerEnter={() => requestSlide(index)}
+                onPointerDown={() => requestSlide(index)}
+                onFocus={() => requestSlide(index)}
                 aria-pressed={isActive}
                 data-sfx="select"
                 className="group block size-full cursor-pointer"

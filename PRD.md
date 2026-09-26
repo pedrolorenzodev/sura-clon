@@ -1009,6 +1009,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
 | 2026-09-25 | **404 “Fuera del mapa”**: `--route-draw-duration` (450ms), `--blip-blink-duration` (1600ms), `--spacing-map` (592), `--spacing-map-mobile` (232), `--spacing-map-grid` (32) / `-desktop` (48); utilities `map-grid`, `route-draw-y`, `route-draw-x`, `route-draw-after-route`, `blip-blink`; variante `rail-hidden`; `card-bracket` suma el estado `data-locked` con `--bracket-lead` y `@starting-style`, así también espera a la línea al montar | 404 | Pantalla sin frames, con diseño propio y excepción a la regla 2. Detalle en *La 404*, § 5. `ScrambleText` suma `decodeOnMount` y ahora deja fijos los caracteres que no son letras ni números (`/`, `-`, `·`); con los labels actuales no cambia nada, porque todos son letras y espacios. |
+| 2026-09-26 | **Arte del hero precargado** (`lib/hero-preload.ts`): las capas de todos los slides quedan montadas y el cruce espera al arte | Hero | Feedback de un tester: el primer cambio de juego pegaba el cambiazo. Detalle en *Arte del hero precargado*, § 6. |
 | 2026-09-26 | **Carruseles fluidos en desktop**: utilities `slide-quarter` y `slide-third-capped`; la card de Eventos reordena scrim y texto en un solo bloque | Eventos · Misiones | Feedback de un tester: la tercera card de Eventos y la cuarta de Misiones se cortaban debajo de 1440. Detalle en § 4, *Breakpoint*. |
 | 2026-09-26 | **El riel se va fuera del Home**: utility `nav-rail-away`, `--rail-away-duration` (300ms), keyframe `rail-away`; se borran `--spacing-route-inset`, la variante `rail-hidden` y `data-hide-rail` | Rutas internas · 404 | Feedback de un tester. La columna de las rutas internas pasa a 40 / 40. Verificado: el Home y todo mobile quedan idénticos al píxel; cambian las cuatro rutas internas a 1440. Detalle en § 5, *Fuera del Home el riel y la bottom bar se van*. |
 | 2026-09-26 | **La intro de Yi corre en cada recarga** y **la pill del menú no hace paradas con clicks rápidos** (`lib/hero-intro.ts`, `lib/use-section-spy.ts`) | Home | Pedidos del usuario. Detalle en *Intro de PROJECT: Yi* y en § 5, *Scroll-spy*, punto 1. |
@@ -1297,7 +1298,7 @@ pérdida, el techo que pone el 4:2:0 de cualquier video web.
    primera carga, y aparece recién en `playing`: como el poster *es* su primer frame, el cambio
    no se ve.
 3. **No se monta** con `prefers-reduced-motion` ni con `Save-Data`: queda el poster.
-4. Se **pausa fuera de pantalla** (`IntersectionObserver`) y se **desmonta** al pasar a otro slide.
+4. Se **pausa fuera de pantalla** (`IntersectionObserver`) y **se pausa** al pasar a otro slide (hasta el 2026-09-26 se desmontaba; ver *Arte del hero precargado*).
 5. Elige el archivo por el breakpoint real —lee `--breakpoint-desktop` del CSS— y cambia si la
    ventana cruza los 1100.
 
@@ -1310,6 +1311,37 @@ pipeline y las máscaras están en `~/Desktop/hero-loop-fuente/` de la máquina 
 cuatro videos de la entrega salen de ahí con `final_enc.py`, y los posters son el frame 0 tal
 como lo pinta Chrome (ver notas de implementación). Para regenerar el master hace falta Python
 con `numpy`, `opencv-python-headless`, `ultralytics` (SAM 2.1) y `simple-lama-inpainting`.
+
+### Arte del hero precargado ✅ (2026-09-26)
+
+Feedback de un tester: la primera vez que se cambiaba de juego desde las miniaturas, el arte
+"pegaba el cambiazo". Causa: los slides que no eran el activo no bajaban nada hasta activarse, el
+fundido de 500 ms arrancaba junto con el pedido del archivo y la capa vieja se desmontaba a los
+500 ms, estuviera o no el arte nuevo. Medido con la red a 120 KB/s: **2 s de fondo vacío** antes
+de que apareciera Fortnite.
+
+- **Precarga.** Después de la carga, y con la intro ya revelada o sin intro, se montan ocultas
+  (`invisible`) las capas de todos los slides y se decodifica su arte con prioridad alta
+  (`lib/hero-preload.ts`, `warmSlide`). El formato y la densidad los elige un `<picture>` con las
+  mismas fuentes AVIF / WebP y 1x / 2x que el `image-set` del CSS, así el navegador baja el mismo
+  archivo que después pinta. Con `Save-Data` no se precarga.
+- **Intención.** Hover, foco o `pointerdown` sobre una miniatura piden ese slide en el acto
+  (`requestSlide`), por si llega antes que la precarga.
+- **Cruce.** El fundido espera a que el arte nuevo esté decodificado, con un tope de 300 ms
+  (`SWAP_WAIT_MS`), y la capa vieja se queda debajo hasta que el arte nuevo termina de
+  decodificarse, aunque el fundido ya haya terminado. Con la red muy lenta el arte puede aparecer
+  tarde, pero nunca sobre un hueco.
+- **Videos.** Las capas quedan montadas: un video que sale de pantalla se pausa en vez de
+  desmontarse, así volver a un slide es instantáneo y retoma donde estaba. Los videos de los slides
+  ocultos recién se montan cuando terminó de bajar todo el arte, para no competirle el ancho de
+  banda. Entran con un fundido de 300 ms en vez de aparecer de golpe.
+- **Apilado.** El contenedor de las capas lleva `isolate`: en desktop no tiene opacidad y sin eso
+  el `z-index` de la capa activa la subía por encima del scrim del hero.
+
+**Verificado:** el Home queda idéntico al píxel a 390 y 1440. Con la red a 200 KB/s, un click
+después de la precarga cruza con el arte ya listo en los tres slides. A 120 KB/s y click temprano,
+el arte anterior queda visible hasta que llega el nuevo (antes, 2 s de fondo vacío). Valorant
+reproduce a los 72 ms del click, el video oculto queda en pausa y la intro no cambió.
 
 ### Intro de PROJECT: Yi ✅ (2026-09-24)
 

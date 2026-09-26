@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useHeroSlide } from "@/components/sections/hero-slide-context";
 import { hero, type HeroLoop, type HeroLoopSource, type HeroLoopVariant } from "@/lib/data/hero";
 import { endIntro, markIntroStarted, readIntroPhase, revealIntro } from "@/lib/hero-intro";
+import { subscribeSlideRequests, warmSlide } from "@/lib/hero-preload";
 import { useIntroPhase } from "@/lib/use-intro-phase";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +13,7 @@ type NetworkInformation = { saveData?: boolean };
 type Breakpoint = "mobile" | "desktop" | "desktopHiDpi";
 
 const INTRO_START_TIMEOUT_MS = 1500;
+const SWAP_WAIT_MS = 300;
 const HI_DPI_MIN_DEVICE_WIDTH = 2200;
 const SKIP_EVENTS = ["pointerdown", "keydown", "wheel", "touchstart"] as const;
 
@@ -82,7 +84,11 @@ function LoopVideo({
 
   useEffect(() => {
     const video = ref.current;
-    if (!video || hold) return;
+    if (!video) return;
+    if (hold) {
+      video.pause();
+      return;
+    }
 
     video.muted = true;
     const observer = new IntersectionObserver(([entry]) => {
@@ -103,7 +109,11 @@ function LoopVideo({
       preload="auto"
       disablePictureInPicture
       onPlaying={() => setPlaying(true)}
-      className={cn("absolute inset-0 size-full opacity-0", className, playing && "opacity-100")}
+      className={cn(
+        "absolute inset-0 size-full opacity-0 transition-opacity duration-300 motion-reduce:transition-none",
+        className,
+        playing && "opacity-100",
+      )}
     >
       {sources.map((source) => (
         <source key={source.src} src={source.src} type={source.type} />
@@ -182,7 +192,7 @@ function IntroVideo({
   );
 }
 
-function HeroLoopArt({ loop }: { loop: HeroLoop }) {
+function HeroLoopArt({ loop, active, videoAllowed }: { loop: HeroLoop; active: boolean; videoAllowed: boolean }) {
   const introPhase = useIntroPhase();
   const introActive = Boolean(loop.intro) && introPhase !== null;
   const breakpoint = useLoopBreakpoint(introActive, Boolean(loop.desktopHiDpi));
@@ -228,11 +238,11 @@ function HeroLoopArt({ loop }: { loop: HeroLoop }) {
           loop.intro && "intro-pending:invisible",
         )}
       />
-      {variant && (!introActive || introStarted) && (
+      {variant && (active || videoAllowed) && (!introActive || introStarted) && (
         <LoopVideo
           key={`loop-${breakpoint}`}
           sources={variant.sources}
-          hold={introActive}
+          hold={introActive || !active}
           className={videoFit}
         />
       )}
@@ -249,24 +259,36 @@ function HeroLoopArt({ loop }: { loop: HeroLoop }) {
   );
 }
 
+type LayerRole = "shown" | "leaving" | "hidden";
+
 function HeroArt({
   index,
+  role,
   entering,
+  videoAllowed,
   onArrived,
 }: {
   index: number;
-  entering?: boolean;
-  onArrived?: () => void;
+  role: LayerRole;
+  entering: boolean;
+  videoAllowed: boolean;
+  onArrived: () => void;
 }) {
   const slide = hero.slides[index];
 
   return (
     <div
-      onAnimationEnd={onArrived}
-      className={cn("absolute inset-0", entering && "hero-art-fade")}
+      onAnimationEnd={entering ? onArrived : undefined}
+      className={cn(
+        "absolute inset-0",
+        role === "shown" && "z-2",
+        role === "leaving" && "z-1",
+        role === "hidden" && "invisible",
+        entering && "hero-art-fade",
+      )}
     >
       {slide.framing === "loop" ? (
-        <HeroLoopArt loop={slide.loop} />
+        <HeroLoopArt loop={slide.loop} active={role === "shown"} videoAllowed={videoAllowed} />
       ) : (
         <div
           style={{ "--hero-art": `url("${slide.artSrc}")` } as React.CSSProperties}
@@ -277,19 +299,70 @@ function HeroArt({
   );
 }
 
+function useSlideWarmup(onRequest: (index: number) => void, onAllWarm: () => void) {
+  const introPhase = useIntroPhase();
+
+  useEffect(() => subscribeSlideRequests(onRequest), [onRequest]);
+
+  useEffect(() => {
+    if (introPhase === "pending") return;
+    const { connection } = navigator as Navigator & { connection?: NetworkInformation };
+    if (connection?.saveData) return;
+
+    const warmAll = () => {
+      hero.slides.forEach((_, index) => onRequest(index));
+      Promise.all(hero.slides.map((_, index) => warmSlide(index))).then(onAllWarm);
+    };
+    if (document.readyState === "complete") {
+      const timer = window.setTimeout(warmAll);
+      return () => window.clearTimeout(timer);
+    }
+    window.addEventListener("load", warmAll, { once: true });
+    return () => window.removeEventListener("load", warmAll);
+  }, [introPhase, onRequest, onAllWarm]);
+}
+
 export function HeroBackground() {
   const { activeSlide } = useHeroSlide();
   const [shown, setShown] = useState(activeSlide);
   const [leaving, setLeaving] = useState<number | null>(null);
+  const [mounted, setMounted] = useState<number[]>([activeSlide]);
+  const [videoAllowed, setVideoAllowed] = useState(false);
 
-  if (activeSlide !== shown) {
-    setLeaving(shown);
-    setShown(activeSlide);
-  }
+  if (!mounted.includes(activeSlide)) setMounted([...mounted, activeSlide]);
+
+  const mount = useCallback((index: number) => {
+    void warmSlide(index);
+    setMounted((current) => (current.includes(index) ? current : [...current, index]));
+  }, []);
+  const allowVideo = useCallback(() => setVideoAllowed(true), []);
+  useSlideWarmup(mount, allowVideo);
+
+  const arrive = () => {
+    const left = leaving;
+    warmSlide(shown).then(() => setLeaving((current) => (current === left ? null : current)));
+  };
+
+  useEffect(() => {
+    if (activeSlide === shown) return;
+    let cancelled = false;
+    const waited = new Promise((resolve) => window.setTimeout(resolve, SWAP_WAIT_MS));
+    Promise.race([warmSlide(activeSlide), waited]).then(() => {
+      if (cancelled) return;
+      setLeaving(shown);
+      setShown(activeSlide);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [activeSlide, shown]);
 
   useEffect(() => {
     if (activeSlide !== hero.activeSlide) endIntro();
   }, [activeSlide]);
+
+  const roleOf = (index: number): LayerRole =>
+    index === shown ? "shown" : index === leaving ? "leaving" : "hidden";
 
   return (
     <div
@@ -297,14 +370,17 @@ export function HeroBackground() {
       /* no tocar: el -z-10 y el overflow-hidden van en esta capa, nunca en la <section> */
       className="absolute inset-x-0 top-4 -z-10 h-hero-mobile overflow-hidden bg-background desktop:top-0 desktop:h-hero-desktop"
     >
-      <div className="absolute inset-0 opacity-75 desktop:opacity-100">
-        {leaving !== null && <HeroArt key={leaving} index={leaving} />}
-        <HeroArt
-          key={shown}
-          index={shown}
-          entering={leaving !== null}
-          onArrived={() => setLeaving(null)}
-        />
+      <div className="absolute inset-0 isolate opacity-75 desktop:opacity-100">
+        {mounted.map((index) => (
+          <HeroArt
+            key={index}
+            index={index}
+            role={roleOf(index)}
+            entering={index === shown && leaving !== null}
+            videoAllowed={videoAllowed}
+            onArrived={arrive}
+          />
+        ))}
       </div>
       <div className="bg-hero-scrim-mobile absolute inset-0 desktop:bg-hero-scrim" />
     </div>
