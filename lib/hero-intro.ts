@@ -4,7 +4,6 @@ export type IntroPhase = "pending" | "reveal";
 
 const INTRO_ATTRIBUTE = "data-intro";
 const STARTED_ATTRIBUTE = "data-intro-started";
-const STORAGE_KEY = "sura-hero-intro";
 const START_DEADLINE_MS = 2000;
 const FAILSAFE_MS = 7000;
 
@@ -17,8 +16,6 @@ var d=document.documentElement;
 if(location.pathname!=="/"||location.hash)return;
 if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
 var c=navigator.connection;if(c&&c.saveData)return;
-if(sessionStorage.getItem("${STORAGE_KEY}"))return;
-sessionStorage.setItem("${STORAGE_KEY}","1");
 d.setAttribute("${INTRO_ATTRIBUTE}","pending");
 setTimeout(function(){if(!d.hasAttribute("${STARTED_ATTRIBUTE}"))d.removeAttribute("${INTRO_ATTRIBUTE}")},${START_DEADLINE_MS});
 setTimeout(function(){d.removeAttribute("${INTRO_ATTRIBUTE}")},${FAILSAFE_MS});
