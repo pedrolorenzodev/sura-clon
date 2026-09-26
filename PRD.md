@@ -594,25 +594,43 @@ preferencia se guarda y no hay Howler.
 
 | Evento | Dónde | Volumen |
 |---|---|---|
-| Hover | Ítems del riel, CTA del hero, "Jugar ahora" ×2, Reclamar, tabs de ruta, "Ver todo", "Ir a Sura News", el toggle. También el foco con teclado | 0,16 |
-| Clic | Flechas de carruseles y del hero, chips, paginador, CTAs, "Ver todo" sin ruta, banners, medallas obtenidas | 0,42 |
+| Hover | Cards y filas a la mitad del volumen (0,08). Ítems del riel, CTA del hero, "Jugar ahora" ×2, Reclamar, tabs de ruta, "Ver todo", "Ir a Sura News", el toggle. También el foco con teclado | 0,16 |
+| Clic | Flechas de carruseles y del hero, chips, paginador, CTAs, "Ver todo" sin ruta, banners, medallas obtenidas, cards y filas | 0,42 |
 | Selección | Ítem del menú, tab de ruta, miniatura del hero | 0,5 |
-| Ida de ruta | Cualquier link a otra ruta que no sea el Home | 0,55 |
-| Vuelta al Home | Links al Home desde una ruta interna, flecha de volver | 0,55 |
-| Reclamar | El botón | 0,8 — lo más fuerte |
+| Ida de ruta | Cualquier link a otra ruta que no sea el Home | 0,3 (0,55 hasta el 2026-09-26) |
+| Vuelta al Home | Links al Home desde una ruta interna, flecha de volver | 0,26 (0,55 hasta el 2026-09-26) |
+| Reclamar | El botón | 0,24 — lo más fuerte (0,8 y después 0,42 hasta el 2026-09-26) |
 | Odómetro | Un tick por dígito que cambia al reclamar, con la afinación subiendo | 0,2 |
 | Bloqueado | Click en una medalla bloqueada | 0,5 |
 | Sonido on / off | El toggle | 0,45 |
 
-**Mudos a propósito:** el hover de cards, filas, chips y footer (son grillas, y ahí el hover se
+**Mudos a propósito:** el hover de chips y footer (son filas de links chicos, y ahí el hover se
 vuelve ráfaga), el scroll-spy, los barridos de títulos, la intro, los conteos al scrollear, el botón
 de perfil y los del footer. Un elemento que ya está seleccionado tampoco suena.
+
+**Las cards suenan desde el 2026-09-26** (opción C de la propuesta, a prueba): las de los carruseles,
+las filas y el podio del Leaderboard, las de Sura News, Juegos, Misiones y Torneos. Hasta ese día
+eran mudas por el riesgo de ráfaga. El hover es el mismo sonido a la mitad del volumen
+(`softHoverGain`, -6 dB) y comparte el limitador con el resto de los hovers; el clic es el de siempre.
+Se cablea en un solo lugar, `CardLink` (más la card de Eventos del Home, que no lo usa), con
+`data-sfx-hover="soft"`. Hoy las cards no navegan (*Rutas de detalle apagadas*, § 6), así que el
+clic suena sin cambiar de pantalla, como los banners; cuando se encienda un detalle, esa card pasa a
+sonar la ida de ruta sola.
 
 **Límites:**
 - **Hover:** un hover cada 110ms, y ninguno mientras suena el anterior; sólo mouse.
 - **Carriles:** un sonido nuevo del mismo carril funde al anterior en 18ms; tope de 6 voces.
 - **Variación:** ±2–4% de afinación y ±6% de volumen, para que el mismo tick no canse.
 - **Movimiento reducido:** la persiana no corre, así que la ida y la vuelta suenan como un clic.
+- **La ida y la vuelta suenan con la persiana, no con el click** (2026-09-26, pedido del usuario). La
+  persiana arranca cuando la ruta nueva está lista para pintarse: medido, 146 ms después del click en
+  producción y ~260 en desarrollo, y el sonido se adelantaba todo eso. Ahora el listener espera, cuadro
+  a cuadro, a que exista la animación del panel (`::view-transition-group(route-shutter)`) y recién ahí
+  suena; si la animación ya avanzó, el sonido arranca desde ese punto (`offset` de `playSfx`), así los
+  dos blips de Chip propio siguen cayendo en el cambio de pantalla, a los 320 ms. Medido: el sonido
+  arranca a **4 ms** del primer movimiento del panel. Si la persiana no corre (el navegador no tiene
+  View Transitions o la transición se cancela), suena cuando cambia la ruta. Espera como mucho 5 s
+  (`routeSwapWaitMs`), que es lo que puede tardar en compilar una ruta en desarrollo.
 
 **El toggle.** Un cuadrado de 40 con la superficie de los contadores: primero en el grupo del header
 desktop, último en el mobile. El ícono es el parlante de Lucide dibujado inline. Al apagar, las
@@ -656,6 +674,13 @@ sonido, con la pestaña oculta (el contexto se suspende) y **después de 5 minut
 (`keepAliveIdleMs`): en macOS una salida de audio activa impide el reposo automático de la
 computadora. Cualquier movimiento del mouse, rueda o toque la vuelve a arrancar.
 
+**Probado por el usuario** (2026-09-26): con auriculares con cable el problema desapareció; con unos
+auriculares Bluetooth baratos seguía. La señal resuelve la parte de Chrome y del sistema, pero no
+lo que hace el propio auricular: muchos Bluetooth baratos apagan su amplificador cuando lo que
+reciben es casi silencio, y a -80 dBFS la señal no llega a despertarlos (el códec Bluetooth además la
+puede descartar por inaudible). Subirla hasta que los despierte la volvería audible. Queda como
+limitación conocida.
+
 ### Paleta mixta con uisfx ✅ implementada · 👀 en prueba (2026-09-25)
 
 Feedback del equipo: la ida y la vuelta de Libre no gustaron, y se recomendó mirar
@@ -664,15 +689,15 @@ comparó la paleta entera contra cuatro paquetes —Sci-fi, Arcade, Mecánico y 
 propuesta, **[Sonido SURA](https://claude.ai/artifact/FtyLwp9kX6guF4FCEek39E)**, sección *La paleta
 entera, contra uisfx*.
 
-**La combinación en prueba** (usuario, 2026-09-25):
+**La combinación en prueba** (usuario, 2026-09-25; corregida el 2026-09-26 después de probarla):
 
 | Evento | Paleta | Archivo de origen | Nivel | Duración |
 |---|---|---|---|---|
-| Hover | **Sci-fi** | `scifi/hover` | -5,1 dB | 124 ms |
+| Hover | **Libre** | el de Kenney, sin cambios | — | 40 ms |
 | Clic | **Sci-fi** | `scifi/press` | -5,6 dB | 135 ms |
-| Selección | **Sci-fi** | `scifi/select` | -5,1 dB | 220 ms |
-| Ida de ruta, vuelta al Home | **Libre** (Ventana) | sin cambios | — | 513 / 510 ms |
-| Reclamar | **Libre** | sin cambios | — | 516 ms |
+| Selección | **Mecánico** | `mechanical/select` | -0,7 dB | 168 ms |
+| Ida de ruta, vuelta al Home | **Chip propio** | el par sintetizado de la propuesta | — | 588 / 586 ms |
+| Reclamar | **Libre** | sin cambios, con el volumen de 0,8 a **0,42** | — | 516 ms |
 | Odómetro | **Arcade** | `arcade/typing` | -7,4 dB | 79 ms |
 | Bloqueado | **Sci-fi** | `scifi/blocked` | -5,2 dB | 272 ms |
 | Sonido on / off | **Sci-fi** | `scifi/toggle-on` / `toggle-off` | -3,2 dB | 225 / 207 ms |
@@ -681,14 +706,27 @@ El nivel es la ganancia aplicada al archivo para que suene igual de fuerte que e
 reemplaza, medido como el pico de RMS en ventanas de 30 ms. Es el mismo que tenían en la propuesta,
 así que en la web suenan como ahí. Los volúmenes de `lib/data/sfx.ts` no cambiaron.
 
-Los sonidos de uisfx son más largos que los de Libre (el hover pasa de 40 a 124 ms). Como el
-limitador no deja sonar un hover mientras suena el anterior, recorrer el riel rápido deja pasar
-menos hovers que antes.
+**Corrección del 2026-09-26.** El usuario encontró muy fuertes Reclamar, la ida y la vuelta.
+Medido como nivel del archivo más volumen del evento, la ida de Ventana quedaba **20 dB** por encima
+del clic y Reclamar **13 dB**. Así quedó la jerarquía:
 
-La ida y la vuelta quedan en Libre, pero el usuario no está seguro: se retoma más adelante.
+| Evento | Antes | Ahora |
+|---|---|---|
+| Hover · odómetro | -37 · -36 | -37 · -36 |
+| Clic · selección · bloqueado · on / off | -25 a -22 | -25 a -22 |
+| Ida · vuelta | **-5,5** · -15 | -21 · -20 → **-26 · -26** |
+| Reclamar | **-12,5** | -18 → **-23** |
+
+En una primera pasada Reclamar quedó 7 dB arriba del clic y la ida y la vuelta unos 5. El usuario
+los siguió encontrando fuertes y se bajaron otros ~5 dB: la ida y la vuelta quedan al nivel del clic
+(duran cuatro veces más, así que igual se oyen más presentes) y Reclamar 2 dB arriba, todavía lo más
+fuerte. La vuelta de Chip propio es 1,3 dB más fuerte que la ida, por eso su volumen es más bajo
+(0,26 contra 0,3). El hover volvió a Libre y la selección pasó a Mecánico, nivelada a la de Libre como el resto.
+
+Chip propio para la ida y la vuelta es a prueba: el usuario no está seguro.
 
 **Datos a tener a mano al retomar:**
-- La ida de Ventana mide **9 dB más fuerte** que su vuelta. Si Libre se queda con la ida y la vuelta, conviene nivelarlas.
+- Si vuelve Ventana, su ida mide **9 dB más fuerte** que su vuelta: hay que nivelarlas antes.
 - Contra la persiana de 640 ms, la única ida de uisfx con ese largo es la de Cinemático (511 ms); las otras terminan antes de la mitad.
 - Los archivos salen del paquete de npm `uisfx@0.4.0` (`sounds/<paquete>/<sonido>.ogg`, CC0): se recortan en el silencio del final, se pasan a mono (el estéreo de uisfx está 16 a 26 dB por debajo del centro) y se convierten a Opus 64k con AAC 96k de respaldo, como los de Libre. **No se instala el runtime de uisfx**: sólo se usan los archivos.
 - uisfx no tiene servidor MCP.
@@ -942,6 +980,10 @@ public/assets/<pantalla>/   assets exportados de Figma
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
 | 2026-09-25 | **404 “Fuera del mapa”**: `--route-draw-duration` (450ms), `--blip-blink-duration` (1600ms), `--spacing-map` (592), `--spacing-map-mobile` (232), `--spacing-map-grid` (32) / `-desktop` (48); utilities `map-grid`, `route-draw-y`, `route-draw-x`, `route-draw-after-route`, `blip-blink`; variante `rail-hidden`; `card-bracket` suma el estado `data-locked` con `--bracket-lead` y `@starting-style`, así también espera a la línea al montar | 404 | Pantalla sin frames, con diseño propio y excepción a la regla 2. Detalle en *La 404*, § 5. `ScrambleText` suma `decodeOnMount` y ahora deja fijos los caracteres que no son letras ni números (`/`, `-`, `·`); con los labels actuales no cambia nada, porque todos son letras y espacios. |
+| 2026-09-26 | **Segunda baja de volumen**: ida 0,55 → 0,3, vuelta 0,55 → 0,26 y Reclamar 0,42 → 0,24 en `lib/data/sfx.ts` | Todas las rutas | El usuario los siguió encontrando fuertes. Unos 5 dB menos cada uno. Niveles en § 5, *Paleta mixta con uisfx*. |
+| 2026-09-26 | **La ida y la vuelta suenan con la persiana**: `routeSwapWaitMs` en `lib/data/sfx.ts`, opción `offset` de `playSfx` | Todas las rutas | Pedido del usuario: el sonido arrancaba con el click y la persiana hasta 260 ms después. Detalle en § 5, *Sonido*, límites. |
+| 2026-09-26 | **Las cards suenan**: hover a la mitad del volumen (`softHoverGain` en `lib/data/sfx.ts`, opción `gain` de `playSfx`) y clic, cableados en `CardLink` y en la card de Eventos con `data-sfx-hover="soft"` | Todas las rutas | Pedido del usuario: lo más tocado de la web era mudo. Eligió la opción C de la demo *Sonido en las cards* de la propuesta, a prueba. Detalle en § 5, *Sonido*. |
+| 2026-09-26 | **Corrección de la paleta mixta**: hover de vuelta a Libre, selección de Mecánico, ida y vuelta con **Chip propio**, y Reclamar de 0,8 a **0,42** en `lib/data/sfx.ts` | Todas las rutas | Pedido del usuario después de probar la mezcla: Reclamar y la ida y la vuelta eran demasiado fuertes. Detalle y niveles en § 5, *Paleta mixta con uisfx*. |
 | 2026-09-25 | **Paleta mixta con uisfx** (7 de los 10 sonidos: hover, clic, selección, bloqueado y on / off de Sci-fi; el odómetro de Arcade) y **señal que mantiene despierta la salida de audio** (`keepAliveGain`, `keepAliveHz`, `keepAliveIdleMs` en `lib/data/sfx.ts`) | Todas las rutas | Elegida por el usuario sobre la propuesta *Sonido SURA*, y arreglo del sonido que se perdía o sonaba bajo después de un rato sin sonidos. Detalle en § 5, *La salida de audio no se duerme* y *Paleta mixta con uisfx*. |
 | 2026-09-25 | **Sonido**: `public/assets/sfx/` (10 sonidos, 21 KB), `--sound-morph-duration`, `--sound-wave-fade-duration`, `--sound-cross-delay`, `--sound-live-duration`, `--sound-live-stagger`, `--sound-wave-off-scale`, `--sound-live-dim`; utilities `sound-wave`, `sound-wave-far`, `sound-cross`; variantes `sound-on` / `sound-off` | Todas las rutas · Header | Propuesta *Sonido SURA*, elegida por el usuario. Detalle en § 5, *Sonido*. El sonido no es parte del diseño: todo es `offDesign`. |
 | 2026-09-25 | **Íconos del menú por partes**: `--nav-icon-*` (16 duraciones), utilities `navicon` y `navpart-*`; los íconos pasan de máscara a SVG inline, `--color-nav-icon` se usa como `text-nav-icon` y se borra `nav-icon-news` | Menú flotante · Bottom bar | Opción D de la misma propuesta. Detalle en § 5, *Íconos del menú por partes*. Las otras cinco máscaras `nav-icon-*` siguen porque las usa la 404. |
@@ -1092,7 +1134,8 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Las posiciones del minimapa son inventadas** | Los cinco destinos, tu punto y la zona están ubicados a ojo para que se lea bien en los dos tamaños, no representan nada. A 320 de ancho “Zona de juego” y “Misiones” quedan pegados, sin pisarse. | Si se suma un destino, hay que ubicarlo en `lib/data/not-found.ts` y revisar 320 y 1100. La línea asume que todos los destinos quedan arriba y a la izquierda de tu punto. |
 | **Las rutas de detalle caen en la 404** | `/tournaments/123`, `/games/…` y compañía muestran “Fuera del mapa”. Hoy ningún link de la UI apunta ahí (*Rutas de detalle apagadas*, § 6). | Cuando se implemente un detalle, su ruta existe y deja de caer en la 404 sola. |
 | **Entrar a la 404 navegando vuelve a montar el chrome** | Consecuencia de que la 404 sea el `not-found` raíz (ver *Notas de arquitectura*). El header, el riel y el footer se vuelven a montar, y la flecha del header mobile pierde el historial del sitio: vuelve al Home. | Sólo importa si aparecen links internos a rutas que no existen. |
-| **La señal que mantiene despierta la salida de audio no se probó con Bluetooth ni en Safari** | Se verificó en Chromium que arranca, se corta y vuelve cuando corresponde. Que el primer sonido después de un rato ya no se pierda depende de la salida real, que Playwright no tiene. Tampoco se sabe si Safari muestra el ícono de audio en la pestaña por una señal de -80 dBFS. | Probarlo a mano: dejar la web un minuto quieta y disparar un hover, con los parlantes de la compu y con auriculares Bluetooth, en Chrome y Safari. Si con Bluetooth el primer sonido sigue saliendo bajo, subir `keepAliveGain` de a poco. |
+| **Volver al Home desde el riel cancela la persiana** | Encontrado el 2026-09-26 al sincronizar el sonido, anterior a ese cambio. Desde una ruta interna, un ítem del riel que lleva a una sección con scroll (Eventos, Juegos…) cambia de pantalla **sin persiana, siempre**; el ítem Home, si el click llega apenas entra el mouse. El logo y la flecha de volver sí la corren. React cancela la transición (`skipTransition`) cuando se cuela una actualización sincrónica antes de que arranque la animación; el primer caso coincide con el salto de scroll al llegar al Home, que despierta el `useScrolled` del header (un `useSyncExternalStore`, que siempre es sincrónico). El segundo no está identificado: no es el cierre del tooltip, probado. | Confirmar la causa y arreglarlo. Candidato: que el header escriba `data-scrolled` directo en el DOM en vez de pasar por React. El sonido ya se adapta: suena con el cambio de pantalla. |
+| **Con auriculares Bluetooth baratos el primer sonido después de un rato puede salir bajo o perderse** | Lo probó el usuario (2026-09-26): con cable funciona bien. El auricular apaga su amplificador con casi silencio y la señal de -80 dBFS no lo despierta (ver § 5, *La salida de audio no se duerme*). | Nada por ahora: subir `keepAliveGain` hasta despertarlos haría la señal audible. Falta además ver si Safari muestra el ícono de audio en la pestaña por esa señal. |
 | **Nada suena antes del primer click o tecla** | Es la política de autoplay de todos los navegadores. Investigado en el código fuente y probado: no hay workaround legítimo para una primera visita (ver § 5, *Sonido*). | Nada. Si vuelve la música de fondo, el *Media Engagement* de Chrome haría que los visitantes frecuentes escuchen desde el primer hover. |
 | **El sonido no se probó en Safari ni Firefox reales** | Sólo en Chrome y en los builds de WebKit y Firefox de Playwright. El respaldo AAC para Safari viejo no se ejercitó. | Probarlo a mano en Safari (macOS e iOS) antes de dar la tanda por cerrada. |
 | **El "Ver todo" de Sura News no se puede tocar en el centro en mobile** | Bug anterior al sonido: el aire que la lista de cards reserva para la sombra del hover queda encima del botón. Hoy el botón no navega, así que sólo se pierden su hover y su sonido. | `pointer-events-none` en la lista y `pointer-events-auto` en sus ítems, verificando que el carrusel siga scrolleando con el dedo. |
@@ -1377,6 +1420,7 @@ tercero. Se retoman en la pasada de fixes chicos, con el scope completo.
 | Tema | Qué pasó | Cómo se resolvió |
 |---|---|---|
 | **Un `notFound()` desde una página devuelve un HTML vacío** | La primera versión de la 404 era un catch-all `(site)/[...slug]` que llamaba a `notFound()`, para heredar el layout `(site)`. Daba 404, pero el servidor mandaba `<html id="__next_error__">` con el `<body>` vacío: la pantalla la dibujaba el JS, sin JS quedaba en blanco y la función corría en cada pedido. De ahí salían también dos síntomas: la pestaña perdía el título al hidratar y en dev aparecía el aviso *Encountered a script tag* (con el badge “1 Issue”), porque React volvía a renderizar el `<head>` entero con el `<script>` de la intro. | Lo encontró la revisión de código y se reprodujo en una app de Next 16.3.5 mínima: pasa con cualquier `notFound()` llamado desde una página. **La 404 de URLs sin ruta va en `app/not-found.tsx`**, que se renderiza completa en el servidor. Con el cambio desaparecieron los dos síntomas. |
+| **`transition.ready` no es el momento en que arranca la persiana** | Al sincronizar el sonido, `ready` de la View Transition resolvía a los 60 ms del click pero el panel empezaba a moverse a los 146: la animación queda en su primer cuadro hasta que el navegador termina de pintar la pantalla nueva. | El sonido se ancla a la animación del panel (`getAnimations`, `currentTime`), no a `ready`. **Para sincronizar algo con una View Transition, mirar la animación, no la promesa.** |
 | **Chrome apaga la salida de Web Audio después de 30 s de silencio** | El usuario notaba que, después de un rato sin sonidos, el siguiente no sonaba o sonaba bajo. El motor no suspende nada por inactividad, así que la causa estaba afuera. | En Chromium, `SilentSinkSuspender` pasa a una salida falsa cuando el `AudioContext` renderiza ceros exactos durante 30 s, y el primer sonido lo devuelve a la real con demora. Los dispositivos Bluetooth y HDMI hacen lo suyo en menos tiempo. Se resuelve con una señal continua de -80 dBFS que nunca es cero (ver § 5, *La salida de audio no se duerme*). **Un `AudioContext` en `running` no garantiza que la salida esté despierta.** |
 | **En Chromium, `page.evaluate` cuenta como gesto del usuario** | Los primeros tests del sonido daban el audio habilitado sin haber tocado nada. `page.evaluate()`, `page.hover()` y `page.focus()` de Playwright prenden `userActivation`. | Para probar lo que pasa antes del primer gesto hay que usar sólo `page.mouse` y `page.keyboard` y leer los resultados con `console.log` desde la propia página. **Y el flag `--autoplay-policy=user-gesture-required` no es la política de desktop**: es la vieja de mobile y deja el `AudioContext` corriendo al cargar. La política real es la que viene sin flags. |
 | **El navegador dispara `pointerover` cuando la página scrollea debajo de un mouse quieto** | Con el hover sonoro en elementos que scrollean, la rueda hacía sonar todo lo que pasaba debajo del cursor. | El evento que causa el scroll trae exactamente las coordenadas del último `pointermove`; uno real, no. El listener descarta los que coinciden. |
