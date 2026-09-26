@@ -36,7 +36,10 @@ export function EventCard({ event }: { event: EventCardData }) {
   const art = ART[event.art];
 
   return (
-    <article className="group relative h-event-surface-mobile w-event-card-mobile shrink-0 cursor-pointer desktop:h-event-surface desktop:w-event-card">
+    <article
+      data-sfx-hover="soft"
+      data-sfx="click"
+      className="group relative h-event-surface-mobile w-event-card-mobile shrink-0 cursor-pointer desktop:h-event-surface desktop:w-event-card">
       <div
         className={cn(
           "absolute inset-0 rounded-lg border border-brand-faint desktop:rounded-xl",

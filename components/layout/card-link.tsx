@@ -13,10 +13,15 @@ export function CardLink({
   children: React.ReactNode;
   "aria-label"?: string;
 }) {
-  if (!href) return <div className={cn("cursor-pointer", className)}>{children}</div>;
+  if (!href)
+    return (
+      <div data-sfx-hover="soft" data-sfx="click" className={cn("cursor-pointer", className)}>
+        {children}
+      </div>
+    );
 
   return (
-    <Link href={href} prefetch={false} aria-label={ariaLabel} className={className}>
+    <Link href={href} prefetch={false} aria-label={ariaLabel} data-sfx-hover="soft" className={className}>
       {children}
     </Link>
   );

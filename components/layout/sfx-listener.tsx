@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-import { isSfxSlot, type SfxSlot } from "@/lib/data/sfx";
+import { isSfxSlot, sfxConfig, type SfxSlot } from "@/lib/data/sfx";
 import { attachSfx, playSfx, toggleSfx } from "@/lib/sfx";
 
 const HOVER_SELECTOR = "[data-sfx-hover]";
@@ -38,6 +38,9 @@ function hoverTarget(target: EventTarget | null, from: EventTarget | null) {
   if (isCurrent(element) || isUnavailable(element)) return null;
   return element;
 }
+
+const playHover = (element: Element) =>
+  playSfx("hover", { gain: element.getAttribute("data-sfx-hover") === "soft" ? sfxConfig.softHoverGain : 1 });
 
 const KEYBOARD_FOCUS_WINDOW_MS = 600;
 
@@ -88,13 +91,15 @@ export function SfxListener() {
       if (event.pointerType !== "mouse") return;
       const scrolledUnder = pointer !== null && pointer.x === event.clientX && pointer.y === event.clientY;
       if (scrolledUnder) return;
-      if (hoverTarget(event.target, event.relatedTarget)) playSfx("hover");
+      const element = hoverTarget(event.target, event.relatedTarget);
+      if (element) playHover(element);
     };
 
     const onFocusIn = (event: FocusEvent) => {
       if (performance.now() - lastKeyAt > KEYBOARD_FOCUS_WINDOW_MS) return;
       if (!(event.target instanceof Element) || !matchesFocusVisible(event.target)) return;
-      if (hoverTarget(event.target, event.relatedTarget)) playSfx("hover");
+      const element = hoverTarget(event.target, event.relatedTarget);
+      if (element) playHover(element);
     };
 
     const onClick = (event: MouseEvent) => {

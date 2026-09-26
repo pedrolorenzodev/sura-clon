@@ -2,7 +2,7 @@ import { sfxConfig, sfxSlotNames, sfxSlots, type SfxFormat, type SfxLane, type S
 import { prefersReducedMotion } from "@/lib/motion";
 
 export type SfxEvent = "state" | "play";
-export type SfxPlayOptions = { rate?: number; stack?: boolean };
+export type SfxPlayOptions = { rate?: number; stack?: boolean; gain?: number };
 
 type Voice = { source: AudioBufferSourceNode; gain: GainNode; end: number };
 type KeepAlive = { tone: OscillatorNode; level: GainNode };
@@ -241,7 +241,7 @@ function fire(slot: SfxSlot, options: SfxPlayOptions) {
   source.playbackRate.value = rate;
 
   const gain = context.createGain();
-  const volume = config.volume * (1 + spread() * sfxConfig.volumeJitter);
+  const volume = config.volume * (options.gain ?? 1) * (1 + spread() * sfxConfig.volumeJitter);
   gain.gain.setValueAtTime(0, now);
   gain.gain.linearRampToValueAtTime(volume, now + sfxConfig.fadeInMs / 1000);
 
