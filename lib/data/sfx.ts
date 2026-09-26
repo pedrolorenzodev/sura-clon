@@ -41,6 +41,7 @@ export type SfxConfig = {
   keepAliveHz: number;
   keepAliveIdleMs: number;
   softHoverGain: number;
+  routeSwapWaitMs: number;
 };
 
 export const sfxSlots: Record<SfxSlot, SfxSlotConfig> = {
@@ -74,6 +75,7 @@ export const sfxConfig: SfxConfig = {
   keepAliveHz: 30,
   keepAliveIdleMs: 300000,
   softHoverGain: 0.5,
+  routeSwapWaitMs: 5000,
 };
 
 export const isSfxSlot = (value: string | null): value is SfxSlot =>

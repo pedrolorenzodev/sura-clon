@@ -2,7 +2,7 @@ import { sfxConfig, sfxSlotNames, sfxSlots, type SfxFormat, type SfxLane, type S
 import { prefersReducedMotion } from "@/lib/motion";
 
 export type SfxEvent = "state" | "play";
-export type SfxPlayOptions = { rate?: number; stack?: boolean; gain?: number };
+export type SfxPlayOptions = { rate?: number; stack?: boolean; gain?: number; offset?: number };
 
 type Voice = { source: AudioBufferSourceNode; gain: GainNode; end: number };
 type KeepAlive = { tone: OscillatorNode; level: GainNode };
@@ -238,6 +238,7 @@ function fire(slot: SfxSlot, options: SfxPlayOptions) {
   const source = context.createBufferSource();
   source.buffer = buffer;
   const rate = (options.rate ?? 1) * (1 + spread() * config.jitter);
+  const offset = Math.min(Math.max(options.offset ?? 0, 0), buffer.duration);
   source.playbackRate.value = rate;
 
   const gain = context.createGain();
@@ -251,9 +252,9 @@ function fire(slot: SfxSlot, options: SfxPlayOptions) {
     source.disconnect();
     gain.disconnect();
   };
-  source.start(now);
+  source.start(now, offset);
 
-  const voice: Voice = { source, gain, end: now + buffer.duration / rate };
+  const voice: Voice = { source, gain, end: now + (buffer.duration - offset) / rate };
   if (!options.stack) lanes.set(config.lane, voice);
   voices.push(voice);
 

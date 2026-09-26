@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 
 import { isSfxSlot, sfxConfig, type SfxSlot } from "@/lib/data/sfx";
+import { prefersReducedMotion } from "@/lib/motion";
 import { attachSfx, playSfx, toggleSfx } from "@/lib/sfx";
 
 const HOVER_SELECTOR = "[data-sfx-hover]";
@@ -43,6 +44,52 @@ const playHover = (element: Element) =>
   playSfx("hover", { gain: element.getAttribute("data-sfx-hover") === "soft" ? sfxConfig.softHoverGain : 1 });
 
 const KEYBOARD_FOCUS_WINDOW_MS = 600;
+const SHUTTER_PSEUDO = "::view-transition-group(route-shutter)";
+
+const isTransitioning = () => {
+  try {
+    return document.documentElement.matches(":active-view-transition");
+  } catch {
+    return false;
+  }
+};
+
+const findShutter = () =>
+  document.documentElement
+    .getAnimations({ subtree: true })
+    .find((animation) => (animation.effect as KeyframeEffect | null)?.pseudoElement === SHUTTER_PSEUDO);
+
+const elapsedSeconds = (animation: Animation) => {
+  const time = animation.currentTime;
+  return typeof time === "number" ? time / 1000 : 0;
+};
+
+let routeSwapWait = 0;
+
+function playOnRouteSwap(slot: SfxSlot) {
+  cancelAnimationFrame(routeSwapWait);
+  if (prefersReducedMotion() || !("startViewTransition" in document)) {
+    playSfx(slot);
+    return;
+  }
+  const fromPath = window.location.pathname;
+  const startedAt = performance.now();
+  const check = () => {
+    const shutter = findShutter();
+    if (shutter) {
+      playSfx(slot, { offset: elapsedSeconds(shutter) });
+      return;
+    }
+    if (window.location.pathname !== fromPath && !isTransitioning()) {
+      playSfx(slot);
+      return;
+    }
+    if (performance.now() - startedAt < sfxConfig.routeSwapWaitMs) routeSwapWait = requestAnimationFrame(check);
+  };
+  routeSwapWait = requestAnimationFrame(check);
+}
+
+const playClick = (slot: SfxSlot) => (slot === "route" || slot === "back" ? playOnRouteSwap(slot) : playSfx(slot));
 
 function linkSlot(event: MouseEvent, target: Element): SfxSlot | "silent" | null {
   const anchor = target.closest("a[href]");
@@ -107,7 +154,7 @@ export function SfxListener() {
       const link = linkSlot(event, event.target);
       if (link === "silent") return;
       const slot = link ?? declaredSlot(event.target);
-      if (slot) playSfx(slot);
+      if (slot) playClick(slot);
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -132,6 +179,7 @@ export function SfxListener() {
       document.removeEventListener("focusin", onFocusIn);
       document.removeEventListener("click", onClick, { capture: true });
       document.removeEventListener("keydown", onKeyDown);
+      cancelAnimationFrame(routeSwapWait);
       detach();
     };
   }, []);
