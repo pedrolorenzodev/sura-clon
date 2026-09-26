@@ -9,7 +9,7 @@ export function Nav() {
 
   return (
     <>
-      <NavDesktop activeId={activeId} />
+      <NavDesktop activeId={activeId} away={!isHome} />
       <NavMobile activeId={activeId} away={!isHome} />
     </>
   );

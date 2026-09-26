@@ -4,7 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 @custom-variant intro-pending (&:where([data-intro="pending"] *));
-@custom-variant rail-hidden (&:is(body:has([data-hide-rail]) *));
 
 /* no tocar: sin `static`, Tailwind poda los tokens sin uso y /styleguide los lee vacíos */
 @theme static {
@@ -286,7 +285,6 @@
   --spacing-header-desktop: 106px;
   --spacing-header-mobile: 56px;
 
-  --spacing-route-inset: 155px;
   --spacing-route-edge: 40px;
   --spacing-route-gutter: 16px;
 
@@ -558,6 +556,7 @@
   --border-light-width: 2px;
   --route-shutter-duration: 640ms;
   --chrome-fade-duration: 220ms;
+  --rail-away-duration: 300ms;
   --route-shutter-slant: 12%;
   --route-shutter-edge: 3px;
   --bracket-size: 14px;
@@ -1277,6 +1276,10 @@
   translate: 0 calc(100% + var(--spacing-gutter) + env(safe-area-inset-bottom));
 }
 
+@utility nav-rail-away {
+  translate: -100% 0;
+}
+
 @utility pb-gutter-safe {
   padding-bottom: calc(var(--spacing-gutter) + env(safe-area-inset-bottom));
 }
@@ -1749,18 +1752,31 @@
   animation: none;
 }
 
-::view-transition-old(site-header),
-::view-transition-old(site-rail) {
+::view-transition-old(site-header) {
   animation: chrome-fade var(--chrome-fade-duration) ease-out reverse both;
 }
 
-::view-transition-new(site-header),
-::view-transition-new(site-rail) {
+::view-transition-new(site-header) {
   animation: chrome-fade var(--chrome-fade-duration) ease-in var(--route-shutter-duration) both;
+}
+
+::view-transition-old(site-rail) {
+  animation: rail-away var(--rail-away-duration) ease-in-out both;
+}
+
+::view-transition-new(site-rail) {
+  animation: none;
 }
 
 @keyframes chrome-fade {
   from {
+    opacity: 0;
+  }
+}
+
+@keyframes rail-away {
+  to {
+    translate: -100% 0;
     opacity: 0;
   }
 }

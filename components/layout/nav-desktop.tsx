@@ -4,13 +4,20 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { homeSections } from "@/lib/data/navigation";
 import { cn } from "@/lib/utils";
 
-export function NavDesktop({ activeId }: { activeId: string | null }) {
+export function NavDesktop({ activeId, away }: { activeId: string | null; away: boolean }) {
   const activeIndex = homeSections.findIndex((section) => section.id === activeId);
 
   return (
     <nav
       aria-label="Secciones del Home"
-      className="intro-veil vt-rail pointer-events-none fixed left-0 top-header-desktop z-40 hidden h-hero-content-desktop w-gutter-desktop items-center px-11 desktop:flex desktop:rail-hidden:hidden"
+      inert={away}
+      data-away={away || undefined}
+      className={cn(
+        "intro-veil pointer-events-none fixed left-0 top-header-desktop z-40 hidden h-hero-content-desktop w-gutter-desktop items-center px-11 transition-[translate,opacity] duration-300 ease-in-out motion-reduce:transition-none desktop:flex",
+        away
+          ? "nav-rail-away opacity-0 [:root:active-view-transition_&]:transition-none"
+          : "vt-rail delay-(--route-shutter-duration) motion-reduce:delay-0",
+      )}
     >
       <TooltipProvider>
         <div className="pointer-events-auto border-gradient-nav-desktop rounded-2xl bg-nav-glass py-2 shadow-nav backdrop-blur-nav">

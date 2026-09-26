@@ -15,10 +15,7 @@ export default function NotFound() {
     <SiteChrome>
       <Header solid back />
       <ViewTransition enter="route-in" exit="route-out" default="none">
-        <main
-          data-hide-rail
-          className="flex-1 overflow-x-clip px-route-gutter pb-route-edge pt-header-mobile desktop:px-route-edge desktop:pt-header-desktop"
-        >
+        <main className="flex-1 overflow-x-clip px-route-gutter pb-route-edge pt-header-mobile desktop:px-route-edge desktop:pt-header-desktop">
           <OffMap />
         </main>
       </ViewTransition>
