@@ -320,9 +320,17 @@ del ancla de una sección, esa gana.
 **Cómo quedaron las cuatro cosas que había que resolver:**
 
 1. **El click pelea con el scroll.** Resuelto como estaba planeado: un `ref` que se levanta en
-   el click y se baja en `scrollend`, con un timeout de respaldo de 700ms para los navegadores
+   el click y se baja en `scrollend`, con un timeout de respaldo para los navegadores
    que no lo tienen. Al bajarse, el observer **recalcula** en vez de quedarse con lo que dejó
    el click, así que el estado siempre reconverge a la verdad.
+   **Corregido el 2026-09-26** (lo levantó el usuario: con dos clicks rápidos la pill hacía
+   cosas raras). El segundo click soltaba el lock del primero y **recalculaba en pleno scroll**,
+   así que la pill viajaba a la sección que pasaba por debajo y recién después al destino
+   (medido: Juegos → Home → Eventos). Ahora un click nuevo **cancela** el lock anterior sin
+   recalcular, y el lock se suelta sólo cuando el scroll deja al destino en su ancla (o ya no
+   puede avanzar, en el tope o el fondo), cuando el usuario toma el scroll (rueda, toque o
+   tecla) o a los 1500 ms de respaldo. Medido en seis combinaciones de 100 a 300 ms entre
+   clicks: la pill va directo al segundo destino, sin paradas, en desktop y en mobile.
 2. **La última sección puede no llegar nunca a la franja de arriba.** Pasa hoy: en desktop el
    scroll máximo del Home son 279px y Eventos necesitaría 720 para cruzar el header. Se
    resolvió **sin listener de scroll**, con un segundo observer sobre la última sección
@@ -980,6 +988,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
 | 2026-09-25 | **404 “Fuera del mapa”**: `--route-draw-duration` (450ms), `--blip-blink-duration` (1600ms), `--spacing-map` (592), `--spacing-map-mobile` (232), `--spacing-map-grid` (32) / `-desktop` (48); utilities `map-grid`, `route-draw-y`, `route-draw-x`, `route-draw-after-route`, `blip-blink`; variante `rail-hidden`; `card-bracket` suma el estado `data-locked` con `--bracket-lead` y `@starting-style`, así también espera a la línea al montar | 404 | Pantalla sin frames, con diseño propio y excepción a la regla 2. Detalle en *La 404*, § 5. `ScrambleText` suma `decodeOnMount` y ahora deja fijos los caracteres que no son letras ni números (`/`, `-`, `·`); con los labels actuales no cambia nada, porque todos son letras y espacios. |
+| 2026-09-26 | **La intro de Yi corre en cada recarga** y **la pill del menú no hace paradas con clicks rápidos** (`lib/hero-intro.ts`, `lib/use-section-spy.ts`) | Home | Pedidos del usuario. Detalle en *Intro de PROJECT: Yi* y en § 5, *Scroll-spy*, punto 1. |
 | 2026-09-26 | **Segunda baja de volumen**: ida 0,55 → 0,3, vuelta 0,55 → 0,26 y Reclamar 0,42 → 0,24 en `lib/data/sfx.ts` | Todas las rutas | El usuario los siguió encontrando fuertes. Unos 5 dB menos cada uno. Niveles en § 5, *Paleta mixta con uisfx*. |
 | 2026-09-26 | **La ida y la vuelta suenan con la persiana**: `routeSwapWaitMs` en `lib/data/sfx.ts`, opción `offset` de `playSfx` | Todas las rutas | Pedido del usuario: el sonido arrancaba con el click y la persiana hasta 260 ms después. Detalle en § 5, *Sonido*, límites. |
 | 2026-09-26 | **Las cards suenan**: hover a la mitad del volumen (`softHoverGain` en `lib/data/sfx.ts`, opción `gain` de `playSfx`) y clic, cableados en `CardLink` y en la card de Eventos con `data-sfx-hover="soft"` | Todas las rutas | Pedido del usuario: lo más tocado de la web era mudo. Eligió la opción C de la demo *Sonido en las cards* de la propuesta, a prueba. Detalle en § 5, *Sonido*. |
@@ -1283,7 +1292,7 @@ con `numpy`, `opencv-python-headless`, `ultralytics` (SAM 2.1) y `simple-lama-in
 
 Idea del usuario, a partir del feedback del equipo ("más dinámico", "tipo el launcher del LoL").
 El slide default es el login screen de **PROJECT: Master Yi** (League of Legends): en la
-primera visita de la sesión se ve **sólo el video** —robots en silueta— y a 1 s Yi los destruye;
+**cada carga completa del Home** (desde el 2026-09-26; antes, sólo la primera de la sesión) se ve **sólo el video** —robots en silueta— y a 1 s Yi los destruye;
 con el destello aparece toda la interfaz del Home, y el video queda en loop sobre el estado final.
 
 **La fuente.** El stream público de Mux que pasó el usuario, a **1280 × 800, 25 fps, 188 s**. No
@@ -1373,7 +1382,8 @@ como custom property, igual para el poster y para el `object-position` del video
 
 1. Un script inline en el `<head>` del layout raíz (`introBootScript`, `lib/hero-intro.ts`) marca
    `<html data-intro="pending">` sólo si: es `/` sin hash, no hay `prefers-reduced-motion` ni
-   `Save-Data`, y la sesión no la vio (`sessionStorage`). No es `next/script` con
+   `Save-Data`. **Corre en cada recarga** (usuario, 2026-09-26: es el efecto "wow" y se muestra
+   siempre); hasta ese día la salteaba si la sesión ya la había visto (`sessionStorage`). No es `next/script` con
    `beforeInteractive`: ése no garantiza correr antes de pintar.
 2. Con `pending`, `intro-veil` (header, riel, bottom bar, contenido del hero y footer) e
    `intro-veil-sections` (las secciones del Home salvo `#home`) quedan en opacidad 0 sin
@@ -1393,14 +1403,15 @@ como custom property, igual para el poster y para el `object-position` del video
 | La intro no arrancó a los **2 s** de abrir la página (red lenta, JS lento) | El script de arranque la cancela: interfaz visible, sin intro |
 | No arrancó a los 1,5 s de hidratar, o `play()` falla | La cancela el componente |
 | JS no carga nunca | A los 2 s el script inline la cancela; failsafe final a los 7 s |
-| Recarga, vuelta al Home desde otra ruta, ruta interna directa | Sin intro |
+| Vuelta al Home desde otra ruta (navegación del sitio), ruta interna directa, `/#seccion` | Sin intro: el script sólo corre en una carga completa de `/` sin hash |
 | Movimiento reducido · `Save-Data` | Sin intro ni video: poster |
 | Cambio de slide durante la aparición | Termina la intro; el slide nuevo entra normal |
 
-**El costo, medido en build de producción:** la primera visita de la sesión tiene un LCP de
+**El costo, medido en build de producción:** cada carga del Home con intro tiene un LCP de
 **~2,5 s en desktop y ~1,9 s en mobile**, porque el H1 recién aparece con el golpe. Es el
-concepto —la interfaz no está hasta que llega el ataque—, no un problema de carga: la visita
-siguiente vuelve a **~72 ms**. El CLS no cambió.
+concepto —la interfaz no está hasta que llega el ataque—, no un problema de carga. Desde que la
+intro corre en cada recarga, ese LCP es el de todas las cargas del Home; los videos quedan en la
+caché del navegador, así que sólo la primera los baja. El CLS no cambió.
 
 ### Diferido hasta que el scope esté maquetado
 
