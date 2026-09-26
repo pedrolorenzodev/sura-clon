@@ -49,9 +49,9 @@ export const sfxSlots: Record<SfxSlot, SfxSlotConfig> = {
   deny: { volume: 0.5, lane: "ui", jitter: 0.02 },
   on: { volume: 0.45, lane: "ui", jitter: 0 },
   off: { volume: 0.45, lane: "ui", jitter: 0 },
-  route: { volume: 0.55, lane: "route", jitter: 0 },
-  back: { volume: 0.55, lane: "route", jitter: 0 },
-  claim: { volume: 0.8, lane: "reward", jitter: 0 },
+  route: { volume: 0.3, lane: "route", jitter: 0 },
+  back: { volume: 0.26, lane: "route", jitter: 0 },
+  claim: { volume: 0.24, lane: "reward", jitter: 0 },
   tick: { volume: 0.2, lane: "tick", jitter: 0 },
 };
 
