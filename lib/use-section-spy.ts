@@ -5,20 +5,30 @@ const anchorOffset = (section: HTMLElement) =>
 
 const ANCHOR_TOLERANCE = 2;
 
+const isAnchored = (section: HTMLElement) =>
+  Math.abs(section.getBoundingClientRect().top - anchorOffset(section)) <= ANCHOR_TOLERANCE;
+
 const BAND_BOTTOM_RATIO = 0.4;
 
 const BOTTOM_TOLERANCE = 4;
 
 const FULLY_VISIBLE_RATIO = 0.99;
 
-const SCROLL_RELEASE_FALLBACK = 700;
+const SCROLL_RELEASE_FALLBACK = 1500;
+
+const USER_SCROLL_EVENTS = ["wheel", "touchstart", "keydown"] as const;
+
+const scrollCannotAdvance = () => {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  return window.scrollY <= 0 || window.scrollY >= max - BOTTOM_TOLERANCE;
+};
 
 export function useSectionSpy(ids: readonly string[], defaultId: string, pathname: string) {
   const [activeId, setActiveId] = useState(defaultId);
 
   const presentIdsRef = useRef<readonly string[]>([]);
   const lockedRef = useRef(false);
-  const releaseRef = useRef<() => void>(() => {});
+  const cancelRef = useRef<() => void>(() => {});
   const resolveRef = useRef<() => void>(() => {});
 
   useEffect(() => {
@@ -39,10 +49,6 @@ export function useSectionSpy(ids: readonly string[], defaultId: string, pathnam
         rect.top < window.innerHeight * BAND_BOTTOM_RATIO
       );
     };
-
-    const isAnchored = (section: HTMLElement) =>
-      Math.abs(section.getBoundingClientRect().top - anchorOffset(section)) <=
-      ANCHOR_TOLERANCE;
 
     const tailWins = () =>
       lastIsFullyVisible ||
@@ -83,26 +89,40 @@ export function useSectionSpy(ids: readonly string[], defaultId: string, pathnam
     };
   }, [ids, pathname]);
 
-  useEffect(() => () => releaseRef.current(), []);
+  useEffect(() => () => cancelRef.current(), []);
 
   const select = useCallback((id: string) => {
     if (!presentIdsRef.current.includes(id)) return;
+    const target = document.getElementById(id);
+    if (!target) return;
 
+    cancelRef.current();
     setActiveId(id);
-    releaseRef.current();
     lockedRef.current = true;
 
-    const release = () => {
+    const cancel = () => {
       clearTimeout(timer);
-      window.removeEventListener("scrollend", release);
-      releaseRef.current = () => {};
+      window.removeEventListener("scrollend", onScrollEnd);
+      USER_SCROLL_EVENTS.forEach((type) => window.removeEventListener(type, release, true));
+      cancelRef.current = () => {};
+    };
+
+    const release = () => {
+      cancel();
       lockedRef.current = false;
       resolveRef.current();
     };
 
+    const onScrollEnd = () => {
+      if (isAnchored(target) || scrollCannotAdvance()) release();
+    };
+
     const timer = setTimeout(release, SCROLL_RELEASE_FALLBACK);
-    window.addEventListener("scrollend", release);
-    releaseRef.current = release;
+    window.addEventListener("scrollend", onScrollEnd);
+    USER_SCROLL_EVENTS.forEach((type) =>
+      window.addEventListener(type, release, { capture: true, passive: true }),
+    );
+    cancelRef.current = cancel;
   }, []);
 
   return { activeId, select };
