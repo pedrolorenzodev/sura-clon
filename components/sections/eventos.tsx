@@ -16,7 +16,7 @@ export function Eventos() {
         <CardSlider
           labels={{ prev: "Ver eventos anteriores", next: "Ver más eventos" }}
           viewportClassName="gap-6 -mb-1.75 pb-2 pt-4.25 desktop:-mb-1.5 desktop:pb-2 desktop:pt-7"
-          arrowClassName="top-50.5"
+          arrowClassName="top-[calc(var(--spacing)*7+var(--spacing-event-surface)/2)]"
         >
           {events.map((event) => (
             <EventCard key={event.id} event={event} />
