@@ -49,7 +49,7 @@ export function EventCard({ event }: { event: EventCardData }) {
         )}
       />
 
-      <div className="pointer-events-none absolute inset-0 overflow-x-clip">
+      <div className="event-art-clip pointer-events-none absolute inset-0">
         <div className={cn("absolute overflow-hidden", art.window)}>
           <Image
             src={art.src}
