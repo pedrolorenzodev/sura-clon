@@ -6,13 +6,13 @@ import { gamesRoutePromo } from "@/lib/data/games";
 
 export function GamesBanner() {
   return (
-    <div className="border-gradient-banner group aspect-[359/478] overflow-hidden rounded-xl shadow-banner desktop:aspect-auto desktop:h-99.75">
+    <div className="border-gradient-banner group aspect-[359/478] max-h-games-banner-mobile-max w-full overflow-hidden rounded-xl shadow-banner desktop:aspect-auto desktop:h-99.75">
       <Image
         src={gamesRoutePromo.imageSrcMobile}
         alt=""
         width={512}
         height={512}
-        className="absolute left-[-37.88%] top-[-32.01%] h-[132.01%] w-[175.77%] max-w-none object-cover desktop:hidden"
+        className="absolute left-[-37.88%] top-[-32.01%] h-[132.01%] w-[175.77%] max-w-none object-cover object-[50%_30%] desktop:hidden"
       />
       <Image
         src={gamesRoutePromo.imageSrc}

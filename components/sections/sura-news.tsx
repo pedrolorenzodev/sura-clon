@@ -33,10 +33,9 @@ export function SuraNews() {
               <TitleSweep>{newsIntro.title}</TitleSweep>
             </h2>
             <p className="font-techno text-news-copy uppercase text-muted-foreground">
-              {newsIntro.body.map((line, index) => (
-                <span key={line}>
+              {newsIntro.body.map((line) => (
+                <span key={line} className="block text-balance">
                   {line}
-                  {index < newsIntro.body.length - 1 && <br />}
                 </span>
               ))}
             </p>

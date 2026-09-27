@@ -158,7 +158,7 @@ Acá van solo los valores, que sí dependen del target.
 
 Los widths de los frames son los de `VIEWPORTS` en `scripts/shot.mjs`: mobile 390 · desktop 1440.
 
-### Breakpoint: 1100px, con el mobile topado en 430
+### Breakpoint: 768px, con el desktop escalado hasta 1100 y el mobile topado en 430
 
 **Actualizado el 2026-09-23** (usuario). Antes el corte era **391px** (decisión del 2026-09-18,
 para que una ventana de 1339px no cayera en mobile): de 391 para arriba mandaba desktop, y entre
@@ -167,13 +167,75 @@ controles de `/games`, Sura News y los badges del footer se cortaban debajo de ~
 del hero desbordaba debajo de ~1100; y Medallas se desarmaba debajo de 1366 (celda de 106px a
 1440, 53 a 1280, 22 debajo de 1200).
 
-Ahora son tres tramos, sin un tercer breakpoint (`AGENTS.md` regla 7 sigue en pie):
+**Actualizado otra vez el 2026-09-26** (feedback de testers: al abrir DevTools la ventana queda en
+~850–1050 y la web saltaba a la columna mobile; la van a mirar developers). Decisión del usuario:
+**escalar el desktop** en vez de diseñar un layout intermedio. Son cuatro tramos y siguen siendo
+dos layouts (`AGENTS.md` regla 7 sigue en pie):
 
 | Ancho | Qué se ve |
 |---|---|
-| ≤ 430 | El diseño mobile, fluido. **390 no cambió un píxel.** |
-| 431 – 1099 | El mismo layout mobile en una **columna centrada de 430** (`--container-mobile`, el iPhone más ancho), con el fondo de página a los costados. Sin tope, a 800–1099 las medallas y las cards de Juegos quedaban gigantes y la bottom bar de borde a borde. El `<body>`, el header fijo y la bottom bar llevan `max-w-mobile`. |
-| ≥ 1100 | El diseño desktop (`--breakpoint-desktop: 1100px`). **1440 no cambió un píxel.** |
+| ≤ 767 | El diseño mobile, **fluido hasta 767** (usuario, 2026-09-27). **390 no cambió un píxel.** Del 2026-09-26 al 27, entre 431 y 767 era una columna centrada de 430 con el fondo a los costados; ahora sólo la bottom bar queda en 430, centrada (`max-w-mobile`). Detalle en *El mobile ancho*, abajo. |
+| 768 – 1099 | **El desktop maquetado a 1100 y escalado** con CSS `zoom` (ancho / 1100: 70 % a 768, 91 % a 1000). Lo calcula un script inline en el `<head>` (`lib/desktop-zoom.ts`), que escribe `--desktop-zoom` en `<html>` antes de pintar y lo recalcula al cambiar el tamaño de la ventana. Decide el tramo con la misma media query que el CSS y toma el ancho de `clientWidth`, que no cambia con el pinch-zoom del iPad (`innerWidth` sí). |
+| ≥ 1100 | El diseño desktop fluido (`--breakpoint-desktop: 768px`, `desktop:` rige desde ahí). **1440 no cambió un píxel.** |
+
+**El mobile ancho** (2026-09-27, pedido del usuario: entre 390 y ~700 la columna de 430 quedaba chica y con los costados vacíos). Se comparó con escalar el layout de 430 con `zoom` hasta 767: todo salía 1,8× más grande, como un teléfono ampliado, y se descartó. Ahora el layout mobile se estira y sólo se ajustan las piezas que al estirarse se veían mal, con fórmulas que **hasta 430 dan exactamente lo de antes**:
+
+- **Grillas de cards** (Juegos del Home, `/games`, `/missions`): `card-grid`, `repeat(auto-fill, minmax(140px, 1fr))` con un piso de dos columnas. 2 columnas hasta ~490, 3 hasta ~640 y 4 después, en vez de dos cards gigantes. `/tournaments` usa `card-grid-wide` (mínimo 268, la card de desktop): 1 columna hasta ~590 y 2 después.
+- **Medallas**: la grilla sigue en 3 × 3 pero la celda deja de crecer en 128 (a 390 mide 98) y la grilla se centra en su panel. Estirada, cada medalla llegaba a 200.
+- **Podio mobile**: la card del 1º medía 144 fijos y las otras dos se llevaban todo el resto (280 cada una a 767). Ahora mide 144 hasta 430 y de ahí crece 0,45 px por cada píxel de ventana: 296 a 767, cerca de la proporción que tiene a 390.
+- **Banner de `/games` mobile**: tiene la proporción del diseño hasta 530 de alto (el que tiene a 430); arriba de eso se recorta con el foco al 30 % para que no entre el logo de FC Mobile y se vean las caras. A 767 se ve algo blando: la foto mobile mide 512 px.
+- **Torneos en 2 columnas**: la fecha, los badges y *Hosted by* se anclan abajo (`mt-auto`, sólo mobile), así un título de una línea y uno de dos no desalinean la fila. En desktop lo sigue resolviendo la caja fija del título.
+- El resto (hero, carruseles, filas, footer, 404) ya estiraba bien.
+- **Quedan dos cosas aceptadas:** con 3 columnas la última fila de Juegos del Home (8 cards) y de `/missions` (16) queda incompleta, entre ~490 y ~640; y el slide de Valorant, que es un arte vertical anclado arriba, a 767 se ve como un primer plano de Jett (se ve el 48 % de arriba, contra el 94 % a 390). Yi, el slide por defecto, usa `cover` y se ve bien. Si molesta, la salida sería usar el recorte desktop de Jett desde ~600, que es un tercer tramo.
+
+Verificado contra el estado anterior: idéntico al píxel a 360, 375, 390 y 414 en las seis rutas, y en todo desktop. A 320 el Home cambia 6 píxeles en Δ2 dentro de Medallas (redondeo de las pistas de la grilla).
+
+**Coordenadas bajo zoom.** Con `zoom`, `getBoundingClientRect` devuelve píxeles visuales y el
+scroll, los estilos calculados y las custom properties siguen en píxeles de layout. Todo lo que
+mezcla los dos pasa por `lib/css-zoom.ts` (`currentCSSZoom`): el ancla del scroll-spy, el paso de
+`CardSlider`, el ancho fijo de `ScrambleText` y la posición de la luz de `BorderLight`. Sin eso,
+bajo zoom el carrusel avanzaba 253 px en vez de 276 y el spy no detectaba ninguna sección posada.
+El margen para detectar el final del carrusel (`SUBPIXEL_SLACK`) pasó de 1 a 2 px: en Firefox el
+zoom dejaba 1,1 px y hacía falta un click de más. Tampoco `scrollHeight` viene escalado, así que el
+spy lo multiplica por el zoom para saber si se llegó al fondo. Y `100vw` sí se escala: el título
+del hero divide por `--desktop-zoom` para calcular sobre los 1100 de layout (a 900 medía 26,7 px en
+vez de los 40,5 escalados). Si el navegador no tiene `currentCSSZoom` (Safari viejo), el zoom se
+deduce del ancho visual contra `offsetWidth`. Verificado en Chromium, WebKit y Firefox a 760,
+800, 820, 1000 y 1099. **Ojo al medir con Playwright:** una captura de página completa agranda la
+ventana al ancho del contenido (1100) y desactiva el zoom; para ver el tramo escalado hay que sacar
+capturas de la ventana.
+
+**El layout de 1100 se pulió** (usuario, 2026-09-26), porque ahora es también el que se ve escalado
+de 768 a 1099. Todo con fórmulas que **a 1440 dan exactamente el valor de antes**:
+
+- **Leaderboard + Medallas:** el gap entre las dos columnas baja de 120 a 32 px entre 1144 y 804 de
+  columna (`--spacing-leaderboard-gap-share`), y el resto se reparte 657 : 367 con `flex-grow`
+  (`flex-657` / `flex-367`). A 1100: 495 / 32 / 277, contra 462 / 84 / 258 antes; las medallas
+  crecen y los nombres se leen más. Primero el ancho del Leaderboard era un `calc()` con `%` y `px`
+  (`--spacing-leaderboard-share`, borrado el 2026-09-27): WebKit lo resolvía mal bajo `zoom` y a 768
+  daba 345 / 427, con las medallas gigantes. **Bajo `zoom`, en WebKit, nada de `calc()` que mezcle
+  `%` y `px` en un ancho.**
+- **Podio:** padding, gap y avatar pasan a ser proporción de la card (16/211, 16/179, 56/179 de la
+  card de 1440), topados en 16, 16 y 56 px. A 1100 el puntaje se salía de su pill y ahora entra.
+  Chrome guarda esos `calc` como un porcentaje flotante y a 1440 daba 15,98 en vez de 16, así que
+  el `min()` lleva un margen de 0,5 px (`--subpixel-slack`) que hace ganar el valor exacto.
+- **Sura News:** los renglones de la bajada son bloques con `text-wrap: balance` en vez de `<br>`.
+  A 1440 cada renglón entra entero y se ven igual; más angosto, un renglón que no entra se parte
+  parejo en vez de dejar una palabra sola ("GAMING,").
+- **Cards de Juegos:** los badges quedan en una sola fila (`max-h-6` + `overflow-hidden`); el que no
+  entra pasa a una segunda fila oculta. Así todos los paneles miden lo mismo en `/games` y en el
+  Home; a 1440 los badges ya entraban en una fila. (Reemplaza lo de abajo: ya no pasan a una segunda
+  fila visible.)
+
+**Revisado por un agente aparte** además de las comparaciones: encontró el título, el `scrollHeight`
+y el pinch del iPad, ya corregidos.
+
+**Verificado:** las seis rutas idénticas al píxel a 390, 500, 1440 y 1920 contra el commit anterior;
+cero scroll lateral a 820, 1000, 1100, 1200 y 1280; persiana, video del hero, riel, carruseles y
+scroll-spy (incluidos los clicks rápidos) funcionando bajo zoom, sin errores de consola.
+
+**Antes, del 2026-09-23 al 2026-09-26**, eran tres tramos: la columna mobile llegaba hasta 1099 y el
+desktop arrancaba en 1100 (`--breakpoint-desktop: 1100px`). Lo que sigue es de esa época.
 
 Dentro de desktop, dos piezas pasaron de medidas fijas a **proporciones que a 1440 dan exactamente
 el mismo valor**:
@@ -184,8 +246,7 @@ el mismo valor**:
 - **Leaderboard + Medallas**: la columna del Leaderboard es 657/1144 de la fila y el gap 120/1144
   (`--spacing-leaderboard-share` / `-gap-share`); Medallas se queda con el resto. A 1144 da 657 / 120
   / 367. Más angosto escalan juntas: el círculo de la medalla mide 86 a 1440, 69 a 1280 y 50 a 1100.
-  El podio aguanta hasta 1100 sin que el pill se salga de la card —por eso el corte está ahí—; los
-  nombres largos se truncan con `…`, que es para lo que está el `truncate`.
+  (Desde el 2026-09-26 el reparto cambió debajo de 1440: ver arriba.)
 - Y los badges de las cards de Juegos no parten su texto (`whitespace-nowrap`): si no entran, pasan a
   una segunda fila.
 - **Los carruseles de Eventos y Misiones** (2026-09-26, feedback de un tester con una MacBook 16"):
@@ -1009,6 +1070,8 @@ public/assets/<pantalla>/   assets exportados de Figma
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
 | 2026-09-25 | **404 “Fuera del mapa”**: `--route-draw-duration` (450ms), `--blip-blink-duration` (1600ms), `--spacing-map` (592), `--spacing-map-mobile` (232), `--spacing-map-grid` (32) / `-desktop` (48); utilities `map-grid`, `route-draw-y`, `route-draw-x`, `route-draw-after-route`, `blip-blink`; variante `rail-hidden`; `card-bracket` suma el estado `data-locked` con `--bracket-lead` y `@starting-style`, así también espera a la línea al montar | 404 | Pantalla sin frames, con diseño propio y excepción a la regla 2. Detalle en *La 404*, § 5. `ScrambleText` suma `decodeOnMount` y ahora deja fijos los caracteres que no son letras ni números (`/`, `-`, `·`); con los labels actuales no cambia nada, porque todos son letras y espacios. |
+| 2026-09-27 | **El mobile se estira hasta 767**: `--spacing-card-grid-min` (140), `--spacing-card-grid-wide-min` (268), `--spacing-medal-cell-max` (128), `--spacing-podium-first-mobile`, `--spacing-games-banner-mobile-max` (530); utilities `card-grid` / `card-grid-wide`; `max-w-mobile` queda sólo en la bottom bar | Todas las rutas | Pedido del usuario: entre 390 y ~700 se veía la columna mobile de 430 con los costados vacíos. Detalle en § 4, *El mobile ancho*. |
+| 2026-09-26 | `--breakpoint-desktop` **1100 → 768px**, `--desktop-zoom` (lo escribe `lib/desktop-zoom.ts`), `--subpixel-slack`, `--spacing-podium-pad` / `-gap` / `-avatar`; `--spacing-leaderboard-gap-share` y `-share` reescritos; `lib/css-zoom.ts` | Todas las rutas | Feedback de testers: con DevTools abierto la web saltaba a mobile. El desktop se escala entre 768 y 1099 y el layout de 1100 se pulió. Detalle y medidas en § 4, *Breakpoint*. |
 | 2026-09-26 | **Arte del hero precargado** (`lib/hero-preload.ts`): las capas de todos los slides quedan montadas y el cruce espera al arte | Hero | Feedback de un tester: el primer cambio de juego pegaba el cambiazo. Detalle en *Arte del hero precargado*, § 6. |
 | 2026-09-26 | **Carruseles fluidos en desktop**: utilities `slide-quarter` y `slide-third-capped`; la card de Eventos reordena scrim y texto en un solo bloque | Eventos · Misiones | Feedback de un tester: la tercera card de Eventos y la cuarta de Misiones se cortaban debajo de 1440. Detalle en § 4, *Breakpoint*. |
 | 2026-09-26 | **El riel se va fuera del Home**: utility `nav-rail-away`, `--rail-away-duration` (300ms), keyframe `rail-away`; se borran `--spacing-route-inset`, la variante `rail-hidden` y `data-hide-rail` | Rutas internas · 404 | Feedback de un tester. La columna de las rutas internas pasa a 40 / 40. Verificado: el Home y todo mobile quedan idénticos al píxel; cambian las cuatro rutas internas a 1440. Detalle en § 5, *Fuera del Home el riel y la bottom bar se van*. |
@@ -1168,12 +1231,16 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Las rutas de detalle caen en la 404** | `/tournaments/123`, `/games/…` y compañía muestran “Fuera del mapa”. Hoy ningún link de la UI apunta ahí (*Rutas de detalle apagadas*, § 6). | Cuando se implemente un detalle, su ruta existe y deja de caer en la 404 sola. |
 | **Entrar a la 404 navegando vuelve a montar el chrome** | Consecuencia de que la 404 sea el `not-found` raíz (ver *Notas de arquitectura*). El header, el riel y el footer se vuelven a montar, y la flecha del header mobile pierde el historial del sitio: vuelve al Home. | Sólo importa si aparecen links internos a rutas que no existen. |
 | ~~**Volver al Home desde el riel cancela la persiana**~~ | Encontrado el 2026-09-26: desde una ruta interna, los ítems del riel cambiaban de pantalla sin persiana (React la cancelaba por una actualización sincrónica antes de que arrancara). | **Resuelta sin tocarla** (2026-09-26): fuera del Home ya no hay riel, así que ese camino no existe. Si el riel vuelve a las rutas internas, el bug vuelve: el candidato era el `useScrolled` del header. |
+| **El zoom del navegador rinde menos entre 768 y 1099** | Con Ctrl + en una pantalla de 1440, a 150 % la ventana queda en 960 y el escalado del desktop le saca una parte: el texto crece a ~131 % en vez de 150 %. A 200 % se pasa a la columna mobile. Antes, esos usuarios veían directamente la columna mobile. | Si molesta, detectar el zoom del navegador con `devicePixelRatio` no es confiable (monitores externos); la salida sería dejar de escalar debajo de cierto ancho. Entra en la pasada de accesibilidad diferida. |
+| **Sin JS, o en Firefox < 126, el tramo 768–1099 no se escala** | Se ve el layout de 1100 sin reducir, recortado por los `overflow-x-clip`. | Nada: es el respaldo esperado. |
+| **Un iPad entre 768 y 1099 baja los videos de desktop** | Con el corte en 768 el hero elige las variantes desktop, intro incluida. | Si pesa, elegir la variante por ancho visual además del breakpoint. |
 | **Con auriculares Bluetooth baratos el primer sonido después de un rato puede salir bajo o perderse** | Lo probó el usuario (2026-09-26): con cable funciona bien. El auricular apaga su amplificador con casi silencio y la señal de -80 dBFS no lo despierta (ver § 5, *La salida de audio no se duerme*). | Nada por ahora: subir `keepAliveGain` hasta despertarlos haría la señal audible. Falta además ver si Safari muestra el ícono de audio en la pestaña por esa señal. |
 | **Nada suena antes del primer click o tecla** | Es la política de autoplay de todos los navegadores. Investigado en el código fuente y probado: no hay workaround legítimo para una primera visita (ver § 5, *Sonido*). | Nada. Si vuelve la música de fondo, el *Media Engagement* de Chrome haría que los visitantes frecuentes escuchen desde el primer hover. |
 | **El sonido no se probó en Safari ni Firefox reales** | Sólo en Chrome y en los builds de WebKit y Firefox de Playwright. El respaldo AAC para Safari viejo no se ejercitó. | Probarlo a mano en Safari (macOS e iOS) antes de dar la tanda por cerrada. |
 | **El "Ver todo" de Sura News no se puede tocar en el centro en mobile** | Bug anterior al sonido: el aire que la lista de cards reserva para la sombra del hover queda encima del botón. Hoy el botón no navega, así que sólo se pierden su hover y su sonido. | `pointer-events-none` en la lista y `pointer-events-auto` en sus ítems, verificando que el carrusel siga scrolleando con el dedo. |
 | **A 320px el nombre del usuario desaparece en las rutas internas** | Lo empujan la flecha de volver y el toggle de sonido (§ 0, punto 15). | Si molesta, achicar los gaps del header mobile. |
 | **La flecha de volver no restaura el scroll entre rutas internas** | Si la pantalla anterior no era el Home, `goBack` sigue haciendo `router.back()`: vuelve con su scroll pero sin persiana. Hoy no hay forma de ir de una ruta interna a otra desde la UI, así que sólo pasa con el historial del navegador. | Nada, salvo que aparezcan links entre rutas internas. |
+| **En Safari (desktop) las dos cards chicas de Sura News no muestran la imagen** | Encontrado el 2026-09-27 por el QA del mobile ancho, anterior a ese cambio: en `news-card-wide.tsx` la caja de la imagen es `aspect-[129/97] self-stretch` y WebKit no deriva el ancho del alto estirado, así que mide 0. Pasa también a 1440. | Darle a la caja un ancho explícito (el que mide en Chromium) o un alto definido para que el `aspect-ratio` tenga de dónde partir. |
 | **Assets de Riot en el hero** | El login screen de PROJECT: Yi es de Riot Games. Su política *Legal Jibber Jabber* lo permite en proyectos de fans gratuitos y no comerciales, **con un aviso visible** de que se usan assets de Riot y que Riot no avala el proyecto. | **Por ahora no aplica** (usuario, 2026-09-25): el proyecto se comparte sólo entre conocidos y no está previsto publicarlo. **Si se publica**, sumar ese aviso antes (el footer es el lugar natural) o sacar el slide. **Para producción no sirve**: licencia de Riot o video propio de diseño. |
 | ~~**El video de Yi es de 1280 × 800**~~ | Era el único tamaño de la fuente. | **Resuelta** (2026-09-25) con Real-ESRGAN 4×: ver *Intro de PROJECT: Yi*. Si aparece un original más grande, reemplaza al escalado. |
 | **En mobile la intro ocupa sólo la franja del hero** | Durante la intro el video se ve en los 524 px del hero y el resto de la pantalla queda en `#202020`. | Esperando el feedback del usuario al verlo en la web. |
@@ -1827,6 +1894,7 @@ lista se mantiene acá para que no se expanda sola:
 | `globals.css` | `@theme static` (sin él `/styleguide` lee vacío), el `border-box` del shorthand de las cards de Eventos y el `1ms` del cruce con `prefers-reduced-motion` |
 | `components/layout/site-chrome.tsx` | `Nav` tiene que quedar hermano anterior del footer: el footer lee el estado de la bottom bar con `peer/bar` |
 | `globals.css` · `intro-veil-sections` | Veila todo hijo de `<main>` salvo `#home`: si el hero cambia de id, la intro esconde el propio hero |
+| `globals.css` · `--breakpoint-desktop` | El corte vive también en `DESKTOP_MIN_WIDTH` (`lib/desktop-zoom.ts`): si cambia uno solo, el zoom y el CSS se contradicen |
 | `next.config.ts` | `images.unoptimized` y `devIndicators: false` |
 
 **Dos se encodearon en vez de comentarse**, que es lo que la regla pide intentar primero:

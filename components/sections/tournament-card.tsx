@@ -40,14 +40,14 @@ export function TournamentCard({ tournament }: { tournament: Tournament }) {
           )}
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-1 flex-col gap-3 desktop:flex-none">
           <p className="truncate text-xs font-semibold text-muted-foreground">{tournament.game}</p>
 
           <h3 className="flex items-center font-techno text-base uppercase text-foreground desktop:h-14 desktop:text-card-title">
             <span className="line-clamp-2">{tournament.title}</span>
           </h3>
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-2 desktop:mt-0">
             <span className="font-techno text-note uppercase text-brand">{tournament.date}</span>
             <span className="flex shrink-0 items-center gap-1 rounded-xs border border-gold px-2 py-1">
               <Image

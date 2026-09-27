@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
+import { desktopZoomScript } from "@/lib/desktop-zoom";
 import { introBootScript } from "@/lib/hero-intro";
 import { soundBootScript } from "@/lib/sfx-boot";
 
@@ -57,8 +58,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         {introBootScript && <script dangerouslySetInnerHTML={{ __html: introBootScript }} />}
         <script dangerouslySetInnerHTML={{ __html: soundBootScript }} />
+        <script dangerouslySetInnerHTML={{ __html: desktopZoomScript }} />
       </head>
-      <body className="mx-auto flex min-h-full w-full max-w-mobile flex-col desktop:max-w-none">{children}</body>
+      <body className="flex min-h-full w-full flex-col">{children}</body>
     </html>
   );
 }

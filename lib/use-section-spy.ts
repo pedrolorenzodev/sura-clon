@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { cssZoom } from "@/lib/css-zoom";
+
 const anchorOffset = (section: HTMLElement) =>
-  Number.parseFloat(getComputedStyle(section).scrollMarginTop) || 0;
+  (Number.parseFloat(getComputedStyle(section).scrollMarginTop) || 0) * cssZoom(section);
 
 const ANCHOR_TOLERANCE = 2;
 
@@ -18,8 +20,11 @@ const SCROLL_RELEASE_FALLBACK = 1500;
 
 const USER_SCROLL_EVENTS = ["wheel", "touchstart", "keydown"] as const;
 
+const documentHeight = () =>
+  document.documentElement.scrollHeight * cssZoom(document.documentElement);
+
 const scrollCannotAdvance = () => {
-  const max = document.documentElement.scrollHeight - window.innerHeight;
+  const max = documentHeight() - window.innerHeight;
   return window.scrollY <= 0 || window.scrollY >= max - BOTTOM_TOLERANCE;
 };
 
@@ -52,14 +57,12 @@ export function useSectionSpy(ids: readonly string[], defaultId: string, pathnam
 
     const tailWins = () =>
       lastIsFullyVisible ||
-      window.scrollY + window.innerHeight >=
-        document.documentElement.scrollHeight - BOTTOM_TOLERANCE;
+      window.scrollY + window.innerHeight >= documentHeight() - BOTTOM_TOLERANCE;
 
     const resolve = () => {
       if (lockedRef.current) return;
 
-      const doc = document.documentElement;
-      if (doc.scrollHeight - window.innerHeight <= BOTTOM_TOLERANCE) return;
+      if (documentHeight() - window.innerHeight <= BOTTOM_TOLERANCE) return;
 
       const next =
         sections.find(isAnchored)?.id ??

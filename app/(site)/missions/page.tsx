@@ -34,7 +34,7 @@ export default function MissionsPage() {
           ))}
         </CardSlider>
 
-        <ul className="grid grid-cols-2 gap-3 desktop:grid-cols-4 desktop:gap-6">
+        <ul className="card-grid grid gap-3 desktop:grid-cols-4 desktop:gap-6">
           {allMissions.map((mission) => (
             <MissionCard key={mission.id} mission={mission} compact />
           ))}

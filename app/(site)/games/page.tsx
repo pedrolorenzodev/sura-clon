@@ -48,7 +48,7 @@ export default function GamesPage() {
           <GamesBanner />
 
           <div className="flex flex-col gap-6">
-            <ul className="grid grid-cols-2 gap-4 desktop:grid-cols-4 desktop:gap-6">
+            <ul className="card-grid grid gap-4 desktop:grid-cols-4 desktop:gap-6">
               {gamesCatalog.map((game) => (
                 <GameCard key={game.id} game={game} largeTitle />
               ))}

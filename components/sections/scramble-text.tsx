@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { layoutWidth } from "@/lib/css-zoom";
 import { isAppReady, prefersReducedMotion, readMs } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -38,7 +39,7 @@ export function ScrambleText({
     const run = () => {
       if (running || prefersReducedMotion()) return;
       running = true;
-      setWidth(el.getBoundingClientRect().width);
+      setWidth(layoutWidth(el));
 
       const duration = readMs("--scramble-duration");
       const step = readMs("--scramble-step");

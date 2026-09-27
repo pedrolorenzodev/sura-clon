@@ -23,7 +23,7 @@ export default function TournamentsPage() {
           inputClassName="desktop:text-base"
         />
 
-        <ul className="grid grid-cols-1 gap-6 desktop:grid-cols-4">
+        <ul className="card-grid-wide grid gap-6 desktop:grid-cols-4">
           {tournaments.map((tournament) => (
             <TournamentCard key={tournament.id} tournament={tournament} />
           ))}

@@ -35,18 +35,18 @@ export function LeaderboardPodiumDesktop({
               href={detailHref("profile", entry.id)}
               aria-label={`Ver el perfil de ${entry.name}`}
               className={cn(
-                "relative flex h-podium-card w-full min-w-0 items-center gap-4 rounded-lg p-4 ring-1 ring-inset transition-transform duration-200 ease-reveal hover:-translate-y-0.5 focus-visible:-translate-y-0.5 motion-reduce:transition-none",
+                "relative flex h-podium-card w-full min-w-0 items-center gap-podium-gap rounded-lg p-podium-pad ring-1 ring-inset transition-transform duration-200 ease-reveal hover:-translate-y-0.5 focus-visible:-translate-y-0.5 motion-reduce:transition-none",
                 GRADIENT[rank],
                 style.ring,
                 rank === 1 && "shadow-gold-glow",
               )}
             >
-              <div className="relative shrink-0">
+              <div className="relative w-podium-avatar shrink-0">
                 <UserAvatar
                   src={entry.avatarSrc}
                   size={56}
                   ringClassName={style.avatarRing}
-                  className="size-14"
+                  className="aspect-square size-auto w-full"
                 >
                   <PodiumMedal rank={rank} className="size-4.5" />
                 </UserAvatar>

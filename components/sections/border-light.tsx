@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { cssZoom } from "@/lib/css-zoom";
 import { cn } from "@/lib/utils";
 
 export function BorderLight({ className }: { className?: string }) {
@@ -16,8 +17,9 @@ export function BorderLight({ className }: { className?: string }) {
     const move = (event: PointerEvent) => {
       if (event.pointerType !== "mouse") return;
       const rect = host.getBoundingClientRect();
-      light.style.setProperty("--light-x", `${event.clientX - rect.left}px`);
-      light.style.setProperty("--light-y", `${event.clientY - rect.top}px`);
+      const zoom = cssZoom(host);
+      light.style.setProperty("--light-x", `${(event.clientX - rect.left) / zoom}px`);
+      light.style.setProperty("--light-y", `${(event.clientY - rect.top) / zoom}px`);
       setLit(true);
     };
     const leave = () => setLit(false);

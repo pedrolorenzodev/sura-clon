@@ -16,7 +16,7 @@ export function Leaderboard() {
     >
       <div className="mx-auto max-w-page">
         <div className="flex flex-col gap-section-gap-mobile desktop:h-leaderboard-row desktop:flex-row desktop:gap-leaderboard-gap-share">
-          <div className="flex flex-col gap-title-gap desktop:w-leaderboard-share">
+          <div className="flex flex-col gap-title-gap desktop:min-w-0 desktop:flex-657">
             <SectionHeader title="Leaderboard" href="/leaderboard" />
 
             <div className="flex flex-col gap-6 desktop:flex-1 desktop:gap-3">
@@ -42,7 +42,7 @@ export function Leaderboard() {
             </div>
           </div>
 
-          <Medallas className="desktop:flex-1" />
+          <Medallas className="desktop:flex-367" />
         </div>
       </div>
     </section>

@@ -51,7 +51,7 @@ export function LeaderboardPodiumMobile({
             className={cn(
               "flex",
               ORDER[rank],
-              isFirst ? "w-36 shrink-0" : "min-w-0 flex-1",
+              isFirst ? "w-podium-first-mobile shrink-0" : "min-w-0 flex-1",
             )}
           >
             <CardLink

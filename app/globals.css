@@ -11,7 +11,8 @@
      BREAKPOINTS
      ============================================================ */
   --breakpoint-*: initial;
-  --breakpoint-desktop: 1100px;
+  /* no tocar sin cambiar DESKTOP_MIN_WIDTH en lib/desktop-zoom.ts */
+  --breakpoint-desktop: 768px;
 
   /* ============================================================
      TIPOGRAFÍA
@@ -36,7 +37,7 @@
   --text-display-fluid: min(
     var(--text-display),
     calc(
-      (100vw - var(--spacing-gutter-desktop) * 2 - var(--spacing) * 20 - var(--spacing-hero-gap)) *
+      (100vw / var(--desktop-zoom, 1) - var(--spacing-gutter-desktop) * 2 - var(--spacing) * 20 - var(--spacing-hero-gap)) *
         0.069041
     )
   );
@@ -303,10 +304,24 @@
   --spacing-event-surface-mobile: 167px;
 
   --spacing-mission-card-mobile: 261px;
-  --spacing-leaderboard-share: calc(100% * 657 / 1144);
-  --spacing-leaderboard-gap-share: calc(100% * 120 / 1144);
+  --spacing-card-grid-min: 140px;
+  --spacing-card-grid-wide-min: 268px;
+  --spacing-medal-cell-max: 128px;
+  --spacing-leaderboard-gap-share: max(
+    calc(var(--spacing) * 8),
+    calc(120px - (var(--container-page) - 100%) * 0.2588)
+  );
 
   --spacing-podium-card: 97px;
+  --spacing-games-banner-mobile-max: 530px;
+  --spacing-podium-first-mobile: max(
+    calc(var(--spacing) * 36),
+    calc(var(--spacing) * 36 + (100vw - var(--container-mobile)) * 0.45)
+  );
+  --subpixel-slack: 0.5px;
+  --spacing-podium-pad: min(16px, calc(100% * 16 / 211 + var(--subpixel-slack)));
+  --spacing-podium-gap: min(16px, calc(100% * 16 / 179 + var(--subpixel-slack)));
+  --spacing-podium-avatar: min(56px, calc(100% * 56 / 179 + var(--subpixel-slack)));
   --spacing-leaderboard-row: 486px;
 
   --spacing-section-gap-mobile: 40px;
@@ -954,6 +969,17 @@
 
 @utility slide-quarter {
   width: calc((100% - 3 * var(--spacing) * 6) / 4);
+}
+
+@utility card-grid {
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(var(--spacing-card-grid-min), 50% - var(--spacing) * 2), 1fr)
+  );
+}
+
+@utility card-grid-wide {
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--spacing-card-grid-wide-min), 100%), 1fr));
 }
 
 /* Aire para que un contenedor con overflow no recorte la sombra del hover de
@@ -2055,6 +2081,7 @@ html:active-view-transition-type(nav-back)::view-transition-image-pair(route-shu
   }
   html {
     @apply font-sans;
+    zoom: var(--desktop-zoom, 1);
   }
   html,
   body {

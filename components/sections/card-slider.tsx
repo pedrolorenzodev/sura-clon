@@ -3,9 +3,10 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { layoutWidth } from "@/lib/css-zoom";
 import { cn } from "@/lib/utils";
 
-const SUBPIXEL_SLACK = 1;
+const SUBPIXEL_SLACK = 2;
 
 export function CardSlider({
   labels,
@@ -43,7 +44,7 @@ export function CardSlider({
     const slide = el.firstElementChild;
     if (!slide) return;
     const gap = Number.parseFloat(getComputedStyle(el).columnGap) || 0;
-    const amount = slide.getBoundingClientRect().width + gap;
+    const amount = layoutWidth(slide) + gap;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     el.scrollBy({ left: direction * amount, behavior: reduce ? "instant" : "smooth" });
   };

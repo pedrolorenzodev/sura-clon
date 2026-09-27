@@ -350,7 +350,7 @@ export const motionTokens: Token[] = [
 ];
 
 export const layoutTokens: Token[] = [
-  { name: "--breakpoint-desktop", utility: "desktop:", usage: "Único prefijo responsive. El diseño mobile vive sólo hasta 390px" },
+  { name: "--breakpoint-desktop", utility: "desktop:", usage: "Único prefijo responsive. Desde 768; entre 768 y 1099 el desktop se escala con --desktop-zoom" },
   { name: "--container-page", utility: "max-w-page", usage: "Columna de contenido desktop (4 × 268 + 3 × 24)" },
   { name: "--spacing-gutter", utility: "px-gutter", usage: "Padding lateral de sección, mobile" },
   { name: "--spacing-gutter-desktop", utility: "desktop:px-gutter-desktop", usage: "Gutter desktop; el izquierdo aloja el menú flotante" },
@@ -375,9 +375,16 @@ export const layoutTokens: Token[] = [
   { name: "--spacing-event-surface-mobile", utility: "h-event-surface-mobile", usage: "Alto de la superficie de la card, mobile" },
   { name: "--spacing-section-gap-mobile", utility: "mt-section-gap-mobile", usage: "Separación entre secciones en mobile — no sale del diseño", offDesign: true },
   { name: "--spacing-mission-card-mobile", utility: "w-mission-card-mobile", usage: "Ancho de la card de misión en el carrusel mobile" },
-  { name: "--spacing-leaderboard-share", utility: "w-leaderboard-share", usage: "Ancho de la columna del Leaderboard: 657 / 1144 de la fila, así a 1440 da 657 y escala abajo", offDesign: true },
-  { name: "--spacing-leaderboard-gap-share", utility: "gap-leaderboard-gap-share", usage: "Separación Leaderboard ↔ Medallas: 120 / 1144 de la fila", offDesign: true },
-  { name: "--container-mobile", utility: "max-w-mobile", usage: "Ancho máximo del layout mobile (el iPhone más ancho); entre 431 y 1099 la página es una columna centrada", offDesign: true },
+  { name: "--spacing-leaderboard-gap-share", utility: "gap-leaderboard-gap-share", usage: "Separación Leaderboard ↔ Medallas: 120 a 1440, baja a 32 cuando la fila mide 804", offDesign: true },
+  { name: "--spacing-podium-pad", utility: "p-podium-pad", usage: "Padding de la card del podio: 16 a 1440, proporcional más angosto", offDesign: true },
+  { name: "--spacing-podium-gap", utility: "gap-podium-gap", usage: "Gap avatar ↔ texto del podio: 16 a 1440, proporcional más angosto", offDesign: true },
+  { name: "--spacing-podium-avatar", utility: "w-podium-avatar", usage: "Avatar del podio: 56 a 1440, proporcional más angosto", offDesign: true },
+  { name: "--container-mobile", utility: "max-w-mobile", usage: "Ancho máximo de la bottom bar: de 431 a 767 queda centrada mientras la página se estira", offDesign: true },
+  { name: "--spacing-card-grid-min", utility: "card-grid", usage: "Ancho mínimo de columna de las grillas de cards mobile: 2 columnas hasta 430, 3 desde ~490, 4 desde ~640", offDesign: true },
+  { name: "--spacing-card-grid-wide-min", utility: "card-grid-wide", usage: "Ancho mínimo de columna de la grilla de torneos mobile: 1 columna hasta 430, 2 desde ~590", offDesign: true },
+  { name: "--spacing-medal-cell-max", utility: "grid-cols-[repeat(3,minmax(0,var(--spacing-medal-cell-max)))]", usage: "Tope de la celda de medalla en mobile: a 390 mide 98 y deja de crecer en 128", offDesign: true },
+  { name: "--spacing-podium-first-mobile", utility: "w-podium-first-mobile", usage: "Card del 1º en el podio mobile: 144 hasta 430; de ahí a 767 crece casi la mitad de lo que crece la ventana (296 a 767)", offDesign: true },
+  { name: "--spacing-games-banner-mobile-max", utility: "max-h-games-banner-mobile-max", usage: "Tope de alto del banner de /games en mobile: el que tiene a 430", offDesign: true },
   { name: "--spacing-podium-card", utility: "h-podium-card", usage: "Alto de la card del podio desktop" },
   { name: "--spacing-leaderboard-row", utility: "h-leaderboard-row", usage: "Alto de la fila Leaderboard + Medallas" },
   { name: "--spacing-nav-bar", utility: "h-nav-bar", usage: "Alto de la bottom bar mobile; el footer le deja ese aire abajo" },

@@ -33,7 +33,7 @@ export function GameCard({ game, largeTitle }: { game: Game; largeTitle?: boolea
             {game.title}
           </p>
 
-          <ul className="relative flex items-center gap-1 desktop:flex-wrap desktop:gap-2">
+          <ul className="relative flex items-center gap-1 desktop:max-h-6 desktop:flex-wrap desktop:gap-2 desktop:overflow-hidden">
             {game.badges.map((badge, index) => (
               <li
                 key={`${badge}-${index}`}
