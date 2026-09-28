@@ -874,6 +874,15 @@
   background-image: var(--gradient-hero-scrim-mobile);
 }
 
+@utility hero-art-clip {
+  --scrim-overlap: calc(var(--spacing) * 0.5);
+  clip-path: inset(var(--scrim-overlap) 0);
+
+  @variant desktop {
+    clip-path: inset(0 0 var(--scrim-overlap));
+  }
+}
+
 @utility hero-poster-mobile {
   background: var(--hero-poster-mobile) left top / 100% auto no-repeat;
 }

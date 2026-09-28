@@ -370,7 +370,7 @@ export function HeroBackground() {
       /* no tocar: el -z-10 y el overflow-hidden van en esta capa, nunca en la <section> */
       className="absolute inset-x-0 top-4 -z-10 h-hero-mobile overflow-hidden bg-background desktop:top-0 desktop:h-hero-desktop"
     >
-      <div className="absolute inset-0 isolate opacity-75 desktop:opacity-100">
+      <div className="hero-art-clip absolute inset-0 isolate opacity-75 desktop:opacity-100">
         {mounted.map((index) => (
           <HeroArt
             key={index}
