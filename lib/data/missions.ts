@@ -194,3 +194,56 @@ export const featuredMissions: Mission[] = [
     imageSrc: "/assets/home/misiones/valorant.png",
   },
 ];
+
+const FEATURED_CATEGORY: Record<string, MissionCategory> = {
+  "conecta-x": "sociales",
+  "conecta-instagram": "sociales",
+  "conecta-discord": "sociales",
+  "racha-siete-dias": "sura",
+  "invita-amigos": "sociales",
+  "primer-torneo": "eventos",
+};
+
+export const missionById = new Map<string, Mission>(
+  [
+    ...missions.map((mission) => ({ ...mission, category: "eventos" as const })),
+    ...featuredMissions.map((mission) => ({ ...mission, category: FEATURED_CATEGORY[mission.id] ?? "sura" })),
+    ...allMissions,
+  ].map((mission) => [mission.id, mission]),
+);
+
+const STEPS: Record<MissionCategory, (title: string) => string[]> = {
+  eventos: (title) => [
+    `${title}.`,
+    "Cuando lo logres, sacá una captura donde se vea el resultado.",
+    "Volvé a esta misión y subí la captura.",
+    "Tocá Reclamar y listo, los puntos se suman a tu cuenta.",
+  ],
+  sociales: (title) => [
+    `${title} desde el botón de abajo.`,
+    "Aceptá el permiso para que Sura pueda validar la misión.",
+    "Volvé a esta misión: se valida sola en unos minutos.",
+    "Tocá Reclamar y listo, los puntos se suman a tu cuenta.",
+  ],
+  sura: (title) => [
+    `${title} desde tu cuenta de Sura.`,
+    "Seguí el avance desde tu perfil.",
+    "Cuando la misión figure como lista, volvé acá.",
+    "Tocá Reclamar y listo, los puntos se suman a tu cuenta.",
+  ],
+};
+
+export const missionSteps = (mission: Mission) => STEPS[mission.category ?? "sura"](mission.title);
+
+export const missionCopy = {
+  subtitle: "Completa la misión y obtén los puntos:",
+  subtitleMobile: "Completa la misión y obtén los puntos que te mostramos a continuación:",
+  rewardLabel: "Conseguirás:",
+  stepsTitle: "Pasos a seguir",
+  play: "Jugar ahora",
+  claim: "Reclamar",
+  completed: "Completada",
+  ended: "Finalizada",
+};
+
+export const rewardPoints = (mission: Mission) => Number(mission.reward.replace(/\D/g, ""));

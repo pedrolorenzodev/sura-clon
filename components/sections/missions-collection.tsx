@@ -6,6 +6,7 @@ import { EMPTY_RESULTS_KEY, EmptyResults } from "@/components/sections/empty-res
 import { FilterChips } from "@/components/sections/filter-chips";
 import { FlipList } from "@/components/sections/flip-list";
 import { MissionCard } from "@/components/sections/mission-card";
+import { missionRewardId } from "@/components/sections/mission-modal";
 import { Pagination } from "@/components/sections/pagination";
 import { RouteTabs } from "@/components/sections/route-tabs";
 import { paginate } from "@/lib/collection";
@@ -17,6 +18,7 @@ import {
   missionFilters,
   missionTabs,
 } from "@/lib/data/missions";
+import { useDailyClaim } from "@/lib/use-daily-claim";
 import { useUrlState } from "@/lib/use-url-state";
 
 const DEFAULTS = { categoria: "todas", estado: "disponibles", pagina: "1" };
@@ -25,8 +27,11 @@ export function MissionsCollection({ featured }: { featured: React.ReactNode }) 
   const [state, setState] = useUrlState(DEFAULTS);
   const grid = useRef<HTMLUListElement>(null);
 
+  const { rewards } = useDailyClaim();
   const status = MISSION_FILTER_STATUS[state.estado];
-  const results = allMissions.filter(
+  const results = allMissions
+    .map((mission) => (rewards.includes(missionRewardId(mission.id)) ? { ...mission, status: "completed" as const } : mission))
+    .filter(
     (mission) =>
       (state.categoria === "todas" || mission.category === state.categoria) &&
       (!status || mission.status === status),

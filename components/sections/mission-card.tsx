@@ -1,9 +1,10 @@
+"use client";
+
 import Image from "next/image";
 
-import { CardLink } from "@/components/layout/card-link";
 import { CardBrackets } from "@/components/sections/card-brackets";
+import { MissionLink, useMissionStatus } from "@/components/sections/mission-modal";
 import type { Mission } from "@/lib/data/missions";
-import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 export function MissionCard({
@@ -15,13 +16,14 @@ export function MissionCard({
   className?: string;
   compact?: boolean;
 }) {
-  const done = mission.status === "completed";
-  const ended = mission.status === "ended";
+  const status = useMissionStatus(mission);
+  const done = status === "completed";
+  const ended = status === "ended";
 
   return (
     <li className={cn("flex", className)}>
-      <CardLink
-        href={detailHref("missions", mission.id)}
+      <MissionLink
+        mission={mission}
         className={cn(
           "group relative flex w-full flex-col rounded-lg transition-[translate,box-shadow,scale] duration-200 ease-reveal hover:-translate-y-0.5 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover active:scale-98 motion-reduce:transition-none",
           compact
@@ -114,7 +116,7 @@ export function MissionCard({
           </p>
         </div>
         <CardBrackets />
-      </CardLink>
+      </MissionLink>
     </li>
   );
 }

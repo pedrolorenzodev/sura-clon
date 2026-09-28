@@ -952,6 +952,18 @@ Feedback de Ema: quien mira el sitio rápido clickea cards que no hacen nada, y 
     - El premio de las medallas pasa a KH, como en Mi Perfil, que es el frame más nuevo.
     - RocketMan1989 pasa a tener **43 medallas**, como en el frame de Mi Perfil (antes 0). Por eso cambia "Tu posición" en `/leaderboard`.
 
+**Detalle de misión** 👀 (bloque 50, 2026-09-28). Frames `6008:29125` / `6008:29552`. **El frame es un modal sobre `/missions`**, no una página: se hizo como el modal de usuario, con el `Dialog` de shadcn y el estado en la URL (`?mision=mission-1`). En mobile ocupa la pantalla entera, con la flecha de volver sobre la foto. Lo abren todas las cards de misión: las del Home, las destacadas y las de la grilla. `missions` deja de ser una ruta de detalle en `lib/routes.ts`.
+  - **El botón hace el recorrido que describen los pasos del frame:**
+    - "Jugar ahora" marca la misión como empezada (`startTask`), y el botón pasa a "Reclamar +120".
+    - "Reclamar" suma los SP al header, con el odómetro y el "+120", y la misión queda completada: el botón dice "Completada" y su card pasa al estado completado en todos lados.
+    - En `/missions` la misión sale de "Disponibles" con el reacomodo y aparece en "Completadas".
+    - Una misión finalizada muestra "Finalizada", sin acción. Todo dura la sesión, como el reclamo diario.
+  - **Pasos:** el frame repite los mismos cuatro pasos ("Juega Raven Quest…") en todas las misiones. Acá hay tres plantillas, una por categoría (juego, social, Sura), con el título de la misión en el primer paso (`missionSteps`). Los estilos y el texto del frame se respetan: KH, Inter 12/18 y 18px entre pasos.
+  - **Desvíos:**
+    - El fondo es el mismo del modal de usuario (`#0C0C0C` al 70%, blur de 5px), no el del frame (negro al 60%, blur de 2,5px), para que haya un solo fondo de modal.
+    - En desktop no hay botón de cerrar, como en el frame: se cierra con Esc o tocando afuera. En mobile cierra la flecha de volver.
+    - Los tokens nuevos incluyen `--radius-3xl` (20), el radio del modal.
+
 - **El detalle de evento sale del diseño viejo** ([`412:4384`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4384&m=dev) *Acerca*, [`412:18445`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-18445&m=dev) *Participantes*, [`412:19980`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-19980&m=dev) *Ganadores*): se toma la UX y la UI es la nuestra, como `/tournaments`. Mobile no tiene frame: se adapta del desktop aprobado.
 
 ### Mapa de rutas
@@ -970,7 +982,7 @@ no rutas, y conviven sin conflicto.
 | `/tournaments/:id` | Detalle de evento | ⏳ Pendiente |
 | `/leaderboard` | Leaderboard | 👀 Esperando aprobación (bloques 26–30) |
 | `/missions` | Misiones | 👀 Esperando aprobación (bloques 21–25) |
-| `/missions/:id` | Detalle de misión | ⏳ Pendiente ❓ a confirmar |
+| `/missions/:id` | Detalle de misión | 👀 Es un modal (`?mision=`), no una ruta: bloque 50 |
 | `/news` | Lista de Sura News | ⏳ Pendiente |
 | `/news/:id` | Detalle de noticia | ⏳ Pendiente |
 | `/games` | Lista de juegos | 👀 Esperando aprobación (bloques 31–34) |
@@ -1142,6 +1154,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-28 | `--text-mission-title` (28/34), `--text-mission-title-sm` (24/24, -0.02em), `--text-reward-xl` (28/18), `--shadow-mission-modal`, `--shadow-mission-cta`, `--shadow-reward-box`, `--radius-3xl` (20), `--spacing-mission-modal` (611), `--spacing-mission-box` (293) | Detalle de misión | Frames `6008:29125` / `6008:29552`. Detalle en § 5, *Feedback de Ema*. El store de premios suma `startTask`. |
 | 2026-09-28 | `--color-danger` (#f87171), `--shadow-segment`, `--shadow-segment-inset`, `--drop-shadow-level-current`, `--gradient-medal-claimable`, `--gradient-profile-banner-tint`, `--gradient-profile-banner-fade`, `--spacing-profile-banner` (268), `--spacing-profile-aside` (372, el frame dice 360); utilities `medal-gap-*` y `medal-row-*` | Mi Perfil | Frames `6140:118274` / `6140:117864`. `medal-gap-*` pone el espacio entre medallas y `medal-row-*` calcula el ancho de n por fila, así la última fila se centra en vez de dejar un hueco. `RouteTabs` acepta un `badge` por tab. Detalle en § 5, *Feedback de Ema*. |
 | 2026-09-28 | `--color-backdrop`, `--blur-modal` (5px), `--shadow-rank-medal`, `--shadow-level-segment`, `--gradient-level-segment` + `@utility bg-level-segment`, `--text-player-name` (24/28), `--spacing-player-modal` (918) | Modal de usuario | Frames `2776:76206` / `2776:63936`. Detalle y desvíos en § 5, *Feedback de Ema*. `MedalCard` suma la variante `profile` (fondo `--color-surface-2`, premio `+100`), la pila de medallitas pasa a `MedalStack` y `PodiumMedal` se apoya en un `RankMedal` sin posición. `profile` deja de ser una ruta de detalle en `lib/routes.ts`. |
 | 2026-09-28 | `--flip-move-duration` (380ms), `--flip-exit-duration` (180ms), `--flip-enter-delay` (120ms), `--flip-enter-stagger` (40ms) | Eventos · Misiones · Leaderboard · Juegos | La animación al filtrar, opción C de *Filtrado SURA*. Todo `offDesign`. Detalle en § 5, *Feedback de Ema*. |
@@ -2150,7 +2163,7 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 47 · Propuesta: Sura News, dropdowns, estado vacío | Sura News · Juegos | — (Artifact) | — **sin frame** | — **sin frame** | ⏳ Pendiente |
 | 48 · Modal de usuario | Leaderboard | `components/sections/player-modal.tsx`, `player-link.tsx`, `medal-stack.tsx`, `medal-card.tsx`, `components/ui/dialog.tsx`, `lib/data/leaderboard.ts` | [`2776:76206`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2776-76206&m=dev) | [`2776:63936`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2776-63936&m=dev) | 👀 Esperando aprobación. Sólo modal y backdrop |
 | 49 · Mi Perfil | `/profile` | `app/(site)/profile/page.tsx`, `components/sections/profile-view.tsx`, `level-panel.tsx`, `stat-pill.tsx`, `segmented-tabs.tsx`, `medal-card.tsx`, `lib/data/profile.ts`, `lib/use-daily-claim.ts` | [`6140:118274`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-118274&m=dev) | [`6140:117864`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-117864&m=dev) | 👀 Esperando aprobación |
-| 50 · Detalle de misión | `/missions/:id` | — | [`6008:29125`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29125&m=dev) | [`6008:29552`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29552&m=dev) | ⏳ Pendiente |
+| 50 · Detalle de misión | `/missions` · modal | `components/sections/mission-modal.tsx`, `mission-card.tsx`, `mission-feature-card.tsx`, `missions-collection.tsx`, `lib/data/missions.ts` | [`6008:29125`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29125&m=dev) | [`6008:29552`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29552&m=dev) | 👀 Esperando aprobación. **Es un modal, no una ruta** |
 | 51 · Detalle de juego | `/games/:id` | — | [`2867:7612`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2867-7612&m=dev) | [`3168:13133`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3168-13133&m=dev) | ⏳ Pendiente |
 | 52 · Detalle de evento | `/tournaments/:id` | — | [`412:4384`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4384&m=dev) Acerca · [`412:18445`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-18445&m=dev) Participantes · [`412:19980`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-19980&m=dev) Ganadores (**diseño viejo**: UX, no UI) | — **sin frame**: se adapta del desktop aprobado | ⏳ Pendiente |
 | 53 · Sura News | `/news` · `/news/:id` | — | — **sin frame**: sale de la propuesta del bloque 47 | — **sin frame** | ⏳ Pendiente |

@@ -6,9 +6,15 @@ import { currentUser, dailyClaim } from "@/lib/data/user";
 
 type Gain = { id: number; amount: number };
 
-type ClaimState = { claimed: boolean; points: number; gain: Gain | null; rewards: readonly string[] };
+type ClaimState = {
+  claimed: boolean;
+  points: number;
+  gain: Gain | null;
+  rewards: readonly string[];
+  started: readonly string[];
+};
 
-const initial: ClaimState = { claimed: false, points: currentUser.points, gain: null, rewards: [] };
+const initial: ClaimState = { claimed: false, points: currentUser.points, gain: null, rewards: [], started: [] };
 let state = initial;
 const listeners = new Set<() => void>();
 
@@ -30,6 +36,12 @@ export const claimDailyReward = () => {
 export const claimReward = (id: string, amount: number) => {
   if (state.rewards.includes(id)) return;
   award(amount, { rewards: [...state.rewards, id] });
+};
+
+export const startTask = (id: string) => {
+  if (state.started.includes(id)) return;
+  state = { ...state, started: [...state.started, id] };
+  listeners.forEach((listener) => listener());
 };
 
 export const useDailyClaim = () => useSyncExternalStore(subscribe, () => state, () => initial);

@@ -189,6 +189,9 @@ export const textTokens: TextToken[] = [
   { name: "--text-note", utility: "text-note", family: "font-techno", usage: "Fechas y valores de las cards", specimen: "Nov 28, 8:00 PM" },
   { name: "--text-news-copy", utility: "text-news-copy", family: "font-techno", usage: "Bajada de Sura News en desktop", specimen: "Todo lo que está pasando" },
   { name: "--text-mission-copy", utility: "text-mission-copy", family: "font-sans", usage: "Bajada de la card destacada de Misiones, desktop", specimen: "Para completar esta misión, debes hacer clic en el botón de abajo." },
+  { name: "--text-mission-title", utility: "text-mission-title", family: "font-techno", usage: "Título del detalle de misión en desktop", specimen: "Gana una partida" },
+  { name: "--text-mission-title-sm", utility: "text-mission-title-sm", family: "font-techno", usage: "Título del detalle de misión en mobile", specimen: "Gana una partida" },
+  { name: "--text-reward-xl", utility: "text-reward-xl", family: "font-techno", usage: "Puntos que da una misión, en su detalle", specimen: "+120" },
   { name: "--text-player-name", utility: "text-player-name", family: "font-sans", usage: "Nombre del jugador en el modal de usuario", specimen: "SabooMafoo" },
   { name: "--text-reward", utility: "text-reward", family: "font-techno", usage: "Premio de una misión", specimen: "+120" },
   { name: "--text-reward-lg", utility: "text-reward-lg", family: "font-techno", usage: "Premio del badge en la card destacada, desktop", specimen: "+120" },
@@ -211,10 +214,14 @@ export const radiusTokens: Token[] = [
   { name: "--radius-xl", utility: "rounded-xl", usage: "Cards, pill de la nav" },
   { name: "--radius-2xl", utility: "rounded-2xl", usage: "Bottom bar mobile" },
   { name: "--radius-pill", utility: "rounded-pill", usage: "CTA del hero" },
+  { name: "--radius-3xl", utility: "rounded-3xl", usage: "Modal del detalle de misión" },
 ];
 
 export const shadowTokens: Token[] = [
   { name: "--shadow-arrow", utility: "shadow-arrow", usage: "Flechas del carrusel de Misiones" },
+  { name: "--shadow-mission-modal", utility: "shadow-mission-modal", usage: "Modal del detalle de misión" },
+  { name: "--shadow-mission-cta", utility: "shadow-mission-cta", usage: "Botón Jugar ahora del detalle de misión" },
+  { name: "--shadow-reward-box", utility: "shadow-reward-box", usage: "Caja de Conseguirás en el detalle de misión" },
   { name: "--shadow-rank-medal", utility: "shadow-rank-medal", usage: "Medalla del puesto en el modal de usuario" },
   { name: "--shadow-level-segment", utility: "shadow-level-segment", usage: "Glow de los segmentos llenos de la barra de nivel" },
   { name: "--shadow-segment", utility: "shadow-segment", usage: "Opción elegida del selector de pestañas de Mi Perfil mobile" },
@@ -393,6 +400,8 @@ export const layoutTokens: Token[] = [
   { name: "--spacing-event-surface-mobile", utility: "h-event-surface-mobile", usage: "Alto de la superficie de la card, mobile" },
   { name: "--spacing-section-gap-mobile", utility: "mt-section-gap-mobile", usage: "Separación entre secciones en mobile — no sale del diseño", offDesign: true },
   { name: "--spacing-mission-card-mobile", utility: "w-mission-card-mobile", usage: "Ancho de la card de misión en el carrusel mobile" },
+  { name: "--spacing-mission-modal", utility: "max-w-mission-modal", usage: "Ancho del modal del detalle de misión" },
+  { name: "--spacing-mission-box", utility: "w-mission-box", usage: "Ancho de la caja de puntos y del botón del detalle de misión en desktop" },
   { name: "--spacing-player-modal", utility: "max-w-player-modal", usage: "Ancho del modal de usuario en desktop" },
   { name: "--spacing-profile-banner", utility: "h-profile-banner", usage: "Alto del banner de Mi Perfil" },
   { name: "--spacing-profile-aside", utility: "w-profile-aside", usage: "Ancho de la columna del usuario en Mi Perfil desktop" },

@@ -94,6 +94,13 @@
 
   --text-mission-copy: 12px;
   --text-mission-copy--line-height: 18px;
+  --text-mission-title: 28px;
+  --text-mission-title--line-height: 34px;
+  --text-mission-title-sm: 24px;
+  --text-mission-title-sm--line-height: 24px;
+  --text-mission-title-sm--letter-spacing: -0.02em;
+  --text-reward-xl: 28px;
+  --text-reward-xl--line-height: 18px;
   --text-player-name: 24px;
   --text-player-name--line-height: 28px;
   --text-reward: 14px;
@@ -225,6 +232,7 @@
   --radius-lg: 8px;
   --radius-xl: 12px;
   --radius-2xl: 16px;
+  --radius-3xl: 20px;
   --radius-pill: 30px;
 
   /* ============================================================
@@ -256,6 +264,9 @@
   --shadow-promo-cta-hover: 0 0 14px rgb(151 243 0 / 0.55), 0 1px 6px rgb(151 243 0 / 0.5);
   --shadow-arrow: 0 4px 4.5px rgb(0 0 0 / 0.5);
   --shadow-rank-medal: 0 4px 9px rgb(0 0 0 / 0.35);
+  --shadow-mission-modal: 0 4px 8px rgb(0 0 0 / 0.5);
+  --shadow-mission-cta: 0 2px 7.5px rgb(151 243 0 / 0.35);
+  --shadow-reward-box: 0 2px 5px rgb(0 0 0 / 0.15);
   --shadow-level-segment: 0 0 6px rgb(151 243 0 / 0.5);
   --shadow-segment: 0 2px 2.5px rgb(0 0 0 / 0.25);
   --shadow-segment-inset: inset 0 2px 5px rgb(0 0 0 / 0.25);
@@ -316,6 +327,8 @@
 
   --spacing-mission-card-mobile: 261px;
   --spacing-player-modal: 918px;
+  --spacing-mission-modal: 611px;
+  --spacing-mission-box: 293px;
   --spacing-profile-banner: 268px;
   --spacing-profile-aside: 372px;
   --spacing-card-grid-min: 140px;
