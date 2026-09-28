@@ -53,7 +53,7 @@ export function MedalCard({ medal }: { medal: Medal }) {
       onPointerMove={follow}
       onPointerLeave={() => setTilt(TILT_RESET)}
       style={tilt}
-      data-sfx={medal.locked ? "deny" : "click"}
+      data-sfx={medal.locked ? "deny" : undefined}
       className={cn(
         "group/medal flex flex-col items-center justify-end gap-3 rounded-lg p-2.5",
         !medal.locked && "bg-background",

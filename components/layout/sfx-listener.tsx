@@ -9,6 +9,12 @@ import { attachSfx, playSfx, toggleSfx } from "@/lib/sfx";
 const HOVER_SELECTOR = "[data-sfx-hover]";
 const CLICK_SELECTOR = "[data-sfx]";
 const EDITABLE_SELECTOR = "input, textarea, select, [contenteditable]:not([contenteditable='false'])";
+const TEXT_ENTRY_SELECTOR = [
+  "textarea",
+  "input:not([type])",
+  ...["text", "search", "email", "url", "tel", "password", "number"].map((type) => `input[type='${type}']`),
+].join(", ");
+const EDITING_KEYS = new Set(["Backspace", "Delete"]);
 
 const isUnavailable = (element: Element) =>
   element.matches(":disabled") || element.getAttribute("aria-disabled") === "true";
@@ -118,10 +124,22 @@ function declaredSlot(target: Element): SfxSlot | null {
   return slot;
 }
 
+const keyTarget = (event: KeyboardEvent) => event.composedPath()[0] ?? event.target;
+
 function isEditable(event: KeyboardEvent) {
-  const target = event.composedPath()[0] ?? event.target;
+  const target = keyTarget(event);
   if (!(target instanceof HTMLElement)) return false;
   return target.isContentEditable || target.closest(EDITABLE_SELECTOR) !== null;
+}
+
+function isTyping(event: KeyboardEvent) {
+  if (event.repeat || event.isComposing || event.metaKey || (event.ctrlKey && !event.altKey)) return false;
+  if (event.key.length !== 1 && !EDITING_KEYS.has(event.key)) return false;
+  const target = keyTarget(event);
+  if (!(target instanceof HTMLElement)) return false;
+  if (target.isContentEditable) return true;
+  if (!target.matches(TEXT_ENTRY_SELECTOR)) return false;
+  return !(target as HTMLInputElement | HTMLTextAreaElement).readOnly && !target.matches(":disabled");
 }
 
 export function SfxListener() {
@@ -159,6 +177,10 @@ export function SfxListener() {
 
     const onKeyDown = (event: KeyboardEvent) => {
       lastKeyAt = performance.now();
+      if (isTyping(event)) {
+        playSfx("type");
+        return;
+      }
       if (event.key !== "m" && event.key !== "M") return;
       if (event.repeat || event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
       if (isEditable(event)) return;

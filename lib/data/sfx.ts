@@ -5,15 +5,13 @@ export const sfxSlotNames = [
   "route",
   "back",
   "claim",
-  "tick",
   "deny",
-  "on",
-  "off",
+  "type",
 ] as const;
 
 export type SfxSlot = (typeof sfxSlotNames)[number];
 
-export type SfxLane = "hover" | "ui" | "route" | "reward" | "tick";
+export type SfxLane = "hover" | "ui" | "route" | "reward" | "type";
 
 export type SfxSlotConfig = {
   volume: number;
@@ -45,16 +43,14 @@ export type SfxConfig = {
 };
 
 export const sfxSlots: Record<SfxSlot, SfxSlotConfig> = {
-  hover: { volume: 0.16, lane: "hover", jitter: 0.04 },
-  click: { volume: 0.42, lane: "ui", jitter: 0.03 },
-  select: { volume: 0.5, lane: "ui", jitter: 0.02 },
-  deny: { volume: 0.5, lane: "ui", jitter: 0.02 },
-  on: { volume: 0.45, lane: "ui", jitter: 0 },
-  off: { volume: 0.45, lane: "ui", jitter: 0 },
-  route: { volume: 0.3, lane: "route", jitter: 0 },
+  hover: { volume: 0.12, lane: "hover", jitter: 0.04 },
+  click: { volume: 0.15, lane: "ui", jitter: 0.03 },
+  select: { volume: 0.2, lane: "ui", jitter: 0.02 },
+  deny: { volume: 0.10, lane: "ui", jitter: 0.02 },
+  route: { volume: 0.25, lane: "route", jitter: 0 },
   back: { volume: 0.26, lane: "route", jitter: 0 },
   claim: { volume: 0.24, lane: "reward", jitter: 0 },
-  tick: { volume: 0.2, lane: "tick", jitter: 0 },
+  type: { volume: 0.2, lane: "type", jitter: 0.05 },
 };
 
 export const sfxConfig: SfxConfig = {
@@ -74,7 +70,7 @@ export const sfxConfig: SfxConfig = {
   keepAliveGain: 0.0001,
   keepAliveHz: 30,
   keepAliveIdleMs: 300000,
-  softHoverGain: 0.5,
+  softHoverGain: 0.6,
   routeSwapWaitMs: 5000,
 };
 

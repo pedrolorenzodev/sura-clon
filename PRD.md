@@ -39,7 +39,7 @@
 | 4 | **Cmd/Ctrl/Shift-click y el click del medio en un link son mudos** | Abren otra pestaña: la pantalla no cambia | Sonar la ruta |
 | 5 | **Los sonidos se bajan aunque el sonido esté apagado**, pero el `AudioContext` no se crea hasta prenderlo | Son 21 KB y así prender el toggle suena en el acto | No bajarlos hasta prender |
 | 6 | **El primer gesto también arranca la descarga** si todavía no había empezado | Antes, un click antes del `load` quedaba mudo hasta el segundo. Un gesto real significa que la página ya pintó | Esperar siempre al `load` |
-| 7 | **Los ticks del odómetro suenan también con movimiento reducido** | El sonido no es movimiento. Lo único que cambia con movimiento reducido es la persiana, que suena como un clic porque no hay panel | Silenciarlos |
+| 7 | ~~**Los ticks del odómetro suenan también con movimiento reducido**~~ (el odómetro es mudo desde el 2026-09-28) | El sonido no es movimiento. Lo único que cambia con movimiento reducido es la persiana, que suena como un clic porque no hay panel | Silenciarlos |
 | 8 | **El banner entero suena `click`, sin hover** (el botón estirado de "Jugar ahora") | Lleva al mismo destino que el CTA | Dejarlo mudo |
 | 9 | **"Ir a Sura News" y el "Ver todo" que es botón suenan `click`** | Son botones sin destino todavía, igual que el resto de los botones inertes que suenan | Sólo hover |
 | 10 | **Shift+M también silencia** | Con Shift o Bloq Mayús la M sigue siendo la M | Sólo la m minúscula |
@@ -684,24 +684,25 @@ preferencia se guarda y no hay Howler.
 
 | Evento | Dónde | Volumen |
 |---|---|---|
-| Hover | Cards y filas a la mitad del volumen (0,08). Ítems del riel, CTA del hero, "Jugar ahora" ×2, Reclamar, tabs de ruta, "Ver todo", "Ir a Sura News", el toggle. También el foco con teclado | 0,16 |
-| Clic | Flechas de carruseles y del hero, chips, paginador, CTAs, "Ver todo" sin ruta, banners, medallas obtenidas, cards y filas | 0,42 |
-| Selección | Ítem del menú, tab de ruta, miniatura del hero | 0,5 |
-| Ida de ruta | Cualquier link a otra ruta que no sea el Home | 0,3 (0,55 hasta el 2026-09-26) |
+| Hover | Cards y filas al 60 % del volumen (0,072). Ítems del riel, miniaturas del hero que no están activas (desde el 2026-09-28), CTA del hero, "Jugar ahora" ×2, Reclamar, tabs de ruta, "Ver todo", "Ir a Sura News", el toggle. También el foco con teclado | 0,12 |
+| Clic | CTAs, "Ver todo" sin ruta, banners, cards y filas | 0,15 |
+| Selección | Ítem del menú, flechas y miniaturas del hero, flechas de cualquier carrusel, tabs de ruta, chips y paginador (desde el 2026-09-28; antes las flechas, los chips y el paginador sonaban clic) | 0,2 |
+| Ida de ruta | Cualquier link a otra ruta que no sea el Home | 0,25 (0,55 hasta el 2026-09-26 y 0,3 hasta el 2026-09-28) |
 | Vuelta al Home | Links al Home desde una ruta interna, flecha de volver | 0,26 (0,55 hasta el 2026-09-26) |
 | Reclamar | El botón | 0,24 — lo más fuerte (0,8 y después 0,42 hasta el 2026-09-26) |
-| Odómetro | Un tick por dígito que cambia al reclamar, con la afinación subiendo | 0,2 |
-| Bloqueado | Click en una medalla bloqueada | 0,5 |
-| Sonido on / off | El toggle | 0,45 |
+| Bloqueado | Click en una medalla bloqueada | 0,1 (0,5 hasta el 2026-09-28) |
+| Tecleo | Cada tecla que escribe o borra en un campo de texto (los buscadores de las rutas). No suenan las flechas, Enter, los atajos con Cmd / Ctrl ni la tecla sostenida | 0,2 |
 
 **Mudos a propósito:** el hover de chips y footer (son filas de links chicos, y ahí el hover se
 vuelve ráfaga), el scroll-spy, los barridos de títulos, la intro, los conteos al scrollear, el botón
-de perfil y los del footer. Un elemento que ya está seleccionado tampoco suena.
+de perfil y los del footer. Un elemento que ya está seleccionado tampoco suena. **Desde el
+2026-09-28** (usuario), también: el click en una medalla obtenida, el odómetro (sonaba un tick por
+dígito y se pisaba con Reclamar) y el toggle al prender o apagar el sonido.
 
 **Las cards suenan desde el 2026-09-26** (opción C de la propuesta, a prueba): las de los carruseles,
 las filas y el podio del Leaderboard, las de Sura News, Juegos, Misiones y Torneos. Hasta ese día
-eran mudas por el riesgo de ráfaga. El hover es el mismo sonido a la mitad del volumen
-(`softHoverGain`, -6 dB) y comparte el limitador con el resto de los hovers; el clic es el de siempre.
+eran mudas por el riesgo de ráfaga. El hover es el mismo sonido más bajo
+(`softHoverGain`: 0,6, -4,4 dB, desde el 2026-09-28; antes 0,5) y comparte el limitador con el resto de los hovers; el clic es el de siempre.
 Se cablea en un solo lugar, `CardLink` (más la card de Eventos del Home, que no lo usa), con
 `data-sfx-hover="soft"`. Hoy las cards no navegan (*Rutas de detalle apagadas*, § 6), así que el
 clic suena sin cambiar de pantalla, como los banners; cuando se encienda un detalle, esa card pasa a
@@ -740,7 +741,7 @@ no hay workaround legítimo para una primera visita. Lo único que existe:
 
 Así que los hovers anteriores al primer click son mudos, igual que en emalorenzo.com.
 
-**Carga.** 10 archivos en `public/assets/sfx/`: Opus en WebM (31 KB en total) con AAC de respaldo
+**Carga.** 8 archivos en `public/assets/sfx/`: Opus en WebM (35 KB en total) con AAC de respaldo
 si el navegador no decodifica WebM. Se bajan después del `load`, en idle, o con el primer gesto si
 llega antes. Se decodifican al crear el `AudioContext`, en ese mismo gesto. Un sonido que no está
 listo en 500ms se descarta: nunca suena tarde. Con la pestaña oculta el contexto se suspende.
@@ -814,6 +815,29 @@ fuerte. La vuelta de Chip propio es 1,3 dB más fuerte que la ida, por eso su vo
 (0,26 contra 0,3). El hover volvió a Libre y la selección pasó a Mecánico, nivelada a la de Libre como el resto.
 
 Chip propio para la ida y la vuelta es a prueba: el usuario no está seguro.
+
+**Paleta Arcade, en prueba** (usuario, 2026-09-28). Reemplaza a la combinación de arriba en todo
+salvo la ida y la vuelta, que siguen con Chip propio, y Reclamar, que volvió al de Libre (se probó
+`arcade/achievement` y el usuario prefirió el anterior). Cada archivo se niveló al que reemplaza (mismo
+pico de RMS en 30 ms). Después el usuario ajustó los volúmenes a oído (2026-09-28, "por ahora"):
+
+| Evento | Archivo de origen | Nivel | Duración | Volumen | Nivel final |
+|---|---|---|---|---|---|
+| Hover · de card | `arcade/hover` | -7,7 dB | 81 ms | 0,12 · 0,072 | -40 · -44 |
+| Clic | `arcade/select` | -7,6 dB | 199 ms | 0,15 | -34 |
+| Selección | `arcade/snap` | -7,4 dB | 112 ms | 0,2 | -31 |
+| Reclamar | ~~`arcade/achievement`~~ → el de Libre, sin cambios | — | 516 ms | 0,24 | -23 |
+| Bloqueado | `arcade/blocked` | -7,8 dB | 286 ms | 0,1 | -37 |
+| Tecleo | `mechanical/typing` | **+9,3 dB** | 81 ms | 0,2 | -32 |
+| Ida · vuelta | Chip propio, sin cambios | — | 588 / 586 ms | 0,25 · 0,26 | -27 · -26 |
+
+- **Con estos valores la jerarquía cambió:** la ida, la vuelta y Reclamar quedan de 5 a 11 dB por
+  encima de clic y selección, cuando antes estaban al mismo nivel. Si vuelven a sonar fuertes, es por
+  eso.
+- **El tecleo se pidió elevado**: el archivo original está 10 dB debajo del resto de uisfx y se subió
+  hasta el nivel del clic. Tiene su propio carril (`type`) y ±5 % de afinación, así una palabra no
+  suena como el mismo golpe repetido.
+- **Se borraron** `tick` (odómetro), `on` y `off` (toggle), con sus archivos y su carril.
 
 **Datos a tener a mano al retomar:**
 - Si vuelve Ventana, su ida mide **9 dB más fuerte** que su vuelta: hay que nivelarlas antes.
@@ -1104,6 +1128,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-28 | **Paleta Arcade en prueba** (salvo Reclamar, que sigue siendo el de Libre), tecleo en los campos de texto, y se borran el odómetro, el on / off y el clic de las medallas obtenidas (`lib/data/sfx.ts`, `sfx-listener.tsx`, `points-value.tsx`, `public/assets/sfx/`) | Todas las rutas | Pedido del usuario. Flechas de carruseles y del hero, chips y paginador pasan de clic a selección. Detalle en § 5, *Paleta mixta con uisfx*. |
 | 2026-09-28 | `--flip-move-duration` (380ms), `--flip-exit-duration` (180ms), `--flip-enter-delay` (120ms), `--flip-enter-stagger` (40ms) | Eventos · Misiones · Leaderboard · Juegos | La animación al filtrar, opción C de *Filtrado SURA*. Todo `offDesign`. Detalle en § 5, *Feedback de Ema*. |
 | 2026-09-28 | `--color-surface-ended` (#353535) y la card de misión **finalizada** | Misiones | Frame mobile `6008:29709`: el `#222` de la card con un gris `#838383` al 20% encima, resuelto en un color plano. El badge del frame es 4 niveles más claro (#393939) y se unificó al de la card, el mismo criterio que la completada; lleva el mismo `border-b border-r`, en `--color-border-dim`, para medir igual que los otros dos estados. La portada va con `grayscale` en CSS porque es data y cambia por misión (el asset del frame es la portada ya en gris); la moneda sí es el asset del diseño (`public/assets/missions/sp-coin-ended.webp`). Borde de la portada 1px `--color-border-dim`, textos en `--color-muted-foreground`, sin check. Desktop usa la misma card, como pidió el usuario. Medido: 173 × 153,6 en mobile, el alto de la completada. |
 | 2026-09-25 | **404 “Fuera del mapa”**: `--route-draw-duration` (450ms), `--blip-blink-duration` (1600ms), `--spacing-map` (592), `--spacing-map-mobile` (232), `--spacing-map-grid` (32) / `-desktop` (48); utilities `map-grid`, `route-draw-y`, `route-draw-x`, `route-draw-after-route`, `blip-blink`; variante `rail-hidden`; `card-bracket` suma el estado `data-locked` con `--bracket-lead` y `@starting-style`, así también espera a la línea al montar | 404 | Pantalla sin frames, con diseño propio y excepción a la regla 2. Detalle en *La 404*, § 5. `ScrambleText` suma `decodeOnMount` y ahora deja fijos los caracteres que no son letras ni números (`/`, `-`, `·`); con los labels actuales no cambia nada, porque todos son letras y espacios. |

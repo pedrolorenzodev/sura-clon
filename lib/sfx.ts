@@ -262,9 +262,8 @@ function fire(slot: SfxSlot, options: SfxPlayOptions) {
   return true;
 }
 
-function request(requested: SfxSlot, options: SfxPlayOptions, force: boolean) {
-  if (!inBrowser()) return false;
-  if (!force && !isSfxEnabled()) return false;
+function request(requested: SfxSlot, options: SfxPlayOptions) {
+  if (!inBrowser() || !isSfxEnabled()) return false;
   const audio = context;
   if (!audio || document.hidden) return false;
 
@@ -284,13 +283,13 @@ function request(requested: SfxSlot, options: SfxPlayOptions, force: boolean) {
   const resumed = audio.state === "running" ? null : Promise.resolve(audio.resume()).catch(noop);
   Promise.all([decodeSlot(slot), resumed]).then(() => {
     if (performance.now() - askedAt > sfxConfig.latePlayMs) return;
-    if ((!force && !isSfxEnabled()) || document.hidden || audio.state !== "running") return;
+    if (!isSfxEnabled() || document.hidden || audio.state !== "running") return;
     fire(slot, options);
   });
   return true;
 }
 
-export const playSfx = (slot: SfxSlot, options: SfxPlayOptions = {}) => request(slot, options, false);
+export const playSfx = (slot: SfxSlot, options: SfxPlayOptions = {}) => request(slot, options);
 
 export function setSfxEnabled(value: boolean) {
   if (!inBrowser() || value === isSfxEnabled()) return;
@@ -301,11 +300,9 @@ export function setSfxEnabled(value: boolean) {
     reflectPreference(true);
     emit("state");
     unlockSfx();
-    request("on", {}, false);
     return;
   }
 
-  request("off", {}, true);
   enabled = false;
   storePreference(false);
   reflectPreference(false);
