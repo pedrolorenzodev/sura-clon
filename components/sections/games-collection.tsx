@@ -3,12 +3,14 @@
 import { useRef } from "react";
 
 import { EmptyResults } from "@/components/sections/empty-results";
+import { FlipList } from "@/components/sections/flip-list";
 import { GameCard } from "@/components/sections/game-card";
 import { Pagination } from "@/components/sections/pagination";
 import { SearchField } from "@/components/sections/search-field";
-import { matchesQuery, paginate } from "@/lib/collection";
+import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
 import { scrollToTopIfHidden } from "@/lib/css-zoom";
 import { GAMES_PER_PAGE, gamesCatalog } from "@/lib/data/games";
+import { useSettledValue } from "@/lib/use-settled-value";
 import { useUrlState } from "@/lib/use-url-state";
 
 const DEFAULTS = { q: "", pagina: "1" };
@@ -17,7 +19,8 @@ export function GamesCollection({ filters, banner }: { filters: React.ReactNode;
   const [state, setState] = useUrlState(DEFAULTS);
   const grid = useRef<HTMLUListElement>(null);
 
-  const results = gamesCatalog.filter((game) => matchesQuery(state.q, game.title, ...game.badges));
+  const query = useSettledValue(state.q, SEARCH_SETTLE_MS);
+  const results = gamesCatalog.filter((game) => matchesQuery(query, game.title, ...game.badges));
   const { pageItems, page, pages } = paginate(results, state.pagina, GAMES_PER_PAGE);
 
   const goToPage = (next: number) => {
@@ -41,16 +44,17 @@ export function GamesCollection({ filters, banner }: { filters: React.ReactNode;
 
       <div className="flex flex-col gap-6">
         {pageItems.length > 0 ? (
-          <ul
-            ref={grid}
-            className="card-grid grid scroll-mt-header-mobile gap-4 desktop:scroll-mt-header-desktop desktop:grid-cols-4 desktop:gap-6"
+          <FlipList
+            listRef={grid}
+            keys={pageItems.map((game) => game.id)}
+            className="card-grid grid scroll-mt-header-mobile content-start gap-4 desktop:scroll-mt-header-desktop desktop:grid-cols-4 desktop:gap-6"
           >
             {pageItems.map((game) => (
               <GameCard key={game.id} game={game} largeTitle />
             ))}
-          </ul>
+          </FlipList>
         ) : (
-          <EmptyResults>No encontramos juegos para “{state.q}”.</EmptyResults>
+          <EmptyResults>No encontramos juegos para “{query}”.</EmptyResults>
         )}
 
         {pages > 0 && (

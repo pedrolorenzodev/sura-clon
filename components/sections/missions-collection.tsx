@@ -4,6 +4,7 @@ import { useRef } from "react";
 
 import { EmptyResults } from "@/components/sections/empty-results";
 import { FilterChips } from "@/components/sections/filter-chips";
+import { FlipList } from "@/components/sections/flip-list";
 import { MissionCard } from "@/components/sections/mission-card";
 import { Pagination } from "@/components/sections/pagination";
 import { RouteTabs } from "@/components/sections/route-tabs";
@@ -55,14 +56,15 @@ export function MissionsCollection({ featured }: { featured: React.ReactNode }) 
       {featured}
 
       {pageItems.length > 0 ? (
-        <ul
-          ref={grid}
-          className="card-grid grid scroll-mt-header-mobile gap-3 desktop:scroll-mt-header-desktop desktop:grid-cols-4 desktop:gap-6"
+        <FlipList
+          listRef={grid}
+          keys={pageItems.map((mission) => mission.id)}
+          className="card-grid grid scroll-mt-header-mobile content-start gap-3 desktop:scroll-mt-header-desktop desktop:grid-cols-4 desktop:gap-6"
         >
           {pageItems.map((mission) => (
             <MissionCard key={mission.id} mission={mission} compact />
           ))}
-        </ul>
+        </FlipList>
       ) : (
         <EmptyResults>No hay misiones con estos filtros.</EmptyResults>
       )}

@@ -2,15 +2,30 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
+import { useFlipList } from "@/lib/use-flip-list";
+import { cn } from "@/lib/utils";
+
 type RevealState = "armed" | "shown" | null;
 
 const RevealContext = createContext<RevealState>(null);
 
 export const useRevealState = () => useContext(RevealContext);
 
-export function RevealList({ className, children }: { className?: string; children: React.ReactNode }) {
+export function RevealList({
+  className,
+  flipKeys,
+  wrapperClassName,
+  children,
+}: {
+  className?: string;
+  flipKeys?: string[];
+  wrapperClassName?: string;
+  children: React.ReactNode;
+}) {
   const ref = useRef<HTMLUListElement>(null);
+  const ghosts = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<RevealState>(null);
+  useFlipList(ref, ghosts, flipKeys ?? []);
 
   useEffect(() => {
     const list = ref.current;
@@ -36,11 +51,22 @@ export function RevealList({ className, children }: { className?: string; childr
     return () => observer.disconnect();
   }, []);
 
+  const list = (
+    <ul ref={ref} data-reveal={state ?? undefined} className={className}>
+      {children}
+    </ul>
+  );
+
   return (
     <RevealContext.Provider value={state}>
-      <ul ref={ref} data-reveal={state ?? undefined} className={className}>
-        {children}
-      </ul>
+      {flipKeys ? (
+        <div className={cn("relative", wrapperClassName)}>
+          {list}
+          <div ref={ghosts} aria-hidden data-flip-ghosts className="pointer-events-none absolute inset-0 **:animate-none" />
+        </div>
+      ) : (
+        list
+      )}
     </RevealContext.Provider>
   );
 }

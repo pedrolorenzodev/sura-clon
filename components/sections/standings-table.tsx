@@ -19,14 +19,18 @@ export function StandingsTable({ entries, iconSrc }: { entries: Standing[]; icon
           <span aria-hidden className="w-70.25 shrink-0" />
         </div>
 
-        <RevealList className="flex flex-col gap-2">
+        <RevealList flipKeys={entries.map((entry) => entry.id)} className="flex flex-col gap-2">
           {entries.map((entry, index) => (
             <StandingsRow key={entry.id} entry={entry} revealIndex={index} />
           ))}
         </RevealList>
       </div>
 
-      <RevealList className="flex flex-col gap-2 desktop:hidden">
+      <RevealList
+        flipKeys={entries.map((entry) => entry.id)}
+        wrapperClassName="desktop:hidden"
+        className="flex flex-col gap-2"
+      >
         {entries.map((entry, index) => (
           <LeaderboardRow
             key={entry.id}

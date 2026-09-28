@@ -3,12 +3,14 @@
 import { useRef } from "react";
 
 import { EmptyResults } from "@/components/sections/empty-results";
+import { FlipList } from "@/components/sections/flip-list";
 import { Pagination } from "@/components/sections/pagination";
 import { SearchField } from "@/components/sections/search-field";
 import { TournamentCard } from "@/components/sections/tournament-card";
-import { matchesQuery, paginate } from "@/lib/collection";
+import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
 import { scrollToTopIfHidden } from "@/lib/css-zoom";
 import { TOURNAMENTS_PER_PAGE, tournaments } from "@/lib/data/tournaments";
+import { useSettledValue } from "@/lib/use-settled-value";
 import { useUrlState } from "@/lib/use-url-state";
 
 const DEFAULTS = { q: "", pagina: "1" };
@@ -17,8 +19,9 @@ export function TournamentsCollection() {
   const [state, setState] = useUrlState(DEFAULTS);
   const grid = useRef<HTMLUListElement>(null);
 
+  const query = useSettledValue(state.q, SEARCH_SETTLE_MS);
   const results = tournaments.filter((tournament) =>
-    matchesQuery(state.q, tournament.title, tournament.game, tournament.host),
+    matchesQuery(query, tournament.title, tournament.game, tournament.host),
   );
   const { pageItems, page, pages } = paginate(results, state.pagina, TOURNAMENTS_PER_PAGE);
 
@@ -38,16 +41,17 @@ export function TournamentsCollection() {
       />
 
       {pageItems.length > 0 ? (
-        <ul
-          ref={grid}
-          className="card-grid-wide grid scroll-mt-header-mobile gap-6 desktop:scroll-mt-header-desktop desktop:grid-cols-4"
+        <FlipList
+          listRef={grid}
+          keys={pageItems.map((tournament) => tournament.id)}
+          className="card-grid-wide grid scroll-mt-header-mobile content-start gap-6 desktop:scroll-mt-header-desktop desktop:grid-cols-4"
         >
           {pageItems.map((tournament) => (
             <TournamentCard key={tournament.id} tournament={tournament} />
           ))}
-        </ul>
+        </FlipList>
       ) : (
-        <EmptyResults>No encontramos eventos para “{state.q}”.</EmptyResults>
+        <EmptyResults>No encontramos eventos para “{query}”.</EmptyResults>
       )}
 
       {pages > 0 && <Pagination pages={pages} page={page} onChange={goToPage} label="Paginación de eventos" />}

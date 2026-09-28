@@ -1,4 +1,5 @@
 import { CardLink } from "@/components/layout/card-link";
+import { FlipList } from "@/components/sections/flip-list";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import {
   Crown,
@@ -31,7 +32,11 @@ export function StandingsPodium({
   className?: string;
 }) {
   return (
-    <ul className={cn("flex items-end justify-center gap-6", className)}>
+    <FlipList
+      keys={entries.map((entry, index) => `${index}:${entry.id}`)}
+      wrapperClassName={className}
+      className="flex items-end justify-center gap-6"
+    >
       {entries.map((entry, index) => {
         const rank = (index + 1) as PodiumRank;
         const style = PODIUM_STYLE[rank];
@@ -71,13 +76,13 @@ export function StandingsPodium({
                     <p className="truncate text-xs">Nivel: {levels[entry.level].label}</p>
                   </div>
                 </div>
-                <ValuePill points={entry.score} iconSrc={iconSrc} variant={style.pill} className="self-start" />
+                <ValuePill points={entry.score} iconSrc={iconSrc} variant={style.pill} countUpIndex={0} className="self-start" />
               </div>
               {isFirst && <PodiumSheen />}
             </CardLink>
           </li>
         );
       })}
-    </ul>
+    </FlipList>
   );
 }

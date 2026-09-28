@@ -12,7 +12,7 @@ import { SearchField } from "@/components/sections/search-field";
 import { StandingsPodium } from "@/components/sections/standings-podium";
 import { StandingsRow } from "@/components/sections/standings-row";
 import { StandingsTable } from "@/components/sections/standings-table";
-import { matchesQuery, paginate } from "@/lib/collection";
+import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
 import { scrollToTopIfHidden } from "@/lib/css-zoom";
 import {
   LEADERBOARD_METRIC_ICON,
@@ -25,6 +25,7 @@ import {
   type LeaderboardRange,
 } from "@/lib/data/leaderboard";
 import { detailHref } from "@/lib/routes";
+import { useSettledValue } from "@/lib/use-settled-value";
 import { useUrlState } from "@/lib/use-url-state";
 
 const DEFAULTS = { metrica: "sura-points", rango: "historico", q: "", pagina: "1" };
@@ -42,7 +43,8 @@ export function LeaderboardCollection() {
 
   const { standings, me } = rankStandings(metric, range);
   const podium = standings.slice(0, 3);
-  const results = standings.filter((entry) => matchesQuery(state.q, entry.name));
+  const query = useSettledValue(state.q, SEARCH_SETTLE_MS);
+  const results = standings.filter((entry) => matchesQuery(query, entry.name));
   const { pageItems, page, pages } = paginate(results, state.pagina, STANDINGS_PER_PAGE);
 
   const goToPage = (next: number) => {
@@ -75,7 +77,7 @@ export function LeaderboardCollection() {
         />
       </div>
 
-      <StandingsPodium entries={podium} iconSrc={iconSrc} className="hidden desktop:flex" />
+      <StandingsPodium entries={podium} iconSrc={iconSrc} className="hidden desktop:block" />
       <LeaderboardPodiumMobile
         entries={podium.map((entry) => ({ ...entry, points: entry.score }))}
         iconSrc={iconSrc}
@@ -84,9 +86,9 @@ export function LeaderboardCollection() {
 
       <div ref={table} className="scroll-mt-header-mobile desktop:scroll-mt-header-desktop">
         {pageItems.length > 0 ? (
-          <StandingsTable key={`${metric}-${range}-${state.q}-${page}`} entries={pageItems} iconSrc={iconSrc} />
+          <StandingsTable entries={pageItems} iconSrc={iconSrc} />
         ) : (
-          <EmptyResults>No encontramos competidores para “{state.q}”.</EmptyResults>
+          <EmptyResults>No encontramos competidores para “{query}”.</EmptyResults>
         )}
       </div>
 

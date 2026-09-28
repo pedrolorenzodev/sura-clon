@@ -1,4 +1,5 @@
 import { CardLink } from "@/components/layout/card-link";
+import { FlipList } from "@/components/sections/flip-list";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import {
   Crown,
@@ -41,7 +42,11 @@ export function LeaderboardPodiumMobile({
 }) {
   return (
     /* no tocar: items-end hace el escalonado; h-full en las cards lo anula */
-    <ul className={cn("flex w-full items-end gap-2", className)}>
+    <FlipList
+      keys={entries.map((entry, index) => `${index}:${entry.id}`)}
+      wrapperClassName={className}
+      className="flex w-full items-end gap-2"
+    >
       {entries.map((entry, index) => {
         const rank = (index + 1) as PodiumRank;
         const style = PODIUM_STYLE[rank];
@@ -94,6 +99,7 @@ export function LeaderboardPodiumMobile({
                 points={entry.points}
                 iconSrc={iconSrc}
                 variant={style.pill}
+                countUpIndex={0}
                 small={!isFirst}
               />
               {isFirst && <PodiumSheen />}
@@ -101,6 +107,6 @@ export function LeaderboardPodiumMobile({
           </li>
         );
       })}
-    </ul>
+    </FlipList>
   );
 }

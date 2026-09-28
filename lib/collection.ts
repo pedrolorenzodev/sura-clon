@@ -20,3 +20,5 @@ export function rotate<T>(items: T[], by: number) {
   const offset = ((by % items.length) + items.length) % items.length;
   return [...items.slice(offset), ...items.slice(0, offset)];
 }
+
+export const SEARCH_SETTLE_MS = 250;
