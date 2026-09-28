@@ -1,12 +1,12 @@
-import { CardLink } from "@/components/layout/card-link";
 import { UserAvatar } from "@/components/layout/user-avatar";
+import { PlayerLink } from "@/components/sections/player-link";
 import { toneOf } from "@/components/sections/standings-tone";
 import { ValuePill } from "@/components/sections/value-pill";
 import type { StandingTone } from "@/lib/data/leaderboard";
 import { cn } from "@/lib/utils";
 
 export function LeaderboardRow({
-  href,
+  playerId,
   rank,
   name,
   levelLabel,
@@ -18,7 +18,7 @@ export function LeaderboardRow({
   revealIndex,
   className,
 }: {
-  href: string | null;
+  playerId: string;
   rank: string;
   name: string;
   levelLabel: string;
@@ -45,9 +45,9 @@ export function LeaderboardRow({
         className,
       )}
     >
-      <CardLink
-        href={href}
-        aria-label={`Ver el perfil de ${name}`}
+      <PlayerLink
+        playerId={playerId}
+        name={name}
         className={cn(
           "group relative flex w-full items-center gap-5 overflow-hidden rounded-lg p-3",
           style.row,
@@ -80,7 +80,7 @@ export function LeaderboardRow({
         </div>
 
         <ValuePill points={points} iconSrc={iconSrc} countUpIndex={revealIndex} className="relative" />
-      </CardLink>
+      </PlayerLink>
     </li>
   );
 }

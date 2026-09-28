@@ -1,17 +1,16 @@
 import Image from "next/image";
 
-import { CardLink } from "@/components/layout/card-link";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { CountUp } from "@/components/sections/count-up";
 import { LevelIcon } from "@/components/sections/level-icon";
+import { MedalStack } from "@/components/sections/medal-stack";
 import { toneOf } from "@/components/sections/standings-tone";
-import { levels, medalStack, type Standing } from "@/lib/data/leaderboard";
-import { detailHref } from "@/lib/routes";
+import { PlayerLink } from "@/components/sections/player-link";
+import { levels, type Standing } from "@/lib/data/leaderboard";
 import { cn } from "@/lib/utils";
 
 const CELL = "flex min-w-px flex-1 items-center justify-center";
 const VALUE = "flex items-center gap-1 rounded-sm p-2 text-xs font-medium text-foreground";
-const MEDAL_LAYER = ["z-3", "z-2", "z-1"];
 
 export function StandingsRow({ entry, revealIndex }: { entry: Standing; revealIndex?: number }) {
   const tone = toneOf(entry.tone);
@@ -23,9 +22,9 @@ export function StandingsRow({ entry, revealIndex }: { entry: Standing; revealIn
       }
       className={cn("flex", revealIndex !== undefined && "row-reveal")}
     >
-      <CardLink
-        href={detailHref("profile", entry.id)}
-        aria-label={`Ver el perfil de ${entry.name}`}
+      <PlayerLink
+        playerId={entry.id}
+        name={entry.name}
         className={cn(
           "group relative flex h-14 w-full items-center gap-6 overflow-hidden rounded-lg p-3",
           tone.row,
@@ -68,20 +67,7 @@ export function StandingsRow({ entry, revealIndex }: { entry: Standing; revealIn
 
         <div className={cn(CELL, "relative")}>
           <span className={VALUE}>
-            <span className="flex items-center">
-              {medalStack.map((src, index) => (
-                <span
-                  key={src}
-                  className={cn(
-                    "relative flex size-4 shrink-0 items-center justify-center rounded-full border border-brand-vivid/30 bg-surface",
-                    MEDAL_LAYER[index],
-                    index < medalStack.length - 1 && "-mr-2.5",
-                  )}
-                >
-                  <Image src={src} alt="" width={2048} height={2048} className="size-3" />
-                </span>
-              ))}
-            </span>
+            <MedalStack />
             {entry.medals}
           </span>
         </div>
@@ -119,7 +105,7 @@ export function StandingsRow({ entry, revealIndex }: { entry: Standing; revealIn
             </>
           )}
         </div>
-      </CardLink>
+      </PlayerLink>
     </li>
   );
 }

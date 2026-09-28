@@ -15,6 +15,7 @@ export type Medal = {
   art: MedalArt;
   locked: boolean;
   sparkle: boolean;
+  reward?: string;
 };
 
 export const medals: Medal[] = [
@@ -28,3 +29,7 @@ export const medals: Medal[] = [
   { id: "influencer", label: "Influencer", art: "influencer", locked: true, sparkle: false },
   { id: "ranking", label: "Ranking", art: "ranking", locked: false, sparkle: false },
 ];
+
+const CLAN_LEADER: Medal = { id: "lider-de-clan", label: "Líder de clan", art: "influencer", locked: true, sparkle: false };
+
+export const PROFILE_MEDALS: Medal[] = [...medals, CLAN_LEADER].map((medal) => ({ ...medal, reward: "+100" }));

@@ -35,7 +35,16 @@ const ART: Record<MedalArt, { src: string; image: string }> = {
 
 const TILT_RESET = { "--tilt-x": 0, "--tilt-y": 0 } as React.CSSProperties;
 
-export function MedalCard({ medal }: { medal: Medal }) {
+export function MedalCard({
+  medal,
+  variant = "section",
+  className,
+}: {
+  medal: Medal;
+  variant?: "section" | "profile";
+  className?: string;
+}) {
+  const profile = variant === "profile";
   const art = ART[medal.art];
   const [tilt, setTilt] = useState(TILT_RESET);
 
@@ -55,8 +64,10 @@ export function MedalCard({ medal }: { medal: Medal }) {
       style={tilt}
       data-sfx={medal.locked ? "deny" : "click"}
       className={cn(
-        "group/medal flex flex-col items-center justify-end gap-3 rounded-lg p-2.5",
-        !medal.locked && "bg-background",
+        "group/medal flex flex-col items-center justify-end gap-3",
+        profile ? "rounded-2xl bg-surface-2 p-2.5 desktop:px-4.5 desktop:py-4.5" : "rounded-lg p-2.5",
+        !profile && !medal.locked && "bg-background",
+        className,
       )}
     >
       <div className={cn("relative aspect-square w-full", !medal.locked && "transition-transform duration-200 ease-reveal group-hover/medal:medal-tilt motion-reduce:transition-none")}>
@@ -115,14 +126,28 @@ export function MedalCard({ medal }: { medal: Medal }) {
         )}
       </div>
 
-      <p
-        className={cn(
-          "w-full truncate text-center text-2xs",
-          medal.locked ? "text-locked-foreground group-hover/medal:flicker" : "text-foreground",
+      <div className="flex w-full flex-col items-center gap-2">
+        <p
+          className={cn(
+            "w-full text-center",
+            profile
+              ? "line-clamp-2 min-h-6 text-2xs font-semibold desktop:line-clamp-none desktop:min-h-0 desktop:truncate desktop:text-base"
+              : "truncate text-2xs",
+            medal.locked && profile && "text-muted-foreground/90 group-hover/medal:flicker",
+            medal.locked && !profile && "text-locked-foreground group-hover/medal:flicker",
+            !medal.locked && "text-foreground",
+          )}
+        >
+          {medal.label}
+        </p>
+
+        {profile && medal.reward && (
+          <span className="flex items-center gap-1 rounded-md border border-brand-vivid px-1 py-0.5 text-2xs font-bold text-brand-vivid desktop:text-xs">
+            {medal.reward}
+            <Image src="/assets/home/sp-coin.webp" alt="" width={59} height={59} className="size-3" />
+          </span>
         )}
-      >
-        {medal.label}
-      </p>
+      </div>
     </li>
   );
 }

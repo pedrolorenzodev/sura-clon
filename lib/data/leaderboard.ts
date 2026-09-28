@@ -1,3 +1,5 @@
+import { PROFILE_MEDALS, type Medal } from "@/lib/data/medals";
+
 export type LeaderboardEntry = {
   id: string;
   rank: number;
@@ -310,3 +312,68 @@ export const medalStack = [
   "/assets/leaderboard/medal-mini-2.webp",
   "/assets/leaderboard/medal-mini-3.webp",
 ];
+
+const LEVEL_ORDER: LevelId[] = ["novato", "guerrero", "heroe", "leyenda"];
+
+const LEVEL_GOAL: Record<LevelId, number> = { novato: 1500, guerrero: 10000, heroe: 50000, leyenda: 125000 };
+
+export type PlayerProfile = {
+  id: string;
+  name: string;
+  avatarSrc: string;
+  rank: number;
+  daysAtRank: number;
+  points: string;
+  medals: string;
+  streak: string;
+  level: LevelId;
+  nextLevel: LevelId;
+  levelPoints: string;
+  levelGoal: string;
+  levelProgress: number;
+  medalCollection: Medal[];
+  unlockedMedals: number;
+};
+
+const HISTORIC_RANKING = [...PLAYERS].sort((a, b) => b.points - a.points);
+
+export function playerProfile(id: string): PlayerProfile | undefined {
+  const player = id === ME.id ? ME : PLAYERS.find((candidate) => candidate.id === id);
+  if (!player) return undefined;
+
+  const index = HISTORIC_RANKING.indexOf(player);
+  const rank = index === -1 ? HISTORIC_RANKING.filter((other) => other.points > player.points).length + 1 : index + 1;
+  const noise = seeded(`${player.id}:profile`);
+  const unlockable = PROFILE_MEDALS.filter((medal) => !medal.locked);
+  const unlocked = Math.min(unlockable.length, Math.round((player.medals / 30) * unlockable.length));
+  const unlockedIds = new Set(
+    unlockable
+      .map((medal) => ({ medal, order: noise() }))
+      .sort((a, b) => a.order - b.order)
+      .slice(0, unlocked)
+      .map(({ medal }) => medal.id),
+  );
+  const goal = LEVEL_GOAL[player.level];
+
+  return {
+    id: player.id,
+    name: player.name,
+    avatarSrc: player.avatarSrc,
+    rank,
+    daysAtRank: 1 + Math.floor(noise() * 40),
+    points: withThousands(player.points),
+    medals: String(player.medals),
+    streak: plural(player.streak, "día", "días"),
+    level: player.level,
+    nextLevel: LEVEL_ORDER[Math.min(LEVEL_ORDER.indexOf(player.level) + 1, LEVEL_ORDER.length - 1)],
+    levelPoints: withThousands(player.points),
+    levelGoal: withThousands(goal),
+    levelProgress: Math.min(1, player.points / goal),
+    medalCollection: PROFILE_MEDALS.map((medal) => ({
+      ...medal,
+      locked: !unlockedIds.has(medal.id),
+      sparkle: unlockedIds.has(medal.id) && medal.sparkle,
+    })),
+    unlockedMedals: unlocked,
+  };
+}

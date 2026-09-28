@@ -21,15 +21,19 @@ const MEDAL = {
 } as const;
 
 export function PodiumMedal({ rank, className }: { rank: PodiumRank; className?: string }) {
+  return (
+    <RankMedal
+      rank={rank}
+      className={cn("pointer-events-none absolute -bottom-px -right-px drop-shadow-badge", className)}
+    />
+  );
+}
+
+export function RankMedal({ rank, className }: { rank: PodiumRank; className?: string }) {
   const medal = MEDAL[rank];
 
   return (
-    <span
-      className={cn(
-        "pointer-events-none absolute -bottom-px -right-px overflow-hidden rounded-full drop-shadow-badge",
-        className,
-      )}
-    >
+    <span className={cn("relative block overflow-hidden rounded-full", className)}>
       <Image
         src={medal.src}
         alt=""

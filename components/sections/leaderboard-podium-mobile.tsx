@@ -1,4 +1,3 @@
-import { CardLink } from "@/components/layout/card-link";
 import { FlipList } from "@/components/sections/flip-list";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import {
@@ -9,7 +8,7 @@ import {
 } from "@/components/sections/leaderboard-podium-style";
 import { ValuePill } from "@/components/sections/value-pill";
 import { PodiumSheen } from "@/components/sections/podium-sheen";
-import { detailHref } from "@/lib/routes";
+import { PlayerLink } from "@/components/sections/player-link";
 import { cn } from "@/lib/utils";
 
 const GRADIENT: Record<PodiumRank, string> = {
@@ -61,9 +60,9 @@ export function LeaderboardPodiumMobile({
               isFirst ? "w-podium-first-mobile shrink-0" : "min-w-0 flex-1",
             )}
           >
-            <CardLink
-              href={detailHref("profile", entry.id)}
-              aria-label={`Ver el perfil de ${entry.name}`}
+            <PlayerLink
+              playerId={entry.id}
+              name={entry.name}
               className={cn(
                 "relative flex w-full flex-col items-center justify-end gap-2 rounded-lg p-3 ring-1 ring-inset transition-transform duration-200 ease-reveal hover:-translate-y-0.5 focus-visible:-translate-y-0.5 active:-translate-y-0.5 motion-reduce:transition-none",
                 GRADIENT[rank],
@@ -103,7 +102,7 @@ export function LeaderboardPodiumMobile({
                 small={!isFirst}
               />
               {isFirst && <PodiumSheen />}
-            </CardLink>
+            </PlayerLink>
           </li>
         );
       })}
