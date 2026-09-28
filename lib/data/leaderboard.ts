@@ -1,4 +1,5 @@
 import { PROFILE_MEDALS, type Medal } from "@/lib/data/medals";
+import { currentUser } from "@/lib/data/user";
 
 export type LeaderboardEntry = {
   id: string;
@@ -167,13 +168,15 @@ const PLAYERS: Player[] = [
   }),
 ];
 
+export const MY_PLAYER_ID = "cerdo-capitalista";
+
 const ME: Player = {
-  id: "rocketman1989",
-  name: "RocketMan1989",
+  id: MY_PLAYER_ID,
+  name: currentUser.name,
   avatarSrc: "/assets/leaderboard/avatar-me.png",
   level: "novato",
   points: 473,
-  medals: 0,
+  medals: 43,
   streak: 5,
   events: 1,
 };

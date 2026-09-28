@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { BackButton } from "@/components/layout/back-button";
 import { PointsValue } from "@/components/layout/points-value";
@@ -44,8 +45,10 @@ export function HeaderMobile({ back, className }: { back?: boolean; className?: 
       <div className="flex w-full items-center justify-between">
         <div className="flex min-w-0 items-center gap-2 pr-3">
           {back && <BackButton />}
-          <UserAvatar src={currentUser.avatarSrc} />
-          <p className="truncate text-sm font-semibold text-foreground">{currentUser.name}</p>
+          <Link href="/profile" prefetch={false} aria-label="Ir a mi perfil" className="flex min-w-0 items-center gap-2">
+            <UserAvatar src={currentUser.avatarSrc} />
+            <p className="truncate text-sm font-semibold text-foreground">{currentUser.name}</p>
+          </Link>
         </div>
 
         <div className="flex items-center gap-2">

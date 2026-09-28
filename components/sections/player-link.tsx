@@ -1,6 +1,9 @@
 "use client";
 
+import Link from "next/link";
+
 import { usePlayerModal } from "@/components/sections/player-modal";
+import { MY_PLAYER_ID } from "@/lib/data/leaderboard";
 import { cn } from "@/lib/utils";
 
 export function PlayerLink({
@@ -15,6 +18,14 @@ export function PlayerLink({
   children: React.ReactNode;
 }) {
   const { open } = usePlayerModal();
+
+  if (playerId === MY_PLAYER_ID) {
+    return (
+      <Link href="/profile" prefetch={false} aria-label="Ir a mi perfil" data-sfx-hover="soft" className={className}>
+        {children}
+      </Link>
+    );
+  }
 
   return (
     <button

@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 
 import { Odometer } from "@/components/layout/odometer";
-import { dailyClaim } from "@/lib/data/user";
 import { readMs } from "@/lib/motion";
 import { playSfx } from "@/lib/sfx";
 import { useDailyClaim } from "@/lib/use-daily-claim";
@@ -23,15 +22,16 @@ function changedDigitPositions(from: number, to: number) {
 }
 
 export function PointsValue() {
-  const { claimed, points } = useDailyClaim();
-  const [claimedOnMount] = useState(claimed);
+  const { points, gain } = useDailyClaim();
+  const [gainOnMount] = useState(gain?.id ?? 0);
+  const freshGain = gain && gain.id !== gainOnMount ? gain : null;
   const ref = useRef<HTMLSpanElement>(null);
   const previousPoints = useRef(points);
 
   useEffect(() => {
     const from = previousPoints.current;
     previousPoints.current = points;
-    if (from === points || !claimed || claimedOnMount) return;
+    if (from === points || !freshGain) return;
     const element = ref.current;
     if (!element || element.getClientRects().length === 0) return;
 
@@ -43,17 +43,18 @@ export function PointsValue() {
       ),
     );
     return () => timers.forEach((timer) => window.clearTimeout(timer));
-  }, [points, claimed, claimedOnMount]);
+  }, [points, freshGain]);
 
   return (
     <span ref={ref} className="relative inline-flex">
       <Odometer value={points} />
-      {claimed && !claimedOnMount && (
+      {freshGain && (
         <span
+          key={freshGain.id}
           aria-hidden
           className="reward-pop pointer-events-none absolute inset-x-0 top-full mt-2 flex justify-center whitespace-nowrap font-techno text-xs uppercase text-brand-vivid drop-shadow-link-hover"
         >
-          +{dailyClaim.reward}
+          +{freshGain.amount}
         </span>
       )}
     </span>

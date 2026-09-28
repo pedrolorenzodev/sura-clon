@@ -8,7 +8,7 @@ export type CurrentUser = {
 };
 
 export const currentUser: CurrentUser = {
-  name: "RocketMan1989",
+  name: "Cerdo_Capitalista",
   avatarSrc: "/assets/home/avatar.png",
   levelLabel: "Nivel: Novato",
   levelBadgeSrc: "/assets/home/level-1.webp",

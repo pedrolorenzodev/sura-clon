@@ -5,7 +5,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { ScrambleText } from "@/components/sections/scramble-text";
 import { cn } from "@/lib/utils";
 
-type TabOption = { id: string; label: string };
+type TabOption = { id: string; label: string; badge?: React.ReactNode };
 
 export function RouteTabs({
   items,
@@ -52,13 +52,14 @@ export function RouteTabs({
                 data-sfx-hover
                 data-sfx="select"
                 className={cn(
-                  "flex h-11 cursor-pointer items-center justify-center border-b-2 px-4 font-techno text-base uppercase transition-colors duration-200 motion-reduce:transition-none desktop:min-w-40 desktop:px-10",
+                  "flex h-11 cursor-pointer items-center justify-center gap-2 border-b-2 px-4 font-techno text-base uppercase transition-colors duration-200 motion-reduce:transition-none desktop:min-w-40 desktop:px-10",
                   isCurrent
                     ? cn("bg-white/5 text-foreground", indicator ? "border-transparent" : "border-muted-foreground")
                     : "border-transparent text-border-dim hover:bg-white/3 hover:text-foreground focus-visible:bg-white/3 focus-visible:text-foreground active:bg-white/3",
                 )}
               >
                 <ScrambleText text={tab.label} />
+                {tab.badge}
               </button>
             </li>
           );

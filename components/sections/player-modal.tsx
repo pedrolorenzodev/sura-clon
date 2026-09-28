@@ -6,11 +6,11 @@ import { createContext, useCallback, useContext, useMemo, useRef, useState } fro
 
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { PODIUM_STYLE, RankMedal, type PodiumRank } from "@/components/sections/leaderboard-podium-style";
-import { LevelIcon } from "@/components/sections/level-icon";
+import { LevelPanel } from "@/components/sections/level-panel";
 import { MedalCard } from "@/components/sections/medal-card";
-import { MedalStack } from "@/components/sections/medal-stack";
+import { PlayerStats } from "@/components/sections/stat-pill";
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { levels, playerProfile, type PlayerProfile } from "@/lib/data/leaderboard";
+import { playerProfile, type PlayerProfile } from "@/lib/data/leaderboard";
 import { useUrlState } from "@/lib/use-url-state";
 import { cn } from "@/lib/utils";
 
@@ -91,24 +91,24 @@ function PlayerSheet({ profile }: { profile: PlayerProfile }) {
                 </DialogTitle>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2.5 desktop:gap-3">
-                <StatPill>
-                  <Image src="/assets/home/sp-coin.webp" alt="" width={59} height={59} className="size-4 shrink-0" />
-                  {profile.points}
-                </StatPill>
-                <StatPill>
-                  <MedalStack />
-                  {profile.medals}
-                </StatPill>
-                <StatPill>
-                  <Image src="/assets/home/fire.png" alt="" width={112} height={112} className="size-4 shrink-0" />
-                  {profile.streak}
-                </StatPill>
-              </div>
+              <PlayerStats
+                points={profile.points}
+                medals={profile.medals}
+                streak={profile.streak}
+                className="flex flex-wrap items-center gap-2.5 desktop:gap-3"
+              />
             </div>
           </div>
 
-          <LevelPanel profile={profile} />
+          <LevelPanel
+            level={profile.level}
+            nextLevel={profile.nextLevel}
+            points={profile.levelPoints}
+            goal={profile.levelGoal}
+            progress={profile.levelProgress}
+            segments={{ mobile: 18, desktop: 25 }}
+            className="rounded-sm bg-surface-2 p-3 desktop:flex-1 desktop:self-stretch"
+          />
         </div>
       </div>
 
@@ -120,92 +120,15 @@ function PlayerSheet({ profile }: { profile: PlayerProfile }) {
           </span>
         </div>
 
-        <ul className="grid grid-cols-3 gap-2 desktop:grid-cols-5">
-          {profile.medalCollection.map((medal, index) => (
-            <MedalCard
-              key={medal.id}
-              medal={medal}
-              variant="profile"
-              className={index >= MOBILE_MEDALS ? "hidden desktop:flex" : undefined}
-            />
+        <ul className="flex flex-wrap justify-center gap-y-2 medal-gap-2">
+          {profile.medalCollection.map((medal) => (
+            <MedalCard key={medal.id} medal={medal} variant="modal" className="medal-row-3 desktop:medal-row-5" />
           ))}
         </ul>
       </section>
 
       <SharePanel profile={profile} />
     </>
-  );
-}
-
-function StatPill({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="flex shrink-0 items-center gap-1 rounded-sm bg-surface-2 p-2 text-xs font-medium text-foreground ring-1 ring-inset ring-muted-foreground/25">
-      {children}
-    </span>
-  );
-}
-
-const MOBILE_MEDALS = 9;
-
-const DESKTOP_SEGMENTS = 25;
-const MOBILE_SEGMENTS = 18;
-
-const FILLED = "bg-brand-vivid bg-none shadow-level-segment";
-const EMPTY = "bg-transparent bg-level-segment shadow-none";
-const FILLED_DESKTOP = "desktop:bg-brand-vivid desktop:bg-none desktop:shadow-level-segment";
-const EMPTY_DESKTOP = "desktop:bg-transparent desktop:bg-level-segment desktop:shadow-none";
-
-function LevelPanel({ profile }: { profile: PlayerProfile }) {
-  const filledDesktop = Math.round(profile.levelProgress * DESKTOP_SEGMENTS);
-  const filledMobile = Math.round(profile.levelProgress * MOBILE_SEGMENTS);
-
-  return (
-    <div className="flex items-center gap-3 rounded-sm bg-surface-2 p-3 desktop:flex-1 desktop:self-stretch">
-      <LevelIcon level={profile.level} className="size-9" />
-
-      <div className="flex min-w-0 flex-1 flex-col gap-1 desktop:gap-2">
-        <div className="flex items-center justify-between gap-2 whitespace-nowrap text-2xs desktop:text-xs">
-          <p className="font-medium text-foreground">Nivel: {levels[profile.level].label}</p>
-          <p className="text-muted-foreground">
-            <span className="font-medium text-foreground">{profile.levelPoints} SP</span> / {profile.levelGoal} SP
-          </p>
-        </div>
-
-        <div
-          role="progressbar"
-          aria-label="Progreso al siguiente nivel"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.round(profile.levelProgress * 100)}
-          className="flex h-3.5 gap-0.75 px-0.5"
-        >
-          {Array.from({ length: DESKTOP_SEGMENTS }, (_, index) =>
-            <span
-              key={index}
-              className={[
-                "min-w-0 flex-1 -skew-x-16 rounded-xs",
-                index >= MOBILE_SEGMENTS && "hidden desktop:block",
-                index < filledMobile ? FILLED : EMPTY,
-                index < filledDesktop ? FILLED_DESKTOP : EMPTY_DESKTOP,
-              ]
-                .filter(Boolean)
-                .join(" ")}
-            />,
-          )}
-        </div>
-      </div>
-
-      <div className="relative size-9 shrink-0" aria-hidden>
-        <LevelIcon level={profile.nextLevel} className="size-9 opacity-50" />
-        <Image
-          src="/assets/leaderboard/modal/lock-level.webp"
-          alt=""
-          width={56}
-          height={37}
-          className="absolute left-1/2 top-1/2 w-5 -translate-x-1/2 -translate-y-1/2 -rotate-4 opacity-75"
-        />
-      </div>
-    </div>
   );
 }
 

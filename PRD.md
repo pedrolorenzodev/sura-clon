@@ -930,6 +930,28 @@ Feedback de Ema: quien mira el sitio rápido clickea cards que no hacen nada, y 
     - La X es la de `lucide-react`, como la del buscador.
   - **Niveles:** la meta de cada nivel es 1.500 (Novato), 10.000 (Guerrero), 50.000 (Héroe) y 125.000 (Leyenda). La barra tiene 25 segmentos en desktop y 18 en mobile, que es lo que dibuja cada frame, y el nivel siguiente se ve apagado con un candado.
 
+**Mi Perfil** 👀 (bloque 49, 2026-09-28). `/profile`, del frame `6140:118274` / `6140:117864`. Se entra por el avatar del header, en los dos tamaños, y por "Tu posición" del leaderboard: `PlayerLink` lleva a `/profile` cuando el jugador sos vos, y a los demás les abre el modal.
+  - **Desktop y mobile son dos componentes**, cada uno oculto en el tamaño del otro. Desktop muestra todo a la vez en dos columnas: tabs Medallas / Trofeos con la grilla a la izquierda, y el usuario y sus datos a la derecha. Mobile reparte lo mismo en tres pestañas (Logros, Mi Perfil, Referidos) con el selector del frame, que arranca en Mi Perfil. Comparten la tarjeta del usuario, la barra de nivel, la grilla de medallas y la lista de datos (`profile-view.tsx`).
+  - **Reclamar funciona:** Devoción diaria y Ranking están listas para reclamar, como en el frame. Al tocarlas, suman 100 SP al contador del header con el odómetro y el "+100" que ya tenía el reclamo diario. El store se generalizó (`claimReward` en `lib/use-daily-claim.ts`). Dura la sesión, igual que el reclamo diario, y se reinicia al recargar.
+  - **Referir a un amigo:** abre el menú de compartir del sistema o copia `/?ref=rocketman1989`, y el botón dice "Link copiado" por 1,6s. **Eliminar cuenta:** el tacho es un `mailto:` a help@suragaming.com.
+  - **Desvíos del frame, con motivo:**
+    - **El banner violeta de arriba es sólo de desktop**: el frame mobile no lo tiene. Detrás del banner el header de desktop queda transparente, como en el Home.
+    - El H1 "Mi perfil" también aparece en mobile, aunque el frame mobile no lo tiene: es el chrome de ruta de § 5, que salió de estos mismos frames.
+    - **El contador del tab dice "5/9"**, obtenidas sobre el total. El "2/9" del frame no coincide con ninguna cuenta.
+    - **Trofeos no tiene diseño:** muestra un texto provisorio, igual que el estado vacío de las colecciones.
+    - **Los datos del perfil no se editan**: no hay diseño del estado de edición. Queda para la propuesta de la Fase B.
+    - El ícono de info de "País" abre un tooltip con un texto nuestro. El frame dibuja el ícono sin decir qué muestra.
+    - El Email aparece también en mobile, aunque el frame mobile lo omite.
+    - En la pestaña Referidos mobile, la bajada es la de la misión "Invitá a tres amigos".
+    - Colores normalizados: el verde de un dato completo (`#324516`) va en `--color-sp-foreground`, a 3 niveles; el borde de uno pendiente (`#414141`), en `--color-border-dim`; y el texto de "Reclamar" (`#211f25`), en `--color-background`.
+    - El glow del nivel actual va como `drop-shadow`, así sigue la silueta del ícono y no dibuja un rectángulo.
+  - **El usuario pasa a llamarse `Cerdo_Capitalista`** (usuario, 2026-09-28). Sale de una sola fuente, `currentUser.name`, que usan el header, la tarjeta, el leaderboard y el dato "Usuario". El frame decía "Usuario: Skell 22" y se tomó como error: es un dato ya completado del checklist, "Nombre" y "Apellido" van aparte, y en ningún otro lado de la app aparece un segundo nombre. El email del frame (`jmg1996@gmail.com`) tampoco coincide, pero se deja: un email no tiene por qué parecerse al nombre de usuario.
+  - **La columna del usuario mide 372 y no 360**: con 360, el nombre en KH 24 mayúscula se cortaba por 7px. A 320 de ancho el nombre se corta en mobile, igual que en el header.
+  - **Cambios que arrastró al modal de usuario:**
+    - Pasa a **9 medallas**, las de Mi Perfil, en 5 + 4 centradas y 3 × 3 en mobile. Se va la décima inventada ("Líder de clan"): el modal repetía Influencer.
+    - El premio de las medallas pasa a KH, como en Mi Perfil, que es el frame más nuevo.
+    - RocketMan1989 pasa a tener **43 medallas**, como en el frame de Mi Perfil (antes 0). Por eso cambia "Tu posición" en `/leaderboard`.
+
 - **El detalle de evento sale del diseño viejo** ([`412:4384`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4384&m=dev) *Acerca*, [`412:18445`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-18445&m=dev) *Participantes*, [`412:19980`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-19980&m=dev) *Ganadores*): se toma la UX y la UI es la nuestra, como `/tournaments`. Mobile no tiene frame: se adapta del desktop aprobado.
 
 ### Mapa de rutas
@@ -953,7 +975,7 @@ no rutas, y conviven sin conflicto.
 | `/news/:id` | Detalle de noticia | ⏳ Pendiente |
 | `/games` | Lista de juegos | 👀 Esperando aprobación (bloques 31–34) |
 | `/games/:id` | Detalle de juego | ⏳ Pendiente ❓ a confirmar |
-| `/profile` | Perfil propio | ⏳ Pendiente ❓ a confirmar |
+| `/profile` | Perfil propio | 👀 Esperando aprobación (bloque 49) |
 | `/profile/:id` | Perfil de otro usuario | ⏳ Pendiente ❓ a confirmar |
 | `/styleguide` | Referencia visual del DS (solo dev) | ✅ Implementada |
 | `not-found` | 404 · “Fuera del mapa” | 👀 Esperando aprobación (bloques 35–38). **Sin frames: diseño propio**, ver *La 404*, § 5 |
@@ -1120,6 +1142,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-28 | `--color-danger` (#f87171), `--shadow-segment`, `--shadow-segment-inset`, `--drop-shadow-level-current`, `--gradient-medal-claimable`, `--gradient-profile-banner-tint`, `--gradient-profile-banner-fade`, `--spacing-profile-banner` (268), `--spacing-profile-aside` (372, el frame dice 360); utilities `medal-gap-*` y `medal-row-*` | Mi Perfil | Frames `6140:118274` / `6140:117864`. `medal-gap-*` pone el espacio entre medallas y `medal-row-*` calcula el ancho de n por fila, así la última fila se centra en vez de dejar un hueco. `RouteTabs` acepta un `badge` por tab. Detalle en § 5, *Feedback de Ema*. |
 | 2026-09-28 | `--color-backdrop`, `--blur-modal` (5px), `--shadow-rank-medal`, `--shadow-level-segment`, `--gradient-level-segment` + `@utility bg-level-segment`, `--text-player-name` (24/28), `--spacing-player-modal` (918) | Modal de usuario | Frames `2776:76206` / `2776:63936`. Detalle y desvíos en § 5, *Feedback de Ema*. `MedalCard` suma la variante `profile` (fondo `--color-surface-2`, premio `+100`), la pila de medallitas pasa a `MedalStack` y `PodiumMedal` se apoya en un `RankMedal` sin posición. `profile` deja de ser una ruta de detalle en `lib/routes.ts`. |
 | 2026-09-28 | `--flip-move-duration` (380ms), `--flip-exit-duration` (180ms), `--flip-enter-delay` (120ms), `--flip-enter-stagger` (40ms) | Eventos · Misiones · Leaderboard · Juegos | La animación al filtrar, opción C de *Filtrado SURA*. Todo `offDesign`. Detalle en § 5, *Feedback de Ema*. |
 | 2026-09-28 | `--color-surface-ended` (#353535) y la card de misión **finalizada** | Misiones | Frame mobile `6008:29709`: el `#222` de la card con un gris `#838383` al 20% encima, resuelto en un color plano. El badge del frame es 4 niveles más claro (#393939) y se unificó al de la card, el mismo criterio que la completada; lleva el mismo `border-b border-r`, en `--color-border-dim`, para medir igual que los otros dos estados. La portada va con `grayscale` en CSS porque es data y cambia por misión (el asset del frame es la portada ya en gris); la moneda sí es el asset del diseño (`public/assets/missions/sp-coin-ended.webp`). Borde de la portada 1px `--color-border-dim`, textos en `--color-muted-foreground`, sin check. Desktop usa la misma card, como pidió el usuario. Medido: 173 × 153,6 en mobile, el alto de la completada. |
@@ -2126,13 +2149,13 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 46 · Búsqueda y paginado | Juegos | `app/(site)/games/page.tsx`, `lib/data/games.ts` | [`6137:82821`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6137-82821&m=dev) | [`6137:82953`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6137-82953&m=dev) | 👀 Esperando aprobación. Los dropdowns y el filtro mobile siguen inertes: esperan la propuesta (Fase B) |
 | 47 · Propuesta: Sura News, dropdowns, estado vacío | Sura News · Juegos | — (Artifact) | — **sin frame** | — **sin frame** | ⏳ Pendiente |
 | 48 · Modal de usuario | Leaderboard | `components/sections/player-modal.tsx`, `player-link.tsx`, `medal-stack.tsx`, `medal-card.tsx`, `components/ui/dialog.tsx`, `lib/data/leaderboard.ts` | [`2776:76206`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2776-76206&m=dev) | [`2776:63936`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2776-63936&m=dev) | 👀 Esperando aprobación. Sólo modal y backdrop |
-| 49 · Mi Perfil | `/profile` | — | [`6140:118274`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-118274&m=dev) | [`6140:117864`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-117864&m=dev) | ⏳ Pendiente |
+| 49 · Mi Perfil | `/profile` | `app/(site)/profile/page.tsx`, `components/sections/profile-view.tsx`, `level-panel.tsx`, `stat-pill.tsx`, `segmented-tabs.tsx`, `medal-card.tsx`, `lib/data/profile.ts`, `lib/use-daily-claim.ts` | [`6140:118274`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-118274&m=dev) | [`6140:117864`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-117864&m=dev) | 👀 Esperando aprobación |
 | 50 · Detalle de misión | `/missions/:id` | — | [`6008:29125`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29125&m=dev) | [`6008:29552`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29552&m=dev) | ⏳ Pendiente |
 | 51 · Detalle de juego | `/games/:id` | — | [`2867:7612`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2867-7612&m=dev) | [`3168:13133`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3168-13133&m=dev) | ⏳ Pendiente |
 | 52 · Detalle de evento | `/tournaments/:id` | — | [`412:4384`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4384&m=dev) Acerca · [`412:18445`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-18445&m=dev) Participantes · [`412:19980`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-19980&m=dev) Ganadores (**diseño viejo**: UX, no UI) | — **sin frame**: se adapta del desktop aprobado | ⏳ Pendiente |
 | 53 · Sura News | `/news` · `/news/:id` | — | — **sin frame**: sale de la propuesta del bloque 47 | — **sin frame** | ⏳ Pendiente |
 
-> **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. El botón de perfil del header ya es su trigger, inerte.
+> **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. Desde el 2026-09-28 el botón de perfil del header lleva a `/profile`; si el drawer vuelve, hay que decidir qué abre ese botón.
 >
 > La numeración es el orden en que se atacan, y es continua: si entra un bloque nuevo
 > en el medio, se renumeran los de abajo en vez de repetir un número.

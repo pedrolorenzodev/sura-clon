@@ -145,6 +145,7 @@
   --color-border-done: #456215;
   --color-overlay: rgb(34 34 34 / 0.9);
   --color-backdrop: rgb(12 12 12 / 0.7);
+  --color-danger: #f87171;
   --color-nav-glass: rgb(255 255 255 / 0.01);
 
   --color-tooltip: #1a1a1a;
@@ -256,6 +257,9 @@
   --shadow-arrow: 0 4px 4.5px rgb(0 0 0 / 0.5);
   --shadow-rank-medal: 0 4px 9px rgb(0 0 0 / 0.35);
   --shadow-level-segment: 0 0 6px rgb(151 243 0 / 0.5);
+  --shadow-segment: 0 2px 2.5px rgb(0 0 0 / 0.25);
+  --shadow-segment-inset: inset 0 2px 5px rgb(0 0 0 / 0.25);
+  --drop-shadow-level-current: 0 0 9px rgb(151 243 0 / 0.3);
   --shadow-mission-card: 0 2px 2.5px rgb(0 0 0 / 0.15);
   --shadow-sp-badge: 0 2px 5px rgb(0 0 0 / 0.15);
   --shadow-thumb: 0 4px 4px rgb(0 0 0 / 0.25);
@@ -312,6 +316,8 @@
 
   --spacing-mission-card-mobile: 261px;
   --spacing-player-modal: 918px;
+  --spacing-profile-banner: 268px;
+  --spacing-profile-aside: 372px;
   --spacing-card-grid-min: 140px;
   --spacing-card-grid-wide-min: 268px;
   --spacing-medal-cell-max: 128px;
@@ -548,6 +554,16 @@
   --gradient-claim: linear-gradient(90deg, rgb(48 48 48 / 0.4) 0%, rgb(48 48 48 / 0.4) 100%),
     linear-gradient(90deg, #091900 0%, #091900 100%);
   --gradient-level-segment: linear-gradient(180deg, rgb(160 229 0 / 0.2), rgb(80 61 11 / 0.1));
+  --gradient-medal-claimable: linear-gradient(
+      141.3deg,
+      rgb(69 98 21 / 0.25) 1.62%,
+      rgb(151 243 0 / 0.25) 52.4%,
+      rgb(69 98 21 / 0.25) 109.4%
+    ),
+    linear-gradient(var(--color-background), var(--color-background));
+  --gradient-profile-banner-tint: linear-gradient(-34.49deg, rgb(108 56 181 / 0.4) 23.8%, rgb(108 56 181 / 0) 79.2%);
+  --gradient-profile-banner-fade: linear-gradient(180deg, rgb(32 32 32 / 0) 26.6%, var(--color-background) 97.36%),
+    linear-gradient(92.66deg, #0c0c0c 2.07%, rgb(12 12 12 / 0) 8.73%, rgb(12 12 12 / 0) 91.43%, #0c0c0c 98.06%);
 }
 
 :root {
@@ -614,6 +630,22 @@
 }
 @utility bg-promo-cta {
   background-image: var(--gradient-promo-cta);
+}
+@utility medal-gap-* {
+  --medal-gap: calc(var(--spacing) * --value(number));
+  column-gap: var(--medal-gap);
+}
+@utility medal-row-* {
+  flex: 0 0 calc((100% - var(--medal-gap) * (--value(integer) - 1)) / --value(integer));
+}
+@utility bg-medal-claimable {
+  background-image: var(--gradient-medal-claimable);
+}
+@utility bg-profile-banner-tint {
+  background-image: var(--gradient-profile-banner-tint);
+}
+@utility bg-profile-banner-fade {
+  background-image: var(--gradient-profile-banner-fade);
 }
 @utility bg-level-segment {
   background-image: var(--gradient-level-segment);
