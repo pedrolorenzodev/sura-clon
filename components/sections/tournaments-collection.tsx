@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 
-import { EmptyResults } from "@/components/sections/empty-results";
+import { EMPTY_RESULTS_KEY, EmptyResults } from "@/components/sections/empty-results";
 import { FlipList } from "@/components/sections/flip-list";
 import { Pagination } from "@/components/sections/pagination";
 import { SearchField } from "@/components/sections/search-field";
@@ -40,21 +40,25 @@ export function TournamentsCollection() {
         inputClassName="desktop:text-base"
       />
 
-      {pageItems.length > 0 ? (
-        <FlipList
-          listRef={grid}
-          keys={pageItems.map((tournament) => tournament.id)}
-          className="card-grid-wide grid scroll-mt-header-mobile content-start gap-6 desktop:scroll-mt-header-desktop desktop:grid-cols-4"
-        >
-          {pageItems.map((tournament) => (
-            <TournamentCard key={tournament.id} tournament={tournament} />
-          ))}
-        </FlipList>
-      ) : (
-        <EmptyResults>No encontramos eventos para “{query}”.</EmptyResults>
-      )}
+      <FlipList
+        listRef={grid}
+        keys={pageItems.length ? pageItems.map((tournament) => tournament.id) : [EMPTY_RESULTS_KEY]}
+        className="card-grid-wide grid scroll-mt-header-mobile content-start gap-6 desktop:scroll-mt-header-desktop desktop:grid-cols-4"
+      >
+        {pageItems.length ? (
+          pageItems.map((tournament) => <TournamentCard key={tournament.id} tournament={tournament} />)
+        ) : (
+          <EmptyResults>No encontramos eventos para “{query}”.</EmptyResults>
+        )}
+      </FlipList>
 
-      {pages > 0 && <Pagination pages={pages} page={page} onChange={goToPage} label="Paginación de eventos" />}
+      <Pagination
+        pages={Math.max(pages, 1)}
+        page={page}
+        onChange={goToPage}
+        label="Paginación de eventos"
+        empty={pages === 0}
+      />
     </>
   );
 }

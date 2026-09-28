@@ -19,6 +19,7 @@ export function Pagination({
   onChange: setPage,
   label,
   compactOnMobile,
+  empty,
   className,
 }: {
   pages: number;
@@ -26,12 +27,21 @@ export function Pagination({
   onChange: (page: number) => void;
   label: string;
   compactOnMobile?: boolean;
+  empty?: boolean;
   className?: string;
 }) {
   const windowStart = Math.min(Math.max(page - 1, 1), Math.max(pages - 2, 1));
 
   return (
-    <nav aria-label={label} className={cn("flex justify-center pt-3", className)}>
+    <nav
+      aria-label={label}
+      inert={empty}
+      className={cn(
+        "flex justify-center pt-3 transition-opacity duration-200 motion-reduce:transition-none",
+        empty && "opacity-0",
+        className,
+      )}
+    >
       {compactOnMobile && (
         <div className="flex items-center justify-center gap-6 desktop:hidden">
           <button type="button" data-sfx="click" onClick={() => setPage(page - 1)} disabled={page === 1} aria-label="Página anterior" className={COMPACT}>

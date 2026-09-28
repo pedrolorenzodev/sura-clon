@@ -115,7 +115,12 @@ export function useFlipList(
     }
 
     if (Math.abs(after.height - before.height) > 1) {
-      list.animate([{ height: `${before.height}px` }, { height: `${after.height}px` }], move);
+      const shrinking = after.height < before.height;
+      list.animate([{ height: `${before.height}px` }, { height: `${after.height}px` }], {
+        ...move,
+        delay: shrinking ? readMs("--flip-exit-duration") : 0,
+        fill: "backwards",
+      });
     }
   }, [signature, listRef, ghostsRef]);
 

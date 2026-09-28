@@ -85,23 +85,22 @@ export function LeaderboardCollection() {
       />
 
       <div ref={table} className="scroll-mt-header-mobile desktop:scroll-mt-header-desktop">
-        {pageItems.length > 0 ? (
-          <StandingsTable entries={pageItems} iconSrc={iconSrc} />
-        ) : (
-          <EmptyResults>No encontramos competidores para “{query}”.</EmptyResults>
-        )}
+        <StandingsTable
+          entries={pageItems}
+          iconSrc={iconSrc}
+          empty={<EmptyResults>No encontramos competidores para “{query}”.</EmptyResults>}
+        />
       </div>
 
-      {pages > 0 && (
-        <Pagination
-          pages={pages}
-          page={page}
-          onChange={goToPage}
-          label="Paginación del leaderboard"
-          compactOnMobile
-          className="pt-0"
-        />
-      )}
+      <Pagination
+        pages={Math.max(pages, 1)}
+        page={page}
+        onChange={goToPage}
+        label="Paginación del leaderboard"
+        compactOnMobile
+        empty={pages === 0}
+        className="pt-0"
+      />
 
       <div className="flex flex-col gap-4">
         <p className="text-sm text-muted-foreground desktop:hidden">Tu posición:</p>

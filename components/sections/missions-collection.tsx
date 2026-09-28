@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 
-import { EmptyResults } from "@/components/sections/empty-results";
+import { EMPTY_RESULTS_KEY, EmptyResults } from "@/components/sections/empty-results";
 import { FilterChips } from "@/components/sections/filter-chips";
 import { FlipList } from "@/components/sections/flip-list";
 import { MissionCard } from "@/components/sections/mission-card";
@@ -55,21 +55,25 @@ export function MissionsCollection({ featured }: { featured: React.ReactNode }) 
 
       {featured}
 
-      {pageItems.length > 0 ? (
-        <FlipList
-          listRef={grid}
-          keys={pageItems.map((mission) => mission.id)}
-          className="card-grid grid scroll-mt-header-mobile content-start gap-3 desktop:scroll-mt-header-desktop desktop:grid-cols-4 desktop:gap-6"
-        >
-          {pageItems.map((mission) => (
-            <MissionCard key={mission.id} mission={mission} compact />
-          ))}
-        </FlipList>
-      ) : (
-        <EmptyResults>No hay misiones con estos filtros.</EmptyResults>
-      )}
+      <FlipList
+        listRef={grid}
+        keys={pageItems.length ? pageItems.map((mission) => mission.id) : [EMPTY_RESULTS_KEY]}
+        className="card-grid grid scroll-mt-header-mobile content-start gap-3 desktop:scroll-mt-header-desktop desktop:grid-cols-4 desktop:gap-6"
+      >
+        {pageItems.length ? (
+          pageItems.map((mission) => <MissionCard key={mission.id} mission={mission} compact />)
+        ) : (
+          <EmptyResults>No hay misiones con estos filtros.</EmptyResults>
+        )}
+      </FlipList>
 
-      {pages > 0 && <Pagination pages={pages} page={page} onChange={goToPage} label="Paginación de misiones" />}
+      <Pagination
+        pages={Math.max(pages, 1)}
+        page={page}
+        onChange={goToPage}
+        label="Paginación de misiones"
+        empty={pages === 0}
+      />
     </>
   );
 }

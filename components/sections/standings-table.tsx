@@ -1,10 +1,21 @@
+import { EMPTY_RESULTS_KEY } from "@/components/sections/empty-results";
 import { LeaderboardRow } from "@/components/sections/leaderboard-row";
 import { RevealList } from "@/components/sections/reveal-list";
 import { StandingsRow } from "@/components/sections/standings-row";
 import { levels, standingsColumns, type Standing } from "@/lib/data/leaderboard";
 import { detailHref } from "@/lib/routes";
 
-export function StandingsTable({ entries, iconSrc }: { entries: Standing[]; iconSrc: string }) {
+export function StandingsTable({
+  entries,
+  iconSrc,
+  empty,
+}: {
+  entries: Standing[];
+  iconSrc: string;
+  empty: React.ReactNode;
+}) {
+  const keys = entries.length ? entries.map((entry) => entry.id) : [EMPTY_RESULTS_KEY];
+
   return (
     <>
       <div className="hidden flex-col gap-2 desktop:flex">
@@ -19,18 +30,15 @@ export function StandingsTable({ entries, iconSrc }: { entries: Standing[]; icon
           <span aria-hidden className="w-70.25 shrink-0" />
         </div>
 
-        <RevealList flipKeys={entries.map((entry) => entry.id)} className="flex flex-col gap-2">
-          {entries.map((entry, index) => (
-            <StandingsRow key={entry.id} entry={entry} revealIndex={index} />
-          ))}
+        <RevealList flipKeys={keys} className="flex flex-col gap-2">
+          {entries.length
+            ? entries.map((entry, index) => <StandingsRow key={entry.id} entry={entry} revealIndex={index} />)
+            : empty}
         </RevealList>
       </div>
 
-      <RevealList
-        flipKeys={entries.map((entry) => entry.id)}
-        wrapperClassName="desktop:hidden"
-        className="flex flex-col gap-2"
-      >
+      <RevealList flipKeys={keys} wrapperClassName="desktop:hidden" className="flex flex-col gap-2">
+        {!entries.length && empty}
         {entries.map((entry, index) => (
           <LeaderboardRow
             key={entry.id}

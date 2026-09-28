@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 
-import { EmptyResults } from "@/components/sections/empty-results";
+import { EMPTY_RESULTS_KEY, EmptyResults } from "@/components/sections/empty-results";
 import { FlipList } from "@/components/sections/flip-list";
 import { GameCard } from "@/components/sections/game-card";
 import { Pagination } from "@/components/sections/pagination";
@@ -43,30 +43,27 @@ export function GamesCollection({ filters, banner }: { filters: React.ReactNode;
       {banner}
 
       <div className="flex flex-col gap-6">
-        {pageItems.length > 0 ? (
-          <FlipList
-            listRef={grid}
-            keys={pageItems.map((game) => game.id)}
-            className="card-grid grid scroll-mt-header-mobile content-start gap-4 desktop:scroll-mt-header-desktop desktop:grid-cols-4 desktop:gap-6"
-          >
-            {pageItems.map((game) => (
-              <GameCard key={game.id} game={game} largeTitle />
-            ))}
-          </FlipList>
-        ) : (
-          <EmptyResults>No encontramos juegos para “{query}”.</EmptyResults>
-        )}
+        <FlipList
+          listRef={grid}
+          keys={pageItems.length ? pageItems.map((game) => game.id) : [EMPTY_RESULTS_KEY]}
+          className="card-grid grid scroll-mt-header-mobile content-start gap-4 desktop:scroll-mt-header-desktop desktop:grid-cols-4 desktop:gap-6"
+        >
+          {pageItems.length ? (
+            pageItems.map((game) => <GameCard key={game.id} game={game} largeTitle />)
+          ) : (
+            <EmptyResults>No encontramos juegos para “{query}”.</EmptyResults>
+          )}
+        </FlipList>
 
-        {pages > 0 && (
-          <Pagination
-            pages={pages}
-            page={page}
-            onChange={goToPage}
-            label="Paginación de juegos"
-            compactOnMobile
-            className="pt-0"
-          />
-        )}
+        <Pagination
+          pages={Math.max(pages, 1)}
+          page={page}
+          onChange={goToPage}
+          label="Paginación de juegos"
+          compactOnMobile
+          empty={pages === 0}
+          className="pt-0"
+        />
       </div>
     </div>
   );
