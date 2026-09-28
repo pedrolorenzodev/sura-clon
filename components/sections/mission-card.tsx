@@ -15,7 +15,8 @@ export function MissionCard({
   className?: string;
   compact?: boolean;
 }) {
-  const done = mission.completed;
+  const done = mission.status === "completed";
+  const ended = mission.status === "ended";
 
   return (
     <li className={cn("flex", className)}>
@@ -26,15 +27,18 @@ export function MissionCard({
           compact
             ? "gap-2 p-2 desktop:gap-4 desktop:px-4 desktop:pb-6 desktop:pt-4"
             : "gap-4 px-4 pb-6 pt-4",
-          done
-            ? "bg-surface-done ring-1 ring-inset ring-border-done"
-            : "bg-surface shadow-mission-card ring-1 ring-inset ring-border hover:ring-border-muted/60 focus-visible:ring-border-muted/60",
+          done && "bg-surface-done ring-1 ring-inset ring-border-done",
+          ended && "bg-surface-ended",
+          !done &&
+            !ended &&
+            "bg-surface shadow-mission-card ring-1 ring-inset ring-border hover:ring-border-muted/60 focus-visible:ring-border-muted/60",
         )}
       >
         <div
           className={cn(
             "relative aspect-[229.456/128] w-full overflow-hidden rounded-sm",
             done && "border-gradient-done",
+            ended && "border border-border-dim",
           )}
         >
           <Image
@@ -42,17 +46,21 @@ export function MissionCard({
             alt=""
             width={1920}
             height={1080}
-            className="size-full object-cover transition-transform duration-250 ease-reveal group-hover:scale-105 group-focus-visible:scale-105 motion-reduce:transition-none"
+            className={cn(
+              "size-full object-cover transition-transform duration-250 ease-reveal group-hover:scale-105 group-focus-visible:scale-105 motion-reduce:transition-none",
+              ended && "grayscale",
+            )}
           />
 
           {done && <span aria-hidden className="bg-mission-done absolute inset-0" />}
+          {ended && <span className="sr-only">Finalizada</span>}
 
           <div
             className={cn(
               "absolute left-0 top-0 flex items-center gap-px overflow-hidden rounded-br-sm rounded-tl-[3px] px-1.5 pb-1.25 pt-1.5",
-              done
-                ? "bg-surface-done border-b border-r border-border-done text-brand"
-                : "bg-sp-badge border-b border-r border-brand text-sp-foreground shadow-sp-badge",
+              done && "bg-surface-done border-b border-r border-border-done text-brand",
+              ended && "bg-surface-ended border-b border-r border-border-dim text-muted-foreground",
+              !done && !ended && "bg-sp-badge border-b border-r border-brand text-sp-foreground shadow-sp-badge",
             )}
           >
             <span className="pt-0.5 text-center font-techno text-reward uppercase">
@@ -60,10 +68,10 @@ export function MissionCard({
             </span>
             <span className="relative block h-4 w-[17.455px] shrink-0 overflow-hidden">
               <Image
-                src="/assets/home/sp-coin.webp"
+                src={ended ? "/assets/missions/sp-coin-ended.webp" : "/assets/home/sp-coin.webp"}
                 alt=""
-                width={2084}
-                height={2084}
+                width={59}
+                height={59}
                 className="absolute left-0 top-[-4.55%] h-[109.09%] w-full max-w-none"
               />
             </span>
@@ -88,7 +96,9 @@ export function MissionCard({
             className={cn(
               "h-4.5 truncate font-techno uppercase",
               compact ? "text-xs desktop:text-sm" : "text-sm",
-              done ? "text-muted-foreground/67" : "text-foreground",
+              done && "text-muted-foreground/67",
+              ended && "text-muted-foreground",
+              !done && !ended && "text-foreground",
             )}
           >
             {mission.title}

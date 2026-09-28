@@ -14,12 +14,14 @@ const VARIANT: Record<ValuePillVariant, string> = {
 
 export function ValuePill({
   points,
+  iconSrc = "/assets/home/sp-coin.webp",
   variant = "neutral",
   small = false,
   countUpIndex,
   className,
 }: {
   points: string;
+  iconSrc?: string;
   variant?: ValuePillVariant;
   small?: boolean;
   countUpIndex?: number;
@@ -34,7 +36,7 @@ export function ValuePill({
       )}
     >
       <Image
-        src="/assets/home/sp-coin.webp"
+        src={iconSrc}
         alt=""
         width={16}
         height={16}

@@ -1,23 +1,22 @@
 "use client";
 
-import { useState } from "react";
-
 import { cn } from "@/lib/utils";
 
 type ChipOption = { id: string; label: string };
 
 export function FilterChips({
   items,
-  current,
+  value: selected,
+  onChange,
   label,
   className,
 }: {
   items: ChipOption[];
-  current: string;
+  value: string;
+  onChange: (id: string) => void;
   label: string;
   className?: string;
 }) {
-  const [selected, setSelected] = useState(current);
 
   return (
     <ul aria-label={label} className={cn("no-scrollbar flex gap-2 overflow-x-auto overscroll-x-none", className)}>
@@ -28,7 +27,7 @@ export function FilterChips({
           <li key={chip.id} className="shrink-0">
             <button
               type="button"
-              onClick={() => setSelected(chip.id)}
+              onClick={() => onChange(chip.id)}
               aria-pressed={isCurrent}
               data-sfx="click"
               className={cn(

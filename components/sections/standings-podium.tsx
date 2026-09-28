@@ -9,7 +9,7 @@ import {
 import { LevelIcon } from "@/components/sections/level-icon";
 import { ValuePill } from "@/components/sections/value-pill";
 import { PodiumSheen } from "@/components/sections/podium-sheen";
-import { levels, standings } from "@/lib/data/leaderboard";
+import { levels, type Standing } from "@/lib/data/leaderboard";
 import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
@@ -21,10 +21,18 @@ const GRADIENT: Record<PodiumRank, string> = {
 
 const ORDER: Record<PodiumRank, string> = { 1: "order-2", 2: "order-1", 3: "order-3" };
 
-export function StandingsPodium({ className }: { className?: string }) {
+export function StandingsPodium({
+  entries,
+  iconSrc,
+  className,
+}: {
+  entries: Standing[];
+  iconSrc: string;
+  className?: string;
+}) {
   return (
     <ul className={cn("flex items-end justify-center gap-6", className)}>
-      {standings.slice(0, 3).map((entry, index) => {
+      {entries.map((entry, index) => {
         const rank = (index + 1) as PodiumRank;
         const style = PODIUM_STYLE[rank];
         const isFirst = rank === 1;
@@ -63,7 +71,7 @@ export function StandingsPodium({ className }: { className?: string }) {
                     <p className="truncate text-xs">Nivel: {levels[entry.level].label}</p>
                   </div>
                 </div>
-                <ValuePill points={entry.points} variant={style.pill} className="self-start" />
+                <ValuePill points={entry.score} iconSrc={iconSrc} variant={style.pill} className="self-start" />
               </div>
               {isFirst && <PodiumSheen />}
             </CardLink>

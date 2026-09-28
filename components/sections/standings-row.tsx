@@ -110,7 +110,7 @@ export function StandingsRow({ entry, revealIndex }: { entry: Standing; revealIn
           {entry.deficit && (
             <>
               <span className="flex items-center gap-1 text-xs font-medium text-foreground">
-                <Coin />
+                {entry.deficitInPoints && <Coin />}
                 {entry.deficit}
               </span>
               <span className="truncate text-xs text-muted-foreground">

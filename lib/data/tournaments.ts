@@ -1,3 +1,5 @@
+import { rotate } from "@/lib/collection";
+
 export type TournamentBadgeIcon = "mode" | "format" | "players";
 
 export type TournamentBadge = {
@@ -17,7 +19,7 @@ export type Tournament = {
   imageSrc: string;
 };
 
-export const tournaments: Tournament[] = [
+const BASE_TOURNAMENTS: Tournament[] = [
   {
     id: "contenders-training-center-108",
     game: "Garena Free Fire",
@@ -136,3 +138,12 @@ export const tournaments: Tournament[] = [
     imageSrc: "/assets/home/juegos/minecraft.webp",
   },
 ];
+
+export const TOURNAMENTS_PER_PAGE = 8;
+
+export const tournaments: Tournament[] = [0, 1, 2].flatMap((round) =>
+  rotate(BASE_TOURNAMENTS, round * 3).map((tournament) => ({
+    ...tournament,
+    id: round ? `${tournament.id}-${round + 1}` : tournament.id,
+  })),
+);

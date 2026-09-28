@@ -80,123 +80,198 @@ export type Standing = {
   streak: string;
   level: LevelId;
   deficit?: string;
+  deficitInPoints?: boolean;
+  score: string;
   tone?: StandingTone;
 };
 
-export const standings: Standing[] = [
-  {
-    id: "desenfrenado",
-    rank: "01",
-    name: "DesenfrenadO_",
-    avatarSrc: "/assets/home/leaderboard/avatar-1.webp",
-    points: "7.015",
-    medals: "30",
-    streak: "3 días",
-    level: "leyenda",
-    tone: "gold",
-  },
-  {
-    id: "bretasnft",
-    rank: "02",
-    name: "BretasNFT",
-    avatarSrc: "/assets/home/leaderboard/avatar-2.webp",
-    points: "6.890",
-    medals: "33",
-    streak: "0 días",
-    level: "guerrero",
-    deficit: "126",
-    tone: "silver",
-  },
-  {
-    id: "saboomafoo",
-    rank: "03",
-    name: "SabooMafoo",
-    avatarSrc: "/assets/home/leaderboard/avatar-3.png",
-    points: "6.755",
-    medals: "32",
-    streak: "0 días",
-    level: "heroe",
-    deficit: "136",
-    tone: "bronze",
-  },
-  {
-    id: "gushvz",
-    rank: "04",
-    name: "gushvz",
-    avatarSrc: "/assets/leaderboard/avatar-04.webp",
-    points: "6.685",
-    medals: "29",
-    streak: "1 día",
-    level: "heroe",
-    deficit: "71",
-  },
-  {
-    id: "lobo-blanco",
-    rank: "05",
-    name: "Lobo Blanco",
-    avatarSrc: "/assets/leaderboard/avatar-05.webp",
-    points: "5.875",
-    medals: "30",
-    streak: "0 días",
-    level: "guerrero",
-    deficit: "811",
-  },
-  {
-    id: "hardnft",
-    rank: "06",
-    name: "HarDNFT",
-    avatarSrc: "/assets/leaderboard/avatar-06.webp",
-    points: "5.845",
-    medals: "27",
-    streak: "0 días",
-    level: "guerrero",
-    deficit: "31",
-  },
-  {
-    id: "loscar",
-    rank: "07",
-    name: "Loscar",
-    avatarSrc: "/assets/leaderboard/avatar-07.jpg",
-    points: "5.625",
-    medals: "13",
-    streak: "8 días",
-    level: "guerrero",
-    deficit: "221",
-  },
-  {
-    id: "xynta",
-    rank: "08",
-    name: "Xynta",
-    avatarSrc: "/assets/leaderboard/avatar-08.webp",
-    points: "5.495",
-    medals: "24",
-    streak: "1 día",
-    level: "guerrero",
-    deficit: "131",
-  },
-  {
-    id: "hitori",
-    rank: "09",
-    name: "Hitori",
-    avatarSrc: "/assets/leaderboard/avatar-09.webp",
-    points: "5.210",
-    medals: "24",
-    streak: "0 días",
-    level: "guerrero",
-    deficit: "286",
-  },
-  {
-    id: "senhorpopo",
-    rank: "10",
-    name: "SenhorPopo",
-    avatarSrc: "/assets/leaderboard/avatar-10.webp",
-    points: "5.100",
-    medals: "24",
-    streak: "0 días",
-    level: "guerrero",
-    deficit: "111",
-  },
+export type LeaderboardMetric = "sura-points" | "medallas" | "racha" | "eventos";
+
+export type LeaderboardRange = "historico" | "mensual" | "semanal" | "diario";
+
+type Player = {
+  id: string;
+  name: string;
+  avatarSrc: string;
+  level: LevelId;
+  points: number;
+  medals: number;
+  streak: number;
+  events: number;
+};
+
+type PlayerStats = Pick<Player, "points" | "medals" | "streak" | "events">;
+
+const AVATARS = [
+  "/assets/home/leaderboard/avatar-1.webp",
+  "/assets/home/leaderboard/avatar-2.webp",
+  "/assets/home/leaderboard/avatar-3.png",
+  "/assets/leaderboard/avatar-04.webp",
+  "/assets/leaderboard/avatar-05.webp",
+  "/assets/leaderboard/avatar-06.webp",
+  "/assets/leaderboard/avatar-07.jpg",
+  "/assets/leaderboard/avatar-08.webp",
+  "/assets/leaderboard/avatar-09.webp",
+  "/assets/leaderboard/avatar-10.webp",
 ];
+
+const DESIGN_PLAYERS: Player[] = [
+  { id: "desenfrenado", name: "DesenfrenadO_", avatarSrc: AVATARS[0], level: "leyenda", points: 7015, medals: 30, streak: 3, events: 14 },
+  { id: "bretasnft", name: "BretasNFT", avatarSrc: AVATARS[1], level: "guerrero", points: 6890, medals: 33, streak: 0, events: 12 },
+  { id: "saboomafoo", name: "SabooMafoo", avatarSrc: AVATARS[2], level: "heroe", points: 6755, medals: 32, streak: 0, events: 11 },
+  { id: "gushvz", name: "gushvz", avatarSrc: AVATARS[3], level: "heroe", points: 6685, medals: 29, streak: 1, events: 9 },
+  { id: "lobo-blanco", name: "Lobo Blanco", avatarSrc: AVATARS[4], level: "guerrero", points: 5875, medals: 30, streak: 0, events: 10 },
+  { id: "hardnft", name: "HarDNFT", avatarSrc: AVATARS[5], level: "guerrero", points: 5845, medals: 27, streak: 0, events: 8 },
+  { id: "loscar", name: "Loscar", avatarSrc: AVATARS[6], level: "guerrero", points: 5625, medals: 13, streak: 8, events: 6 },
+  { id: "xynta", name: "Xynta", avatarSrc: AVATARS[7], level: "guerrero", points: 5495, medals: 24, streak: 1, events: 7 },
+  { id: "hitori", name: "Hitori", avatarSrc: AVATARS[8], level: "guerrero", points: 5210, medals: 24, streak: 0, events: 5 },
+  { id: "senhorpopo", name: "SenhorPopo", avatarSrc: AVATARS[9], level: "guerrero", points: 5100, medals: 24, streak: 0, events: 6 },
+];
+
+const EXTRA_NAMES = [
+  "KoibitoSura", "Madness9891", "Gasstiel", "NebulaFox", "PixelPampa", "Zurdo_GG", "LaChilindrina", "VortexAR",
+  "Maté_Frag", "Ninja_Tango", "CholoSniper", "Lupe.exe", "RayoRioplata", "ElKraken", "Cumbia_Clutch", "Nahuel404",
+  "SrPancho", "Tormenta_7", "Quilmes_Aim", "Fideo_Pro", "Morocha_TTV", "Gaucho_Byte", "Ruido_Blanco", "Yaguareté",
+  "ZetaBoss", "Colectivo_60", "Bizcochito", "Neon_Mendoza", "Cachafaz", "LunaTucu", "Kuka_Plays", "Dulce_de_Lag",
+  "Trueno_Azul", "Pibe_Rush", "Carpincho_GG", "Milanesa_OP", "Sombra_Sur", "Alfajor_Aim", "Tano_Tilt", "Boludeo_Pro",
+];
+
+function seeded(seed: string) {
+  let state = [...seed].reduce((hash, char) => Math.imul(hash ^ char.charCodeAt(0), 16777619), 2166136261);
+  return () => {
+    state = Math.imul(state ^ (state >>> 15), 2246822507);
+    state = Math.imul(state ^ (state >>> 13), 3266489909);
+    return ((state ^= state >>> 16) >>> 0) / 4294967296;
+  };
+}
+
+const random = seeded("sura-leaderboard");
+let nextPoints = 5100;
+
+const PLAYERS: Player[] = [
+  ...DESIGN_PLAYERS,
+  ...EXTRA_NAMES.map((name, index) => {
+    nextPoints -= 40 + Math.round(random() * 60);
+    return {
+      id: name.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+      name,
+      avatarSrc: AVATARS[(index + 3) % AVATARS.length],
+      level: nextPoints > 3000 ? "guerrero" : "novato",
+      points: nextPoints,
+      medals: 2 + Math.round(random() * 24),
+      streak: Math.round(random() * 12),
+      events: 1 + Math.round(random() * 12),
+    } satisfies Player;
+  }),
+];
+
+const ME: Player = {
+  id: "rocketman1989",
+  name: "RocketMan1989",
+  avatarSrc: "/assets/leaderboard/avatar-me.png",
+  level: "novato",
+  points: 473,
+  medals: 0,
+  streak: 5,
+  events: 1,
+};
+
+const POINTS_FACTOR: Record<LeaderboardRange, number> = { historico: 1, mensual: 0.22, semanal: 0.06, diario: 0.012 };
+
+const COUNT_FACTOR: Record<LeaderboardRange, number> = { historico: 1, mensual: 0.4, semanal: 0.15, diario: 0.05 };
+
+const STREAK_CAP: Record<LeaderboardRange, number> = { historico: Infinity, mensual: 30, semanal: 7, diario: 1 };
+
+function statsFor(player: Player, range: LeaderboardRange): PlayerStats {
+  if (range === "historico") return player;
+  const noise = seeded(`${player.id}:${range}`);
+  const scale = (value: number, factor: Record<LeaderboardRange, number>) =>
+    Math.round(value * factor[range] * (0.5 + noise()));
+  return {
+    points: scale(player.points, POINTS_FACTOR),
+    medals: scale(player.medals, COUNT_FACTOR),
+    streak: Math.min(player.streak, STREAK_CAP[range]),
+    events: scale(player.events, COUNT_FACTOR),
+  };
+}
+
+const METRIC_KEY: Record<LeaderboardMetric, keyof PlayerStats> = {
+  "sura-points": "points",
+  medallas: "medals",
+  racha: "streak",
+  eventos: "events",
+};
+
+export const LEADERBOARD_METRIC_ICON: Record<LeaderboardMetric, string> = {
+  "sura-points": "/assets/home/sp-coin.webp",
+  medallas: "/assets/leaderboard/medal-mini-1.webp",
+  racha: "/assets/home/fire.png",
+  eventos: "/assets/home/eventos/trophy.webp",
+};
+
+const withThousands = (value: number) => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+const plural = (value: number, one: string, many: string) => `${value} ${value === 1 ? one : many}`;
+
+const UNIT: Record<LeaderboardMetric, ((value: number) => string) | null> = {
+  "sura-points": null,
+  medallas: (value) => plural(value, "medalla", "medallas"),
+  racha: (value) => plural(value, "día", "días"),
+  eventos: (value) => plural(value, "evento", "eventos"),
+};
+
+const TONES: StandingTone[] = ["gold", "silver", "bronze"];
+
+function toStanding(
+  player: Player,
+  stats: PlayerStats,
+  metric: LeaderboardMetric,
+  rank: string,
+  ahead: PlayerStats | undefined,
+  tone: StandingTone | undefined,
+): Standing {
+  const key = METRIC_KEY[metric];
+  const gap = ahead ? ahead[key] - stats[key] + 1 : undefined;
+  return {
+    id: player.id,
+    rank,
+    name: player.name,
+    avatarSrc: player.avatarSrc,
+    points: withThousands(stats.points),
+    medals: String(stats.medals),
+    streak: plural(stats.streak, "día", "días"),
+    level: player.level,
+    score: metric === "racha" ? plural(stats.streak, "día", "días") : withThousands(stats[key]),
+    deficit: gap === undefined ? undefined : UNIT[metric] ? UNIT[metric](gap) : withThousands(gap),
+    deficitInPoints: !UNIT[metric],
+    tone,
+  };
+}
+
+const byMetric = (metric: LeaderboardMetric) => {
+  const key = METRIC_KEY[metric];
+  return (a: { stats: PlayerStats; player: Player }, b: { stats: PlayerStats; player: Player }) =>
+    b.stats[key] - a.stats[key] || b.stats.points - a.stats.points || a.player.name.localeCompare(b.player.name);
+};
+
+export function rankStandings(metric: LeaderboardMetric, range: LeaderboardRange) {
+  const ranked = PLAYERS.map((player) => ({ player, stats: statsFor(player, range) })).sort(byMetric(metric));
+
+  const standings = ranked.map(({ player, stats }, index) =>
+    toStanding(player, stats, metric, String(index + 1).padStart(2, "0"), ranked[index - 1]?.stats, TONES[index]),
+  );
+
+  const mine = { player: ME, stats: statsFor(ME, range) };
+  const myIndex = ranked.findIndex((entry) => byMetric(metric)(mine, entry) < 0);
+  const myRank = myIndex === -1 ? ranked.length : myIndex;
+  const me = toStanding(ME, mine.stats, metric, String(myRank + 1), ranked[myRank - 1]?.stats, "me");
+
+  return { standings, me };
+}
+
+export const STANDINGS_PER_PAGE = 10;
+
+export const standings: Standing[] = rankStandings("sura-points", "historico").standings;
 
 export const leaderboardRows: LeaderboardEntry[] = standings.slice(3, 8).map((entry) => ({
   id: entry.id,
@@ -206,19 +281,6 @@ export const leaderboardRows: LeaderboardEntry[] = standings.slice(3, 8).map((en
   points: entry.points,
   avatarSrc: entry.avatarSrc,
 }));
-
-export const myStanding: Standing = {
-  id: "rocketman1989",
-  rank: "+40",
-  name: "RocketMan1989",
-  avatarSrc: "/assets/leaderboard/avatar-me.png",
-  points: "473",
-  medals: "0",
-  streak: "5 días",
-  level: "novato",
-  deficit: "1.996",
-  tone: "me",
-};
 
 export const standingsColumns = [
   "#",

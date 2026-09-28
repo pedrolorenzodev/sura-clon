@@ -32,9 +32,11 @@ export type PodiumEntry = {
 
 export function LeaderboardPodiumMobile({
   entries,
+  iconSrc,
   className,
 }: {
   entries: PodiumEntry[];
+  iconSrc?: string;
   className?: string;
 }) {
   return (
@@ -90,6 +92,7 @@ export function LeaderboardPodiumMobile({
 
               <ValuePill
                 points={entry.points}
+                iconSrc={iconSrc}
                 variant={style.pill}
                 small={!isFirst}
               />

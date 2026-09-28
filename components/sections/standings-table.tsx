@@ -1,10 +1,10 @@
 import { LeaderboardRow } from "@/components/sections/leaderboard-row";
 import { RevealList } from "@/components/sections/reveal-list";
 import { StandingsRow } from "@/components/sections/standings-row";
-import { levels, standings, standingsColumns } from "@/lib/data/leaderboard";
+import { levels, standingsColumns, type Standing } from "@/lib/data/leaderboard";
 import { detailHref } from "@/lib/routes";
 
-export function StandingsTable() {
+export function StandingsTable({ entries, iconSrc }: { entries: Standing[]; iconSrc: string }) {
   return (
     <>
       <div className="hidden flex-col gap-2 desktop:flex">
@@ -20,21 +20,22 @@ export function StandingsTable() {
         </div>
 
         <RevealList className="flex flex-col gap-2">
-          {standings.map((entry, index) => (
+          {entries.map((entry, index) => (
             <StandingsRow key={entry.id} entry={entry} revealIndex={index} />
           ))}
         </RevealList>
       </div>
 
       <RevealList className="flex flex-col gap-2 desktop:hidden">
-        {standings.map((entry, index) => (
+        {entries.map((entry, index) => (
           <LeaderboardRow
             key={entry.id}
             href={detailHref("profile", entry.id)}
             rank={entry.rank}
             name={entry.name}
             levelLabel={`Nivel: ${levels[entry.level].label}`}
-            points={entry.points}
+            points={entry.score}
+            iconSrc={iconSrc}
             avatarSrc={entry.avatarSrc}
             tone={entry.tone}
             revealIndex={index}

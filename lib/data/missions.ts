@@ -4,9 +4,14 @@ export type Mission = {
   description: string;
   reward: string;
   imageSrc: string;
-  completed?: boolean;
+  status?: MissionStatus;
+  category?: MissionCategory;
   highlighted?: boolean;
 };
+
+export type MissionStatus = "available" | "completed" | "ended";
+
+export type MissionCategory = "sociales" | "sura" | "eventos";
 
 const DESCRIPTION =
   "Para completar esta misión, debes hacer clic en el botón de abajo para visitar la página requerida.";
@@ -75,46 +80,68 @@ export const missionFilters: MissionOption[] = [
   { id: "todas", label: "Todas" },
 ];
 
-const ART = [
-  "/assets/home/misiones/fortnite.webp",
-  "/assets/home/misiones/valorant.png",
-  "/assets/home/misiones/assassins-creed.webp",
-  "/assets/home/misiones/mario.webp",
-  "/assets/home/juegos/minecraft.webp",
-  "/assets/home/juegos/wagmi.webp",
-  "/assets/home/juegos/cod-mw.webp",
-  "/assets/home/juegos/racing.webp",
+export const MISSION_FILTER_STATUS: Record<string, MissionStatus | undefined> = {
+  disponibles: "available",
+  completadas: "completed",
+  finalizadas: "ended",
+};
+
+const ART = {
+  fortnite: "/assets/home/misiones/fortnite.webp",
+  valorant: "/assets/home/misiones/valorant.png",
+  assassinsCreed: "/assets/home/misiones/assassins-creed.webp",
+  mario: "/assets/home/misiones/mario.webp",
+  minecraft: "/assets/home/juegos/minecraft.webp",
+  wagmi: "/assets/home/juegos/wagmi.webp",
+  codMw: "/assets/home/juegos/cod-mw.webp",
+  racing: "/assets/home/juegos/racing.webp",
+  valhalla: "/assets/home/juegos/ac-valhalla.png",
+};
+
+type MissionSeed = [title: string, category: MissionCategory, imageSrc: string];
+
+const SEEDS: MissionSeed[] = [
+  ["Juega a Fortnite", "eventos", ART.fortnite],
+  ["Conecta tu cuenta de X", "sociales", ART.codMw],
+  ["Completa tu perfil", "sura", ART.valhalla],
+  ["Completa 10 partidas de Valorant", "eventos", ART.valorant],
+  ["Sumá un amigo a tu clan", "sociales", ART.minecraft],
+  ["Jugá tres días seguidos", "sura", ART.racing],
+  ["Termina Assassin's Creed Syndicate", "eventos", ART.assassinsCreed],
+  ["Compartí un logro en Instagram", "sociales", ART.fortnite],
+  ["Sumá 500 SP en una semana", "sura", ART.mario],
+  ["Gana una partida de Mario Bros.", "eventos", ART.mario],
+  ["Conecta tu cuenta de Discord", "sociales", ART.racing],
+  ["Mirá un stream de Sura", "sura", ART.valorant],
+  ["Construye tu primera base en Minecraft", "eventos", ART.minecraft],
+  ["Seguí a Sura en X", "sociales", ART.wagmi],
+  ["Reclamá tu recompensa diaria", "sura", ART.codMw],
+  ["Defiende 3 oleadas en Wagmi Defense", "eventos", ART.wagmi],
+  ["Conecta tu cuenta de Instagram", "sociales", ART.valhalla],
+  ["Desbloqueá tu primera medalla", "sura", ART.assassinsCreed],
+  ["Sobreviví una ronda en Modern Warfare", "eventos", ART.codMw],
+  ["Invitá a tres amigos a Sura", "sociales", ART.mario],
+  ["Llegá al nivel Guerrero", "sura", ART.minecraft],
+  ["Gana una carrera sin chocar", "eventos", ART.racing],
+  ["Compartí un torneo con tu clan", "sociales", ART.valorant],
+  ["Participa de un evento Sura", "sura", ART.fortnite],
 ];
 
-const TITLES = [
-  "Juega a Fortnite",
-  "Completa 10 partidas de Valorant",
-  "Termina Assassin's Creed Syndicate",
-  "Gana una partida de Mario Bros.",
-  "Construye tu primera base en Minecraft",
-  "Defiende 3 oleadas en Wagmi Defense",
-  "Sobreviví una ronda en Modern Warfare",
-  "Gana una carrera sin chocar",
-  "Conecta tu cuenta de X",
-  "Sumá un amigo a tu clan",
-  "Completa tu perfil",
-  "Compartí un logro en Instagram",
-  "Jugá tres días seguidos",
-  "Sumá 500 SP en una semana",
-  "Mirá un stream de Sura",
-  "Participa de un evento Sura",
-];
+const STATUS_CYCLE: MissionStatus[] = ["available", "completed", "available", "ended", "available", "completed"];
 
-const DONE = new Set([4, 7, 9, 10, 13]);
+export const MISSIONS_PER_PAGE = 16;
 
-export const allMissions: Mission[] = TITLES.map((title, index) => ({
-  id: `mission-${index + 1}`,
-  title,
-  description: DESCRIPTION,
-  reward: "+120",
-  imageSrc: ART[index % ART.length],
-  completed: DONE.has(index),
-}));
+export const allMissions: Mission[] = [0, 1, 2].flatMap((round) =>
+  SEEDS.map(([title, category, imageSrc], index) => ({
+    id: `mission-${round * SEEDS.length + index + 1}`,
+    title,
+    description: DESCRIPTION,
+    reward: "+120",
+    imageSrc,
+    category,
+    status: STATUS_CYCLE[(index + round * 2) % STATUS_CYCLE.length],
+  })),
+);
 
 export const featuredMissions: Mission[] = [
   {

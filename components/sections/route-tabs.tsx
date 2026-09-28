@@ -9,14 +9,15 @@ type TabOption = { id: string; label: string };
 
 export function RouteTabs({
   items,
-  current,
+  value: selected,
+  onChange,
   label,
 }: {
   items: TabOption[];
-  current: string;
+  value: string;
+  onChange: (id: string) => void;
   label: string;
 }) {
-  const [selected, setSelected] = useState(current);
   const [indicator, setIndicator] = useState<{ x: number; w: number } | null>(null);
   const tabs = useRef(new Map<string, HTMLButtonElement>());
 
@@ -46,7 +47,7 @@ export function RouteTabs({
                   else tabs.current.delete(tab.id);
                 }}
                 type="button"
-                onClick={() => setSelected(tab.id)}
+                onClick={() => onChange(tab.id)}
                 aria-current={isCurrent ? "page" : undefined}
                 data-sfx-hover
                 data-sfx="select"

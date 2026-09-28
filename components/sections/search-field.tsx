@@ -2,20 +2,22 @@
 
 import Image from "next/image";
 import { X } from "lucide-react";
-import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
 export function SearchField({
   placeholder,
+  value: query,
+  onChange: setQuery,
   className,
   inputClassName,
 }: {
   placeholder: string;
+  value: string;
+  onChange: (query: string) => void;
   className?: string;
   inputClassName?: string;
 }) {
-  const [query, setQuery] = useState("");
 
   return (
     <div

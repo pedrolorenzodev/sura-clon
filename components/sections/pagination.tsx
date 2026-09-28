@@ -1,7 +1,6 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -16,18 +15,19 @@ const IDLE =
 
 export function Pagination({
   pages,
-  current,
+  page,
+  onChange: setPage,
   label,
   compactOnMobile,
   className,
 }: {
   pages: number;
-  current: number;
+  page: number;
+  onChange: (page: number) => void;
   label: string;
   compactOnMobile?: boolean;
   className?: string;
 }) {
-  const [page, setPage] = useState(current);
   const windowStart = Math.min(Math.max(page - 1, 1), Math.max(pages - 2, 1));
 
   return (

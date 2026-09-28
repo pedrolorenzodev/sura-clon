@@ -1,3 +1,5 @@
+import { rotate } from "@/lib/collection";
+
 export type Game = {
   id: string;
   title: string;
@@ -103,10 +105,14 @@ const CATALOG: Omit<Game, "id">[] = [
   },
 ];
 
-export const gamesCatalog: Game[] = [...CATALOG, ...CATALOG.slice(0, 4)].map((game, index) => ({
-  ...game,
-  id: `${game.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${index + 1}`,
-}));
+export const GAMES_PER_PAGE = 12;
+
+export const gamesCatalog: Game[] = [0, 1, 2]
+  .flatMap((round) => [...rotate(CATALOG, round * 3), ...rotate(CATALOG, round * 3).slice(0, 4)])
+  .map((game, index) => ({
+    ...game,
+    id: `${game.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${index + 1}`,
+  }));
 
 export const gamesRoutePromo = {
   ...gamesPromo,

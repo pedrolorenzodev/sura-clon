@@ -11,6 +11,7 @@ export function LeaderboardRow({
   name,
   levelLabel,
   points,
+  iconSrc,
   avatarSrc,
   tone,
   elastic,
@@ -22,6 +23,7 @@ export function LeaderboardRow({
   name: string;
   levelLabel: string;
   points: string;
+  iconSrc?: string;
   avatarSrc: string;
   tone?: StandingTone;
   elastic?: boolean;
@@ -77,7 +79,7 @@ export function LeaderboardRow({
           </div>
         </div>
 
-        <ValuePill points={points} countUpIndex={revealIndex} className="relative" />
+        <ValuePill points={points} iconSrc={iconSrc} countUpIndex={revealIndex} className="relative" />
       </CardLink>
     </li>
   );

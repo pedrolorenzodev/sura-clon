@@ -121,6 +121,7 @@ export const missionColors: TokenGroup = {
   tokens: [
     { name: "--color-sp-foreground", utility: "text-sp-foreground", usage: "Número del premio, sobre el verde del badge" },
     { name: "--color-surface-done", utility: "bg-surface-done", usage: "Fondo de una misión completada, y de su badge de SP" },
+    { name: "--color-surface-ended", utility: "bg-surface-ended", usage: "Fondo de una misión finalizada, y de su badge de SP" },
     { name: "--color-border-done", utility: "ring-border-done", usage: "Borde de una misión completada" },
   ],
 };
