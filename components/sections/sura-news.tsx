@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { NewsCard } from "@/components/sections/news-card";
 import { NewsCardWide } from "@/components/sections/news-card-wide";
@@ -15,7 +16,7 @@ export function SuraNews() {
       className="mt-section-gap-mobile scroll-mt-header-mobile overflow-x-clip px-gutter desktop:mt-section-gap desktop:scroll-mt-header-desktop desktop:bg-surface-deep desktop:px-gutter-desktop desktop:py-24"
     >
       <div className="flex flex-col gap-title-gap desktop:hidden">
-        <SectionHeader title={newsIntro.title} />
+        <SectionHeader title={newsIntro.title} href="/news" />
         {/* no tocar: lift-room y -mx-6/px-6 son aire para la sombra del hover, no espaciado */}
         <ul className="lift-room no-scrollbar -mx-6 flex gap-3 overflow-x-auto overscroll-x-none overflow-y-hidden px-6">
           {news.map((item) => (
@@ -41,11 +42,10 @@ export function SuraNews() {
             </p>
           </div>
 
-          <button
-            type="button"
+          <Link
+            href="/news"
             data-sfx-hover
-            data-sfx="click"
-            className="flex cursor-pointer items-center gap-1 self-start font-techno text-link uppercase text-brand transition-[filter] duration-200 hover:drop-shadow-link-hover focus-visible:drop-shadow-link-hover motion-reduce:transition-none"
+            className="flex items-center gap-1 self-start font-techno text-link uppercase text-brand transition-[filter] duration-200 hover:drop-shadow-link-hover focus-visible:drop-shadow-link-hover motion-reduce:transition-none"
           >
             <ScrambleText text={newsIntro.cta} />
             <Image
@@ -55,7 +55,7 @@ export function SuraNews() {
               height={24}
               className="size-6 shrink-0"
             />
-          </button>
+          </Link>
         </div>
 
         <ul className="flex shrink-0 items-stretch gap-3">

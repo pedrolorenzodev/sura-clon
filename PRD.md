@@ -897,9 +897,9 @@ Home el header sigue transparente sobre el hero, sin cambios.
 > | ✅ commiteado | 54–59 | Tanda de fixes y efectos de carga de los detalles de juego y de evento: ver *Tanda de fixes de los detalles*, abajo. El 60 (marquesina de sponsors) se descartó |
 > | 👀 | 61 | Filas de Participantes (B) y Posición / Premio (C), elegidas en [Filas SURA](https://claude.ai/artifact/1EfbM4DELzVC2Pmv9K4KeW) |
 > | 👀 | 47a · 64 · 65 | [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v): elegidas la **B** para el mobile del detalle de evento (con los tabs de siempre) y la **E3** (radar) para el estado vacío. Implementadas en los bloques 64 y 65 |
-> | ⏳ | 47b · Fase B | Segunda propuesta: Sura News (lista y detalle), los 4 dropdowns y el filtro mobile de `/games` y **editar los datos de Mi Perfil** |
-> | ⏳ | 53 | Sura News, después de elegir en la propuesta |
-> | ⏳ | Fase D | Barrido de lo inerte: "Jugar ahora" del detalle de juego, "Ver todo" e "Ir a Sura News", links del footer. Para cada uno: destino, acción, o dejar de parecer clickeable |
+> | 👀 | 47b · Fase B | Propuesta publicada: Sura News (lista y detalle), los filtros de `/games` y **editar los datos de Mi Perfil**, en [Noticias y filtros SURA](https://claude.ai/artifact/GtCFDG6WMzyj8F6HeH8wwz). Esperando elección |
+> | 👀 | 53 | Sura News: lista (N1) y detalle (D2), elegidos en [Noticias y filtros SURA](https://claude.ai/artifact/GtCFDG6WMzyj8F6HeH8wwz) |
+> | ⏳ | Fase D | Barrido de lo inerte: "Jugar ahora" del detalle de juego, links del footer. Para cada uno: destino, acción, o dejar de parecer clickeable |
 >
 > **Cómo se viene trabajando:** un bloque por vez; se para a mostrar cada detalle antes de seguir; se mide contra el render del Figma y se diffea contra las capturas de antes. Los desvíos del frame se anotan acá abajo, bloque por bloque. Otro agente trabaja en `../sura-clon-sfx` (branch `feat/sfx`): no se toca ese worktree, no se usa `git stash` y hay que avisar antes de tocar el motor de sonido.
 
@@ -1082,6 +1082,14 @@ Feedback de Ema: quien mira el sitio rápido clickea cards que no hacen nada, y 
   - El botón **"Buscar de nuevo"** limpia la búsqueda y la colección vuelve con el reacomodo; en Misiones dice **"Limpiar filtros"** y vuelve a los filtros por defecto.
   - Aplica en Eventos, Misiones, Leaderboard, Juegos y Participantes. Con movimiento reducido el radar queda quieto. Verificado a 390 y 1440 en las cuatro colecciones con buscador y en Participantes.
 
+**Sura News** 👀 (bloque 53, 2026-09-29). Sin frames: se propuso en **[Noticias y filtros SURA](https://claude.ai/artifact/GtCFDG6WMzyj8F6HeH8wwz)** (regla 20) y el usuario eligió la lista **N1** y el detalle **D2**. Las dos puertas del Home ("Ver todo" en mobile e "Ir a Sura News" en desktop) llevan a `/news`, y las cards de News del Home a su nota.
+  - **`/news`, portada:** tabs por categoría (Todas, Lanzamientos, Actualizaciones, Guías, Esports, Sura) con el estado en la URL (`?categoria=`). La primera nota de la categoría es la destacada, a todo el ancho: foto con un fundido hacia abajo (`--gradient-news-feature-scrim`), categoría, título en Monument (`text-banner-title`) y metadatos. El resto va en la grilla de las rutas (4 columnas en desktop, `card-grid` en mobile) con la card de News del Home. Cambiar de categoría usa el reacomodo de siempre.
+  - **`/news/:id`, la plantilla del detalle de juego:** el arte de la nota de fondo en el hero (`DetailHeroArt`), categoría, título (`text-game-hero` en desktop) con el barrido y metadatos. Debajo, el texto en una columna de lectura de 680 (párrafos, subtítulos en KH y citas con el borde verde) y, al costado, "Compartir" y tres notas relacionadas (primero las de la misma categoría). En mobile la columna pasa debajo del texto. 11 páginas estáticas; una URL que no existe cae en la 404.
+  - **Compartir** son los mismos botones del modal de jugador, extraídos a `ShareButtons`; el modal no cambió.
+  - **La data es de relleno:** las tres notas del Home (con sus títulos del Figma, en inglés, incluido el "Dateerint" del primero) y ocho nuevas con portadas del catálogo. Todas tienen texto propio, escrito para la maqueta.
+  - `NewsCard` y `NewsCardWide` suman la prop `fluid` (ancho de la grilla). La ancha fluida lleva `--color-surface-3` de fondo: el `--color-background` que tiene en el Home desaparecía sobre el fondo de la página.
+  - Verificado a 390 y 1440: tabs, navegación Home → lista → nota, cero scroll lateral, sin errores de consola; el Home queda idéntico al píxel.
+
 ### Mapa de rutas
 
 > Absorbido desde `ROUTES.md` el 2026-09-20, que era temporal y ya cumplió su condición de merge.
@@ -1099,8 +1107,8 @@ no rutas, y conviven sin conflicto.
 | `/leaderboard` | Leaderboard | 👀 Esperando aprobación (bloques 26–30) |
 | `/missions` | Misiones | 👀 Esperando aprobación (bloques 21–25) |
 | `/missions/:id` | Detalle de misión | 👀 Es un modal (`?mision=`), no una ruta: bloque 50 |
-| `/news` | Lista de Sura News | ⏳ Pendiente |
-| `/news/:id` | Detalle de noticia | ⏳ Pendiente |
+| `/news` | Lista de Sura News | 👀 Esperando aprobación (bloque 53). **Sin frames**: opción N1 de *Noticias y filtros SURA* |
+| `/news/:id` | Detalle de noticia | 👀 Esperando aprobación (bloque 53). **Sin frames**: opción D2 |
 | `/games` | Lista de juegos | 👀 Esperando aprobación (bloques 31–34) |
 | `/games/:id` | Detalle de juego | ✅ Aprobada (2026-09-28, bloque 51) |
 | `/profile` | Perfil propio | 👀 Esperando aprobación (bloque 49) |
@@ -1125,7 +1133,7 @@ propia puerta de entrada:
 
 Hasta que exista la puerta, el link se maqueta apuntando a su destino real (regla 14).
 
-**Excepción (usuario, 2026-09-23):** con el sitio público en Vercel, las cards de los **detalles** (`/tournaments/:id`, `/missions/:id`, `/games/:id`, `/news/:id`) y el perfil (`/profile/:id`) **dejaron de linkear** para no mandar a nadie a un 404. `/news` tampoco se va a implementar por ahora. Ver *Rutas de detalle apagadas*, § 6.
+**Excepción (usuario, 2026-09-23):** con el sitio público en Vercel, las cards de los **detalles** (`/tournaments/:id`, `/missions/:id`, `/games/:id`, `/news/:id`) y el perfil (`/profile/:id`) **dejaron de linkear** para no mandar a nadie a un 404. Desde el 2026-09-29 las cuatro rutas de detalle están encendidas y `/news` existe (bloque 53). Ver *Rutas de detalle apagadas*, § 6.
 
 #### Rutas descartadas a propósito
 
@@ -1270,6 +1278,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-29 | `--gradient-news-feature-scrim` + utility `bg-news-feature-scrim` | Sura News | Fundido de la nota destacada de `/news`. `offDesign`. |
 | 2026-09-29 | `--text-countdown-sm` (28/30); `--spacing-radar` (104), `--spacing-radar-grid` (16), `--radar-sweep-duration` (2400ms), utility `radar` | Detalle de evento · colecciones | Panel mobile del detalle de evento (B) y estado vacío con radar (E3) de *Evento mobile SURA*. Todo `offDesign`. |
 | 2026-09-29 | `--gradient-row-divider` + utility `bg-row-divider` | Detalle de evento | Separadores de la tabla Posición / Premio (opción C de *Filas SURA*). `offDesign`. |
 | 2026-09-29 | `--stream-word-duration` (280ms), `--stream-word-step` (4ms), `--stream-word-blur` (2px); utility `stream-word`; `RevealList` suma `onMount` y `listRef` | Detalle de evento | Streaming de la descripción y cascadas de los tabs. Todo `offDesign`. Detalle en § 5, *Tanda de fixes de los detalles*. |
@@ -2082,7 +2091,7 @@ no hay ninguna `.dark` en el proyecto, así que las utilities `dark:` que arrast
 primitives de shadcn quedan inertes y hay un solo camino de render.
 
 **Rutas de detalle apagadas.** `lib/routes.ts` arma la URL de cada detalle y lleva un
-registro de cuáles están vivas (`LIVE_DETAIL_ROUTES`); hoy `games` y `tournaments` están en `true` (desde el 2026-09-28); para `news`
+registro de cuáles están vivas (`LIVE_DETAIL_ROUTES`); hoy `games`, `tournaments` (desde el 2026-09-28) y `news` (desde el 2026-09-29) están en `true`; para una ruta en `false`
 `detailHref()` devuelve `null`. `CardLink` (`components/layout/card-link.tsx`) renderiza un `<Link>`
 si hay destino y un `<div>` con las mismas clases si no. **La UI no cambia** aunque no haya link
 (decisión del usuario, 2026-09-23): el `<div>` conserva el hover y suma `cursor-pointer`, que el
@@ -2287,13 +2296,13 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 45 · Tabs, rangos, búsqueda y paginado | Leaderboard | `app/(site)/leaderboard/page.tsx`, `lib/data/leaderboard.ts` | [`6010:45762`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6010-45762&m=dev) | [`6010:45504`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6010-45504&m=dev) | 👀 Esperando aprobación |
 | 46 · Búsqueda y paginado | Juegos | `app/(site)/games/page.tsx`, `lib/data/games.ts` | [`6137:82821`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6137-82821&m=dev) | [`6137:82953`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6137-82953&m=dev) | 👀 Esperando aprobación. Los dropdowns y el filtro mobile siguen inertes: esperan la propuesta (Fase B) |
 | 47a · Propuesta: mobile del detalle de evento y estado vacío | `/tournaments/:id` · colecciones | — (Artifact) | — **sin frame**: [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v) | — **sin frame** | ✅ Elegidas B y E3 → bloques 64 y 65 |
-| 47b · Propuesta: Sura News, dropdowns, editar perfil | Sura News · Juegos · Mi Perfil | — (Artifact) | — **sin frame** | — **sin frame** | ⏳ Pendiente |
+| 47b · Propuesta: Sura News, dropdowns, editar perfil | Sura News · Juegos · Mi Perfil | — (Artifact) | — **sin frame**: [Noticias y filtros SURA](https://claude.ai/artifact/GtCFDG6WMzyj8F6HeH8wwz) | — **sin frame** | 👀 Esperando elección |
 | 48 · Modal de usuario | Leaderboard | `components/sections/player-modal.tsx`, `player-link.tsx`, `medal-stack.tsx`, `medal-card.tsx`, `components/ui/dialog.tsx`, `lib/data/leaderboard.ts` | [`2776:76206`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2776-76206&m=dev) | [`2776:63936`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2776-63936&m=dev) | 📦 Aprobado y commiteado. Sólo modal y backdrop |
 | 49 · Mi Perfil | `/profile` | `app/(site)/profile/page.tsx`, `components/sections/profile-view.tsx`, `level-panel.tsx`, `stat-pill.tsx`, `segmented-tabs.tsx`, `medal-card.tsx`, `lib/data/profile.ts`, `lib/use-daily-claim.ts` | [`6140:118274`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-118274&m=dev) | [`6140:117864`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-117864&m=dev) | 📦 Aprobado y commiteado |
 | 50 · Detalle de misión | `/missions` · modal | `components/sections/mission-modal.tsx`, `mission-card.tsx`, `mission-feature-card.tsx`, `missions-collection.tsx`, `lib/data/missions.ts` | [`6008:29125`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29125&m=dev) | [`6008:29552`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29552&m=dev) | 📦 Aprobado y commiteado. **Es un modal, no una ruta** |
 | 51 · Detalle de juego | `/games/:id` | `app/(site)/games/[id]/page.tsx`, `components/sections/game-hero.tsx`, `game-body.tsx`, `game-reviews.tsx`, `game-aside.tsx`, `star-rating.tsx`, `card-slider.tsx`, `lib/data/game-detail.ts` | [`2867:7612`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2867-7612&m=dev) | [`3168:13133`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3168-13133&m=dev) | ✅ Aprobado (2026-09-28) |
 | 52 · Detalle de evento | `/tournaments/:id` | — | [`412:4384`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4384&m=dev) Acerca · [`412:18445`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-18445&m=dev) Participantes · [`412:19980`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-19980&m=dev) Ganadores (**diseño viejo**: UX, no UI) | — **sin frame**: se adapta del desktop aprobado | ✅ Desktop aprobado (2026-09-28). Mobile provisorio |
-| 53 · Sura News | `/news` · `/news/:id` | — | — **sin frame**: sale de la propuesta del bloque 47 | — **sin frame** | ⏳ Pendiente |
+| 53 · Sura News | `/news` · `/news/:id` | `app/(site)/news/`, `components/sections/news-collection.tsx`, `news-feature.tsx`, `news-article.tsx`, `news-category-badge.tsx`, `share-buttons.tsx`, `sura-news.tsx`, `lib/data/news.ts`, `lib/routes.ts` | — **sin frame**: [Noticias y filtros SURA](https://claude.ai/artifact/GtCFDG6WMzyj8F6HeH8wwz), N1 y D2 | — **sin frame** | 👀 Esperando aprobación |
 | 54 · Cards de Eventos → detalle de evento | Home | `components/sections/event-card.tsx`, `lib/data/events.ts`, `lib/data/tournaments.ts`, `lib/data/tournament-detail.ts` | — | — | 📦 Aprobado y commiteado |
 | 55 · Banners del Mundial → detalle de juego | Home · `/games` | `components/sections/game-banner.tsx`, `games-banner.tsx` | — | — | 📦 Aprobado y commiteado |
 | 56 · Banner de Acerca en mobile | `/tournaments/:id` | `components/sections/tournament-tabs.tsx`, `public/assets/tournaments/detail/banner-fortnite.webp` | [`412:4501`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4501&m=dev) | — **sin frame** | 📦 Aprobado y commiteado |
@@ -2304,8 +2313,8 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 61 · Filas de Participantes y Posición / Premio | `/tournaments/:id` | `components/sections/tournament-tabs.tsx` | — **sin frame**: [Filas SURA](https://claude.ai/artifact/1EfbM4DELzVC2Pmv9K4KeW) | — **sin frame** | 👀 Esperando aprobación. Elegidas B y C |
 | 62 · Imagen de las cards chicas de Sura News en Safari | Home | `components/sections/news-card-wide.tsx` | — | — | 📦 Aprobado y commiteado |
 | 63 · "Ver todo" de Sura News en mobile | Home | `components/sections/section-header.tsx` | — | — | 📦 Aprobado y commiteado |
-| 64 · Detalle de evento en mobile (opción B) | `/tournaments/:id` | `components/sections/join-panel.tsx`, `app/globals.css` | — **sin frame**: [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v) | — **sin frame** | 👀 Esperando aprobación |
-| 65 · Estado vacío con radar (E3) | Colecciones | `components/sections/empty-results.tsx`, las cinco colecciones, `app/globals.css` | — **sin frame**: [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v) | — **sin frame** | 👀 Esperando aprobación |
+| 64 · Detalle de evento en mobile (opción B) | `/tournaments/:id` | `components/sections/join-panel.tsx`, `app/globals.css` | — **sin frame**: [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v) | — **sin frame** | 📦 Aprobado y commiteado |
+| 65 · Estado vacío con radar (E3) | Colecciones | `components/sections/empty-results.tsx`, las cinco colecciones, `app/globals.css` | — **sin frame**: [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v) | — **sin frame** | 📦 Aprobado y commiteado |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. Desde el 2026-09-28 el botón de perfil del header lleva a `/profile`; si el drawer vuelve, hay que decidir qué abre ese botón.
 >

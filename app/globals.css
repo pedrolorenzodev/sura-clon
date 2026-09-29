@@ -498,6 +498,7 @@
     var(--color-background) 84.135%
   );
   --gradient-suggestion-scrim: linear-gradient(180deg, rgb(12 12 12 / 0) 9.536%, #0c0c0c 98.514%);
+  --gradient-news-feature-scrim: linear-gradient(180deg, rgb(32 32 32 / 0) 35%, rgb(32 32 32 / 0.92) 100%);
   --gradient-play-bar: linear-gradient(180deg, rgb(32 32 32 / 0) 9.536%, var(--color-background) 98.514%);
 
   --gradient-row-gold: linear-gradient(
@@ -801,6 +802,9 @@
   background-image: var(--gradient-play-bar);
 }
 
+@utility bg-news-feature-scrim {
+  background-image: var(--gradient-news-feature-scrim);
+}
 @utility bg-row-divider {
   background-image: var(--gradient-row-divider);
 }
