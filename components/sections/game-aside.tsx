@@ -32,14 +32,18 @@ export function GameAside({ game }: { game: GameDetail }) {
           </AsideField>
 
           <AsideField label="Plataformas">
-            <p className="text-2xs leading-3.5 text-muted-foreground">
-              No hay plataformas disponibles.
-            </p>
+            {game.platforms.length ? (
+              <TagList tags={game.platforms} />
+            ) : (
+              <p className="text-2xs leading-3.5 text-muted-foreground">
+                No hay plataformas disponibles.
+              </p>
+            )}
           </AsideField>
 
           <AsideField label="Sociales">
             <ul className="flex flex-wrap gap-x-2 gap-y-1">
-              {gameSocials.map((social) => (
+              {gameSocials(game).map((social) => (
                 <li key={social}>
                   <button
                     type="button"
@@ -54,20 +58,26 @@ export function GameAside({ game }: { game: GameDetail }) {
           </AsideField>
 
           <AsideField label="Géneros" last>
-            <ul className="flex flex-wrap gap-2">
-              {game.tags.map((tag) => (
-                <li
-                  key={tag}
-                  className="flex h-7 items-center justify-center rounded-pill border-2 border-border-dim px-4 text-xs font-medium leading-5 text-muted-foreground"
-                >
-                  {tag}
-                </li>
-              ))}
-            </ul>
+            <TagList tags={game.tags} />
           </AsideField>
         </dl>
       </AsidePanel>
     </aside>
+  );
+}
+
+function TagList({ tags }: { tags: string[] }) {
+  return (
+    <ul className="flex flex-wrap gap-2">
+      {tags.map((tag) => (
+        <li
+          key={tag}
+          className="flex h-7 items-center justify-center rounded-pill border-2 border-border-dim px-4 text-xs font-medium leading-5 text-muted-foreground"
+        >
+          {tag}
+        </li>
+      ))}
+    </ul>
   );
 }
 

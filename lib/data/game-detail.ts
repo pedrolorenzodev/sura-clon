@@ -1,6 +1,6 @@
 import { seeded } from "@/lib/collection";
 import type { DetailArt } from "@/lib/data/detail-art";
-import { games, gamesCatalog, gamesPromo, type Game } from "@/lib/data/games";
+import { facetLabel, games, gamesCatalog, gamesPromo, type Game } from "@/lib/data/games";
 
 
 export type GameDetail = {
@@ -9,6 +9,8 @@ export type GameDetail = {
   rating: number;
   reviewsCount: number;
   tags: string[];
+  platforms: string[];
+  socials: string[];
   about: string;
   gallery: string[];
   art: DetailArt;
@@ -24,6 +26,8 @@ const promoGame: GameDetail = {
   rating: 4.2,
   reviewsCount: 84,
   tags: ["Mini-Juego", "Fútbol", "Online"],
+  platforms: [],
+  socials: [],
   about:
     "Juega al nuevo juego de fútbol Soccer Super Star y disfruta de una experiencia de fútbol real, ultra rápida e inmersiva. ¿Te gustan los arcades de fútbol pero no tienes tiempo de practicar? Los controles de juego del nuevo Soccer Super Star son muy sencillos, diviértete desde el principio.",
   gallery: [...GALLERY, ...GALLERY],
@@ -43,7 +47,9 @@ function detailFromGame(game: Game): GameDetail {
     title: [game.title],
     rating: Math.round((4.1 + noise() * 0.8) * 10) / 10,
     reviewsCount: 12 + Math.floor(noise() * 240),
-    tags: [...new Set(game.badges)],
+    tags: [...new Set([...(game.facets?.genero.map((id) => facetLabel("genero", id)) ?? []), ...game.badges])],
+    platforms: game.facets?.plataforma.map((id) => facetLabel("plataforma", id)) ?? [],
+    socials: game.facets?.redes.map((id) => facetLabel("redes", id)) ?? [],
     about: `${game.title} es parte del catálogo de Sura Gaming. Jugalo desde la app, sumá Sura Points con cada partida y competí en los eventos de la comunidad para escalar en el leaderboard.`,
     gallery: [],
     art: { desktop: game.imageSrc, mobile: game.imageSrc, className: "inset-0 size-full" },
@@ -99,6 +105,8 @@ export const gameReviews: GameReview[] = [
 
 export const gameNetwork = { name: "Solana", logoSrc: "/assets/games/detail/network-solana.webp" };
 
-export const gameSocials = ["Whitepaper", "Twitter", "Discord", "Instagram", "Telegram", "Youtube", "Linkedin", "Medium"];
+const FIGMA_SOCIALS = ["Whitepaper", "Twitter", "Discord", "Instagram", "Telegram", "Youtube", "Linkedin", "Medium"];
+
+export const gameSocials = (game: GameDetail) => (game.socials.length ? game.socials : FIGMA_SOCIALS);
 
 export const suggestedGames = (id: string) => games.filter((game) => game.id !== id).slice(0, 7);

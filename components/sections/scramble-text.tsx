@@ -27,7 +27,13 @@ export function ScrambleText({
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const [display, setDisplay] = useState(text);
+  const [shownText, setShownText] = useState(text);
   const [width, setWidth] = useState<number | null>(null);
+
+  if (text !== shownText) {
+    setShownText(text);
+    setDisplay(text);
+  }
 
   useEffect(() => {
     const el = ref.current;
