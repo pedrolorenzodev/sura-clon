@@ -1,7 +1,9 @@
 import Image from "next/image";
 
+import { CardLink } from "@/components/layout/card-link";
 import { CardBrackets } from "@/components/sections/card-brackets";
 import type { EventCardData } from "@/lib/data/events";
+import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const SURFACE = {
@@ -38,10 +40,10 @@ export function EventCard({ event }: { event: EventCardData }) {
   const art = ART[event.art];
 
   return (
-    <article
-      data-sfx-hover="soft"
-      data-sfx="click"
-      className="group relative h-event-surface-mobile w-event-card-mobile shrink-0 cursor-pointer desktop:h-event-surface desktop:slide-third-capped">
+    <CardLink
+      href={detailHref("tournaments", event.tournamentId)}
+      className="group relative block h-event-surface-mobile w-event-card-mobile shrink-0 desktop:h-event-surface desktop:slide-third-capped"
+    >
       <div
         className={cn(
           "absolute inset-0 rounded-lg border border-brand-faint desktop:rounded-xl",
@@ -129,6 +131,6 @@ export function EventCard({ event }: { event: EventCardData }) {
         </div>
       </div>
       <CardBrackets />
-    </article>
+    </CardLink>
   );
 }

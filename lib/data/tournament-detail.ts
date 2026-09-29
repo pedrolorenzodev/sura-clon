@@ -11,13 +11,13 @@ export type TournamentDetail = Tournament & {
   capacity: number;
 };
 
-const FEATURED_ID = "contenders-training-center-110";
+const FEATURED_IDS = ["contenders-training-center-110", "fortnite-tournament"];
 
 function detailFromTournament(tournament: Tournament): TournamentDetail {
   const noise = seeded(`${tournament.id}:detail`);
   const players = tournament.badges.find((badge) => badge.icon === "players")?.label ?? "0/0";
   const [joined, capacity] = players.split("/").map(Number);
-  const featured = tournament.id.startsWith(FEATURED_ID);
+  const featured = FEATURED_IDS.some((id) => tournament.id.startsWith(id));
   const heroSrc = featured ? "/assets/tournaments/detail/hero-fortnite.webp" : tournament.imageSrc;
 
   return {

@@ -894,7 +894,8 @@ Home el header sigue transparente sobre el hero, sin cambios.
 > | ✅ commiteado | 50 | Detalle de misión: es un modal (`?mision=`), no una ruta |
 > | ✅ aprobado | 51 | Detalle de juego (`/games/:id`), frames `2867:7612` / `3168:13133` |
 > | ✅ aprobado | 52 | Detalle de evento (`/tournaments/:id`), desktop. El mobile sigue provisorio |
-> | ⏭️ **sigue** | — | Animaciones de carga (pedido del usuario, 2026-09-28) |
+> | 🚧 | 54–60 | Tanda de fixes y efectos de carga de los detalles de juego y de evento: ver *Tanda de fixes de los detalles*, abajo |
+> | 👀 | 61 | Filas de Participantes y Posición / Premio: esperando elección en [Filas SURA](https://claude.ai/artifact/1EfbM4DELzVC2Pmv9K4KeW) |
 > | ⏳ | 47 · Fase B | Página de propuesta con demos (regla 20): Sura News (lista y detalle), los 4 dropdowns y el filtro mobile de `/games`, el estado vacío definitivo y **editar los datos de Mi Perfil** |
 > | ⏳ | 53 | Sura News, después de elegir en la propuesta |
 > | ⏳ | Fase D | Barrido de lo inerte: "Jugar ahora" de los dos banners, "Ver todo" e "Ir a Sura News", links del footer. Para cada uno: destino, acción, o dejar de parecer clickeable |
@@ -1044,6 +1045,13 @@ Feedback de Ema: quien mira el sitio rápido clickea cards que no hacen nada, y 
     - **La lista de participantes sale del leaderboard**: son como mucho 50. Los eventos con más inscriptos (78, 112) muestran los primeros 50.
     - El arte del hero y el banner son los del frame sólo en *Contenders #110*. El resto usa la portada del torneo.
     - El recorte del arte del #110 sigue al frame (la franja media, `-translate-y-[29.75%]`).
+
+**Tanda de fixes de los detalles** 🚧 (bloques 54–61, 2026-09-28). Pedido del usuario sobre los detalles de juego y de evento, más dos puertas de entrada que faltaban.
+
+- **54 · Las cards de Eventos del Home linkean a su torneo.** La card es un `CardLink` a `/tournaments/:id` y lee del torneo el título, la fecha, el premio y los badges (`lib/data/events.ts` guarda sólo `tournamentId`, la descripción, la superficie y el arte), así la card y el detalle no se pueden contradecir (usuario, 2026-09-28).
+  - Las dos cards que no tenían torneo pasan a serlo: **Valorant Champions Tour** (portada: el poster del loop de Jett) y **Fortnite Tournament** (portada y tratamiento de detalle de Fortnite, como el #110). Van al final de la lista, así la página 1 de `/tournaments` no cambia; la ruta pasa de 24 a **30 torneos, 4 páginas**.
+  - Consecuencias visibles en el Home: las fechas pasan al formato de los torneos ("Nov 28, 20:00 PM"), los premios a USDC y Noche de Duelos suma el badge "Eliminación". El arte no se movió (diff contra el estado anterior: sólo cambian las filas de texto de las cards).
+  - El clic suena la ida de ruta y dispara la persiana, como cualquier link: se sacó el `data-sfx="click"`.
 
 ### Mapa de rutas
 
@@ -2250,6 +2258,8 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 51 · Detalle de juego | `/games/:id` | `app/(site)/games/[id]/page.tsx`, `components/sections/game-hero.tsx`, `game-body.tsx`, `game-reviews.tsx`, `game-aside.tsx`, `star-rating.tsx`, `card-slider.tsx`, `lib/data/game-detail.ts` | [`2867:7612`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2867-7612&m=dev) | [`3168:13133`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3168-13133&m=dev) | ✅ Aprobado (2026-09-28) |
 | 52 · Detalle de evento | `/tournaments/:id` | — | [`412:4384`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4384&m=dev) Acerca · [`412:18445`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-18445&m=dev) Participantes · [`412:19980`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-19980&m=dev) Ganadores (**diseño viejo**: UX, no UI) | — **sin frame**: se adapta del desktop aprobado | ✅ Desktop aprobado (2026-09-28). Mobile provisorio |
 | 53 · Sura News | `/news` · `/news/:id` | — | — **sin frame**: sale de la propuesta del bloque 47 | — **sin frame** | ⏳ Pendiente |
+| 54 · Cards de Eventos → detalle de evento | Home | `components/sections/event-card.tsx`, `lib/data/events.ts`, `lib/data/tournaments.ts`, `lib/data/tournament-detail.ts` | — | — | 👀 Esperando aprobación |
+| 61 · Filas de Participantes y Posición / Premio | `/tournaments/:id` | — (Artifact) | — **sin frame**: [Filas SURA](https://claude.ai/artifact/1EfbM4DELzVC2Pmv9K4KeW) | — **sin frame** | 👀 Esperando elección |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. Desde el 2026-09-28 el botón de perfil del header lleva a `/profile`; si el drawer vuelve, hay que decidir qué abre ese botón.
 >

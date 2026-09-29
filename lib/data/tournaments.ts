@@ -137,6 +137,34 @@ const BASE_TOURNAMENTS: Tournament[] = [
     host: "CommunityGaming",
     imageSrc: "/assets/home/juegos/minecraft.webp",
   },
+  {
+    id: "valorant-champions-tour",
+    game: "Valorant",
+    title: "Valorant Champions Tour",
+    date: "Nov 28, 20:00 PM",
+    prize: "50 USDC",
+    badges: [
+      { icon: "mode", label: "Battle Royale" },
+      { icon: "format", label: "2v2" },
+      { icon: "players", label: "12/15" },
+    ],
+    host: "SuraGaming",
+    official: true,
+    imageSrc: "/assets/home/hero-loop/desktop-poster.webp",
+  },
+  {
+    id: "fortnite-tournament",
+    game: "Fortnite",
+    title: "Fortnite Tournament",
+    date: "Nov 28, 20:00 PM",
+    prize: "5 USDC",
+    badges: [
+      { icon: "format", label: "1v1" },
+      { icon: "players", label: "118/150" },
+    ],
+    host: "CommunityGaming",
+    imageSrc: "/assets/tournaments/detail/hero-fortnite.webp",
+  },
 ];
 
 export const TOURNAMENTS_PER_PAGE = 8;
