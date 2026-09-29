@@ -16,23 +16,63 @@ export const profileMedals: ProfileMedal[] = medals.map((medal) => ({
   rewardPoints: MEDAL_REWARD_POINTS,
 }));
 
+export type ProfileFieldInput = "name" | "date" | "country" | "email";
+
 export type ProfileField = {
   id: string;
   label: string;
+  value?: string;
   done?: boolean;
-  reward?: string;
+  rewardPoints?: number;
   showAvatar?: boolean;
   info?: string;
+  input?: ProfileFieldInput;
+  placeholder?: string;
+  autoComplete?: string;
 };
+
+export const PROFILE_FIELD_REWARD = 20;
 
 export const profileFields: ProfileField[] = [
   { id: "avatar", label: "Tu avatar", done: true, showAvatar: true },
-  { id: "usuario", label: `Usuario: ${currentUser.name}`, done: true },
-  { id: "nombre", label: "Nombre", reward: "+20" },
-  { id: "apellido", label: "Apellido", reward: "+20" },
-  { id: "nacimiento", label: "Fecha de nacimiento", reward: "+20" },
-  { id: "pais", label: "País", reward: "+20", info: "Lo usamos para mostrarte los eventos de tu región." },
-  { id: "email", label: "Email: jmg1996@gmail.com" },
+  { id: "usuario", label: "Usuario", value: currentUser.name, done: true },
+  { id: "nombre", label: "Nombre", rewardPoints: PROFILE_FIELD_REWARD, input: "name", placeholder: "Tu nombre", autoComplete: "given-name" },
+  { id: "apellido", label: "Apellido", rewardPoints: PROFILE_FIELD_REWARD, input: "name", placeholder: "Tu apellido", autoComplete: "family-name" },
+  { id: "nacimiento", label: "Fecha de nacimiento", rewardPoints: PROFILE_FIELD_REWARD, input: "date", placeholder: "dd/mm/aaaa", autoComplete: "bday" },
+  {
+    id: "pais",
+    label: "País",
+    rewardPoints: PROFILE_FIELD_REWARD,
+    info: "Lo usamos para mostrarte los eventos de tu región.",
+    input: "country",
+    placeholder: "Argentina",
+    autoComplete: "country-name",
+  },
+  { id: "email", label: "Email", value: "jmg1996@gmail.com", done: true, input: "email", placeholder: "tu@email.com", autoComplete: "email" },
+];
+
+export const profileCountries = [
+  "Argentina",
+  "Bolivia",
+  "Brasil",
+  "Chile",
+  "Colombia",
+  "Costa Rica",
+  "Ecuador",
+  "El Salvador",
+  "España",
+  "Estados Unidos",
+  "Guatemala",
+  "Honduras",
+  "México",
+  "Nicaragua",
+  "Panamá",
+  "Paraguay",
+  "Perú",
+  "Puerto Rico",
+  "República Dominicana",
+  "Uruguay",
+  "Venezuela",
 ];
 
 export const profileTabs = [

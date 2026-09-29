@@ -897,9 +897,10 @@ Home el header sigue transparente sobre el hero, sin cambios.
 > | ✅ commiteado | 54–59 | Tanda de fixes y efectos de carga de los detalles de juego y de evento: ver *Tanda de fixes de los detalles*, abajo. El 60 (marquesina de sponsors) se descartó |
 > | 👀 | 61 | Filas de Participantes (B) y Posición / Premio (C), elegidas en [Filas SURA](https://claude.ai/artifact/1EfbM4DELzVC2Pmv9K4KeW) |
 > | 👀 | 47a · 64 · 65 | [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v): elegidas la **B** para el mobile del detalle de evento (con los tabs de siempre) y la **E3** (radar) para el estado vacío. Implementadas en los bloques 64 y 65 |
-> | 👀 | 47b · Fase B | Propuesta publicada: Sura News (lista y detalle), los filtros de `/games` y **editar los datos de Mi Perfil**, en [Noticias y filtros SURA](https://claude.ai/artifact/GtCFDG6WMzyj8F6HeH8wwz). Esperando elección |
+> | ✅ | 47b · Fase B | [Noticias y filtros SURA](https://claude.ai/artifact/GtCFDG6WMzyj8F6HeH8wwz): elegidas N1, D2, F2 y P1. Implementadas en los bloques 53, 66 y 67 |
 > | 📦 | 53 | Sura News: lista (N1) y detalle (D2), elegidos en [Noticias y filtros SURA](https://claude.ai/artifact/GtCFDG6WMzyj8F6HeH8wwz) |
-> | 👀 | 66 | Filtros de `/games` (F2) |
+> | 📦 | 66 | Filtros de `/games` (F2) |
+> | 👀 | 67 | Completar y editar los datos de Mi Perfil (P1) |
 > | ⏳ | Fase D | Barrido de lo inerte: "Jugar ahora" del detalle de juego, links del footer. Para cada uno: destino, acción, o dejar de parecer clickeable |
 >
 > **Cómo se viene trabajando:** un bloque por vez; se para a mostrar cada detalle antes de seguir; se mide contra el render del Figma y se diffea contra las capturas de antes. Los desvíos del frame se anotan acá abajo, bloque por bloque. Otro agente trabaja en `../sura-clon-sfx` (branch `feat/sfx`): no se toca ese worktree, no se usa `git stash` y hay que avisar antes de tocar el motor de sonido.
@@ -959,7 +960,7 @@ Feedback de Ema: quien mira el sitio rápido clickea cards que no hacen nada, y 
     - El H1 "Mi perfil" también aparece en mobile, aunque el frame mobile no lo tiene: es el chrome de ruta de § 5, que salió de estos mismos frames.
     - **El contador del tab dice "5/9"**, obtenidas sobre el total. El "2/9" del frame no coincide con ninguna cuenta.
     - **Trofeos no tiene diseño:** muestra un texto provisorio, igual que el estado vacío de las colecciones.
-    - **Los datos del perfil no se editan**: no hay diseño del estado de edición. Queda para la propuesta de la Fase B.
+    - ~~**Los datos del perfil no se editan**~~: desde el bloque 67 (2026-09-29) se completan y editan en la fila.
     - El ícono de info de "País" abre un tooltip con un texto nuestro. El frame dibuja el ícono sin decir qué muestra.
     - El Email aparece también en mobile, aunque el frame mobile lo omite.
     - En la pestaña Referidos mobile, la bajada es la de la misión "Invitá a tres amigos".
@@ -1100,6 +1101,15 @@ Feedback de Ema: quien mira el sitio rápido clickea cards que no hacen nada, y 
   - **Data de relleno:** cada juego del catálogo suma género, plataformas, estado y redes (`facets` en `lib/data/games.ts`). **El detalle de juego lee lo mismo**, así el filtro y el detalle no se contradicen: "Plataformas" muestra las del juego (antes, "No hay plataformas disponibles"), "Sociales" sus redes y "Géneros" suma el género antes de los badges. La promo del Mundial y los juegos del Home, que no tienen esos datos, quedan como estaban.
   - `ScrambleText` ahora actualiza el texto visible cuando cambia el prop (el botón decía "Ver 36 juegos" con 4 resultados).
   - Verificado a 390 y 1440: menús, casillas, chips, URL, recarga, hoja mobile, cero scroll lateral y sin errores de consola.
+
+**Completar y editar los datos de Mi Perfil** 👀 (bloque 67, 2026-09-29). Opción **P1** de *Noticias y filtros SURA*: se edita en la misma fila.
+  - **Tocar una fila pendiente** (Nombre, Apellido, Fecha de nacimiento, País) la abre en un campo con "Cancelar" y "Guardar". Enter guarda y Esc cancela; al cerrar, el foco vuelve a la fila. Al guardar por primera vez, la fila pasa a verde con el dato ("Nombre: Pedro"), el "+20" sube desde la fila (`reward-pop`) y los puntos entran al header con el odómetro (`claimReward`, una sola vez por dato) y el sonido de reclamo.
+  - **Las filas ya completas se pueden corregir** sin sumar puntos: un lápiz aparece con el hover o el foco (siempre visible en pantallas táctiles, `pointer-coarse`). El email también se edita. **El usuario y el avatar no**: son los que usan el header, el leaderboard y el modal (lo que se descartó en la propuesta).
+  - **Fecha de nacimiento** (pedido del usuario): sólo acepta números (`inputMode="numeric"`, todo lo que no es dígito se descarta) y la barra aparece sola: al escribir "23" el campo muestra "23/", y al completar el mes, "23/05/". Borrar no se traba en las barras (la barra automática sólo se agrega cuando el texto crece) y a los 8 dígitos no se escribe más. Pegar "23051996" da "23/05/1996". Lógica en `formatBirthDate` (`lib/profile-validation.ts`).
+  - **Validación al guardar**, con el mensaje debajo del campo en `--color-danger` (`role="alert"`, `aria-invalid`) y el sonido de "bloqueado": nombre y apellido con al menos dos letras y sólo letras (acentos, espacios, apóstrofo y guion valen); fecha completa, que exista (31/02 no) y que no sea futura; país con sugerencias de los países de la región (`<datalist>`); email con @ y dominio.
+  - Los campos tienen el `autoComplete` que corresponde y letra de 16px, para que iOS no haga zoom al enfocar.
+  - **Los datos duran la sesión**, como los premios: sobreviven a la navegación dentro del sitio y se reinician al recargar (`lib/use-profile-fields.ts`).
+  - Verificado a 390 y 1440: los cuatro datos, la máscara de fecha tecla por tecla, los errores, Esc, el foco, el lápiz, la suma de puntos (473 → 553) y cero scroll lateral.
 
 ### Mapa de rutas
 
@@ -2308,7 +2318,7 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 45 · Tabs, rangos, búsqueda y paginado | Leaderboard | `app/(site)/leaderboard/page.tsx`, `lib/data/leaderboard.ts` | [`6010:45762`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6010-45762&m=dev) | [`6010:45504`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6010-45504&m=dev) | 👀 Esperando aprobación |
 | 46 · Búsqueda y paginado | Juegos | `app/(site)/games/page.tsx`, `lib/data/games.ts` | [`6137:82821`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6137-82821&m=dev) | [`6137:82953`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6137-82953&m=dev) | 👀 Esperando aprobación. Los dropdowns y el filtro mobile siguen inertes: esperan la propuesta (Fase B) |
 | 47a · Propuesta: mobile del detalle de evento y estado vacío | `/tournaments/:id` · colecciones | — (Artifact) | — **sin frame**: [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v) | — **sin frame** | ✅ Elegidas B y E3 → bloques 64 y 65 |
-| 47b · Propuesta: Sura News, dropdowns, editar perfil | Sura News · Juegos · Mi Perfil | — (Artifact) | — **sin frame**: [Noticias y filtros SURA](https://claude.ai/artifact/GtCFDG6WMzyj8F6HeH8wwz) | — **sin frame** | 👀 Esperando elección |
+| 47b · Propuesta: Sura News, dropdowns, editar perfil | Sura News · Juegos · Mi Perfil | — (Artifact) | — **sin frame**: [Noticias y filtros SURA](https://claude.ai/artifact/GtCFDG6WMzyj8F6HeH8wwz) | — **sin frame** | ✅ Elegidas N1, D2, F2 y P1 → bloques 53, 66 y 67 |
 | 48 · Modal de usuario | Leaderboard | `components/sections/player-modal.tsx`, `player-link.tsx`, `medal-stack.tsx`, `medal-card.tsx`, `components/ui/dialog.tsx`, `lib/data/leaderboard.ts` | [`2776:76206`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2776-76206&m=dev) | [`2776:63936`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2776-63936&m=dev) | 📦 Aprobado y commiteado. Sólo modal y backdrop |
 | 49 · Mi Perfil | `/profile` | `app/(site)/profile/page.tsx`, `components/sections/profile-view.tsx`, `level-panel.tsx`, `stat-pill.tsx`, `segmented-tabs.tsx`, `medal-card.tsx`, `lib/data/profile.ts`, `lib/use-daily-claim.ts` | [`6140:118274`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-118274&m=dev) | [`6140:117864`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-117864&m=dev) | 📦 Aprobado y commiteado |
 | 50 · Detalle de misión | `/missions` · modal | `components/sections/mission-modal.tsx`, `mission-card.tsx`, `mission-feature-card.tsx`, `missions-collection.tsx`, `lib/data/missions.ts` | [`6008:29125`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29125&m=dev) | [`6008:29552`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29552&m=dev) | 📦 Aprobado y commiteado. **Es un modal, no una ruta** |
@@ -2327,7 +2337,8 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 63 · "Ver todo" de Sura News en mobile | Home | `components/sections/section-header.tsx` | — | — | 📦 Aprobado y commiteado |
 | 64 · Detalle de evento en mobile (opción B) | `/tournaments/:id` | `components/sections/join-panel.tsx`, `app/globals.css` | — **sin frame**: [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v) | — **sin frame** | 📦 Aprobado y commiteado |
 | 65 · Estado vacío con radar (E3) | Colecciones | `components/sections/empty-results.tsx`, las cinco colecciones, `app/globals.css` | — **sin frame**: [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v) | — **sin frame** | 📦 Aprobado y commiteado |
-| 66 · Filtros de `/games` (F2) | `/games` | `components/sections/game-filters.tsx`, `games-collection.tsx`, `game-aside.tsx`, `filter-chips.tsx`, `scramble-text.tsx`, `components/ui/dropdown-menu.tsx`, `components/ui/sheet.tsx`, `lib/data/games.ts`, `lib/data/game-detail.ts` | — **sin frame**: [Noticias y filtros SURA](https://claude.ai/artifact/GtCFDG6WMzyj8F6HeH8wwz), F2 | — **sin frame** | 👀 Esperando aprobación |
+| 66 · Filtros de `/games` (F2) | `/games` | `components/sections/game-filters.tsx`, `games-collection.tsx`, `game-aside.tsx`, `filter-chips.tsx`, `scramble-text.tsx`, `components/ui/dropdown-menu.tsx`, `components/ui/sheet.tsx`, `lib/data/games.ts`, `lib/data/game-detail.ts` | — **sin frame**: [Noticias y filtros SURA](https://claude.ai/artifact/GtCFDG6WMzyj8F6HeH8wwz), F2 | — **sin frame** | 📦 Aprobado y commiteado |
+| 67 · Completar y editar los datos de Mi Perfil (P1) | `/profile` | `components/sections/profile-fields.tsx`, `profile-view.tsx`, `lib/data/profile.ts`, `lib/profile-validation.ts`, `lib/use-profile-fields.ts` | — **sin frame**: [Noticias y filtros SURA](https://claude.ai/artifact/GtCFDG6WMzyj8F6HeH8wwz), P1 | — **sin frame** | 👀 Esperando aprobación |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. Desde el 2026-09-28 el botón de perfil del header lleva a `/profile`; si el drawer vuelve, hay que decidir qué abre ese botón.
 >

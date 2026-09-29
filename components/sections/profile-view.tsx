@@ -7,15 +7,14 @@ import { useState } from "react";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { LevelPanel } from "@/components/sections/level-panel";
 import { MedalCard } from "@/components/sections/medal-card";
+import { ProfileFields } from "@/components/sections/profile-fields";
 import { RouteTabs } from "@/components/sections/route-tabs";
 import { SegmentedTabs } from "@/components/sections/segmented-tabs";
 import { PlayerStats } from "@/components/sections/stat-pill";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MY_PLAYER_ID, playerProfile } from "@/lib/data/leaderboard";
 import {
   deleteAccount,
   noTrophies,
-  profileFields,
   profileMedals,
   profileMobileTabs,
   profileTabs,
@@ -160,49 +159,6 @@ function MedalShelf({
         ))}
       </ul>
     </div>
-  );
-}
-
-function ProfileFields({ className }: { className?: string }) {
-  return (
-    <ul className={cn("flex flex-col gap-3", className)}>
-      {profileFields.map((field) => (
-        <li
-          key={field.id}
-          className={cn(
-            "flex h-16 items-center justify-between gap-3 rounded-lg px-4 text-base text-foreground ring-1 ring-inset",
-            field.done ? "bg-sp-foreground ring-brand" : "ring-border-dim",
-          )}
-        >
-          <span className="flex min-w-0 items-center gap-2">
-            {field.showAvatar && <UserAvatar src={currentUser.avatarSrc} size={24} ringClassName="" className="size-6" />}
-            <span className="truncate">{field.label}</span>
-            {field.info && (
-              <Tooltip>
-                <TooltipTrigger
-                  render={<button type="button" aria-label={`Más información sobre ${field.label}`} className="flex size-4 shrink-0 cursor-help" />}
-                >
-                  <Image src="/assets/profile/info.svg" alt="" width={16} height={16} className="size-4" />
-                </TooltipTrigger>
-                <TooltipContent side="top" sideOffset={8} className="whitespace-normal">
-                  {field.info}
-                </TooltipContent>
-              </Tooltip>
-            )}
-          </span>
-
-          {field.done && (
-            <Image src="/assets/profile/check.svg" alt="Completado" width={16} height={16} className="size-4 shrink-0" />
-          )}
-          {!field.done && field.reward && (
-            <span className="flex shrink-0 items-center gap-0.5 rounded-lg bg-sp-foreground px-1.5 py-1 font-techno text-xs leading-4 text-brand ring-1 ring-inset ring-brand">
-              {field.reward}
-              <Image src="/assets/home/sp-coin.webp" alt="" width={59} height={59} className="size-4" />
-            </span>
-          )}
-        </li>
-      ))}
-    </ul>
   );
 }
 
