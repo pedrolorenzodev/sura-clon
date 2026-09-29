@@ -1670,6 +1670,12 @@
   background-clip: text;
   color: transparent;
   animation: title-sweep var(--title-sweep-duration) var(--ease-scan) both;
+
+  @media (prefers-reduced-motion: reduce) {
+    background: none;
+    color: inherit;
+    animation: none;
+  }
 }
 
 @utility title-sweep-after-route {

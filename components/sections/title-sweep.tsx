@@ -5,13 +5,17 @@ import { useEffect, useRef, useState } from "react";
 import { isAppReady, prefersReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-type Phase = "idle" | "scroll" | "arrival" | "done";
+type Phase = "idle" | "scroll" | "load" | "route" | "done";
+
+const initialPhase = (onArrival?: boolean): Phase => {
+  if (!onArrival) return "idle";
+  if (!isAppReady()) return "load";
+  return prefersReducedMotion() ? "idle" : "route";
+};
 
 export function TitleSweep({ onArrival, children }: { onArrival?: boolean; children: React.ReactNode }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const [phase, setPhase] = useState<Phase>(() =>
-    onArrival && isAppReady() && !prefersReducedMotion() ? "arrival" : "idle",
-  );
+  const [phase, setPhase] = useState<Phase>(() => initialPhase(onArrival));
 
   useEffect(() => {
     const el = ref.current;
@@ -35,10 +39,7 @@ export function TitleSweep({ onArrival, children }: { onArrival?: boolean; child
     <span
       ref={ref}
       onAnimationEnd={() => setPhase("done")}
-      className={cn(
-        (phase === "scroll" || phase === "arrival") && "title-sweep",
-        phase === "arrival" && "title-sweep-after-route",
-      )}
+      className={cn(phase !== "idle" && phase !== "done" && "title-sweep", phase === "route" && "title-sweep-after-route")}
     >
       {children}
     </span>
