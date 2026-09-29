@@ -1053,6 +1053,7 @@ Feedback de Ema: quien mira el sitio rápido clickea cards que no hacen nada, y 
   - Consecuencias visibles en el Home: las fechas pasan al formato de los torneos ("Nov 28, 20:00 PM"), los premios a USDC y Noche de Duelos suma el badge "Eliminación". El arte no se movió (diff contra el estado anterior: sólo cambian las filas de texto de las cards).
   - El clic suena la ida de ruta y dispara la persiana, como cualquier link: se sacó el `data-sfx="click"`.
 - **55 · Los dos banners del Mundial llevan al detalle de juego** (`/games/mundial-fifa-2026`): el del Home y el de `/games`. El botón estirado y el CTA "Jugar ahora" pasan a ser links al mismo destino, con las mismas clases, el decodificado, el barrido y la luz de borde. La tabulación sigue teniendo una sola parada (el CTA) y el render no cambió un píxel. Salen de la lista de inertes de la Fase D.
+- **56 · El banner de Acerca se ve entero en mobile.** El asset estaba recortado a la franja del frame (1280 × 208) y en mobile quedaba en una tira de ~60px de alto. Ahora es la imagen completa del nodo `412:4501` (1280 × 720) y el recorte lo hace el CSS: `aspect-[1064/173]` centrado en desktop, que reproduce la misma franja (Δ medio 2 contra el render anterior, sólo reescalado), y `aspect-video` en mobile. Los demás torneos usan su portada 16:9, que con esto también entra entera en mobile.
 
 ### Mapa de rutas
 
@@ -2261,6 +2262,7 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 53 · Sura News | `/news` · `/news/:id` | — | — **sin frame**: sale de la propuesta del bloque 47 | — **sin frame** | ⏳ Pendiente |
 | 54 · Cards de Eventos → detalle de evento | Home | `components/sections/event-card.tsx`, `lib/data/events.ts`, `lib/data/tournaments.ts`, `lib/data/tournament-detail.ts` | — | — | 👀 Esperando aprobación |
 | 55 · Banners del Mundial → detalle de juego | Home · `/games` | `components/sections/game-banner.tsx`, `games-banner.tsx` | — | — | 👀 Esperando aprobación |
+| 56 · Banner de Acerca en mobile | `/tournaments/:id` | `components/sections/tournament-tabs.tsx`, `public/assets/tournaments/detail/banner-fortnite.webp` | [`412:4501`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4501&m=dev) | — **sin frame** | 👀 Esperando aprobación |
 | 61 · Filas de Participantes y Posición / Premio | `/tournaments/:id` | — (Artifact) | — **sin frame**: [Filas SURA](https://claude.ai/artifact/1EfbM4DELzVC2Pmv9K4KeW) | — **sin frame** | 👀 Esperando elección |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. Desde el 2026-09-28 el botón de perfil del header lleva a `/profile`; si el drawer vuelve, hay que decidir qué abre ese botón.

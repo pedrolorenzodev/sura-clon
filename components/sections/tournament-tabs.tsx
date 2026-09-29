@@ -67,8 +67,8 @@ export function TournamentTabs({ tournament }: { tournament: TournamentDetail })
 function AboutPanel({ bannerSrc }: { bannerSrc: string }) {
   return (
     <div className="flex flex-col gap-6">
-      <div className="relative aspect-[1064/173] w-full overflow-hidden rounded-xl bg-surface">
-        <Image src={bannerSrc} alt="" fill sizes="(min-width: 768px) 1064px, 100vw" className="object-cover" />
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-surface desktop:aspect-[1064/173]">
+        <Image src={bannerSrc} alt="" fill sizes="(min-width: 768px) 1064px, 100vw" className="object-cover object-center" />
       </div>
 
       <div className="flex flex-col gap-6 desktop:flex-row desktop:items-start">
