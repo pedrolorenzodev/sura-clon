@@ -896,7 +896,7 @@ Home el header sigue transparente sobre el hero, sin cambios.
 > | ✅ aprobado | 52 | Detalle de evento (`/tournaments/:id`), desktop. El mobile sigue provisorio |
 > | ✅ commiteado | 54–59 | Tanda de fixes y efectos de carga de los detalles de juego y de evento: ver *Tanda de fixes de los detalles*, abajo. El 60 (marquesina de sponsors) se descartó |
 > | 👀 | 61 | Filas de Participantes (B) y Posición / Premio (C), elegidas en [Filas SURA](https://claude.ai/artifact/1EfbM4DELzVC2Pmv9K4KeW) |
-> | 👀 | 47a · Fase B | Propuesta publicada: **mobile del detalle de evento** y **estado vacío** de las búsquedas, en [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v). Esperando elección |
+> | 👀 | 47a · 64 · 65 | [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v): elegidas la **B** para el mobile del detalle de evento (con los tabs de siempre) y la **E3** (radar) para el estado vacío. Implementadas en los bloques 64 y 65 |
 > | ⏳ | 47b · Fase B | Segunda propuesta: Sura News (lista y detalle), los 4 dropdowns y el filtro mobile de `/games` y **editar los datos de Mi Perfil** |
 > | ⏳ | 53 | Sura News, después de elegir en la propuesta |
 > | ⏳ | Fase D | Barrido de lo inerte: "Jugar ahora" del detalle de juego, "Ver todo" e "Ir a Sura News", links del footer. Para cada uno: destino, acción, o dejar de parecer clickeable |
@@ -925,7 +925,7 @@ Feedback de Ema: quien mira el sitio rápido clickea cards que no hacen nada, y 
 - **Cantidad de páginas real**, que sale de los resultados: `/tournaments` 3 (24 torneos, 8 por página), `/missions` 5 en *Todas* y 3 en *Disponibles*, que es el default (72 misiones, 16 por página), `/leaderboard` 5 (50 jugadores, 10 por página), `/games` 3 (36 juegos, 12 por página). La data se repite rotada por página, así la página 2 no se ve igual que la 1.
 - **Misiones:** cada misión tiene categoría (Sociales, Sura, Eventos) y estado (disponible, completada, finalizada). Las nueve combinaciones de tab y chip tienen resultados.
 - **Leaderboard:** el tab elige la métrica del ranking (SP, medallas, racha o eventos) y el chip, el período. El podio y los pills muestran la métrica activa con su ícono (moneda, medallita, fuego, trofeo). El período escala los valores con un ruido fijo por jugador, así el orden cambia. La racha se topa en 1, 7 y 30 días. El déficit se calcula contra el puesto de arriba (+1), que reproduce los valores del frame (126, 136, 71, 811). Los 10 jugadores del diseño siguen arriba en *Histórico · SP*, así que el Home no cambió. "Tu posición" pasa de "+40" a tu puesto calculado (51).
-- **El estado vacío es provisorio**: una línea de texto gris, hasta que salga de la propuesta de la Fase B. **Es un ítem más de la lista** (`EmptyResults`, clave `EMPTY_RESULTS_KEY`), así entra y sale con el reacomodo como cualquier card (usuario, 2026-09-28: aparecía y desaparecía de golpe). Por lo mismo, la lista y el paginador ya no se desmontan sin resultados: el paginador se desvanece en 200ms y queda `inert`.
+- **El estado vacío es el radar** (bloque 65, 2026-09-29; hasta ese día era una línea de texto gris). Ver *Tanda de fixes de los detalles*. **Es un ítem más de la lista** (`EmptyResults`, clave `EMPTY_RESULTS_KEY`), así entra y sale con el reacomodo como cualquier card (usuario, 2026-09-28: aparecía y desaparecía de golpe). Por lo mismo, la lista y el paginador ya no se desmontan sin resultados: el paginador se desvanece en 200ms y queda `inert`.
 - **Animación al filtrar: reacomodo** ✅ implementada · 👀 esperando aprobación. Lo pidió el usuario (2026-09-28): el cambio se sentía brusco y estático. Se propuso en **[Filtrado SURA](https://claude.ai/artifact/GTM5LEeudtRTj12NwJEvTd)** con cuatro opciones (A cascada, B barrido, C reacomodo, D decodificado) y el usuario eligió **C en las cuatro rutas**, también al cambiar de página, y con la búsqueda animando al dejar de tipear.
   - **Cómo se ve.** Lo que sigue en el resultado se desliza a su lugar nuevo en 380ms. Lo que sale se apaga en su lugar en 180ms, achicándose al 96%. Lo nuevo entra con la cascada de las filas del Home (420ms, sube 8px), después de 120ms y con 40ms de escalón, topado en 8 escalones. Si la lista cambia de alto, el alto también se anima. En el Leaderboard los jugadores viajan a su puesto y los números cuentan desde el valor anterior. En el podio, cuando cambia quién ocupa un puesto, el anterior se apaga y el nuevo entra; si es el mismo jugador, el número cuenta.
   - **La búsqueda espera 250ms** (`SEARCH_SETTLE_MS`): el input y la URL responden al instante, pero la lista se reacomoda recién cuando dejás de tipear. La propuesta decía que el filtrado seguía siendo instantáneo, y no se pueden las dos cosas: si la lista cambiara con cada tecla, cada letra relanzaría la animación.
@@ -1023,7 +1023,7 @@ Feedback de Ema: quien mira el sitio rápido clickea cards que no hacen nada, y 
 
 - **El detalle de evento sale del diseño viejo** ([`412:4384`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4384&m=dev) *Acerca*, [`412:18445`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-18445&m=dev) *Participantes*, [`412:19980`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-19980&m=dev) *Ganadores*): se toma la UX y la UI es la nuestra, como `/tournaments`. Mobile no tiene frame: se adapta del desktop aprobado.
 
-**Detalle de evento** ✅ desktop (bloque 52, aprobado el 2026-09-28). `/tournaments/:id`, 24 páginas estáticas; las cards de `/tournaments` ya linkean. **Mobile está provisorio** (apilado, sin revisar).
+**Detalle de evento** ✅ desktop (bloque 52, aprobado el 2026-09-28). `/tournaments/:id`, 24 páginas estáticas; las cards de `/tournaments` ya linkean. **Mobile: panel compacto** (bloque 64, opción B de *Evento mobile SURA*, 2026-09-29).
   - Reusa la plantilla del detalle de juego: `DetailHeroArt`, `BrandCta`, `AsidePanel` y `CommunityRules` pasaron a ser compartidos.
   - **Hero:**
     - Título, fecha, premio, badges y organizador.
@@ -1073,6 +1073,14 @@ Feedback de Ema: quien mira el sitio rápido clickea cards que no hacen nada, y 
   - **Participantes, opción B: grilla de cards de jugador.** 5 columnas en desktop (los 10 de la página en dos filas) y 2 en mobile. Cada card es el `PlayerLink` entero: avatar de 56, nombre, nivel en el pill de puntaje y "Ver perfil", que pasa a verde con el hover. Hover de elevación, como las cards de Juegos, con el borde degradé de las filas del Leaderboard. Tu card, cuando te unís, va primera con el anillo `--color-brand-vivid` de "Tu posición". Se va el panel que envolvía la tabla. La búsqueda sigue con el reacomodo y la entrada en cascada del bloque 59.
   - **Posición / Premio, opción C: la tabla pulida.** Se implementó primero la A (filas sueltas con el pill dorado) y el usuario cambió a la C al verla (2026-09-29). Se queda el panel; el puesto y el monto van en KH a 14, con el trofeo al lado de cada premio y el monto en el dorado de la card de torneo. Al pasar el mouse la fila toma `--color-surface-2` y se apagan los dos separadores que la tocan. Los separadores se desvanecen hacia las puntas (`--gradient-row-divider`). El radio de la fila es 8 y no los 10 de la demo (normalización, ≤ 2px).
   - Verificado a 390 y 1440: modal desde la card, búsqueda, unirse, hover y cero scroll lateral de 320 a 1920.
+- **64 · El detalle de evento en mobile: panel compacto.** Se propuso en **[Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v)** (regla 20) contra lo que había (el panel de desktop apilado) y el usuario eligió la **opción B** (2026-09-29).
+  - La cuenta regresiva y los inscriptos van lado a lado en un solo panel (KH 28/30, `--text-countdown-sm`), con una barra de cupo (`role="meter"`, `--color-brand-vivid` sobre `--color-border-dim`, que avanza al unirte) y el botón debajo. Nada queda fijo.
+  - Desktop no cambia: es el mismo `JoinPanel` con dos cuerpos, cada uno oculto en el tamaño del otro (regla 12: mismos datos, layout distinto). El botón es un solo `JoinAction` compartido. Verificado idéntico al píxel a 1440.
+  - Los tabs quedan como estaban (decisión del usuario): los de las rutas, con "Participantes (44/60)", que en mobile se scrollean.
+- **65 · El estado vacío de las búsquedas es un radar** (opción E3 de la misma propuesta; el usuario: "INCREÍBLE, más como esto").
+  - Un minimapa de 104 con la grilla y el punto "estás acá" de la 404 (`blip-blink`), un barrido de radar que da una vuelta cada 2,4s (`radar`, `--radar-sweep-duration`), "Nada en este sector" en KH y la frase de cada colección debajo.
+  - El botón **"Buscar de nuevo"** limpia la búsqueda y la colección vuelve con el reacomodo; en Misiones dice **"Limpiar filtros"** y vuelve a los filtros por defecto.
+  - Aplica en Eventos, Misiones, Leaderboard, Juegos y Participantes. Con movimiento reducido el radar queda quieto. Verificado a 390 y 1440 en las cuatro colecciones con buscador y en Participantes.
 
 ### Mapa de rutas
 
@@ -1087,7 +1095,7 @@ no rutas, y conviven sin conflicto.
 |---|---|---|
 | `/` | Home | ✅ Aprobada (2026-09-20) |
 | `/tournaments` | Lista de eventos | 👀 Esperando aprobación (bloques 15–20) |
-| `/tournaments/:id` | Detalle de evento | ✅ Aprobada en desktop (2026-09-28, bloque 52). Mobile provisorio |
+| `/tournaments/:id` | Detalle de evento | ✅ Aprobada en desktop (2026-09-28, bloque 52). Mobile: 👀 bloque 64 |
 | `/leaderboard` | Leaderboard | 👀 Esperando aprobación (bloques 26–30) |
 | `/missions` | Misiones | 👀 Esperando aprobación (bloques 21–25) |
 | `/missions/:id` | Detalle de misión | 👀 Es un modal (`?mision=`), no una ruta: bloque 50 |
@@ -1262,6 +1270,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-29 | `--text-countdown-sm` (28/30); `--spacing-radar` (104), `--spacing-radar-grid` (16), `--radar-sweep-duration` (2400ms), utility `radar` | Detalle de evento · colecciones | Panel mobile del detalle de evento (B) y estado vacío con radar (E3) de *Evento mobile SURA*. Todo `offDesign`. |
 | 2026-09-29 | `--gradient-row-divider` + utility `bg-row-divider` | Detalle de evento | Separadores de la tabla Posición / Premio (opción C de *Filas SURA*). `offDesign`. |
 | 2026-09-29 | `--stream-word-duration` (280ms), `--stream-word-step` (4ms), `--stream-word-blur` (2px); utility `stream-word`; `RevealList` suma `onMount` y `listRef` | Detalle de evento | Streaming de la descripción y cascadas de los tabs. Todo `offDesign`. Detalle en § 5, *Tanda de fixes de los detalles*. |
 | 2026-09-29 | Utility `slides-reveal`; `CardSlider` suma la prop `reveal` y `RevealList` pasa a usar el hook `useRevealOnView` | Detalle de juego | Cascada de las cards de los carruseles. Detalle en § 5, *Tanda de fixes de los detalles*. |
@@ -2277,7 +2286,7 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 44 · Filtros, paginado y card finalizada | Misiones | `app/(site)/missions/page.tsx`, `mission-card.tsx`, `lib/data/missions.ts` | [`6008:29000`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29000&m=dev) · card finalizada: traducida del mobile | [`6008:29689`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29689&m=dev) · card finalizada [`6008:29709`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29709&m=dev) | 👀 Esperando aprobación |
 | 45 · Tabs, rangos, búsqueda y paginado | Leaderboard | `app/(site)/leaderboard/page.tsx`, `lib/data/leaderboard.ts` | [`6010:45762`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6010-45762&m=dev) | [`6010:45504`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6010-45504&m=dev) | 👀 Esperando aprobación |
 | 46 · Búsqueda y paginado | Juegos | `app/(site)/games/page.tsx`, `lib/data/games.ts` | [`6137:82821`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6137-82821&m=dev) | [`6137:82953`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6137-82953&m=dev) | 👀 Esperando aprobación. Los dropdowns y el filtro mobile siguen inertes: esperan la propuesta (Fase B) |
-| 47a · Propuesta: mobile del detalle de evento y estado vacío | `/tournaments/:id` · colecciones | — (Artifact) | — **sin frame**: [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v) | — **sin frame** | 👀 Esperando elección |
+| 47a · Propuesta: mobile del detalle de evento y estado vacío | `/tournaments/:id` · colecciones | — (Artifact) | — **sin frame**: [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v) | — **sin frame** | ✅ Elegidas B y E3 → bloques 64 y 65 |
 | 47b · Propuesta: Sura News, dropdowns, editar perfil | Sura News · Juegos · Mi Perfil | — (Artifact) | — **sin frame** | — **sin frame** | ⏳ Pendiente |
 | 48 · Modal de usuario | Leaderboard | `components/sections/player-modal.tsx`, `player-link.tsx`, `medal-stack.tsx`, `medal-card.tsx`, `components/ui/dialog.tsx`, `lib/data/leaderboard.ts` | [`2776:76206`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2776-76206&m=dev) | [`2776:63936`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2776-63936&m=dev) | 📦 Aprobado y commiteado. Sólo modal y backdrop |
 | 49 · Mi Perfil | `/profile` | `app/(site)/profile/page.tsx`, `components/sections/profile-view.tsx`, `level-panel.tsx`, `stat-pill.tsx`, `segmented-tabs.tsx`, `medal-card.tsx`, `lib/data/profile.ts`, `lib/use-daily-claim.ts` | [`6140:118274`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-118274&m=dev) | [`6140:117864`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-117864&m=dev) | 📦 Aprobado y commiteado |
@@ -2293,8 +2302,10 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 59 · Efectos de carga en los tabs del detalle de evento | `/tournaments/:id` | `components/sections/tournament-tabs.tsx`, `stream-text.tsx`, `reveal-list.tsx`, `lib/use-reveal-on-view.ts`, `app/globals.css` | — | — | 📦 Aprobado y commiteado |
 | 60 · Sponsors en marquesina | `/tournaments/:id` | — | — | — | 🗑️ Descartado por el usuario (2026-09-29) |
 | 61 · Filas de Participantes y Posición / Premio | `/tournaments/:id` | `components/sections/tournament-tabs.tsx` | — **sin frame**: [Filas SURA](https://claude.ai/artifact/1EfbM4DELzVC2Pmv9K4KeW) | — **sin frame** | 👀 Esperando aprobación. Elegidas B y C |
-| 62 · Imagen de las cards chicas de Sura News en Safari | Home | `components/sections/news-card-wide.tsx` | — | — | 👀 Esperando aprobación |
-| 63 · "Ver todo" de Sura News en mobile | Home | `components/sections/section-header.tsx` | — | — | 👀 Esperando aprobación |
+| 62 · Imagen de las cards chicas de Sura News en Safari | Home | `components/sections/news-card-wide.tsx` | — | — | 📦 Aprobado y commiteado |
+| 63 · "Ver todo" de Sura News en mobile | Home | `components/sections/section-header.tsx` | — | — | 📦 Aprobado y commiteado |
+| 64 · Detalle de evento en mobile (opción B) | `/tournaments/:id` | `components/sections/join-panel.tsx`, `app/globals.css` | — **sin frame**: [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v) | — **sin frame** | 👀 Esperando aprobación |
+| 65 · Estado vacío con radar (E3) | Colecciones | `components/sections/empty-results.tsx`, las cinco colecciones, `app/globals.css` | — **sin frame**: [Evento mobile SURA](https://claude.ai/artifact/84ucddHccEw5DzBPFQ8J1v) | — **sin frame** | 👀 Esperando aprobación |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. Desde el 2026-09-28 el botón de perfil del header lleva a `/profile`; si el drawer vuelve, hay que decidir qué abre ese botón.
 >

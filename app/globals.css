@@ -65,6 +65,8 @@
 
   --text-countdown: 44px;
   --text-countdown--line-height: 52px;
+  --text-countdown-sm: 28px;
+  --text-countdown-sm--line-height: 30px;
 
   /* techno */
   --text-title: 24px;
@@ -367,6 +369,8 @@
   --spacing-map-mobile: 232px;
   --spacing-map-grid: 32px;
   --spacing-map-grid-desktop: 48px;
+  --spacing-radar: 104px;
+  --spacing-radar-grid: 16px;
 }
 
 /* ============================================================
@@ -652,6 +656,7 @@
   --title-sweep-duration: 950ms;
   --route-draw-duration: 450ms;
   --blip-blink-duration: 1600ms;
+  --radar-sweep-duration: 2400ms;
   --wipe-duration: 280ms;
   --wipe-slant: 1em;
   --wipe-light: rgb(255 255 255 / 0.2);
@@ -1666,6 +1671,40 @@
 @keyframes blip-blink {
   50% {
     opacity: 0.25;
+  }
+}
+
+@utility radar {
+  position: relative;
+  overflow: hidden;
+  width: var(--spacing-radar);
+  height: var(--spacing-radar);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-deep);
+  background-image:
+    linear-gradient(to right, --alpha(var(--color-border-dim) / 45%) 1px, transparent 1px),
+    linear-gradient(to bottom, --alpha(var(--color-border-dim) / 45%) 1px, transparent 1px);
+  background-size: var(--spacing-radar-grid) var(--spacing-radar-grid);
+  background-position: center;
+  box-shadow: inset 0 0 0 1px var(--color-border-dim);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, --alpha(var(--color-brand-vivid) / 22%), transparent 22%);
+    animation: radar-sweep var(--radar-sweep-duration) linear infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+}
+
+@keyframes radar-sweep {
+  to {
+    rotate: 1turn;
   }
 }
 

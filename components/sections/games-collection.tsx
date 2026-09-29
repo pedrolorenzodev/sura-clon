@@ -51,7 +51,7 @@ export function GamesCollection({ filters, banner }: { filters: React.ReactNode;
           {pageItems.length ? (
             pageItems.map((game) => <GameCard key={game.id} game={game} largeTitle />)
           ) : (
-            <EmptyResults>No encontramos juegos para “{query}”.</EmptyResults>
+            <EmptyResults onClear={() => setState({ q: "", pagina: "1" })}>No encontramos juegos para “{query}”.</EmptyResults>
           )}
         </FlipList>
 

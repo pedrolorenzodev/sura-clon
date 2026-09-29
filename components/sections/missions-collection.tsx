@@ -68,7 +68,9 @@ export function MissionsCollection({ featured }: { featured: React.ReactNode }) 
         {pageItems.length ? (
           pageItems.map((mission) => <MissionCard key={mission.id} mission={mission} compact />)
         ) : (
-          <EmptyResults>No hay misiones con estos filtros.</EmptyResults>
+          <EmptyResults onClear={() => setState(DEFAULTS)} clearLabel="Limpiar filtros">
+            No hay misiones con estos filtros.
+          </EmptyResults>
         )}
       </FlipList>
 

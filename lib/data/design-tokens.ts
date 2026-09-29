@@ -186,6 +186,7 @@ export const textTokens: TextToken[] = [
   { name: "--text-banner-title-sm", utility: "text-banner-title-sm", family: "font-display", usage: "Título del banner de /games, mobile — 24/28, tracking -0.0625em", specimen: "Mundial FIFA 2026" },
   { name: "--text-game-hero", utility: "text-game-hero", family: "font-display", usage: "Título del detalle de juego, desktop — 56/64, tracking -0.0625em", specimen: "Mundial FIFA 2026" },
   { name: "--text-countdown", utility: "text-countdown", family: "font-techno", usage: "Cuenta regresiva del detalle de evento — 44/52", specimen: "02:58:32" },
+  { name: "--text-countdown-sm", utility: "text-countdown-sm", family: "font-techno", usage: "Cuenta regresiva e inscriptos del panel mobile del detalle de evento — 28/30", specimen: "07:57:16", offDesign: true },
   { name: "--text-link", utility: "text-link", family: "font-techno", usage: '"VER todo", "ir a sura news"', specimen: "Ver todo" },
   { name: "--text-cta", utility: "text-cta", family: "font-techno", usage: "Botón del hero, desktop — 14/14", specimen: "Comenzar ahora" },
   { name: "--text-cta-sm", utility: "text-cta-sm", family: "font-techno", usage: "Botón del hero, mobile — 12/14", specimen: "Comenzar ahora" },
@@ -360,6 +361,7 @@ export const motionTokens: Token[] = [
   { name: "--route-shutter-edge", utility: "route-shutter", usage: "Grosor del filo verde de la persiana", offDesign: true },
   { name: "--route-draw-duration", utility: "route-draw-y / route-draw-x", usage: "Trazado de la línea del minimapa de la 404 hasta el destino: mitad vertical, mitad horizontal", offDesign: true },
   { name: "--blip-blink-duration", utility: "blip-blink", usage: "Parpadeo lento del punto “Vos” en el minimapa de la 404", offDesign: true },
+  { name: "--radar-sweep-duration", utility: "radar", usage: "Vuelta del barrido del radar en el estado vacío", offDesign: true },
   { name: "--sound-morph-duration", utility: "sound-wave / sound-cross", usage: "Toggle de sonido: las ondas se retraen y la cruz se dibuja al apagar", offDesign: true },
   { name: "--sound-wave-fade-duration", utility: "sound-wave", usage: "Fundido de las ondas del toggle de sonido al apagar y prender", offDesign: true },
   { name: "--sound-cross-delay", utility: "sound-cross", usage: "Retraso de la cruz del toggle respecto de las ondas al apagar", offDesign: true },
@@ -434,4 +436,6 @@ export const layoutTokens: Token[] = [
   { name: "--spacing-map-mobile", utility: "h-map-mobile", usage: "Alto del minimapa de la 404 en mobile", offDesign: true },
   { name: "--spacing-map-grid", utility: "map-grid", usage: "Celda de la grilla del minimapa, mobile", offDesign: true },
   { name: "--spacing-map-grid-desktop", utility: "map-grid", usage: "Celda de la grilla del minimapa, desktop", offDesign: true },
+  { name: "--spacing-radar", utility: "radar", usage: "Lado del radar del estado vacío de las búsquedas", offDesign: true },
+  { name: "--spacing-radar-grid", utility: "radar", usage: "Celda de la grilla del radar", offDesign: true },
 ];

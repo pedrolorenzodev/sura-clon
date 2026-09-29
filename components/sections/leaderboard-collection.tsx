@@ -87,7 +87,11 @@ export function LeaderboardCollection() {
         <StandingsTable
           entries={pageItems}
           iconSrc={iconSrc}
-          empty={<EmptyResults>No encontramos competidores para “{query}”.</EmptyResults>}
+          empty={
+            <EmptyResults onClear={() => setState({ q: "", pagina: "1" })}>
+              No encontramos competidores para “{query}”.
+            </EmptyResults>
+          }
         />
       </div>
 

@@ -173,7 +173,7 @@ function ParticipantsPanel({
             </li>
           ))
         ) : (
-          <EmptyResults>No encontramos participantes para “{query}”.</EmptyResults>
+          <EmptyResults onClear={() => setState({ q: "", pagina: "1" })}>No encontramos participantes para “{query}”.</EmptyResults>
         )}
       </RevealList>
 

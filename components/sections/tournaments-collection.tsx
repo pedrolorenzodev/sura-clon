@@ -48,7 +48,7 @@ export function TournamentsCollection() {
         {pageItems.length ? (
           pageItems.map((tournament) => <TournamentCard key={tournament.id} tournament={tournament} />)
         ) : (
-          <EmptyResults>No encontramos eventos para “{query}”.</EmptyResults>
+          <EmptyResults onClear={() => setState({ q: "", pagina: "1" })}>No encontramos eventos para “{query}”.</EmptyResults>
         )}
       </FlipList>
 
