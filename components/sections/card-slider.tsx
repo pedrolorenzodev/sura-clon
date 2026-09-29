@@ -34,7 +34,7 @@ export function CardSlider({
   const viewport = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
-  const revealState = useRevealOnView(viewport, { onLoad: reveal });
+  const revealState = useRevealOnView(viewport, reveal ? "load" : "off");
   const [afterRoute] = useState(isAppReady);
 
   const sync = useCallback(() => {

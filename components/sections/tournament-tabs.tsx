@@ -2,16 +2,17 @@
 
 import { Eye } from "lucide-react";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import { EMPTY_RESULTS_KEY, EmptyResults } from "@/components/sections/empty-results";
-import { FlipList } from "@/components/sections/flip-list";
 import { AsidePanel, CommunityRules } from "@/components/sections/game-aside";
 import { LevelIcon } from "@/components/sections/level-icon";
 import { Pagination } from "@/components/sections/pagination";
 import { PlayerLink } from "@/components/sections/player-link";
+import { RevealList } from "@/components/sections/reveal-list";
 import { RouteTabs } from "@/components/sections/route-tabs";
 import { SearchField } from "@/components/sections/search-field";
+import { StreamText } from "@/components/sections/stream-text";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
 import { scrollToTopIfHidden } from "@/lib/css-zoom";
@@ -36,6 +37,7 @@ export function TournamentTabs({ tournament }: { tournament: TournamentDetail })
   const [state, setState] = useUrlState(DEFAULTS);
   const joined = useTournamentJoined(tournament.id);
   const count = tournament.joined + (joined ? 1 : 0);
+  const [aboutStreamed, setAboutStreamed] = useState(false);
 
   const tabs = [
     { id: "acerca", label: "Acerca" },
@@ -49,12 +51,15 @@ export function TournamentTabs({ tournament }: { tournament: TournamentDetail })
       <RouteTabs
         items={tabs}
         value={tab}
-        onChange={(next) => setState({ tab: next, q: "", pagina: "1" })}
+        onChange={(next) => {
+          if (tab === "acerca" && next !== "acerca") setAboutStreamed(true);
+          setState({ tab: next, q: "", pagina: "1" });
+        }}
         label="Secciones del evento"
       />
 
       <div className="pt-10">
-        {tab === "acerca" && <AboutPanel bannerSrc={tournament.bannerSrc} />}
+        {tab === "acerca" && <AboutPanel bannerSrc={tournament.bannerSrc} stream={!aboutStreamed} />}
         {tab === "participantes" && (
           <ParticipantsPanel tournament={tournament} joined={joined} state={state} setState={setState} />
         )}
@@ -64,7 +69,7 @@ export function TournamentTabs({ tournament }: { tournament: TournamentDetail })
   );
 }
 
-function AboutPanel({ bannerSrc }: { bannerSrc: string }) {
+function AboutPanel({ bannerSrc, stream }: { bannerSrc: string; stream: boolean }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-surface desktop:aspect-[1064/173]">
@@ -74,18 +79,7 @@ function AboutPanel({ bannerSrc }: { bannerSrc: string }) {
       <div className="flex flex-col gap-6 desktop:flex-row desktop:items-start">
         <div className="flex min-w-0 flex-1 flex-col gap-3 desktop:p-6">
           <h2 className="font-techno text-base uppercase text-foreground">Descripción</h2>
-          <div className="flex flex-col gap-4 text-xs leading-5">
-            {tournamentDescription.map((block) => (
-              <div key={block.heading}>
-                <p className="text-foreground">{block.heading}</p>
-                {block.lines.map((line) => (
-                  <p key={line} className="text-muted-foreground">
-                    {line}
-                  </p>
-                ))}
-              </div>
-            ))}
-          </div>
+          <StreamText blocks={tournamentDescription} animate={stream} />
         </div>
 
         <div className="flex w-full shrink-0 flex-col gap-6 desktop:w-105.75">
@@ -143,16 +137,21 @@ function ParticipantsPanel({
       </div>
 
       <div className="rounded-2xl border border-border-panel bg-surface px-6 py-3">
-        <FlipList
+        <RevealList
+          onMount
           listRef={list}
-          keys={pageItems.length ? pageItems.map((player) => player.id) : [EMPTY_RESULTS_KEY]}
+          flipKeys={pageItems.length ? pageItems.map((player) => player.id) : [EMPTY_RESULTS_KEY]}
           className="flex scroll-mt-header-mobile flex-col desktop:scroll-mt-header-desktop"
         >
           {pageItems.length ? (
             pageItems.map((player, index) => (
               <li
                 key={player.id}
-                className={cn("flex items-center gap-6 py-3", index < pageItems.length - 1 && "border-b border-foreground/5")}
+                style={{ "--reveal-index": index } as React.CSSProperties}
+                className={cn(
+                  "row-reveal flex items-center gap-6 py-3",
+                  index < pageItems.length - 1 && "border-b border-foreground/5",
+                )}
               >
                 <div className="flex min-w-0 flex-1 items-center gap-6">
                   <Image
@@ -183,7 +182,7 @@ function ParticipantsPanel({
           ) : (
             <EmptyResults>No encontramos participantes para “{query}”.</EmptyResults>
           )}
-        </FlipList>
+        </RevealList>
       </div>
 
       <Pagination
@@ -228,9 +227,13 @@ function PrizesPanel({ prize }: { prize: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <ul className="grid gap-4 desktop:grid-cols-3 desktop:gap-4.5">
+      <RevealList onMount className="grid gap-4 desktop:grid-cols-3 desktop:gap-4.5">
         {PODIUM.map((place, index) => (
-          <li key={place.label} className={cn("flex items-center gap-3 rounded-xl border p-6", place.card)}>
+          <li
+            key={place.label}
+            style={{ "--reveal-index": index } as React.CSSProperties}
+            className={cn("row-reveal flex items-center gap-3 rounded-xl border p-6", place.card)}
+          >
             <Image
               src={`/assets/tournaments/detail/medal-${index + 1}.webp`}
               alt=""
@@ -249,19 +252,20 @@ function PrizesPanel({ prize }: { prize: string }) {
             </div>
           </li>
         ))}
-      </ul>
+      </RevealList>
 
       <div className="rounded-2xl border border-border-panel bg-surface p-6">
         <div className="flex justify-between pb-2 font-techno text-xs uppercase text-muted-foreground">
           <span>Posición</span>
           <span>Premio</span>
         </div>
-        <ul className="flex flex-col">
+        <RevealList onMount className="flex flex-col">
           {prizes.slice(3).map((row, index, rows) => (
             <li
               key={row.position}
+              style={{ "--reveal-index": PODIUM.length + index } as React.CSSProperties}
               className={cn(
-                "flex justify-between py-3 text-xs text-foreground",
+                "row-reveal flex justify-between py-3 text-xs text-foreground",
                 index < rows.length - 1 && "border-b border-foreground/5",
               )}
             >
@@ -269,7 +273,7 @@ function PrizesPanel({ prize }: { prize: string }) {
               <span className={cn(!row.prize && "text-muted-foreground")}>{row.prize ?? "—"}</span>
             </li>
           ))}
-        </ul>
+        </RevealList>
       </div>
     </div>
   );

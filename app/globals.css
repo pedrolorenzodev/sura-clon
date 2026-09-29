@@ -612,6 +612,9 @@
   --row-reveal-duration: 420ms;
   --row-reveal-stagger: 60ms;
   --row-reveal-shift: 8px;
+  --stream-word-duration: 280ms;
+  --stream-word-step: 4ms;
+  --stream-word-blur: 2px;
   --flip-move-duration: 380ms;
   --flip-exit-duration: 180ms;
   --flip-enter-delay: 120ms;
@@ -2169,6 +2172,33 @@ html:active-view-transition-type(nav-back)::view-transition-image-pair(route-shu
   from {
     opacity: 0;
     transform: translateY(var(--row-reveal-shift));
+  }
+}
+
+/* ============================================================
+   TEXTO QUE ENTRA PALABRA POR PALABRA
+   ============================================================ */
+@utility stream-word {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-reveal="armed"] & {
+      opacity: 0;
+    }
+
+    [data-reveal="shown"] & {
+      animation: stream-word var(--stream-word-duration) var(--ease-reveal) backwards;
+      animation-delay: calc(var(--word-index) * var(--stream-word-step));
+    }
+
+    [data-reveal="shown"][data-after-route] & {
+      animation-delay: calc(var(--route-shutter-duration) + var(--word-index) * var(--stream-word-step));
+    }
+  }
+}
+
+@keyframes stream-word {
+  from {
+    opacity: 0;
+    filter: blur(var(--stream-word-blur));
   }
 }
 

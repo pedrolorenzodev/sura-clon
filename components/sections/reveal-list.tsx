@@ -14,16 +14,21 @@ export function RevealList({
   className,
   flipKeys,
   wrapperClassName,
+  listRef,
+  onMount,
   children,
 }: {
   className?: string;
   flipKeys?: string[];
   wrapperClassName?: string;
+  listRef?: React.RefObject<HTMLUListElement | null>;
+  onMount?: boolean;
   children: React.ReactNode;
 }) {
-  const ref = useRef<HTMLUListElement>(null);
+  const ownList = useRef<HTMLUListElement>(null);
+  const ref = listRef ?? ownList;
   const ghosts = useRef<HTMLDivElement>(null);
-  const state = useRevealOnView(ref);
+  const state = useRevealOnView(ref, onMount ? "mount" : "view");
   useFlipList(ref, ghosts, flipKeys ?? []);
 
   const list = (

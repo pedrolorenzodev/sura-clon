@@ -1062,6 +1062,11 @@ Feedback de Ema: quien mira el sitio rápido clickea cards que no hacen nada, y 
   - La regla vive en un hook, `useRevealOnView` (`lib/use-reveal-on-view.ts`, opción `onLoad`), que ahora usan `RevealList` y `CardSlider` (prop `reveal`). `RevealList` no cambió de comportamiento.
   - Cada card sube 8px y se funde con los tiempos de las miniaturas del hero (420ms, 150ms de escalón), topado en cinco escalones: las cards fuera de la vista entran con el último.
   - Flechas, fundido, recorte y hover no cambian: en reposo el detalle queda idéntico al píxel. Con movimiento reducido no hay cascada.
+- **59 · Efectos de carga en los tabs del detalle de evento.**
+  - **Acerca:** la descripción entra palabra por palabra, como un texto que se escribe en streaming. Cada palabra pasa de transparente y desenfocada (2px) a nítida en 280ms, con 4ms de escalón (`StreamText`, `stream-word`): las 183 palabras tardan **1s** (usuario, 2026-09-29). Arrancó con 320ms y 15ms de escalón (~3s) y se veía lento. Anima en cada carga, con la misma regla que los carruseles del detalle de juego: si ya se ve, enseguida; si está más abajo, al scrollear hasta ella. Corre una sola vez por visita: al volver al tab ya está entera. Las palabras ocupan su lugar desde el principio, así no hay salto de layout; en reposo la descripción difiere del render anterior sólo en antialiasing (Δ medio 0,45, mismos cortes de línea).
+  - **Participantes:** la lista entra con la cascada de filas del Leaderboard **cada vez que se entra al tab** (`RevealList` con `onMount`, que la arma sin mirar la vista). La búsqueda y el paginado siguen con el reacomodo de siempre.
+  - **Ganadores:** la misma cascada, en un solo orden: las tres cards del podio y después las filas del #4 al #10.
+  - Con movimiento reducido no hay nada de esto. Verificado a 390 y 1440, yendo y volviendo entre tabs y buscando; en reposo Participantes y Ganadores quedan idénticos al píxel.
 
 ### Mapa de rutas
 
@@ -1251,6 +1256,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-29 | `--stream-word-duration` (280ms), `--stream-word-step` (4ms), `--stream-word-blur` (2px); utility `stream-word`; `RevealList` suma `onMount` y `listRef` | Detalle de evento | Streaming de la descripción y cascadas de los tabs. Todo `offDesign`. Detalle en § 5, *Tanda de fixes de los detalles*. |
 | 2026-09-29 | Utility `slides-reveal`; `CardSlider` suma la prop `reveal` y `RevealList` pasa a usar el hook `useRevealOnView` | Detalle de juego | Cascada de las cards de los carruseles. Detalle en § 5, *Tanda de fixes de los detalles*. |
 | 2026-09-28 | `--text-countdown` (44/52), `--drop-shadow-medal`; `components/ui/accordion.tsx` (shadcn, re-estilado) | Detalle de evento | Detalle en § 5, *Feedback de Ema*. |
 | 2026-09-28 | Utilities `lift-clip-flush` y `slider-fade` (máscara con fundido a los dos lados, con cuatro `@property` `<number>`); `CardSlider` suma las props `fade` y `flush` | Detalle de juego | Los carruseles con fundido recortan al ras de la columna. Detalle en § 5, *Feedback de Ema*. |
@@ -2275,6 +2281,7 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 56 · Banner de Acerca en mobile | `/tournaments/:id` | `components/sections/tournament-tabs.tsx`, `public/assets/tournaments/detail/banner-fortnite.webp` | [`412:4501`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4501&m=dev) | — **sin frame** | 👀 Esperando aprobación |
 | 57 · Barrido del título en cada carga | Rutas internas · detalles · 404 | `components/sections/title-sweep.tsx`, `app/globals.css` | — | — | 👀 Esperando aprobación |
 | 58 · Cascada en los carruseles del detalle de juego | `/games/:id` | `lib/use-reveal-on-view.ts`, `components/sections/card-slider.tsx`, `reveal-list.tsx`, `game-body.tsx`, `app/globals.css` | — | — | 👀 Esperando aprobación |
+| 59 · Efectos de carga en los tabs del detalle de evento | `/tournaments/:id` | `components/sections/tournament-tabs.tsx`, `stream-text.tsx`, `reveal-list.tsx`, `lib/use-reveal-on-view.ts`, `app/globals.css` | — | — | 👀 Esperando aprobación |
 | 61 · Filas de Participantes y Posición / Premio | `/tournaments/:id` | — (Artifact) | — **sin frame**: [Filas SURA](https://claude.ai/artifact/1EfbM4DELzVC2Pmv9K4KeW) | — **sin frame** | 👀 Esperando elección |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. Desde el 2026-09-28 el botón de perfil del header lleva a `/profile`; si el drawer vuelve, hay que decidir qué abre ese botón.

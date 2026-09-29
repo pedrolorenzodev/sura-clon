@@ -6,12 +6,16 @@ import { prefersReducedMotion } from "@/lib/motion";
 
 export type RevealState = "armed" | "shown" | "entered" | null;
 
-export function useRevealOnView(ref: React.RefObject<Element | null>, { onLoad = false } = {}) {
-  const [state, setState] = useState<RevealState>(onLoad ? "shown" : null);
+export type RevealMode = "view" | "load" | "mount" | "off";
+
+const INITIAL: Record<RevealMode, RevealState> = { view: null, load: "shown", mount: "shown", off: null };
+
+export function useRevealOnView(ref: React.RefObject<Element | null>, mode: RevealMode = "view") {
+  const [state, setState] = useState<RevealState>(INITIAL[mode]);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || prefersReducedMotion()) return;
+    if (!el || (mode !== "view" && mode !== "load") || prefersReducedMotion()) return;
 
     let decided = false;
     const observer = new IntersectionObserver(
@@ -23,7 +27,7 @@ export function useRevealOnView(ref: React.RefObject<Element | null>, { onLoad =
           return;
         }
         if (entry.isIntersecting) {
-          setState(onLoad ? "entered" : "shown");
+          setState(mode === "load" ? "entered" : "shown");
           observer.disconnect();
         }
       },
@@ -31,7 +35,7 @@ export function useRevealOnView(ref: React.RefObject<Element | null>, { onLoad =
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [ref, onLoad]);
+  }, [ref, mode]);
 
   return state;
 }
