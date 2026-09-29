@@ -1,8 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { BorderLight } from "@/components/sections/border-light";
 import { ScrambleText } from "@/components/sections/scramble-text";
+import { PROMO_GAME_ID } from "@/lib/data/game-detail";
 import { gamesPromo } from "@/lib/data/games";
+
+const PROMO_HREF = `/games/${PROMO_GAME_ID}`;
 
 export function GameBanner() {
   return (
@@ -17,12 +21,12 @@ export function GameBanner() {
       <span className="absolute inset-0 bg-promo-scrim-mobile desktop:bg-promo-scrim" />
       <BorderLight className="[--border-light-color:var(--color-promo-light)]" />
 
-      <button
-        type="button"
+      <Link
+        href={PROMO_HREF}
+        prefetch={false}
         aria-hidden
         tabIndex={-1}
-        data-sfx="click"
-        className="absolute inset-0 z-10 cursor-pointer rounded-xl"
+        className="absolute inset-0 z-10 rounded-xl"
       />
 
       <div className="pointer-events-none relative z-20 flex flex-col gap-4 p-4 desktop:absolute desktop:inset-y-0 desktop:left-10.75 desktop:w-132.5 desktop:justify-center desktop:gap-6 desktop:p-0">
@@ -43,14 +47,14 @@ export function GameBanner() {
           </p>
         </div>
 
-        <button
-          type="button"
+        <Link
+          href={PROMO_HREF}
+          prefetch={false}
           data-sfx-hover
-          data-sfx="click"
-          className="pointer-events-auto flex h-10 cursor-pointer items-center justify-center self-start rounded-full border border-brand-vivid bg-promo-cta px-6 font-techno text-sm uppercase text-promo-foreground wipe shadow-promo-cta transition-[box-shadow,translate] duration-200 hover:wipe-on hover:shadow-promo-cta-hover focus-visible:wipe-on focus-visible:shadow-promo-cta-hover active:translate-y-px motion-reduce:transition-none desktop:h-12 desktop:px-8 desktop:text-title-sm"
+          className="pointer-events-auto flex h-10 items-center justify-center self-start rounded-full border border-brand-vivid bg-promo-cta px-6 font-techno text-sm uppercase text-promo-foreground wipe shadow-promo-cta transition-[box-shadow,translate] duration-200 hover:wipe-on hover:shadow-promo-cta-hover focus-visible:wipe-on focus-visible:shadow-promo-cta-hover active:translate-y-px motion-reduce:transition-none desktop:h-12 desktop:px-8 desktop:text-title-sm"
         >
           <ScrambleText text={gamesPromo.cta} />
-        </button>
+        </Link>
       </div>
     </div>
   );
