@@ -70,6 +70,7 @@ export const surfaceColors: TokenGroup = {
     { name: "--color-border-muted", utility: "bg-border-muted", usage: "Badges de Juegos" },
     { name: "--color-border-light", utility: "bg-border-light", usage: "Badges de Torneos" },
     { name: "--color-border-dim", utility: "bg-border-dim", usage: "Separadores" },
+    { name: "--color-border-panel", utility: "bg-border-panel", usage: "Borde de los paneles laterales del detalle de juego" },
   ],
 };
 
@@ -183,6 +184,7 @@ export const textTokens: TextToken[] = [
   { name: "--text-game-title", utility: "text-game-title", family: "font-sans", usage: "Título de la card en la grilla de /games — 20/24", specimen: "Wagmi Defense" },
   { name: "--text-banner-title", utility: "text-banner-title", family: "font-display", usage: "Título del banner de /games, desktop — 40/48, tracking -0.0625em", specimen: "Mundial FIFA 2026" },
   { name: "--text-banner-title-sm", utility: "text-banner-title-sm", family: "font-display", usage: "Título del banner de /games, mobile — 24/28, tracking -0.0625em", specimen: "Mundial FIFA 2026" },
+  { name: "--text-game-hero", utility: "text-game-hero", family: "font-display", usage: "Título del detalle de juego, desktop — 56/64, tracking -0.0625em", specimen: "Mundial FIFA 2026" },
   { name: "--text-link", utility: "text-link", family: "font-techno", usage: '"VER todo", "ir a sura news"', specimen: "Ver todo" },
   { name: "--text-cta", utility: "text-cta", family: "font-techno", usage: "Botón del hero, desktop — 14/14", specimen: "Comenzar ahora" },
   { name: "--text-cta-sm", utility: "text-cta-sm", family: "font-techno", usage: "Botón del hero, mobile — 12/14", specimen: "Comenzar ahora" },
@@ -273,6 +275,10 @@ export const gradientTokens: Token[] = [
   { name: "--gradient-banner-scrim", utility: "bg-banner-scrim", usage: "Scrim del banner de /games, desktop" },
   { name: "--gradient-banner-scrim-mobile", utility: "bg-banner-scrim-mobile", usage: "Scrim del banner de /games, mobile — vertical" },
   { name: "--gradient-banner-cta", utility: "bg-banner-cta", usage: "Fondo del CTA del banner de /games" },
+  { name: "--gradient-game-hero-scrim", utility: "bg-game-hero-scrim", usage: "Fundido del arte del detalle de juego, desktop" },
+  { name: "--gradient-game-hero-scrim-mobile", utility: "bg-game-hero-scrim-mobile", usage: "Fundido del arte del detalle de juego, mobile" },
+  { name: "--gradient-play-bar", utility: "bg-play-bar", usage: "Fundido detrás del CTA fijo del detalle de juego, mobile" },
+  { name: "--gradient-suggestion-scrim", utility: "bg-suggestion-scrim", usage: "Fundido de las cards de «También te puede interesar»" },
   { name: "--gradient-podium-gold", utility: "bg-podium-gold", usage: "Fondo del primer puesto del podio, desktop" },
   { name: "--gradient-podium-silver", utility: "bg-podium-silver", usage: "Fondo del segundo puesto, desktop" },
   { name: "--gradient-podium-bronze", utility: "bg-podium-bronze", usage: "Fondo del tercer puesto, desktop" },

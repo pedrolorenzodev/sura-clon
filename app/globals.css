@@ -59,6 +59,11 @@
   --text-banner-title-sm--line-height: 28px;
   --text-banner-title-sm--letter-spacing: -0.0625em;
 
+  --text-game-hero: 56px;
+  --text-game-hero--line-height: 64px;
+  --text-game-hero--letter-spacing: -0.0625em;
+
+
   /* techno */
   --text-title: 24px;
   --text-title--line-height: 32px;
@@ -164,6 +169,7 @@
   --color-border-muted: #a5a5a5;
   --color-border-light: #dddddd;
   --color-border-dim: #444444;
+  --color-border-panel: #3a3a3a;
 
   --color-nav-icon: #abb7c2;
 
@@ -478,6 +484,14 @@
   );
 
   --gradient-banner-cta: linear-gradient(#97f300 40.385%, #6bad00);
+  --gradient-game-hero-scrim: linear-gradient(180deg, rgb(32 32 32 / 0) 0%, var(--color-background) 86.058%);
+  --gradient-game-hero-scrim-mobile: linear-gradient(
+    180deg,
+    rgb(32 32 32 / 0.25) 41.346%,
+    var(--color-background) 84.135%
+  );
+  --gradient-suggestion-scrim: linear-gradient(180deg, rgb(12 12 12 / 0) 9.536%, #0c0c0c 98.514%);
+  --gradient-play-bar: linear-gradient(180deg, rgb(32 32 32 / 0) 9.536%, var(--color-background) 98.514%);
 
   --gradient-row-gold: linear-gradient(
     90deg,
@@ -754,6 +768,18 @@
 }
 @utility bg-banner-cta {
   background-image: var(--gradient-banner-cta);
+}
+@utility bg-game-hero-scrim {
+  background-image: var(--gradient-game-hero-scrim);
+}
+@utility bg-game-hero-scrim-mobile {
+  background-image: var(--gradient-game-hero-scrim-mobile);
+}
+@utility bg-suggestion-scrim {
+  background-image: var(--gradient-suggestion-scrim);
+}
+@utility bg-play-bar {
+  background-image: var(--gradient-play-bar);
 }
 
 @utility bg-row-gold {
@@ -1077,6 +1103,68 @@
 
   @variant desktop {
     --clip-air: calc(var(--spacing) * 6 - var(--bracket-offset));
+  }
+}
+
+@utility lift-clip-flush {
+  clip-path: inset(0 var(--clip-end, calc(var(--spacing) * 6)) 0 var(--clip-start, calc(var(--spacing) * 6)));
+}
+
+@property --slider-fade-start-to {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: -0.1;
+}
+@property --slider-fade-start-from {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: -0.1;
+}
+@property --slider-fade-end-from {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1.1;
+}
+@property --slider-fade-end-to {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1.1;
+}
+
+@utility slider-fade {
+  --slider-column: calc(100% - var(--spacing) * 12);
+
+  @variant desktop {
+    --slider-fade-start-to: 0.04035;
+    --slider-fade-start-from: 0.13445;
+    --slider-fade-end-from: 0.86555;
+    --slider-fade-end-to: 0.95965;
+    mask-image: linear-gradient(
+      90deg,
+      transparent calc(var(--spacing) * 6 + var(--slider-column) * var(--slider-fade-start-to)),
+      #000 calc(var(--spacing) * 6 + var(--slider-column) * var(--slider-fade-start-from)),
+      #000 calc(var(--spacing) * 6 + var(--slider-column) * var(--slider-fade-end-from)),
+      transparent calc(var(--spacing) * 6 + var(--slider-column) * var(--slider-fade-end-to))
+    );
+    transition:
+      --slider-fade-start-to 200ms,
+      --slider-fade-start-from 200ms,
+      --slider-fade-end-from 200ms,
+      --slider-fade-end-to 200ms;
+
+    &[data-at-start] {
+      --slider-fade-start-to: -0.1;
+      --slider-fade-start-from: -0.1;
+    }
+
+    &[data-at-end] {
+      --slider-fade-end-from: 1.1;
+      --slider-fade-end-to: 1.1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 

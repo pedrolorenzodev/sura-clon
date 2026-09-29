@@ -2,7 +2,7 @@ type DetailRoute = "tournaments" | "games" | "news";
 
 const LIVE_DETAIL_ROUTES: Record<DetailRoute, boolean> = {
   tournaments: false,
-  games: false,
+  games: true,
   news: false,
 };
 

@@ -1,3 +1,4 @@
+import { seeded } from "@/lib/collection";
 import { PROFILE_MEDALS, type Medal } from "@/lib/data/medals";
 import { currentUser } from "@/lib/data/user";
 
@@ -139,14 +140,6 @@ const EXTRA_NAMES = [
   "Trueno_Azul", "Pibe_Rush", "Carpincho_GG", "Milanesa_OP", "Sombra_Sur", "Alfajor_Aim", "Tano_Tilt", "Boludeo_Pro",
 ];
 
-function seeded(seed: string) {
-  let state = [...seed].reduce((hash, char) => Math.imul(hash ^ char.charCodeAt(0), 16777619), 2166136261);
-  return () => {
-    state = Math.imul(state ^ (state >>> 15), 2246822507);
-    state = Math.imul(state ^ (state >>> 13), 3266489909);
-    return ((state ^= state >>> 16) >>> 0) / 4294967296;
-  };
-}
 
 const random = seeded("sura-leaderboard");
 let nextPoints = 5100;

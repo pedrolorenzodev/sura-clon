@@ -14,6 +14,8 @@ export function CardSlider({
   viewportClassName,
   arrowClassName,
   arrowSides = { left: "-left-13.25", right: "-right-13.25" },
+  fade,
+  flush,
   children,
 }: {
   labels: { prev: string; next: string };
@@ -21,6 +23,8 @@ export function CardSlider({
   viewportClassName: string;
   arrowClassName: string;
   arrowSides?: { left: string; right: string };
+  fade?: boolean;
+  flush?: boolean;
   children: React.ReactNode;
 }) {
   const viewport = useRef<HTMLDivElement>(null);
@@ -54,6 +58,8 @@ export function CardSlider({
       <div
         ref={viewport}
         onScroll={sync}
+        data-at-start={atStart || undefined}
+        data-at-end={atEnd || undefined}
         style={
           {
             "--clip-start": atStart ? "0px" : undefined,
@@ -62,7 +68,9 @@ export function CardSlider({
         }
         /* no tocar: -mx-6/px-6 es aire para la sombra del hover y lift-clip es lo que evita que asome la card siguiente */
         className={cn(
-          "lift-clip no-scrollbar -mx-6 flex overflow-x-auto overscroll-x-none overflow-y-hidden px-6",
+          flush ? "lift-clip-flush" : "lift-clip",
+          fade && "slider-fade",
+          "no-scrollbar -mx-6 flex overflow-x-auto overscroll-x-none overflow-y-hidden px-6",
           viewportClassName,
         )}
       >
