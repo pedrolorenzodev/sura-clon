@@ -2173,6 +2173,32 @@ html:active-view-transition-type(nav-back)::view-transition-image-pair(route-shu
 }
 
 /* ============================================================
+   ENTRADA DE LAS CARDS DE UN CARRUSEL
+   ============================================================ */
+@utility slides-reveal {
+  @media (prefers-reduced-motion: no-preference) {
+    &[data-reveal="armed"] > * {
+      opacity: 0;
+    }
+
+    &[data-reveal="shown"] > * {
+      animation: thumb-reveal var(--thumb-reveal-duration) var(--ease-reveal) backwards;
+      animation-delay: calc(var(--slide-index, 0) * var(--thumb-reveal-stagger));
+    }
+
+    &[data-after-route] > * {
+      animation-delay: calc(var(--route-shutter-duration) + var(--slide-index, 0) * var(--thumb-reveal-stagger));
+    }
+
+    & > :nth-child(2) { --slide-index: 1; }
+    & > :nth-child(3) { --slide-index: 2; }
+    & > :nth-child(4) { --slide-index: 3; }
+    & > :nth-child(5) { --slide-index: 4; }
+    & > :nth-child(n + 6) { --slide-index: 5; }
+  }
+}
+
+/* ============================================================
    SONIDO
    ============================================================ */
 @custom-variant sound-on (&:where(:root:not([data-sound="off"]) *));

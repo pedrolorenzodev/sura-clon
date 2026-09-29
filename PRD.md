@@ -1057,6 +1057,11 @@ Feedback de Ema: quien mira el sitio rápido clickea cards que no hacen nada, y 
 - **57 · El barrido del título corre en cada carga**, no sólo al llegar navegando (usuario, 2026-09-29). Aplica a los H1 con `onArrival`: `RouteShell` (`/tournaments`, `/missions`, `/leaderboard`, `/games`, `/profile`), los detalles de juego y de evento, y la 404. Los títulos de sección del Home, que barren al scrollear, no cambian.
   - El SSR ya renderiza el `<span>` con `title-sweep`, así el primer cuadro sale gris y el barrido corre sólo con CSS, sin esperar a React y también sin JS. `title-sweep-after-route` (la espera de la persiana) se suma sólo al llegar navegando (`isAppReady()`), que en la hidratación es `false`, así el cliente coincide con el servidor.
   - Con movimiento reducido la utility no hace nada (sin degradé ni animación): el título queda blanco, idéntico al píxel al de antes. Verificado en las ocho rutas, en carga directa, navegando, con movimiento reducido y sin JS, sin errores de hidratación.
+- **58 · Las cards de los carruseles del detalle de juego entran una por una**, en la galería y en "También te puede interesar" (usuario, 2026-09-28). **Anima en cada carga** (usuario, 2026-09-29): si el carrusel ya se ve al cargar, la cascada corre enseguida; si está más abajo, espera a que se scrollee hasta él. Es distinto de las filas del Leaderboard, que no animan si ya se ven.
+  - El SSR ya trae `data-reveal="shown"`, así la cascada arranca con el primer cuadro, sin parpadeo y también sin JS. Al hidratar, un carrusel fuera de la vista pasa a `armed` (invisible) y vuelve a `shown` al entrar. Llegando navegando, la cascada espera a la persiana (`data-after-route`).
+  - La regla vive en un hook, `useRevealOnView` (`lib/use-reveal-on-view.ts`, opción `onLoad`), que ahora usan `RevealList` y `CardSlider` (prop `reveal`). `RevealList` no cambió de comportamiento.
+  - Cada card sube 8px y se funde con los tiempos de las miniaturas del hero (420ms, 150ms de escalón), topado en cinco escalones: las cards fuera de la vista entran con el último.
+  - Flechas, fundido, recorte y hover no cambian: en reposo el detalle queda idéntico al píxel. Con movimiento reducido no hay cascada.
 
 ### Mapa de rutas
 
@@ -1246,6 +1251,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-29 | Utility `slides-reveal`; `CardSlider` suma la prop `reveal` y `RevealList` pasa a usar el hook `useRevealOnView` | Detalle de juego | Cascada de las cards de los carruseles. Detalle en § 5, *Tanda de fixes de los detalles*. |
 | 2026-09-28 | `--text-countdown` (44/52), `--drop-shadow-medal`; `components/ui/accordion.tsx` (shadcn, re-estilado) | Detalle de evento | Detalle en § 5, *Feedback de Ema*. |
 | 2026-09-28 | Utilities `lift-clip-flush` y `slider-fade` (máscara con fundido a los dos lados, con cuatro `@property` `<number>`); `CardSlider` suma las props `fade` y `flush` | Detalle de juego | Los carruseles con fundido recortan al ras de la columna. Detalle en § 5, *Feedback de Ema*. |
 | 2026-09-28 | `--text-game-hero` (56/64, -0.0625em), `--gradient-game-hero-scrim` / `-mobile`, `--gradient-play-bar`, `--gradient-suggestion-scrim`, `--color-border-panel` (#3a3a3a) | Detalle de juego | Frames `2867:7612` / `3168:13133`. Detalle en § 5, *Feedback de Ema*. `seeded()` pasa de `lib/data/leaderboard.ts` a `lib/collection.ts`. |
@@ -2268,6 +2274,7 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 55 · Banners del Mundial → detalle de juego | Home · `/games` | `components/sections/game-banner.tsx`, `games-banner.tsx` | — | — | 👀 Esperando aprobación |
 | 56 · Banner de Acerca en mobile | `/tournaments/:id` | `components/sections/tournament-tabs.tsx`, `public/assets/tournaments/detail/banner-fortnite.webp` | [`412:4501`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4501&m=dev) | — **sin frame** | 👀 Esperando aprobación |
 | 57 · Barrido del título en cada carga | Rutas internas · detalles · 404 | `components/sections/title-sweep.tsx`, `app/globals.css` | — | — | 👀 Esperando aprobación |
+| 58 · Cascada en los carruseles del detalle de juego | `/games/:id` | `lib/use-reveal-on-view.ts`, `components/sections/card-slider.tsx`, `reveal-list.tsx`, `game-body.tsx`, `app/globals.css` | — | — | 👀 Esperando aprobación |
 | 61 · Filas de Participantes y Posición / Premio | `/tournaments/:id` | — (Artifact) | — **sin frame**: [Filas SURA](https://claude.ai/artifact/1EfbM4DELzVC2Pmv9K4KeW) | — **sin frame** | 👀 Esperando elección |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. Desde el 2026-09-28 el botón de perfil del header lleva a `/profile`; si el drawer vuelve, hay que decidir qué abre ese botón.

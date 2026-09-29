@@ -29,6 +29,7 @@ export function GameBody({ game }: { game: GameDetail }) {
               arrowSides={ARROWS.sides}
               fade
               flush
+              reveal
             >
               {game.gallery.map((src, index) => (
                 <div
@@ -50,6 +51,7 @@ export function GameBody({ game }: { game: GameDetail }) {
             arrowSides={ARROWS.sides}
             fade
             flush
+            reveal
           >
             {suggestedGames(game.id).map((suggestion) => (
               <CardLink
