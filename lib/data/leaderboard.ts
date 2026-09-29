@@ -163,7 +163,7 @@ const PLAYERS: Player[] = [
 
 export const MY_PLAYER_ID = "cerdo-capitalista";
 
-const ME: Player = {
+export const ME: Player = {
   id: MY_PLAYER_ID,
   name: currentUser.name,
   avatarSrc: "/assets/leaderboard/avatar-me.png",

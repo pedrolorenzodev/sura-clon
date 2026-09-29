@@ -63,6 +63,8 @@
   --text-game-hero--line-height: 64px;
   --text-game-hero--letter-spacing: -0.0625em;
 
+  --text-countdown: 44px;
+  --text-countdown--line-height: 52px;
 
   /* techno */
   --text-title: 24px;
@@ -277,6 +279,7 @@
   --shadow-segment: 0 2px 2.5px rgb(0 0 0 / 0.25);
   --shadow-segment-inset: inset 0 2px 5px rgb(0 0 0 / 0.25);
   --drop-shadow-level-current: 0 0 9px rgb(151 243 0 / 0.3);
+  --drop-shadow-medal: 0 4px 10px rgb(0 0 0 / 0.35);
   --shadow-mission-card: 0 2px 2.5px rgb(0 0 0 / 0.15);
   --shadow-sp-badge: 0 2px 5px rgb(0 0 0 / 0.15);
   --shadow-thumb: 0 4px 4px rgb(0 0 0 / 0.25);

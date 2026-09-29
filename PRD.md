@@ -893,7 +893,8 @@ Home el header sigue transparente sobre el hero, sin cambios.
 > | ✅ commiteado | 49 | Mi Perfil (`/profile`), y el usuario renombrado a Cerdo_Capitalista |
 > | ✅ commiteado | 50 | Detalle de misión: es un modal (`?mision=`), no una ruta |
 > | ✅ aprobado | 51 | Detalle de juego (`/games/:id`), frames `2867:7612` / `3168:13133` |
-> | ⏭️ **sigue** | 52 | Detalle de evento (`/tournaments/:id`): **primero desktop**, desde el diseño viejo (UX sí, UI no), frames `412:4384` / `412:18445` / `412:19980`. El mobile se adapta cuando el usuario aprueba el desktop |
+> | ✅ aprobado | 52 | Detalle de evento (`/tournaments/:id`), desktop. El mobile sigue provisorio |
+> | ⏭️ **sigue** | — | Animaciones de carga (pedido del usuario, 2026-09-28) |
 > | ⏳ | 47 · Fase B | Página de propuesta con demos (regla 20): Sura News (lista y detalle), los 4 dropdowns y el filtro mobile de `/games`, el estado vacío definitivo y **editar los datos de Mi Perfil** |
 > | ⏳ | 53 | Sura News, después de elegir en la propuesta |
 > | ⏳ | Fase D | Barrido de lo inerte: "Jugar ahora" de los dos banners, "Ver todo" e "Ir a Sura News", links del footer. Para cada uno: destino, acción, o dejar de parecer clickeable |
@@ -1020,6 +1021,30 @@ Feedback de Ema: quien mira el sitio rápido clickea cards que no hacen nada, y 
 
 - **El detalle de evento sale del diseño viejo** ([`412:4384`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4384&m=dev) *Acerca*, [`412:18445`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-18445&m=dev) *Participantes*, [`412:19980`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-19980&m=dev) *Ganadores*): se toma la UX y la UI es la nuestra, como `/tournaments`. Mobile no tiene frame: se adapta del desktop aprobado.
 
+**Detalle de evento** ✅ desktop (bloque 52, aprobado el 2026-09-28). `/tournaments/:id`, 24 páginas estáticas; las cards de `/tournaments` ya linkean. **Mobile está provisorio** (apilado, sin revisar).
+  - Reusa la plantilla del detalle de juego: `DetailHeroArt`, `BrandCta`, `AsidePanel` y `CommunityRules` pasaron a ser compartidos.
+  - **Hero:**
+    - Título, fecha, premio, badges y organizador.
+    - A la derecha, la cuenta regresiva, que corre en vivo desde que carga la página, y "Unirse".
+    - Unirse suma tu lugar a los inscriptos y pasa a "Inscripto", con "Salir del evento" en hover.
+    - Dura la sesión (`lib/use-tournament-join.ts`) y también actualiza el tab de Participantes.
+    - Un evento lleno muestra "Cupo completo", desactivado.
+  - **Sponsors:** fila estática y centrada.
+  - **Tabs** con el estado en la URL (`?tab=`):
+    - **Acerca:** banner, descripción, Reglas y preguntas frecuentes con el `Accordion` de shadcn (Base UI), re-estilado.
+    - **Participantes:** búsqueda, paginado de a 10 con el reacomodo de siempre, y "Ver participante", que abre el modal de usuario. Si te uniste, aparecés primero.
+    - **Ganadores:** podio de premios con los degradés del Leaderboard y tabla del #4 al #10. Los montos salen del premio del evento (100 / 40 / 20 / 10 / 8 / 6 / 4 / 2 %).
+  - **Desvíos del frame, con motivo:**
+    - El título va en Monument (`--text-game-hero`), no en Druk Cond, que no tenemos. Ocupa 3 líneas en vez de 2.
+    - Los tabs son los de `RouteTabs`, como en el resto de las rutas, no los tercios del frame.
+    - **Los sponsors no se mueven**: el frame los muestra desbordando, como una marquesina, pero la animación no está definida (regla 20). Los seis logos entran centrados. El de Red Bull ya trae la opacidad en el SVG; al resto se le aplica el 50 % del frame.
+    - Las respuestas 2 y 3 de las preguntas frecuentes son nuestras: en el frame son texto de relleno de otro producto ("Gran DT").
+    - La pregunta "¿Qué pasa si no me puedo iscribir?" va corregida.
+    - Reglas muestra las tres reglas sin repetir, como en el detalle de juego.
+    - **La lista de participantes sale del leaderboard**: son como mucho 50. Los eventos con más inscriptos (78, 112) muestran los primeros 50.
+    - El arte del hero y el banner son los del frame sólo en *Contenders #110*. El resto usa la portada del torneo.
+    - El recorte del arte del #110 sigue al frame (la franja media, `-translate-y-[29.75%]`).
+
 ### Mapa de rutas
 
 > Absorbido desde `ROUTES.md` el 2026-09-20, que era temporal y ya cumplió su condición de merge.
@@ -1033,7 +1058,7 @@ no rutas, y conviven sin conflicto.
 |---|---|---|
 | `/` | Home | ✅ Aprobada (2026-09-20) |
 | `/tournaments` | Lista de eventos | 👀 Esperando aprobación (bloques 15–20) |
-| `/tournaments/:id` | Detalle de evento | ⏳ Pendiente |
+| `/tournaments/:id` | Detalle de evento | ✅ Aprobada en desktop (2026-09-28, bloque 52). Mobile provisorio |
 | `/leaderboard` | Leaderboard | 👀 Esperando aprobación (bloques 26–30) |
 | `/missions` | Misiones | 👀 Esperando aprobación (bloques 21–25) |
 | `/missions/:id` | Detalle de misión | 👀 Es un modal (`?mision=`), no una ruta: bloque 50 |
@@ -1208,6 +1233,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-28 | `--text-countdown` (44/52), `--drop-shadow-medal`; `components/ui/accordion.tsx` (shadcn, re-estilado) | Detalle de evento | Detalle en § 5, *Feedback de Ema*. |
 | 2026-09-28 | Utilities `lift-clip-flush` y `slider-fade` (máscara con fundido a los dos lados, con cuatro `@property` `<number>`); `CardSlider` suma las props `fade` y `flush` | Detalle de juego | Los carruseles con fundido recortan al ras de la columna. Detalle en § 5, *Feedback de Ema*. |
 | 2026-09-28 | `--text-game-hero` (56/64, -0.0625em), `--gradient-game-hero-scrim` / `-mobile`, `--gradient-play-bar`, `--gradient-suggestion-scrim`, `--color-border-panel` (#3a3a3a) | Detalle de juego | Frames `2867:7612` / `3168:13133`. Detalle en § 5, *Feedback de Ema*. `seeded()` pasa de `lib/data/leaderboard.ts` a `lib/collection.ts`. |
 | 2026-09-28 | `--text-mission-title` (28/34), `--text-mission-title-sm` (24/24, -0.02em), `--text-reward-xl` (28/18), `--shadow-mission-modal`, `--shadow-mission-cta`, `--shadow-reward-box`, `--radius-3xl` (20), `--spacing-mission-modal` (611), `--spacing-mission-box` (293) | Detalle de misión | Frames `6008:29125` / `6008:29552`. Detalle en § 5, *Feedback de Ema*. El store de premios suma `startTask`. |
@@ -1456,7 +1482,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Datos de torneos inventados** | Los dos primeros son los del diseño; los otros seis se escribieron para que la grilla no se lea como un duplicado. Las portadas salen de la sección Juegos: no hay arte propio de torneos. | Pedir el listado real y un lote de portadas. |
 | ~~**El buscador y el paginador no hacen nada**~~ | Eran maqueta en `/tournaments`. | **Resuelta** (2026-09-28, Fase A). |
 | **Eventos no tiene filtros en ningún tamaño** | Ni el Eventos viejo ni el rediseño ponen filtros en el desktop de esta ruta; el `FILTRAR` de mobile se sacó por eso (ver changelog). Misiones sí los tiene y ya define el patrón: chips en desktop, colapsados en `FILTRAR` en mobile. | Pedir los criterios de filtrado de Eventos. Cuando existan, entran como chips en desktop y `FILTRAR` vuelve en mobile — el shell de ruta recupera su slot de acción en tres líneas. |
-| **`/tournaments/:id` no existe** | Las ocho cards no linkean desde el 2026-09-23 (ver *Rutas de detalle apagadas*, § 6). | Se enciende en `lib/routes.ts` cuando lleguen los frames del detalle. Ojo al hacerlo: la portada lleva el mismo `ring-inset` debajo de una imagen con zoom que hizo flashear la de misión (notas de implementación) — revisarlo junto. |
+| ~~**`/tournaments/:id` no existe**~~ | — | **Resuelta** (2026-09-28, bloque 52). |
 | **La card de misión describe en dos colores** | La misma instancia de Figma usa `#a5a5a5` en el Home y blanco en `/missions`. Se unificó en gris. | Confirmar cuál es el bueno. |
 | **`/missions/:id` no existe** | Las cards de la ruta y del Home no linkean desde el 2026-09-23 (ver *Rutas de detalle apagadas*, § 6). | Se enciende en `lib/routes.ts` cuando lleguen los frames del detalle. |
 | ~~**Tabs y chips de Misiones no filtran**~~ | Eran maqueta, y el diseño no decía cómo se combinan. | **Resuelta** (2026-09-28, Fase A): se combinan con un Y, categoría × estado. |
@@ -2013,7 +2039,7 @@ no hay ninguna `.dark` en el proyecto, así que las utilities `dark:` que arrast
 primitives de shadcn quedan inertes y hay un solo camino de render.
 
 **Rutas de detalle apagadas.** `lib/routes.ts` arma la URL de cada detalle y lleva un
-registro de cuáles están vivas (`LIVE_DETAIL_ROUTES`); hoy sólo `games` está en `true` (desde el 2026-09-28); para las otras
+registro de cuáles están vivas (`LIVE_DETAIL_ROUTES`); hoy `games` y `tournaments` están en `true` (desde el 2026-09-28); para `news`
 `detailHref()` devuelve `null`. `CardLink` (`components/layout/card-link.tsx`) renderiza un `<Link>`
 si hay destino y un `<div>` con las mismas clases si no. **La UI no cambia** aunque no haya link
 (decisión del usuario, 2026-09-23): el `<div>` conserva el hover y suma `cursor-pointer`, que el
@@ -2222,7 +2248,7 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 49 · Mi Perfil | `/profile` | `app/(site)/profile/page.tsx`, `components/sections/profile-view.tsx`, `level-panel.tsx`, `stat-pill.tsx`, `segmented-tabs.tsx`, `medal-card.tsx`, `lib/data/profile.ts`, `lib/use-daily-claim.ts` | [`6140:118274`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-118274&m=dev) | [`6140:117864`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6140-117864&m=dev) | 📦 Aprobado y commiteado |
 | 50 · Detalle de misión | `/missions` · modal | `components/sections/mission-modal.tsx`, `mission-card.tsx`, `mission-feature-card.tsx`, `missions-collection.tsx`, `lib/data/missions.ts` | [`6008:29125`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29125&m=dev) | [`6008:29552`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=6008-29552&m=dev) | 📦 Aprobado y commiteado. **Es un modal, no una ruta** |
 | 51 · Detalle de juego | `/games/:id` | `app/(site)/games/[id]/page.tsx`, `components/sections/game-hero.tsx`, `game-body.tsx`, `game-reviews.tsx`, `game-aside.tsx`, `star-rating.tsx`, `card-slider.tsx`, `lib/data/game-detail.ts` | [`2867:7612`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2867-7612&m=dev) | [`3168:13133`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3168-13133&m=dev) | ✅ Aprobado (2026-09-28) |
-| 52 · Detalle de evento | `/tournaments/:id` | — | [`412:4384`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4384&m=dev) Acerca · [`412:18445`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-18445&m=dev) Participantes · [`412:19980`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-19980&m=dev) Ganadores (**diseño viejo**: UX, no UI) | — **sin frame**: se adapta del desktop aprobado | ⏳ Pendiente |
+| 52 · Detalle de evento | `/tournaments/:id` | — | [`412:4384`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4384&m=dev) Acerca · [`412:18445`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-18445&m=dev) Participantes · [`412:19980`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-19980&m=dev) Ganadores (**diseño viejo**: UX, no UI) | — **sin frame**: se adapta del desktop aprobado | ✅ Desktop aprobado (2026-09-28). Mobile provisorio |
 | 53 · Sura News | `/news` · `/news/:id` | — | — **sin frame**: sale de la propuesta del bloque 47 | — **sin frame** | ⏳ Pendiente |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. Desde el 2026-09-28 el botón de perfil del header lleva a `/profile`; si el drawer vuelve, hay que decidir qué abre ese botón.
