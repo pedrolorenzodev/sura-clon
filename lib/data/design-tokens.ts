@@ -293,6 +293,7 @@ export const gradientTokens: Token[] = [
   { name: "--gradient-medal-claimable", utility: "bg-medal-claimable", usage: "Medalla lista para reclamar, en Mi Perfil" },
   { name: "--gradient-profile-banner-tint", utility: "bg-profile-banner-tint", usage: "Tinte violeta del banner de Mi Perfil" },
   { name: "--gradient-profile-banner-fade", utility: "bg-profile-banner-fade", usage: "Fundido del banner de Mi Perfil hacia la página y los costados" },
+  { name: "--gradient-row-divider", utility: "bg-row-divider", usage: "Separador entre filas de la tabla de premios de un evento — se apaga hacia las puntas", offDesign: true },
   { name: "--gradient-row-border", utility: "border-gradient-row", usage: "Borde de la fila del Leaderboard — se apaga hacia abajo" },
   { name: "--gradient-row-border-active", utility: "border-gradient-row", usage: "La misma fila con el puntero encima — no sale del diseño", offDesign: true },
   { name: "--gradient-card-border", utility: "border-gradient-card", usage: "Borde del panel de la card de Juegos — se apaga hacia abajo" },

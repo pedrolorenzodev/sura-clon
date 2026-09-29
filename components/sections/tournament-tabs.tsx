@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 
 import { EMPTY_RESULTS_KEY, EmptyResults } from "@/components/sections/empty-results";
 import { AsidePanel, CommunityRules } from "@/components/sections/game-aside";
+import { UserAvatar } from "@/components/layout/user-avatar";
 import { LevelIcon } from "@/components/sections/level-icon";
 import { Pagination } from "@/components/sections/pagination";
 import { PlayerLink } from "@/components/sections/player-link";
@@ -16,7 +17,7 @@ import { StreamText } from "@/components/sections/stream-text";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
 import { scrollToTopIfHidden } from "@/lib/css-zoom";
-import { levels } from "@/lib/data/leaderboard";
+import { MY_PLAYER_ID, levels } from "@/lib/data/leaderboard";
 import {
   ME_AS_PARTICIPANT,
   PARTICIPANTS_PER_PAGE,
@@ -136,54 +137,45 @@ function ParticipantsPanel({
         />
       </div>
 
-      <div className="rounded-2xl border border-border-panel bg-surface px-6 py-3">
-        <RevealList
-          onMount
-          listRef={list}
-          flipKeys={pageItems.length ? pageItems.map((player) => player.id) : [EMPTY_RESULTS_KEY]}
-          className="flex scroll-mt-header-mobile flex-col desktop:scroll-mt-header-desktop"
-        >
-          {pageItems.length ? (
-            pageItems.map((player, index) => (
-              <li
-                key={player.id}
-                style={{ "--reveal-index": index } as React.CSSProperties}
+      <RevealList
+        onMount
+        listRef={list}
+        flipKeys={pageItems.length ? pageItems.map((player) => player.id) : [EMPTY_RESULTS_KEY]}
+        className="grid scroll-mt-header-mobile grid-cols-2 gap-2 desktop:scroll-mt-header-desktop desktop:grid-cols-5 desktop:gap-4"
+      >
+        {pageItems.length ? (
+          pageItems.map((player, index) => (
+            <li key={player.id} style={{ "--reveal-index": index } as React.CSSProperties} className="row-reveal flex">
+              <PlayerLink
+                playerId={player.id}
+                name={player.name}
                 className={cn(
-                  "row-reveal flex items-center gap-6 py-3",
-                  index < pageItems.length - 1 && "border-b border-foreground/5",
+                  "group relative flex w-full min-w-0 flex-col items-center gap-2.5 rounded-xl bg-surface px-3 pt-5 pb-4 transition-[translate,box-shadow,scale] duration-200 ease-reveal hover:-translate-y-0.5 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover active:scale-98 motion-reduce:transition-none",
+                  player.id === MY_PLAYER_ID ? "ring-1 ring-inset ring-brand-vivid" : "border-gradient-row",
                 )}
               >
-                <div className="flex min-w-0 flex-1 items-center gap-6">
-                  <Image
-                    src={player.avatarSrc}
-                    alt=""
-                    width={32}
-                    height={32}
-                    className="size-8 shrink-0 rounded-full object-cover"
-                  />
-                  <span className="min-w-0 truncate text-base font-medium text-foreground desktop:w-59 desktop:flex-none">
-                    {player.name}
-                  </span>
-                  <span className="hidden items-center gap-3 desktop:flex">
-                    <LevelIcon level={player.level} className="size-5" />
-                    <span className="text-sm text-muted-foreground">{levels[player.level].label}</span>
-                  </span>
-                </div>
-                <PlayerLink
-                  playerId={player.id}
-                  name={player.name}
-                  className="flex shrink-0 items-center gap-2 rounded-md px-2 py-1.5 text-xs text-brand transition-[filter] duration-200 hover:drop-shadow-link-hover focus-visible:drop-shadow-link-hover motion-reduce:transition-none"
-                >
+                <UserAvatar
+                  src={player.avatarSrc}
+                  size={56}
+                  ringClassName={cn("border", player.id === MY_PLAYER_ID ? "border-brand-vivid" : "border-border")}
+                  className="size-14"
+                />
+                <span className="max-w-full truncate text-sm font-medium text-foreground">{player.name}</span>
+                <span className="flex items-center gap-1 rounded-sm bg-surface-2 px-2 py-1.5 text-xs font-medium text-foreground ring-1 ring-inset ring-muted-foreground/25">
+                  <LevelIcon level={player.level} />
+                  {levels[player.level].label}
+                </span>
+                <span className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors duration-200 group-hover:text-brand group-focus-visible:text-brand motion-reduce:transition-none">
                   <Eye aria-hidden className="size-3" />
-                  <span>Ver participante</span>
-                </PlayerLink>
-              </li>
-            ))
-          ) : (
-            <EmptyResults>No encontramos participantes para “{query}”.</EmptyResults>
-          )}
-        </RevealList>
-      </div>
+                  Ver perfil
+                </span>
+              </PlayerLink>
+            </li>
+          ))
+        ) : (
+          <EmptyResults>No encontramos participantes para “{query}”.</EmptyResults>
+        )}
+      </RevealList>
 
       <Pagination
         pages={Math.max(pages, 1)}
@@ -254,23 +246,35 @@ function PrizesPanel({ prize }: { prize: string }) {
         ))}
       </RevealList>
 
-      <div className="rounded-2xl border border-border-panel bg-surface p-6">
-        <div className="flex justify-between pb-2 font-techno text-xs uppercase text-muted-foreground">
+      <div className="rounded-2xl border border-border-panel bg-surface px-2 pt-4 pb-2">
+        <div className="flex justify-between px-4 pb-2 font-techno text-xs uppercase text-muted-foreground">
           <span>Posición</span>
           <span>Premio</span>
         </div>
         <RevealList onMount className="flex flex-col">
-          {prizes.slice(3).map((row, index, rows) => (
+          {prizes.slice(3).map((row, index) => (
             <li
               key={row.position}
               style={{ "--reveal-index": PODIUM.length + index } as React.CSSProperties}
-              className={cn(
-                "row-reveal flex justify-between py-3 text-xs text-foreground",
-                index < rows.length - 1 && "border-b border-foreground/5",
-              )}
+              className="row-reveal relative flex items-center justify-between rounded-lg px-4 py-3 transition-colors duration-200 before:absolute before:inset-x-4 before:top-0 before:h-px before:transition-opacity before:duration-200 not-first:before:bg-row-divider hover:bg-surface-2 hover:before:opacity-0 motion-reduce:transition-none motion-reduce:before:transition-none [li:hover+&]:before:opacity-0"
             >
-              <span>#{row.position}</span>
-              <span className={cn(!row.prize && "text-muted-foreground")}>{row.prize ?? "—"}</span>
+              <span className="font-techno text-sm leading-4 uppercase text-foreground">#{row.position}</span>
+              {row.prize ? (
+                <span className="flex items-center gap-1.5">
+                  <Image
+                    src="/assets/home/eventos/trophy.webp"
+                    alt=""
+                    width={18}
+                    height={18}
+                    className="size-3.5 shrink-0"
+                  />
+                  <span className="bg-gold-text bg-clip-text font-techno text-sm leading-4 uppercase text-transparent">
+                    {row.prize}
+                  </span>
+                </span>
+              ) : (
+                <span className="text-xs text-muted-foreground">—</span>
+              )}
             </li>
           ))}
         </RevealList>
