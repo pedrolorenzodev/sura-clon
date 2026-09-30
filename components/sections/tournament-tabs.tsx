@@ -60,7 +60,7 @@ export function TournamentTabs({ tournament }: { tournament: TournamentDetail })
       />
 
       <div className="pt-10">
-        {tab === "acerca" && <AboutPanel bannerSrc={tournament.bannerSrc} stream={!aboutStreamed} />}
+        {tab === "acerca" && <AboutPanel tournament={tournament} stream={!aboutStreamed} />}
         {tab === "participantes" && (
           <ParticipantsPanel tournament={tournament} joined={joined} state={state} setState={setState} />
         )}
@@ -70,17 +70,17 @@ export function TournamentTabs({ tournament }: { tournament: TournamentDetail })
   );
 }
 
-function AboutPanel({ bannerSrc, stream }: { bannerSrc: string; stream: boolean }) {
+function AboutPanel({ tournament, stream }: { tournament: TournamentDetail; stream: boolean }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-surface desktop:aspect-[1064/173]">
-        <Image src={bannerSrc} alt="" fill sizes="(min-width: 768px) 1064px, 100vw" className="object-cover object-center" />
+        <Image src={tournament.bannerSrc} alt="" fill sizes="(min-width: 768px) 1064px, 100vw" className="object-cover object-center" />
       </div>
 
       <div className="flex flex-col gap-6 desktop:flex-row desktop:items-start">
         <div className="flex min-w-0 flex-1 flex-col gap-3 desktop:p-6">
           <h2 className="font-techno text-base uppercase text-foreground">Descripción</h2>
-          <StreamText blocks={tournamentDescription} animate={stream} />
+          <StreamText blocks={tournamentDescription(tournament)} animate={stream} />
         </div>
 
         <div className="flex w-full shrink-0 flex-col gap-6 desktop:w-105.75">

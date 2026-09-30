@@ -5,20 +5,18 @@ import { tournaments, type Tournament } from "@/lib/data/tournaments";
 
 export type TournamentDetail = Tournament & {
   art: DetailArt;
-  bannerSrc: string;
   startsInSeconds: number;
   joined: number;
   capacity: number;
 };
 
-const FEATURED_IDS = ["contenders-training-center-110", "fortnite-tournament"];
+const FIGMA_ART_ID = "contenders-training-center-110";
 
 function detailFromTournament(tournament: Tournament): TournamentDetail {
   const noise = seeded(`${tournament.id}:detail`);
   const players = tournament.badges.find((badge) => badge.icon === "players")?.label ?? "0/0";
   const [joined, capacity] = players.split("/").map(Number);
-  const featured = FEATURED_IDS.some((id) => tournament.id.startsWith(id));
-  const heroSrc = featured ? "/assets/tournaments/detail/hero-fortnite.webp" : tournament.imageSrc;
+  const figmaArt = tournament.id === FIGMA_ART_ID;
 
   return {
     ...tournament,
@@ -26,11 +24,10 @@ function detailFromTournament(tournament: Tournament): TournamentDetail {
       badge.icon === "players" ? { ...badge, label: `${capacity} participantes` } : badge,
     ),
     art: {
-      desktop: heroSrc,
-      mobile: heroSrc,
-      className: featured ? "inset-0 size-full desktop:-translate-y-[29.75%]" : "inset-0 size-full",
+      desktop: tournament.heroSrc,
+      mobile: tournament.heroSrc,
+      className: figmaArt ? "inset-0 size-full desktop:-translate-y-[29.75%]" : "inset-0 size-full",
     },
-    bannerSrc: featured ? "/assets/tournaments/detail/banner-fortnite.webp" : tournament.imageSrc,
     startsInSeconds: 3600 + Math.floor(noise() * 11 * 3600),
     joined,
     capacity,
@@ -52,18 +49,15 @@ export const tournamentSponsors = [
   { name: "Riot Games", src: "/assets/tournaments/detail/sponsor-riot.webp", width: 143, height: 40, className: "h-5", dim: true },
 ];
 
-export const tournamentDescription = [
-  {
-    heading: "Noches de Juego de SURA",
-    lines: ["Es el momento de unir a la comunidad. Únete a Discord y disfruta de horas de pura diversión, desafíos y muchas risas."],
-  },
+export const tournamentDescription = (tournament: Tournament) => [
+  { heading: tournament.title, lines: [tournament.about] },
   {
     heading: "👉 ¿Cómo funciona?",
     lines: [
-      "Cada noche hay un juego o modo diferente para que todos exploren.",
-      "Todos pueden participar, sin importar su nivel.",
-      "Las partidas son informales, pero siempre hay un ambiente competitivo saludable.",
-      "El objetivo es simple: divertirse, conocer gente nueva y fortalecer la comunidad.",
+      "Tocá Unirse antes de que se llene el cupo: tu lugar queda reservado al instante.",
+      "Treinta minutos antes del inicio te llega el link de la sala al Discord de Sura.",
+      "Los resultados se reportan con una captura de pantalla en el canal del evento.",
+      "El premio se acredita en tu billetera dentro de las 48 horas posteriores a la final.",
       "💡 ¡Aporta energía, invita a tus amigos y ven a crear recuerdos con SURA! ¡Al fin y al cabo, es la noche de los gamers!",
     ],
   },

@@ -151,7 +151,7 @@ const PLAYERS: Player[] = [
     return {
       id: name.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
       name,
-      avatarSrc: AVATARS[(index + 3) % AVATARS.length],
+      avatarSrc: `/assets/avatars/avatar-${String(index + 1).padStart(2, "0")}.webp`,
       level: nextPoints > 3000 ? "guerrero" : "novato",
       points: nextPoints,
       medals: 2 + Math.round(random() * 24),

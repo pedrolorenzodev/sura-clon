@@ -10,7 +10,8 @@ import { currentUser } from "@/lib/data/user";
 import { cn } from "@/lib/utils";
 
 export function GameReviews({ game }: { game: GameDetail }) {
-  const [reviews, setReviews] = useState(gameReviews);
+  const [initialReviews] = useState(() => gameReviews(game.id));
+  const [reviews, setReviews] = useState(initialReviews);
   const [draft, setDraft] = useState("");
   const [rating, setRating] = useState<number | null>(null);
   const text = draft.trim();
@@ -44,7 +45,7 @@ export function GameReviews({ game }: { game: GameDetail }) {
       ),
     );
 
-  const count = game.reviewsCount + reviews.length - gameReviews.length;
+  const count = game.reviewsCount + reviews.length - initialReviews.length;
 
   return (
     <section className="flex flex-col gap-5 rounded-lg bg-surface px-4 pb-6 pt-4 desktop:gap-6">

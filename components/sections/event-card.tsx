@@ -7,25 +7,61 @@ import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const SURFACE = {
-  gamepad: "event-surface-gamepad",
-  sunset: "event-surface-sunset",
+  gamepad: { className: "event-surface-gamepad", bright: false },
+  sunset: { className: "event-surface-sunset", bright: true },
+  dota: { className: "event-surface-dota", bright: false },
+  valorant: { className: "event-surface-valorant", bright: false },
+  fortnite: { className: "event-surface-fortnite", bright: false },
+  lol: { className: "event-surface-lol", bright: false },
 } as const;
+
+const RENDER_WINDOW = "inset-0";
 
 // no tocar: el piso va en bottom-px, no bottom-0; con 0 el personaje pisa el borde
 const ART = {
   domino: {
     src: "/assets/home/eventos/char-domino.webp",
-    size: 1024,
+    width: 1024,
+    height: 1024,
     window:
-      "bottom-px left-[46.85%] h-[110.31%] w-[53.15%] desktop:right-0 desktop:left-auto desktop:w-auto desktop:aspect-[193.9975/321.0021]",
+      "overflow-hidden bottom-px left-[46.85%] h-[110.31%] w-[53.15%] desktop:right-0 desktop:left-auto desktop:w-auto desktop:aspect-[193.9975/321.0021]",
     image: "left-[-39.18%] top-[-3.74%] h-[103.74%] w-[172.16%]",
   },
   squad: {
     src: "/assets/home/eventos/char-squad.webp",
-    size: 924,
+    width: 924,
+    height: 924,
     window:
-      "bottom-px left-[11.78%] h-[122.34%] w-[87.95%] rounded-br-lg desktop:right-[0.27%] desktop:left-auto desktop:w-auto desktop:aspect-[321.0175/356.0094] desktop:rounded-br-xl",
+      "overflow-hidden bottom-px left-[11.78%] h-[122.34%] w-[87.95%] rounded-br-lg desktop:right-[0.27%] desktop:left-auto desktop:w-auto desktop:aspect-[321.0175/356.0094] desktop:rounded-br-xl",
     image: "left-[-0.95%] top-[0.06%] h-[100.56%] w-[137.4%]",
+  },
+  juggernaut: {
+    src: "/assets/home/eventos/char-juggernaut.webp",
+    width: 629,
+    height: 760,
+    window: RENDER_WINDOW,
+    image: "-right-[6%] -bottom-[45%] h-[152%] w-auto",
+  },
+  reyna: {
+    src: "/assets/home/eventos/char-reyna.webp",
+    width: 410,
+    height: 760,
+    window: RENDER_WINDOW,
+    image: "right-[2%] -bottom-[45%] h-[152%] w-auto",
+  },
+  omega: {
+    src: "/assets/home/eventos/char-omega.webp",
+    width: 392,
+    height: 760,
+    window: RENDER_WINDOW,
+    image: "right-[3%] -bottom-[43%] h-[150%] w-auto",
+  },
+  yone: {
+    src: "/assets/home/eventos/char-yone.webp",
+    width: 619,
+    height: 760,
+    window: RENDER_WINDOW,
+    image: "-right-[12%] -bottom-[41%] h-[148%] w-auto",
   },
 } as const;
 
@@ -36,7 +72,8 @@ const BADGE_ICON = {
 } as const;
 
 export function EventCard({ event }: { event: EventCardData }) {
-  const isBright = event.surface === "sunset";
+  const surface = SURFACE[event.surface];
+  const isBright = surface.bright;
   const art = ART[event.art];
 
   return (
@@ -47,17 +84,17 @@ export function EventCard({ event }: { event: EventCardData }) {
       <div
         className={cn(
           "absolute inset-0 rounded-lg border border-brand-faint desktop:rounded-xl",
-          SURFACE[event.surface],
+          surface.className,
         )}
       />
 
       <div className="event-art-clip pointer-events-none absolute inset-0">
-        <div className={cn("absolute overflow-hidden", art.window)}>
+        <div className={cn("absolute", art.window)}>
           <Image
             src={art.src}
             alt=""
-            width={art.size}
-            height={art.size}
+            width={art.width}
+            height={art.height}
             className={cn("absolute max-w-none", art.image)}
           />
         </div>

@@ -1101,6 +1101,18 @@
 @utility event-surface-sunset {
   background: url("/assets/home/eventos/card-surface-sunset.webp") center / cover no-repeat border-box;
 }
+@utility event-surface-dota {
+  background: url("/assets/home/eventos/card-surface-dota.webp") center / cover no-repeat border-box;
+}
+@utility event-surface-valorant {
+  background: url("/assets/home/eventos/card-surface-valorant.webp") center / cover no-repeat border-box;
+}
+@utility event-surface-fortnite {
+  background: url("/assets/home/eventos/card-surface-fortnite.webp") center / cover no-repeat border-box;
+}
+@utility event-surface-lol {
+  background: url("/assets/home/eventos/card-surface-lol.webp") center / cover no-repeat border-box;
+}
 
 /* Tres slides por viewport, descontando los dos `gap-6` que los separan.
    Va atada a ese gap: con otro, la fila desborda. */
