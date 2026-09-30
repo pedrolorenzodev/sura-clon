@@ -39,6 +39,9 @@
 | 6 | **La música arranca con el `pointerdown`, no con el `click`** | Es el mismo gesto que desbloquea el audio; con el click, un arrastre o un click cancelado no la arrancarían. Con el chip, el loop que arranca en el `pointerdown` se cancela antes de sonar (todavía no está decodificado) y el `click` pone el tema | Escuchar el `click` |
 | 7 | **La M apaga y prende los dos** (efectos y música): si alguno está prendido, apaga todo; si no, prende todo | Es lo que decía la propuesta para dos botones | Que la M sea sólo el parlante |
 | 8 | **Movimiento reducido: sin intro ni chip, pero con música** | La música no es movimiento; la propuesta sólo excluía la intro | Silenciar también la música |
+| 10 | **El slider del volumen corre en el dominio interno (0 a 0,30) con paso de 0,003, y el porcentaje es sólo visual** | 0,30 / 100 = 0,003, así cada posición del slider es un porcentaje entero. Con el paso de teclado de 0,05 (usuario) los saltos muestran 17, 33, 50, 67, 83 y 100 %: es lo que da 0,05 sobre 0,30 y se deja tal cual | Un paso de teclado de 0,03 (10 %) o 0,045 (15 %), que son un número en `levelStep` si molesta |
+| 11 | **Llevar el slider a 0 apaga la música, y subirlo desde 0 con la música apagada la prende** | Es lo que hacía la demo, y una música "prendida" al 0 % con las barras moviéndose no se entiende | Dejar el nivel y el prendido independientes |
+| 12 | **El popover abre con el mouse encima o con el foco de teclado, y Tab desde el botón entra al slider** | Base UI abre por hover pero no por foco, y sus guardas de foco chocaban con el cierre por `blur`: Tab dejaba el foco en el `<body>`. Tab, Shift+Tab y Escape se manejan a mano en el botón y en el thumb | Confiar en las guardas de Base UI |
 | 9 | **El estado del chip va en un atributo (`data-shown`) y no en una segunda clase** | Tailwind emite `intro-chip-on` antes que `intro-chip` y la base ganaba: el chip se veía pero era `visibility: hidden` y el click caía en la sección. Detalle en notas de implementación | Dos utilities |
 
 ### 2026-09-25 · Sonido e íconos del menú
@@ -805,6 +808,24 @@ limitación conocida.
 
 **Verificado** (build de producción, Chromium): chip a los ~400 ms de la intro en 1440 y 390; click en el chip → `data-intro-run=1`, tema desde 3,064 con rampa de 0,5 s al 0,84, interfaz de vuelta con el golpe, cruce al calmo a los 11,52 s del tema y tema pausado 3 s después; click en cualquier otra parte → intro salteada, chip fuera y loop calmo con 2 s de fundido; toggle de música apaga y prende; M apaga y prende los dos; "Ver todo" → persiana con ducking; mobile: chip toca el audio de la intro y se apaga al arrancar el loop, y ningún click arranca música; movimiento reducido: sin intro ni chip, música con el primer click. `npm run verify` limpio. **No se probó a oído en Safari ni Firefox reales**, igual que el resto del sonido.
 
+**Volumen de la música ✅ implementado · 👀 esperando aprobación (2026-09-30).** Elecciones del usuario sobre la propuesta de abajo: **A** (slider en un popover), tope **0,30**, paso de teclado **0,05**, el valor **se muestra**, y **en la UI va un porcentaje de 0 a 100 %** mientras el código sigue en 0 a 0,30 (la conversión es sólo visual: 0,15 se ve como 50 %).
+
+| | Qué hace |
+|---|---|
+| **Dónde** | `components/layout/music-toggle.tsx`. El botón de música es el trigger de un **Popover** de shadcn (Base UI, `openOnHover`, sin retraso al abrir y 300 ms al cerrar) que también abre con el foco de teclado. El click sigue prendiendo y apagando: el `trigger-press` se ignora en `onOpenChange`, así el popover no se cierra al clickear |
+| **El popover** | Debajo del botón, alineado a la izquierda, a 10 px: el chrome del tooltip (`--color-tooltip`, borde, radio 12, `--shadow-nav`), 208 de ancho. Arriba "Música" y el porcentaje en verde; el **Slider** de shadcn con pista `--color-surface-2`, relleno y thumb en `--color-brand` con el glow de marca en hover y foco; abajo "0 %" y "100 %" |
+| **El nivel** | `musicConfig.levelMax` 0,30, `levelStep` 0,05, `levelRampSeconds` 0,05. Vive en el motor (`setMusicLevel`, `getMusicLevelSnapshot`) y se guarda en `sura-music-level`, sincronizado entre pestañas. Se aplica a la ganancia del carril con `setTargetAtTime`, así no hay saltos. Slider a 0 apaga; subir desde 0 con la música apagada la prende |
+| **Teclado** | Tab desde el botón entra al slider; flechas mueven 0,05; Home y End van a los extremos; Escape vuelve al botón; Tab sale al parlante y Shift+Tab vuelve al botón. `aria-valuetext` dice el porcentaje |
+| **Primitives** | `components/ui/slider.tsx` y `popover.tsx` salen del CLI de shadcn y se re-estilan con los tokens (como el Tooltip): `cn` de `@/lib/utils`, colores nuestros, el popover sólo con fade de 200 ms. El Slider suma la prop `thumbProps` para pasarle `aria-label`, `getAriaValueText` y el `onKeyDown` al thumb |
+
+**Verificado** (build de producción, Chromium, 1440): hover abre y el mouse afuera cierra a los 300 ms; click con el mouse encima apaga y prende sin cerrar; arrastre cambia la ganancia en pasos de 1 %; flechas ±0,05; Home → 0 → apagada, flecha arriba → 0,05 → prendida; el porcentaje y `aria-valuetext` coinciden; recarga con el nivel guardado (17 %). `npm run verify` limpio.
+
+#### La propuesta (2026-09-30)
+
+El usuario preguntó si es complejo dejar que el usuario suba o baje la música (los efectos no: la jerarquía se calibró a mano y un volumen sobre ellos sólo la desbalancea). En el motor son unas 15 líneas (el carril ya tiene su ganancia); el costo es la UI, que el Figma no define, así que fue a una propuesta con demos (regla 20): **[Volumen de la música](https://claude.ai/artifact/VTy1HD5zvhgi6G6sDza6Dh)**, con Hoy y tres formas dentro del botón de música del header: **A** slider en un popover al pasar el mouse o enfocar (recomendada, con Slider y Popover de shadcn), **B** click que recorre baja / media / alta / apagada, **C** flechas con el atajo en el tooltip. Rango propuesto 0 a 0,30 con paso de 0,03. Se descartan un slider fijo en el header, la rueda del mouse sobre el botón, el volumen de los efectos y cualquier control en mobile.
+
+**La música después de recargar** (lo levantó el usuario, 2026-09-30): tocar el chip y navegar con sonido, recargar, y la música no vuelve hasta un click. Medido: al recargar `navigator.userActivation.hasBeenActive` vuelve a `false` y el motor no crea el contexto hasta un gesto nuevo; la preferencia sí quedó prendida (`data-music="on"`, el botón muestra las barras quietas de "esperando tu click"). Es la política de autoplay: la activación es por documento y no sobrevive a la recarga. Lo único que la salta es el *Media Engagement* de Chrome (visitas repetidas con más de 7 s de audio por `<audio>`, que el tema del chip sí acumula), y hoy no se aprovecha porque el motor no intenta arrancar sin gesto. Pendiente de decidir: al cargar con la música prendida, crear el contexto y probar `resume()`; si el navegador lo deja, arrancar el loop calmo solo; si no, quedar armado como hoy.
+
 #### La propuesta (2026-09-28)
 
 El usuario piensa que la intro con sonido sólo tiene sentido si además hay música de fondo, como el launcher del LoL. Se relevaron unos 60 sitios con subagentes (oficiales de juegos, launchers y premiados) y se sumó la música a la misma página de la intro con sonido (regla 20): **[Intro con sonido](https://claude.ai/artifact/REZFZZ3By4Lh3geUyU6qEd)**.
@@ -1189,6 +1210,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-30 | **Volumen de la música**: `levelMax` (0,30), `levelStep` (0,05), `levelRampSeconds`, `levelStorageKey` en `musicConfig`; `setMusicLevel` / `getMusicLevelSnapshot` en `lib/sfx.ts`; primitives `components/ui/slider.tsx` y `popover.tsx` (shadcn sobre Base UI, re-estilados); `music-toggle.tsx` pasa a trigger de un popover con slider | Header | Elecciones del usuario sobre *Volumen de la música* (A, 0,30, 0,05, valor visible, porcentaje sólo visual). Sin tokens nuevos: el popover usa los del tooltip y el slider los de marca y superficie. Detalle en § 5, *Música de fondo*; decisiones en § 0. |
 | 2026-09-30 | **Música de fondo, chip de la intro y paleta LoL**: `--music-bar-duration` / `-min` / `-max`, `--intro-chip-delay` (400ms) / `-hold` (7000ms) / `-fade` (300ms); utilities `music-bars`, `music-bar`, `intro-chip`; variantes `music-on` / `music-off`; `musicConfig` y `musicTracks` en `lib/data/sfx.ts`; `public/assets/sfx/` cambia los 8 sonidos y suma `bgm-yi`, `bgm-yi-calm` e `intro`; `components/layout/music-toggle.tsx`, `components/sections/intro-sound-chip.tsx`; `hero-intro.ts` suma `replayIntroWithSound` y `data-intro-run`; el tecleo baja a 0,07 | Home · Header · Todas las rutas | Elecciones del usuario sobre *Intro con sonido*. Detalle en § 5, *Música de fondo* y *Paleta LoL*; decisiones en § 0. Todo `offDesign`. Las medidas del ícono del toggle (barras de 3 px, alturas 8/14/10/6) viven en CSS como la geometría del parlante vive en su SVG. |
 | 2026-09-28 | **Paleta Arcade en prueba** (salvo Reclamar, que sigue siendo el de Libre), tecleo en los campos de texto, y se borran el odómetro, el on / off y el clic de las medallas obtenidas (`lib/data/sfx.ts`, `sfx-listener.tsx`, `points-value.tsx`, `public/assets/sfx/`) | Todas las rutas | Pedido del usuario. Flechas de carruseles y del hero, chips y paginador pasan de clic a selección. Detalle en § 5, *Paleta mixta con uisfx*. |
 | 2026-09-28 | `--flip-move-duration` (380ms), `--flip-exit-duration` (180ms), `--flip-enter-delay` (120ms), `--flip-enter-stagger` (40ms) | Eventos · Misiones · Leaderboard · Juegos | La animación al filtrar, opción C de *Filtrado SURA*. Todo `offDesign`. Detalle en § 5, *Feedback de Ema*. |
@@ -2044,6 +2066,8 @@ borrarlo deja de parecer limpieza— y el margen de subpíxel del carrusel a la 
 `SUBPIXEL_SLACK`. En Misiones eso además separó las dos cosas que el `-my-5 py-8` mezclaba:
 `lift-room` es aire de pintura y el `py-3` del contenedor es el espaciado real.
 
+**El `Slider` y el `Popover` siguen el criterio del `Tooltip`**: salen del CLI de shadcn, `cn` pasa a `@/lib/utils`, los colores a nuestros tokens, y el popover queda sólo con fade (sin zoom ni slide). El `Slider` suma `thumbProps` porque el primitive de shadcn no expone el thumb, y es ahí donde Base UI pone el `<input>` con `aria-valuetext` y el teclado. Base UI no lee `preventBaseUIHandler` en el thumb: su `onKeyDown` sólo mira `defaultPrevented`, así que alcanza con `preventDefault()` en el nuestro.
+
 **El `Tooltip` se aparta de lo que genera el CLI de shadcn** en cuatro cosas: `cn` sale de
 `@/lib/utils` y no del paquete `cn`, los colores y la geometría pasan a nuestros tokens, no
 lleva flecha (el elemento de referencia no tiene; queda disponible con `arrow`) y la
@@ -2143,7 +2167,7 @@ Más:
 | Juegos (`/games`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 31–34 |
 | Micro-animaciones HUD | ✅ | ✅ | ✅ **Aprobadas el 2026-09-25** — P1 B, P2 C, P3–P9, la tanda 0 y los fixes posteriores |
 | Sonido e íconos del menú | ✅ | ✅ | 👀 Esperando aprobación — bloques 39–41. Propuesta [Sonido SURA](https://claude.ai/artifact/FtyLwp9kX6guF4FCEek39E). Paleta LoL en prueba desde el 30 sep: ver *Paleta LoL*, § 5 |
-| Música de fondo e intro con sonido | ✅ | ✅ | 👀 Esperando aprobación — bloques 54–55. Propuesta [Intro con sonido](https://claude.ai/artifact/REZFZZ3By4Lh3geUyU6qEd): C + M4, tramo calmo, dos botones, 0,15, sin música en mobile |
+| Música de fondo e intro con sonido | ✅ | ✅ | 👀 Esperando aprobación — bloques 54–56. Propuesta [Intro con sonido](https://claude.ai/artifact/REZFZZ3By4Lh3geUyU6qEd): C + M4, tramo calmo, dos botones, 0,15, sin música en mobile |
 | 404 (`not-found`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 35–38. Sin frames: diseño propio (concepto A de [SURA 404](https://claude.ai/artifact/6G4urUtxnPWsrbxDuLCAyW)) |
 
 **Leyenda:** ⏳ Pendiente · 🚧 En progreso · 👀 Esperando aprobación · ✅ Aprobada · 📦 Commiteada · 🚫 Bloqueada
@@ -2211,6 +2235,7 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 53 · Sura News | `/news` · `/news/:id` | — | — **sin frame**: sale de la propuesta del bloque 47 | — **sin frame** | ⏳ Pendiente |
 | 54 · Música de fondo y chip de la intro | Home · Header · Todas las rutas | `lib/sfx.ts`, `lib/data/sfx.ts`, `lib/sfx-boot.ts`, `lib/hero-intro.ts`, `lib/use-intro-phase.ts`, `components/layout/music-toggle.tsx`, `header-desktop.tsx`, `sfx-listener.tsx`, `components/sections/intro-sound-chip.tsx`, `hero.tsx`, `hero-background.tsx` | — **sin frame**: [Intro con sonido](https://claude.ai/artifact/REZFZZ3By4Lh3geUyU6qEd) (C + M4) | — **sin frame**: mismo artifact | 👀 Esperando aprobación |
 | 55 · Paleta LoL | Todas las rutas | `public/assets/sfx/`, `lib/data/sfx.ts` | — **sin frame**: Pieza 4 del mismo artifact | — **sin frame** | 👀 Esperando aprobación. Reemplaza a la paleta Arcade |
+| 56 · Volumen de la música | Header | `components/layout/music-toggle.tsx`, `components/ui/slider.tsx`, `components/ui/popover.tsx`, `lib/sfx.ts`, `lib/data/sfx.ts` | — **sin frame**: [Volumen de la música](https://claude.ai/artifact/VTy1HD5zvhgi6G6sDza6Dh), opción A | — (no hay música en mobile) | 👀 Esperando aprobación |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. El botón de perfil del header ya es su trigger, inerte.
 >

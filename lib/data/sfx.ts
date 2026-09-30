@@ -60,7 +60,11 @@ export type MusicBridge = {
 
 export type MusicConfig = {
   storageKey: string;
+  levelStorageKey: string;
   volume: number;
+  levelMax: number;
+  levelStep: number;
+  levelRampSeconds: number;
   desktopOnly: boolean;
   fadeInSeconds: number;
   fadeOutSeconds: number;
@@ -117,7 +121,11 @@ export const musicTracks: Record<MusicTrack, MusicTrackConfig> = {
 
 export const musicConfig: MusicConfig = {
   storageKey: "sura-music",
+  levelStorageKey: "sura-music-level",
   volume: 0.15,
+  levelMax: 0.3,
+  levelStep: 0.05,
+  levelRampSeconds: 0.05,
   desktopOnly: true,
   fadeInSeconds: 2,
   fadeOutSeconds: 0.8,

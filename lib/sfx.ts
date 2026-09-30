@@ -44,6 +44,7 @@ const streams = new Map<MusicTrack, StreamSource>();
 
 let enabled: boolean | null = null;
 let musicEnabled: boolean | null = null;
+let musicLevel: number | null = null;
 let context: AudioContext | null = null;
 let master: GainNode | null = null;
 let musicBus: { level: GainNode; duck: GainNode } | null = null;
@@ -93,6 +94,24 @@ const reflectMusicPreference = (value: boolean) => {
   document.documentElement.dataset.music = value ? "on" : "off";
 };
 
+const clampLevel = (value: number) =>
+  Math.min(musicConfig.levelMax, Math.max(0, Math.round(value * 1000) / 1000));
+
+const readStoredLevel = () => {
+  try {
+    const stored = Number.parseFloat(localStorage.getItem(musicConfig.levelStorageKey) ?? "");
+    return Number.isFinite(stored) ? clampLevel(stored) : musicConfig.volume;
+  } catch {
+    return musicConfig.volume;
+  }
+};
+
+const storeLevel = (value: number) => {
+  try {
+    localStorage.setItem(musicConfig.levelStorageKey, String(value));
+  } catch {}
+};
+
 export function isSfxEnabled() {
   if (enabled === null) enabled = inBrowser() ? readStoredPreference(sfxConfig.storageKey) : true;
   return enabled;
@@ -103,6 +122,11 @@ export function isMusicEnabled() {
     musicEnabled = inBrowser() ? readStoredPreference(musicConfig.storageKey) : true;
   }
   return musicEnabled;
+}
+
+export function getMusicLevelSnapshot() {
+  if (musicLevel === null) musicLevel = inBrowser() ? readStoredLevel() : musicConfig.volume;
+  return musicLevel;
 }
 
 const anySoundEnabled = () => isSfxEnabled() || isMusicEnabled();
@@ -397,7 +421,7 @@ function ensureMusicBus() {
   if (!context || !master) return null;
   if (!musicBus) {
     const level = context.createGain();
-    level.gain.value = musicConfig.volume;
+    level.gain.value = getMusicLevelSnapshot();
     level.connect(master);
     const duck = context.createGain();
     duck.connect(level);
@@ -639,6 +663,26 @@ export function setMusicEnabled(value: boolean) {
 
 export const toggleMusic = () => setMusicEnabled(!isMusicEnabled());
 
+function applyMusicLevel(value: number) {
+  musicLevel = value;
+  if (context && musicBus) {
+    const param = musicBus.level.gain;
+    param.cancelScheduledValues(context.currentTime);
+    param.setTargetAtTime(value, context.currentTime, musicConfig.levelRampSeconds);
+  }
+}
+
+export function setMusicLevel(requested: number) {
+  if (!inBrowser()) return;
+  const value = clampLevel(requested);
+  if (value === getMusicLevelSnapshot()) return;
+  applyMusicLevel(value);
+  storeLevel(value);
+  emit("music");
+  if (value === 0) setMusicEnabled(false);
+  else if (!isMusicEnabled()) setMusicEnabled(true);
+}
+
 export function toggleAllSound() {
   const next = !anySoundEnabled();
   setSfxEnabled(next);
@@ -659,6 +703,11 @@ function onStorage(event: StorageEvent) {
     reflectMusicPreference(value);
     if (value) startBackgroundMusic();
     else stopMusic();
+    emit("music");
+  } else if (event.key === musicConfig.levelStorageKey) {
+    const value = readStoredLevel();
+    if (value === getMusicLevelSnapshot()) return;
+    applyMusicLevel(value);
     emit("music");
   } else {
     return;
