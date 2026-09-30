@@ -5,7 +5,6 @@ import { Medallas } from "@/components/sections/medallas";
 import { RevealList } from "@/components/sections/reveal-list";
 import { SectionHeader } from "@/components/sections/section-header";
 import { leaderboardRows, podium } from "@/lib/data/leaderboard";
-import { detailHref } from "@/lib/routes";
 
 export function Leaderboard() {
   return (
@@ -27,7 +26,7 @@ export function Leaderboard() {
                 {leaderboardRows.map((entry, index) => (
                   <LeaderboardRow
                     key={entry.id}
-                    href={detailHref("profile", entry.id)}
+                    playerId={entry.id}
                     rank={String(entry.rank).padStart(2, "0")}
                     name={entry.name}
                     levelLabel={entry.levelLabel}

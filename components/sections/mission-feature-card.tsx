@@ -1,9 +1,8 @@
 import Image from "next/image";
 
-import { CardLink } from "@/components/layout/card-link";
 import { CardBrackets } from "@/components/sections/card-brackets";
+import { MissionLink } from "@/components/sections/mission-modal";
 import type { Mission } from "@/lib/data/missions";
-import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 export function MissionFeatureCard({ mission }: { mission: Mission }) {
@@ -11,8 +10,8 @@ export function MissionFeatureCard({ mission }: { mission: Mission }) {
 
   return (
     <li className="flex w-mission-card-mobile shrink-0 desktop:slide-third">
-      <CardLink
-        href={detailHref("missions", mission.id)}
+      <MissionLink
+        mission={mission}
         className={cn(
           "group relative flex aspect-[261.456/245.787] w-full flex-col justify-end gap-3 rounded-xl px-4 pb-6 pt-4 shadow-mission-card ring-1 ring-inset transition-[translate,box-shadow,scale] duration-200 ease-reveal hover:-translate-y-0.5 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:shadow-card-hover active:scale-98 motion-reduce:transition-none desktop:aspect-[399/414] desktop:gap-6 desktop:px-6 desktop:pb-10 desktop:pt-6",
           highlighted
@@ -59,7 +58,7 @@ export function MissionFeatureCard({ mission }: { mission: Mission }) {
           </p>
         </div>
         <CardBrackets />
-      </CardLink>
+      </MissionLink>
     </li>
   );
 }

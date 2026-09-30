@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { ClaimButton } from "@/components/layout/claim-button";
 import { MusicToggle } from "@/components/layout/music-toggle";
@@ -46,8 +47,11 @@ export function HeaderDesktop({ className }: { className?: string }) {
         <Counter iconSrc="/assets/home/fire.png" value={currentUser.streak} />
         <Counter iconSrc="/assets/home/sp-coin.webp" value={<PointsValue />} />
 
-        <button
-          type="button"
+        <Link
+          href="/profile"
+          prefetch={false}
+          aria-label="Ir a mi perfil"
+          data-sfx-hover
           className="group relative flex cursor-pointer items-center gap-3 pr-3 text-left"
         >
           <span
@@ -70,7 +74,7 @@ export function HeaderDesktop({ className }: { className?: string }) {
               </p>
             </div>
           </div>
-        </button>
+        </Link>
       </div>
     </div>
   );

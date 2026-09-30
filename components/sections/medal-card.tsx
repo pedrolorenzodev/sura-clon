@@ -35,7 +35,19 @@ const ART: Record<MedalArt, { src: string; image: string }> = {
 
 const TILT_RESET = { "--tilt-x": 0, "--tilt-y": 0 } as React.CSSProperties;
 
-export function MedalCard({ medal }: { medal: Medal }) {
+export function MedalCard({
+  medal,
+  variant = "section",
+  onClaim,
+  className,
+}: {
+  medal: Medal;
+  variant?: "section" | "modal" | "profile";
+  onClaim?: () => void;
+  className?: string;
+}) {
+  const profile = variant !== "section";
+  const claimable = Boolean(onClaim);
   const art = ART[medal.art];
   const [tilt, setTilt] = useState(TILT_RESET);
 
@@ -53,10 +65,16 @@ export function MedalCard({ medal }: { medal: Medal }) {
       onPointerMove={follow}
       onPointerLeave={() => setTilt(TILT_RESET)}
       style={tilt}
-      data-sfx={medal.locked ? "deny" : undefined}
+      data-sfx={!claimable && medal.locked ? "deny" : undefined}
       className={cn(
-        "group/medal flex flex-col items-center justify-end gap-3 rounded-lg p-2.5",
-        !medal.locked && "bg-background",
+        "group/medal relative flex flex-col items-center justify-end gap-3",
+        profile ? "rounded-2xl p-2.5 desktop:p-4.5" : "rounded-lg p-2.5",
+        variant === "modal" && "bg-surface-2",
+        variant === "profile" && !claimable && "bg-background",
+        claimable &&
+          "bg-medal-claimable ring-2 ring-inset ring-brand-vivid transition-[translate,box-shadow,scale] duration-200 ease-reveal hover:-translate-y-0.5 hover:shadow-card-hover has-focus-visible:-translate-y-0.5 has-focus-visible:shadow-card-hover active:scale-98 motion-reduce:transition-none",
+        !profile && !medal.locked && "bg-background",
+        className,
       )}
     >
       <div className={cn("relative aspect-square w-full", !medal.locked && "transition-transform duration-200 ease-reveal group-hover/medal:medal-tilt motion-reduce:transition-none")}>
@@ -115,14 +133,49 @@ export function MedalCard({ medal }: { medal: Medal }) {
         )}
       </div>
 
-      <p
-        className={cn(
-          "w-full truncate text-center text-2xs",
-          medal.locked ? "text-locked-foreground group-hover/medal:flicker" : "text-foreground",
+      <div className="flex w-full flex-col items-center gap-2">
+        <p
+          className={cn(
+            "w-full text-center",
+            profile
+              ? "line-clamp-2 min-h-6 text-2xs font-semibold desktop:line-clamp-none desktop:min-h-0 desktop:truncate desktop:text-base"
+              : "truncate text-2xs",
+            medal.locked && profile && "text-muted-foreground/90 group-hover/medal:flicker",
+            medal.locked && !profile && "text-locked-foreground group-hover/medal:flicker",
+            !medal.locked && "text-foreground",
+          )}
+        >
+          {medal.label}
+        </p>
+
+        {profile && medal.reward && (
+          <span
+            className={cn(
+              "flex items-center gap-1 rounded-md border px-1 py-0.5 font-techno text-2xs uppercase desktop:text-xs",
+              variant === "modal" ? "border-brand-vivid text-brand-vivid" : "border-brand text-brand",
+              variant === "profile" && medal.locked && "opacity-40",
+            )}
+          >
+            {medal.reward}
+            <Image src="/assets/home/sp-coin.webp" alt="" width={59} height={59} className="size-3" />
+          </span>
         )}
-      >
-        {medal.label}
-      </p>
+      </div>
+
+      {claimable && (
+        <>
+          <span className="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 rounded-sm bg-brand-legacy px-2 py-0.5 text-2xs font-semibold text-background ring-1 ring-inset ring-brand">
+            Reclamar
+          </span>
+          <button
+            type="button"
+            onClick={onClaim}
+            aria-label={`Reclamar la medalla ${medal.label} y sumar ${medal.reward} SP`}
+            data-sfx="claim"
+            className="absolute inset-0 cursor-pointer rounded-2xl outline-none"
+          />
+        </>
+      )}
     </li>
   );
 }

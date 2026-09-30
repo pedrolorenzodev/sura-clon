@@ -1,11 +1,10 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useRef } from "react";
 
 import { useFlipList } from "@/lib/use-flip-list";
+import { useRevealOnView, type RevealState } from "@/lib/use-reveal-on-view";
 import { cn } from "@/lib/utils";
-
-type RevealState = "armed" | "shown" | null;
 
 const RevealContext = createContext<RevealState>(null);
 
@@ -15,41 +14,22 @@ export function RevealList({
   className,
   flipKeys,
   wrapperClassName,
+  listRef,
+  onMount,
   children,
 }: {
   className?: string;
   flipKeys?: string[];
   wrapperClassName?: string;
+  listRef?: React.RefObject<HTMLUListElement | null>;
+  onMount?: boolean;
   children: React.ReactNode;
 }) {
-  const ref = useRef<HTMLUListElement>(null);
+  const ownList = useRef<HTMLUListElement>(null);
+  const ref = listRef ?? ownList;
   const ghosts = useRef<HTMLDivElement>(null);
-  const [state, setState] = useState<RevealState>(null);
+  const state = useRevealOnView(ref, onMount ? "mount" : "view");
   useFlipList(ref, ghosts, flipKeys ?? []);
-
-  useEffect(() => {
-    const list = ref.current;
-    if (!list || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    let decided = false;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!decided) {
-          decided = true;
-          if (entry.isIntersecting) observer.disconnect();
-          else setState("armed");
-          return;
-        }
-        if (entry.isIntersecting) {
-          setState("shown");
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "0px 0px -15% 0px" },
-    );
-    observer.observe(list);
-    return () => observer.disconnect();
-  }, []);
 
   const list = (
     <ul ref={ref} data-reveal={state ?? undefined} className={className}>

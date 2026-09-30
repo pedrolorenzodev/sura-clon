@@ -4,6 +4,14 @@ import { cn } from "@/lib/utils";
 
 type ChipOption = { id: string; label: string };
 
+export const chipClassName = (isCurrent: boolean) =>
+  cn(
+    "wipe flex h-9 cursor-pointer items-center justify-center rounded-pill border-2 px-4 text-sm font-medium transition-[color,border-color,scale] duration-200 [--wipe-fill:var(--color-surface-2)] active:scale-97 motion-reduce:transition-none",
+    isCurrent
+      ? "wipe-on border-muted-foreground text-foreground"
+      : "border-border-dim text-muted-foreground hover:border-border-muted hover:text-foreground focus-visible:border-border-muted focus-visible:text-foreground",
+  );
+
 export function FilterChips({
   items,
   value: selected,
@@ -30,12 +38,7 @@ export function FilterChips({
               onClick={() => onChange(chip.id)}
               aria-pressed={isCurrent}
               data-sfx="select"
-              className={cn(
-                "wipe flex h-9 cursor-pointer items-center justify-center rounded-pill border-2 px-4 text-sm font-medium transition-[color,border-color,scale] duration-200 [--wipe-fill:var(--color-surface-2)] active:scale-97 motion-reduce:transition-none",
-                isCurrent
-                  ? "wipe-on border-muted-foreground text-foreground"
-                  : "border-border-dim text-muted-foreground hover:border-border-muted hover:text-foreground focus-visible:border-border-muted focus-visible:text-foreground",
-              )}
+              className={chipClassName(isCurrent)}
             >
               {chip.label}
             </button>

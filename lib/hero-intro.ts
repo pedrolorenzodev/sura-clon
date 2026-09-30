@@ -23,8 +23,12 @@ if(location.pathname!=="/"||location.hash)return;
 if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
 var c=navigator.connection;if(c&&c.saveData)return;
 d.setAttribute("${INTRO_ATTRIBUTE}","pending");
-setTimeout(function(){if(!d.hasAttribute("${STARTED_ATTRIBUTE}"))d.removeAttribute("${INTRO_ATTRIBUTE}")},${START_DEADLINE_MS});
-setTimeout(function(){if(!d.hasAttribute("${RUN_ATTRIBUTE}"))d.removeAttribute("${INTRO_ATTRIBUTE}")},${FAILSAFE_MS});
+var h=history,z={top:0,behavior:"instant"};h.scrollRestoration="manual";scrollTo(z);
+function t(){if(d.getAttribute("${INTRO_ATTRIBUTE}")==="pending"){if(scrollY)scrollTo(z)}else removeEventListener("scroll",t)}
+addEventListener("scroll",t,{passive:true});
+function e(){d.removeAttribute("${INTRO_ATTRIBUTE}");h.scrollRestoration="auto"}
+setTimeout(function(){if(!d.hasAttribute("${STARTED_ATTRIBUTE}"))e()},${START_DEADLINE_MS});
+setTimeout(function(){if(!d.hasAttribute("${RUN_ATTRIBUTE}"))e()},${FAILSAFE_MS});
 }catch(e){}})();`
   : "";
 
@@ -60,6 +64,7 @@ export function endIntro(skipped = false) {
   if (withSound) settleIntroSound(skipped);
   withSound = false;
   document.documentElement.removeAttribute(INTRO_ATTRIBUTE);
+  history.scrollRestoration = "auto";
 }
 
 export const isIntroWithSound = () => withSound;

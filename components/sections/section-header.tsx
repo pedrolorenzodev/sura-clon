@@ -30,7 +30,7 @@ export function SectionHeader({
   );
 
   return (
-    <header className="flex items-center justify-between">
+    <header className="relative flex items-center justify-between">
       <h2 className="font-techno text-title-sm uppercase text-foreground desktop:text-title">
         <TitleSweep>{title}</TitleSweep>
       </h2>

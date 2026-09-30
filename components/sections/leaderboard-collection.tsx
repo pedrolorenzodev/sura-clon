@@ -24,7 +24,6 @@ import {
   type LeaderboardMetric,
   type LeaderboardRange,
 } from "@/lib/data/leaderboard";
-import { detailHref } from "@/lib/routes";
 import { useSettledValue } from "@/lib/use-settled-value";
 import { useUrlState } from "@/lib/use-url-state";
 
@@ -88,7 +87,11 @@ export function LeaderboardCollection() {
         <StandingsTable
           entries={pageItems}
           iconSrc={iconSrc}
-          empty={<EmptyResults>No encontramos competidores para “{query}”.</EmptyResults>}
+          empty={
+            <EmptyResults onClear={() => setState({ q: "", pagina: "1" })}>
+              No encontramos competidores para “{query}”.
+            </EmptyResults>
+          }
         />
       </div>
 
@@ -111,7 +114,7 @@ export function LeaderboardCollection() {
 
         <ul className="flex flex-col desktop:hidden">
           <LeaderboardRow
-            href={detailHref("profile", me.id)}
+            playerId={me.id}
             rank={me.rank}
             name={me.name}
             levelLabel={`Nivel: ${levels[me.level].label}`}

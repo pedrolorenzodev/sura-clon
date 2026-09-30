@@ -4,6 +4,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { layoutWidth } from "@/lib/css-zoom";
+import { isAppReady } from "@/lib/motion";
+import { useRevealOnView } from "@/lib/use-reveal-on-view";
 import { cn } from "@/lib/utils";
 
 const SUBPIXEL_SLACK = 2;
@@ -14,6 +16,9 @@ export function CardSlider({
   viewportClassName,
   arrowClassName,
   arrowSides = { left: "-left-13.25", right: "-right-13.25" },
+  fade,
+  flush,
+  reveal,
   children,
 }: {
   labels: { prev: string; next: string };
@@ -21,11 +26,16 @@ export function CardSlider({
   viewportClassName: string;
   arrowClassName: string;
   arrowSides?: { left: string; right: string };
+  fade?: boolean;
+  flush?: boolean;
+  reveal?: boolean;
   children: React.ReactNode;
 }) {
   const viewport = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
+  const revealState = useRevealOnView(viewport, reveal ? "load" : "off");
+  const [afterRoute] = useState(isAppReady);
 
   const sync = useCallback(() => {
     const el = viewport.current;
@@ -54,6 +64,10 @@ export function CardSlider({
       <div
         ref={viewport}
         onScroll={sync}
+        data-at-start={atStart || undefined}
+        data-at-end={atEnd || undefined}
+        data-reveal={reveal ? (revealState === "entered" ? "shown" : revealState ?? undefined) : undefined}
+        data-after-route={(reveal && afterRoute && revealState === "shown") || undefined}
         style={
           {
             "--clip-start": atStart ? "0px" : undefined,
@@ -62,7 +76,10 @@ export function CardSlider({
         }
         /* no tocar: -mx-6/px-6 es aire para la sombra del hover y lift-clip es lo que evita que asome la card siguiente */
         className={cn(
-          "lift-clip no-scrollbar -mx-6 flex overflow-x-auto overscroll-x-none overflow-y-hidden px-6",
+          flush ? "lift-clip-flush" : "lift-clip",
+          fade && "slider-fade",
+          reveal && "slides-reveal",
+          "no-scrollbar -mx-6 flex overflow-x-auto overscroll-x-none overflow-y-hidden px-6",
           viewportClassName,
         )}
       >

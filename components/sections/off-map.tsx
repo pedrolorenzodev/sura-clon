@@ -2,10 +2,11 @@
 
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useState, useSyncExternalStore } from "react";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 import { SectionLink } from "@/components/layout/section-link";
+import { useSectionNav } from "@/components/layout/section-nav-context";
 import { CardBrackets } from "@/components/sections/card-brackets";
 import { ScrambleText } from "@/components/sections/scramble-text";
 import { TitleSweep } from "@/components/sections/title-sweep";
@@ -20,7 +21,6 @@ import {
   type SpawnPoint,
   type SpawnPointId,
 } from "@/lib/data/not-found";
-import { isAppReady, prefersReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 type Aim = {
@@ -31,10 +31,6 @@ type Aim = {
   onFocus: () => void;
   onBlur: () => void;
 };
-
-const noSubscription = () => () => {};
-const hasPreviousPage = () => window.history.length > 1;
-const serverHasPreviousPage = () => false;
 
 const readPath = (pathname: string) => {
   try {
@@ -57,7 +53,7 @@ function SpawnLink({ point, className, children, ...props }: {
     );
   }
   return (
-    <Link href={point.href} className={className} {...props}>
+    <Link href={point.href} transitionTypes={["nav-back"]} data-sfx="back" className={className} {...props}>
       {children}
     </Link>
   );
@@ -122,15 +118,13 @@ function MapNode({ point, locked, afterRoute, aim }: {
 
 export function OffMap() {
   const pathname = usePathname();
-  const router = useRouter();
-  const canGoBack = useSyncExternalStore(noSubscription, hasPreviousPage, serverHasPreviousPage);
+  const { goBack, canGoBack } = useSectionNav();
   const [hovered, setHovered] = useState<SpawnPointId | null>(null);
   const [focused, setFocused] = useState<SpawnPointId | null>(null);
   const [aimed, setAimed] = useState(false);
-  const [arrival] = useState(() => isAppReady() && !prefersReducedMotion());
 
   const target = mapPoints.find((point) => point.id === (hovered ?? focused)) ?? homeSpawn;
-  const afterRoute = arrival && !aimed;
+  const afterRoute = !aimed;
 
   const aim = (id: SpawnPointId): Aim => {
     const lock = () => {
@@ -239,7 +233,8 @@ export function OffMap() {
         {canGoBack && (
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={goBack}
+            data-sfx="back"
             className="hidden cursor-pointer items-center gap-1 font-techno text-sm uppercase text-muted-foreground transition-colors duration-200 hover:text-foreground focus-visible:text-foreground motion-reduce:transition-none desktop:inline-flex"
           >
             <ChevronLeft aria-hidden className="size-4" strokeWidth={1.5} />
@@ -259,6 +254,8 @@ export function OffMap() {
               <li key={point.id}>
                 <Link
                   href={point.href}
+                  transitionTypes={["nav-back"]}
+                  data-sfx="back"
                   {...aim(point.id)}
                   className="group/row flex h-11 items-center gap-3 border-b border-border-dim px-3 transition-colors duration-200 hover:bg-white/3 focus-visible:bg-white/3 motion-reduce:transition-none desktop:h-12 desktop:gap-4"
                 >

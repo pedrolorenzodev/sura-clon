@@ -1,4 +1,3 @@
-import { CardLink } from "@/components/layout/card-link";
 import { FlipList } from "@/components/sections/flip-list";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import {
@@ -10,8 +9,8 @@ import {
 import { LevelIcon } from "@/components/sections/level-icon";
 import { ValuePill } from "@/components/sections/value-pill";
 import { PodiumSheen } from "@/components/sections/podium-sheen";
+import { PlayerLink } from "@/components/sections/player-link";
 import { levels, type Standing } from "@/lib/data/leaderboard";
-import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const GRADIENT: Record<PodiumRank, string> = {
@@ -44,9 +43,9 @@ export function StandingsPodium({
 
         return (
           <li key={entry.id} className={cn("flex w-73.25 shrink-0", ORDER[rank], isFirst && "pb-6")}>
-            <CardLink
-              href={detailHref("profile", entry.id)}
-              aria-label={`Ver el perfil de ${entry.name}`}
+            <PlayerLink
+              playerId={entry.id}
+              name={entry.name}
               className={cn(
                 "relative flex w-full items-center gap-6 rounded-lg px-6 ring-1 ring-inset transition-transform duration-200 ease-reveal hover:-translate-y-0.5 focus-visible:-translate-y-0.5 motion-reduce:transition-none",
                 GRADIENT[rank],
@@ -79,7 +78,7 @@ export function StandingsPodium({
                 <ValuePill points={entry.score} iconSrc={iconSrc} variant={style.pill} countUpIndex={0} className="self-start" />
               </div>
               {isFirst && <PodiumSheen />}
-            </CardLink>
+            </PlayerLink>
           </li>
         );
       })}

@@ -8,7 +8,7 @@ export type CurrentUser = {
 };
 
 export const currentUser: CurrentUser = {
-  name: "RocketMan1989",
+  name: "Cerdo_Capitalista",
   avatarSrc: "/assets/home/avatar.png",
   levelLabel: "Nivel: Novato",
   levelBadgeSrc: "/assets/home/level-1.webp",
@@ -26,6 +26,6 @@ export type DailyClaim = {
 export const dailyClaim: DailyClaim = {
   label: "Reclamar",
   reward: 50,
-  gameIconSrc: "/assets/home/cs2-logo.png",
+  gameIconSrc: "/assets/home/claim-chest.webp",
   sparkleSrc: "/assets/home/sparkling.webp",
 };

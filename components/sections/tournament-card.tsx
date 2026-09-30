@@ -5,7 +5,7 @@ import { CardBrackets } from "@/components/sections/card-brackets";
 import type { Tournament } from "@/lib/data/tournaments";
 import { detailHref } from "@/lib/routes";
 
-const BADGE_ICON = {
+export const TOURNAMENT_BADGE_ICON = {
   mode: "/assets/home/eventos/badge-mode.svg",
   format: "/assets/home/eventos/badge-format.svg",
   players: "/assets/home/eventos/badge-players.svg",
@@ -70,7 +70,7 @@ export function TournamentCard({ tournament }: { tournament: Tournament }) {
                 className="bg-badge flex items-center gap-1 rounded-xs border border-subtle-foreground px-1.5 py-1"
               >
                 <Image
-                  src={BADGE_ICON[badge.icon]}
+                  src={TOURNAMENT_BADGE_ICON[badge.icon]}
                   alt=""
                   width={12}
                   height={12}

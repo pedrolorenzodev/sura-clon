@@ -1,8 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { BorderLight } from "@/components/sections/border-light";
 import { ScrambleText } from "@/components/sections/scramble-text";
+import { PROMO_GAME_ID } from "@/lib/data/game-detail";
 import { gamesRoutePromo } from "@/lib/data/games";
+
+const PROMO_HREF = `/games/${PROMO_GAME_ID}`;
 
 export function GamesBanner() {
   return (
@@ -24,12 +28,12 @@ export function GamesBanner() {
       <span aria-hidden className="absolute inset-0 bg-banner-scrim-mobile desktop:bg-banner-scrim" />
       <BorderLight />
 
-      <button
-        type="button"
+      <Link
+        href={PROMO_HREF}
+        prefetch={false}
         aria-hidden
         tabIndex={-1}
-        data-sfx="click"
-        className="absolute inset-0 z-10 cursor-pointer rounded-xl"
+        className="absolute inset-0 z-10 rounded-xl"
       />
 
       <span className="absolute left-0 top-0 z-20 flex items-center rounded-br-md bg-brand-vivid px-3 pb-1.25 pt-2 font-techno text-sm uppercase leading-3.5 text-border-done shadow-sp-badge desktop:hidden">
@@ -61,14 +65,14 @@ export function GamesBanner() {
           </p>
         </div>
 
-        <button
-          type="button"
+        <Link
+          href={PROMO_HREF}
+          prefetch={false}
           data-sfx-hover
-          data-sfx="click"
-          className="pointer-events-auto flex h-13.5 w-full cursor-pointer items-center justify-center rounded-pill border border-brand-vivid bg-banner-cta px-4.5 font-techno text-title-sm uppercase text-sp-foreground wipe shadow-promo-cta transition-[box-shadow,translate] duration-200 hover:wipe-on hover:shadow-promo-cta-hover focus-visible:wipe-on focus-visible:shadow-promo-cta-hover active:translate-y-px motion-reduce:transition-none desktop:h-12 desktop:w-fit desktop:px-8"
+          className="pointer-events-auto flex h-13.5 w-full items-center justify-center rounded-pill border border-brand-vivid bg-banner-cta px-4.5 font-techno text-title-sm uppercase text-sp-foreground wipe shadow-promo-cta transition-[box-shadow,translate] duration-200 hover:wipe-on hover:shadow-promo-cta-hover focus-visible:wipe-on focus-visible:shadow-promo-cta-hover active:translate-y-px motion-reduce:transition-none desktop:h-12 desktop:w-fit desktop:px-8"
         >
           <ScrambleText text={gamesRoutePromo.cta} />
-        </button>
+        </Link>
       </div>
     </div>
   );

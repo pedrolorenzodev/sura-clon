@@ -1,11 +1,9 @@
-type DetailRoute = "tournaments" | "missions" | "games" | "news" | "profile";
+type DetailRoute = "tournaments" | "games" | "news";
 
 const LIVE_DETAIL_ROUTES: Record<DetailRoute, boolean> = {
-  tournaments: false,
-  missions: false,
-  games: false,
-  news: false,
-  profile: false,
+  tournaments: true,
+  games: true,
+  news: true,
 };
 
 export const detailHref = (route: DetailRoute, id: string) =>
