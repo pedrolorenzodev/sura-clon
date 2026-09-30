@@ -688,6 +688,24 @@ Para que entre la flecha, **el nombre del usuario se trunca con `…`** cuando n
 desde el 2026-09-25, con el toggle de sonido al lado, a 390 se corta en el Home ("RocketMan19…") y en las rutas internas ("Rocket…"); a 320, en las rutas internas, desaparece (§ 0). Medido de 320 a 430: nada
 se sale del header y el alto sigue en 56.
 
+### Smooth scroll y scrollbar propia 👀 (2026-09-30)
+
+Pedido del usuario, hecho sin propuesta previa (regla 20) por indicación explícita suya.
+
+| | Qué hace |
+|---|---|
+| **Lenis** | Sólo con ancho ≥ 768 y sin `prefers-reduced-motion` (`SmoothScroll`, montado en el layout raíz). `lerp` 0,18 y `wheelMultiplier` 1: asienta en ~300 ms, rápido y sin inercia larga. Mobile y movimiento reducido usan el scroll nativo. El `ResizeObserver` de `<body>` llama a `resize()`: `<html>` es `h-full`, no crece con el contenido y Lenis se quedaba con un límite viejo |
+| **Lo que no scrollea Lenis** | Cualquier evento dentro de `[role=dialog]`, `[role=menu]`, `[role=listbox]` o `[data-lenis-prevent]`, y con un diálogo abierto. Hoy el modal no bloquea el scroll del fondo (ya pasaba antes de Lenis) y sigue igual |
+| **Anclas del menú** | `goTo` pasa por `scrollToElement` (Lenis) y respeta `scroll-margin-top`; las restauraciones de scroll (atrás, adelante, llegada desde otra ruta) usan `scrollInstant`, que fuerza `resize()` antes de saltar, si no quedaban topadas al límite de la página anterior |
+| **Zoom 768–1099** | `scrollY`, `scrollHeight` y los rects están todos en píxeles visuales; el margen de ancla (layout) se multiplica por el zoom. Verificado a 900 |
+| **Scrollbar propia** | `CustomScrollbar`, fija a la derecha, **de la altura exacta del riel (278) y centrada en el mismo punto** (top 327 a 1440 y 1100; escala con el zoom). Pista fina `--color-border-dim`, thumb `--color-accent`, que se ensancha con hover o arrastre. Se arrastra, y un click en la pista salta ahí. Oculta si la página no scrollea; `aria-hidden` (el teclado sigue con el scroll nativo) |
+| **Horizontal** | No es el espejo exacto del riel (centro a 74 px del borde): en las rutas internas la columna llega a 40 px del borde y la barra tapaba las cards. Queda a **20 px del borde** (`--spacing-scrollbar-inset`). Si se quiere el espejo, es un número |
+| **Mobile** | `scrollbar-width: thin` y `scrollbar-color` en `--color-accent`, bajo 768. Safari iOS ignora `scrollbar-color` y usa su barra overlay |
+
+### Link de volver en los detalles 👀 (2026-09-30)
+
+`DetailBackLink` en `/games/:id`, `/tournaments/:id` y `/news/:id`, en los dos tamaños. Dice "Volver a Eventos", "Volver a Home", etc., según la entrada anterior de la pila de navegación propia (`sura-nav-stack`), que el provider ahora expone como `backPath`. Sin entrada anterior (carga directa) dice "Volver a Home", que es adonde lleva `goBack` en ese caso. Una ruta anterior sin nombre dice "Volver atrás". Va `absolute` en el aire de 160 px sobre el título: no mueve el hero. Texto blanco con `--text-shadow-hero-copy` porque el arte de fondo lo volvía ilegible en gris. El efecto de la pila pasó de `useEffect` a `useLayoutEffect` para que el texto no parpadee con el valor viejo.
+
 ### Sonido ✅ implementado · 👀 esperando aprobación (2026-09-25)
 
 Feedback del equipo (Ema): SFX en hovers, clicks y cambios de página, toggleable y prendido por
@@ -1427,6 +1445,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-30 | **Smooth scroll con Lenis y scrollbar propia**: dependencia `lenis`; `--spacing-scrollbar` (278) y `--spacing-scrollbar-inset` (20); `components/layout/smooth-scroll.tsx`, `custom-scrollbar.tsx`, `lib/smooth-scroll.ts`; `scrollToTopIfHidden` pasa de `lib/css-zoom.ts` a `lib/smooth-scroll.ts`; en mobile (< 768) vuelve la barra nativa, fina y en `--color-accent` | Todas las rutas | Pedido del usuario. Detalle en § 5, *Smooth scroll y scrollbar*. Reemplaza lo de *La barra de scroll de la página se oculta* (2026-09-20) solo en mobile. |
 | 2026-09-30 | **Merge de main en `feat/sfx`**, resolución de los seis conflictos: los chips de filtros de `/games` (bloque 66) pasan de `click` a `select`, como el resto de los chips desde el 2026-09-28; el `+50` de Reclamar usa el `gain` del store de main (bloque 49) sin los ticks del odómetro, borrados el 2026-09-28; las medallas obtenidas siguen mudas, las bloqueadas suenan `deny` y las reclamables suenan por su propio botón; la intro sube al tope al recargar (bloque 69) y el failsafe de 7 s respeta el replay del chip; el listener suma el atrás y adelante del navegador (bloque 70) y la M sigue apagando efectos y música | Todas las rutas | Los bloques 54–56 de esta rama pasan a **74–76** porque main ya usaba esos números. Verificado sobre el build mergeado: intro y chip, primer click, mobile sin música, volumen, recarga al tope, ida y vuelta con el navegador (con ducking), medallas y chips. |
 | 2026-09-30 | **Volumen de la música**: `levelMax` (0,30), `levelStep` (0,05), `levelRampSeconds`, `levelStorageKey` en `musicConfig`; `setMusicLevel` / `getMusicLevelSnapshot` en `lib/sfx.ts`; primitives `components/ui/slider.tsx` y `popover.tsx` (shadcn sobre Base UI, re-estilados); `music-toggle.tsx` pasa a trigger de un popover con slider | Header | Elecciones del usuario sobre *Volumen de la música* (A, 0,30, 0,05, valor visible, porcentaje sólo visual). Sin tokens nuevos: el popover usa los del tooltip y el slider los de marca y superficie. Detalle en § 5, *Música de fondo*; decisiones en § 0. |
 | 2026-09-30 | **Música de fondo, chip de la intro y paleta LoL**: `--music-bar-duration` / `-min` / `-max`, `--intro-chip-delay` (400ms) / `-hold` (7000ms) / `-fade` (300ms); utilities `music-bars`, `music-bar`, `intro-chip`; variantes `music-on` / `music-off`; `musicConfig` y `musicTracks` en `lib/data/sfx.ts`; `public/assets/sfx/` cambia los 8 sonidos y suma `bgm-yi`, `bgm-yi-calm` e `intro`; `components/layout/music-toggle.tsx`, `components/sections/intro-sound-chip.tsx`; `hero-intro.ts` suma `replayIntroWithSound` y `data-intro-run`; el tecleo baja a 0,07 | Home · Header · Todas las rutas | Elecciones del usuario sobre *Intro con sonido*. Detalle en § 5, *Música de fondo* y *Paleta LoL*; decisiones en § 0. Todo `offDesign`. Las medidas del ícono del toggle (barras de 3 px, alturas 8/14/10/6) viven en CSS como la geometría del parlante vive en su SVG. |
@@ -2499,6 +2518,8 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 74 · Música de fondo y chip de la intro | Home · Header · Todas las rutas | `lib/sfx.ts`, `lib/data/sfx.ts`, `lib/sfx-boot.ts`, `lib/hero-intro.ts`, `lib/use-intro-phase.ts`, `components/layout/music-toggle.tsx`, `header-desktop.tsx`, `sfx-listener.tsx`, `components/sections/intro-sound-chip.tsx`, `hero.tsx`, `hero-background.tsx` | — **sin frame**: [Intro con sonido](https://claude.ai/artifact/REZFZZ3By4Lh3geUyU6qEd) (C + M4) | — **sin frame**: mismo artifact | 👀 Esperando aprobación |
 | 75 · Paleta LoL | Todas las rutas | `public/assets/sfx/`, `lib/data/sfx.ts` | — **sin frame**: Pieza 4 del mismo artifact | — **sin frame** | 👀 Esperando aprobación. Reemplaza a la paleta Arcade |
 | 76 · Volumen de la música | Header | `components/layout/music-toggle.tsx`, `components/ui/slider.tsx`, `components/ui/popover.tsx`, `lib/sfx.ts`, `lib/data/sfx.ts` | — **sin frame**: [Volumen de la música](https://claude.ai/artifact/VTy1HD5zvhgi6G6sDza6Dh), opción A | — (no hay música en mobile) | 👀 Esperando aprobación |
+| 77 · Smooth scroll y scrollbar propia | Todas las rutas | `components/layout/smooth-scroll.tsx`, `custom-scrollbar.tsx`, `lib/smooth-scroll.ts`, `app/layout.tsx`, `app/globals.css`, `section-nav-context.tsx` | — **sin frame** | — (mobile: barra nativa estilizada) | 👀 Esperando aprobación |
+| 78 · Link de volver en los detalles | `/games/:id` · `/tournaments/:id` · `/news/:id` | `components/layout/detail-back-link.tsx`, `section-nav-context.tsx`, `lib/data/navigation.ts` | — **sin frame** | — **sin frame** | 👀 Esperando aprobación |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. Desde el 2026-09-28 el botón de perfil del header lleva a `/profile`; si el drawer vuelve, hay que decidir qué abre ese botón.
 >

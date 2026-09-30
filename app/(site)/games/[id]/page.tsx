@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
 
+import { DetailBackLink } from "@/components/layout/detail-back-link";
 import { Header } from "@/components/layout/header";
 import { GameBody } from "@/components/sections/game-body";
 import { DetailHeroArt } from "@/components/sections/detail-hero-art";
@@ -32,7 +33,8 @@ export default async function GameDetailPage({ params }: PageProps<"/games/[id]"
       <ViewTransition enter="route-in" exit="route-out" default="none">
         <main className="flex-1 overflow-x-clip px-route-gutter pb-route-edge pt-header-mobile desktop:px-route-edge desktop:pt-header-desktop">
           <DetailHeroArt art={game.art} />
-          <div className="mx-auto flex w-full max-w-page flex-col">
+          <div className="relative mx-auto flex w-full max-w-page flex-col">
+            <DetailBackLink />
             <GameHero game={game} />
             <GameBody game={game} />
           </div>

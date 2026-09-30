@@ -75,6 +75,7 @@ type SectionNavState = {
   activeId: string | null;
   isHome: boolean;
   canGoBack: boolean;
+  backPath: string | null;
   goTo: (id: string) => void;
   goBack: () => void;
 };
@@ -97,10 +98,11 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
   const restoreScrollRef = useRef<number | null>(null);
   const stackRef = useRef<NavStack>({ entries: [{ path: pathname, y: 0 }], index: 0 });
   const [canGoBack, setCanGoBack] = useState(false);
+  const [backPath, setBackPath] = useState<string | null>(null);
 
   useEffect(markAppReady, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (pathname === firstPathRef.current && !navigatedRef.current) stackRef.current = readNavStack(pathname);
     if (pathname !== firstPathRef.current) navigatedRef.current = true;
     if (pathname !== currentPathRef.current) {
@@ -109,6 +111,7 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
       else pushNavEntry(stackRef.current, pathname);
     }
     setCanGoBack(stackRef.current.index > 0);
+    setBackPath(stackRef.current.entries[stackRef.current.index - 1]?.path ?? null);
   }, [pathname]);
 
   useEffect(() => {
@@ -194,8 +197,8 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
   }, [isHome, select]);
 
   const value = useMemo(
-    () => ({ activeId: isHome ? activeId : null, isHome, canGoBack, goTo, goBack }),
-    [activeId, isHome, canGoBack, goTo, goBack],
+    () => ({ activeId: isHome ? activeId : null, isHome, canGoBack, backPath, goTo, goBack }),
+    [activeId, isHome, canGoBack, backPath, goTo, goBack],
   );
 
   return <SectionNavContext.Provider value={value}>{children}</SectionNavContext.Provider>;

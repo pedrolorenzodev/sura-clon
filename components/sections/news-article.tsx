@@ -1,3 +1,4 @@
+import { DetailBackLink } from "@/components/layout/detail-back-link";
 import { AsidePanel } from "@/components/sections/game-aside";
 import { NewsCardWide } from "@/components/sections/news-card-wide";
 import { NewsCategoryBadge } from "@/components/sections/news-category-badge";
@@ -8,7 +9,8 @@ import { relatedNews, type NewsBlock, type NewsItem } from "@/lib/data/news";
 
 export function NewsArticle({ item }: { item: NewsItem }) {
   return (
-    <div className="mx-auto flex w-full max-w-page flex-col">
+    <div className="relative mx-auto flex w-full max-w-page flex-col">
+      <DetailBackLink />
       <header className="flex flex-col gap-4 pt-40">
         <NewsCategoryBadge category={item.category} />
         <h1 className="font-display text-banner-title-sm uppercase text-foreground desktop:text-game-hero">

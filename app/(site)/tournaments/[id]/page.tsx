@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
 
+import { DetailBackLink } from "@/components/layout/detail-back-link";
 import { Header } from "@/components/layout/header";
 import { DetailHeroArt } from "@/components/sections/detail-hero-art";
 import { TournamentHero } from "@/components/sections/tournament-hero";
@@ -33,7 +34,8 @@ export default async function TournamentDetailPage({ params }: PageProps<"/tourn
       <ViewTransition enter="route-in" exit="route-out" default="none">
         <main className="flex-1 overflow-x-clip px-route-gutter pb-route-edge pt-header-mobile desktop:px-route-edge desktop:pt-header-desktop">
           <DetailHeroArt art={tournament.art} />
-          <div className="mx-auto flex w-full max-w-page flex-col">
+          <div className="relative mx-auto flex w-full max-w-page flex-col">
+            <DetailBackLink />
             <TournamentHero tournament={tournament} />
             <TournamentSponsors />
             <TournamentTabs tournament={tournament} />
