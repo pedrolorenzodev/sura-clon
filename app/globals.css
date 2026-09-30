@@ -655,6 +655,7 @@
   --border-light-size: 180px;
   --border-light-width: 2px;
   --route-shutter-duration: 640ms;
+  --lost-arrival-duration: 1800ms;
   --chrome-fade-duration: 220ms;
   --rail-away-duration: 300ms;
   --route-shutter-slant: 12%;
@@ -1675,7 +1676,171 @@
 }
 
 @utility route-draw-after-route {
-  --route-draw-lead: var(--route-shutter-duration);
+  --route-draw-lead: var(--arrival-lead, var(--route-shutter-duration));
+}
+
+@utility lost-lead {
+  --arrival-lead: var(--lost-arrival-duration);
+}
+
+@utility lost-arrival {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  background: var(--color-surface-deep);
+  animation: lost-arrival var(--lost-arrival-duration) linear both;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, rgb(0 0 0 / 0.45) 0 2px, transparent 2px 4px);
+    animation: lost-static var(--lost-arrival-duration) steps(1, end) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+  }
+}
+
+@utility lost-tear {
+  animation: lost-tear var(--lost-arrival-duration) steps(1, end) both;
+}
+
+@utility lost-hud {
+  animation: lost-hud var(--lost-arrival-duration) steps(1, end) both;
+}
+
+@utility lost-hud-dot {
+  animation: lost-blink calc(var(--lost-arrival-duration) / 2.25) steps(1, end) infinite;
+}
+
+@utility lost-black {
+  animation: lost-black var(--lost-arrival-duration) steps(1, end) both;
+}
+
+@keyframes lost-arrival {
+  0%,
+  78.9% {
+    opacity: 1;
+  }
+  79%,
+  82.9% {
+    opacity: 0;
+  }
+  83%,
+  86.9% {
+    opacity: 0.65;
+  }
+  87%,
+  91.9% {
+    opacity: 0;
+  }
+  92%,
+  95.9% {
+    opacity: 0.3;
+  }
+  96%,
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes lost-static {
+  0% {
+    opacity: 0.55;
+    background-position: 0 0;
+  }
+  20% {
+    opacity: 0.8;
+    background-position: 0 1px;
+  }
+  40% {
+    opacity: 1;
+    background-position: 0 3px;
+  }
+  55% {
+    background-position: 0 0;
+  }
+  68%,
+  100% {
+    opacity: 1;
+    background-position: 0 2px;
+  }
+}
+
+@keyframes lost-tear {
+  0%,
+  20% {
+    opacity: 0;
+    top: 0;
+  }
+  21% {
+    opacity: 1;
+    top: 6%;
+  }
+  30% {
+    top: 30%;
+  }
+  40% {
+    top: -4%;
+  }
+  50% {
+    top: 52%;
+  }
+  60% {
+    top: 18%;
+  }
+  66% {
+    top: 71%;
+  }
+  68%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes lost-hud {
+  0%,
+  12% {
+    opacity: 0;
+  }
+  13%,
+  67.9% {
+    opacity: 1;
+  }
+  68%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes lost-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes lost-black {
+  0%,
+  67.9% {
+    opacity: 0;
+  }
+  68%,
+  78.9% {
+    opacity: 1;
+  }
+  79%,
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes route-draw-y {
@@ -1763,6 +1928,10 @@
 
 @utility title-sweep-after-route {
   animation-delay: var(--route-shutter-duration);
+}
+
+@utility title-sweep-after-lead {
+  animation-delay: var(--arrival-lead, 0ms);
 }
 
 @keyframes title-sweep {

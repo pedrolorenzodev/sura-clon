@@ -15,6 +15,7 @@ export type SpawnPoint = MapPoint & {
 
 export const notFoundCopy = {
   eyebrow: "ERR 404 · Sector sin señal",
+  signalLost: "Sin señal",
   titleLines: ["Fuera del", "mapa"],
   pathLabel: "Ruta",
   body: "La ruta que buscás no existe o se movió. Elegí un punto de reaparición y volvé a la partida.",

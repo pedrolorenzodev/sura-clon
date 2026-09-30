@@ -21,7 +21,6 @@ import {
   type SpawnPoint,
   type SpawnPointId,
 } from "@/lib/data/not-found";
-import { isAppReady, prefersReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 type Aim = {
@@ -123,10 +122,9 @@ export function OffMap() {
   const [hovered, setHovered] = useState<SpawnPointId | null>(null);
   const [focused, setFocused] = useState<SpawnPointId | null>(null);
   const [aimed, setAimed] = useState(false);
-  const [arrival] = useState(() => isAppReady() && !prefersReducedMotion());
 
   const target = mapPoints.find((point) => point.id === (hovered ?? focused)) ?? homeSpawn;
-  const afterRoute = arrival && !aimed;
+  const afterRoute = !aimed;
 
   const aim = (id: SpawnPointId): Aim => {
     const lock = () => {

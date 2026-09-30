@@ -39,7 +39,11 @@ export function TitleSweep({ onArrival, children }: { onArrival?: boolean; child
     <span
       ref={ref}
       onAnimationEnd={() => setPhase("done")}
-      className={cn(phase !== "idle" && phase !== "done" && "title-sweep", phase === "route" && "title-sweep-after-route")}
+      className={cn(
+        phase !== "idle" && phase !== "done" && "title-sweep",
+        phase === "route" && "title-sweep-after-route",
+        phase === "load" && "title-sweep-after-lead",
+      )}
     >
       {children}
     </span>

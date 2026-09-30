@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { layoutWidth } from "@/lib/css-zoom";
-import { isAppReady, prefersReducedMotion, readMs } from "@/lib/motion";
+import { isAppReady, prefersReducedMotion, readMs, readMsOf } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -73,7 +73,7 @@ export function ScrambleText({
     host.addEventListener("pointerenter", run);
     host.addEventListener("focusin", run);
     const mountTimer = decodeOnMount
-      ? window.setTimeout(run, isAppReady() ? readMs("--route-shutter-duration") : 0)
+      ? window.setTimeout(run, isAppReady() ? readMs("--route-shutter-duration") : readMsOf(el, "--arrival-lead"))
       : 0;
     return () => {
       window.clearTimeout(mountTimer);

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 import { isSfxSlot, sfxConfig, type SfxSlot } from "@/lib/data/sfx";
-import { prefersReducedMotion, TRAVERSE_EVENT, type TraverseDetail } from "@/lib/motion";
+import { LOST_EVENT, prefersReducedMotion, TRAVERSE_EVENT, type TraverseDetail } from "@/lib/motion";
 import { attachSfx, playSfx, toggleSfx } from "@/lib/sfx";
 
 const HOVER_SELECTOR = "[data-sfx-hover]";
@@ -89,6 +89,9 @@ function playOnRouteSwap(slot: SfxSlot) {
   routeSwapWait = requestAnimationFrame(check);
 }
 
+// TODO(sfx): poner acá el slot del sonido de la llegada a la 404 cuando exista en lib/data/sfx.ts
+const LOST_SLOT = null as SfxSlot | null;
+
 const playClick = (slot: SfxSlot) => (slot === "route" || slot === "back" ? playOnRouteSwap(slot) : playSfx(slot));
 
 function linkSlot(event: MouseEvent, target: Element): SfxSlot | "silent" | null {
@@ -163,6 +166,10 @@ export function SfxListener() {
       playClick((event as CustomEvent<TraverseDetail>).detail.back ? "back" : "route");
     };
 
+    const onLost = () => {
+      if (LOST_SLOT) playSfx(LOST_SLOT);
+    };
+
     const onKeyDown = (event: KeyboardEvent) => {
       lastKeyAt = performance.now();
       if (event.key !== "m" && event.key !== "M") return;
@@ -178,6 +185,7 @@ export function SfxListener() {
     document.addEventListener("click", onClick, { capture: true });
     document.addEventListener("keydown", onKeyDown);
     window.addEventListener(TRAVERSE_EVENT, onTraverse);
+    window.addEventListener(LOST_EVENT, onLost);
 
     return () => {
       document.removeEventListener("pointermove", onPointerMove, { capture: true });
@@ -187,6 +195,7 @@ export function SfxListener() {
       document.removeEventListener("click", onClick, { capture: true });
       document.removeEventListener("keydown", onKeyDown);
       window.removeEventListener(TRAVERSE_EVENT, onTraverse);
+      window.removeEventListener(LOST_EVENT, onLost);
       detach();
     };
   }, []);
