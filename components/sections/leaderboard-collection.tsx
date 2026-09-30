@@ -13,7 +13,7 @@ import { StandingsPodium } from "@/components/sections/standings-podium";
 import { StandingsRow } from "@/components/sections/standings-row";
 import { StandingsTable } from "@/components/sections/standings-table";
 import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
-import { scrollToTopIfHidden } from "@/lib/css-zoom";
+import { scrollToTopIfHidden } from "@/lib/smooth-scroll";
 import {
   LEADERBOARD_METRIC_ICON,
   STANDINGS_PER_PAGE,

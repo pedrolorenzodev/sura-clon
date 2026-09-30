@@ -19,3 +19,25 @@ export const homeSections: HomeSection[] = [
 export const defaultActiveSectionId = "home";
 
 export const homeSectionIds = homeSections.map((section) => section.id);
+
+const routeLabels: Record<string, string> = {
+  "/": "Home",
+  "/tournaments": "Eventos",
+  "/missions": "Misiones",
+  "/leaderboard": "Leaderboard",
+  "/games": "Juegos",
+  "/news": "Sura News",
+  "/profile": "Mi Perfil",
+};
+
+const detailLabels: Record<string, string> = {
+  tournaments: "Evento",
+  games: "Juego",
+  news: "Noticia",
+};
+
+export function backLabel(path: string | null) {
+  if (!path) return "Volver atrás";
+  const name = routeLabels[path] ?? detailLabels[path.split("/")[1] ?? ""];
+  return name ? `Volver a ${name}` : "Volver atrás";
+}

@@ -318,6 +318,8 @@
 
   --spacing-header-desktop: 106px;
   --spacing-header-mobile: 56px;
+  --spacing-scrollbar: 278px;
+  --spacing-scrollbar-inset: 20px;
 
   --spacing-route-edge: 40px;
   --spacing-route-gutter: 16px;
@@ -2650,10 +2652,23 @@ html:active-view-transition-type(nav-back)::view-transition-image-pair(route-shu
   body::-webkit-scrollbar {
     display: none;
   }
+  /* no tocar sin cambiar DESKTOP_MIN_WIDTH en lib/desktop-zoom.ts */
+  @media (max-width: 767.98px) {
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-accent) transparent;
+    }
+    html::-webkit-scrollbar {
+      display: initial;
+    }
+  }
 
   @media (prefers-reduced-motion: no-preference) {
     html {
       scroll-behavior: smooth;
+    }
+    html.lenis {
+      scroll-behavior: auto;
     }
   }
   body {

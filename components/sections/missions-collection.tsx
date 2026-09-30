@@ -10,7 +10,7 @@ import { missionRewardId } from "@/components/sections/mission-modal";
 import { Pagination } from "@/components/sections/pagination";
 import { RouteTabs } from "@/components/sections/route-tabs";
 import { paginate } from "@/lib/collection";
-import { scrollToTopIfHidden } from "@/lib/css-zoom";
+import { scrollToTopIfHidden } from "@/lib/smooth-scroll";
 import {
   MISSION_FILTER_STATUS,
   MISSIONS_PER_PAGE,

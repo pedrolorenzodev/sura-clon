@@ -16,7 +16,7 @@ import { SearchField } from "@/components/sections/search-field";
 import { StreamText } from "@/components/sections/stream-text";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
-import { scrollToTopIfHidden } from "@/lib/css-zoom";
+import { scrollToTopIfHidden } from "@/lib/smooth-scroll";
 import { MY_PLAYER_ID, levels } from "@/lib/data/leaderboard";
 import {
   ME_AS_PARTICIPANT,

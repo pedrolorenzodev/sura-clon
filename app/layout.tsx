@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
+import { CustomScrollbar } from "@/components/layout/custom-scrollbar";
+import { SmoothScroll } from "@/components/layout/smooth-scroll";
 import { desktopZoomScript } from "@/lib/desktop-zoom";
 import { introBootScript } from "@/lib/hero-intro";
 import { soundBootScript } from "@/lib/sfx-boot";
@@ -60,7 +62,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: soundBootScript }} />
         <script dangerouslySetInnerHTML={{ __html: desktopZoomScript }} />
       </head>
-      <body className="flex min-h-full w-full flex-col">{children}</body>
+      <body className="flex min-h-full w-full flex-col">{children}
+        <SmoothScroll />
+        <CustomScrollbar />
+      </body>
     </html>
   );
 }

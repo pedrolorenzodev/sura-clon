@@ -10,12 +10,6 @@ import { useIntroPhase, useIntroRun, useIntroStarted } from "@/lib/use-intro-pha
 
 type ChipState = "hidden" | "shown" | "gone";
 
-const CHIP_SELECTOR = "[data-intro-chip]";
-const FOCUS_KEYS = new Set(["Tab", "Shift"]);
-
-const isOnChip = (event: Event) =>
-  event.target instanceof Element && event.target.closest(CHIP_SELECTOR) !== null;
-
 export function IntroSoundChip() {
   const phase = useIntroPhase();
   const started = useIntroStarted();
@@ -31,21 +25,11 @@ export function IntroSoundChip() {
   useEffect(() => {
     if (navigator.userActivation?.hasBeenActive) dismissed.current = true;
 
-    const onGesture = (event: Event) => {
-      if (isOnChip(event)) return;
-      if (event instanceof KeyboardEvent && FOCUS_KEYS.has(event.key)) return;
-      dismiss();
-    };
-    const options = { capture: true, passive: true };
-    window.addEventListener("pointerdown", onGesture, options);
-    window.addEventListener("keydown", onGesture, options);
     const unsubscribe = subscribeSfx((event) => {
       if (event !== "play" && !introSoundAllowed()) dismiss();
     });
 
     return () => {
-      window.removeEventListener("pointerdown", onGesture, options);
-      window.removeEventListener("keydown", onGesture, options);
       unsubscribe();
     };
   }, [dismiss]);

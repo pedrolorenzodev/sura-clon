@@ -8,7 +8,7 @@ import { Pagination } from "@/components/sections/pagination";
 import { SearchField } from "@/components/sections/search-field";
 import { TournamentCard } from "@/components/sections/tournament-card";
 import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
-import { scrollToTopIfHidden } from "@/lib/css-zoom";
+import { scrollToTopIfHidden } from "@/lib/smooth-scroll";
 import { TOURNAMENTS_PER_PAGE, tournaments } from "@/lib/data/tournaments";
 import { useSettledValue } from "@/lib/use-settled-value";
 import { useUrlState } from "@/lib/use-url-state";
