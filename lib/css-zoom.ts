@@ -7,11 +7,3 @@ export function cssZoom(element: Element) {
 
 export const layoutWidth = (element: Element) =>
   element.getBoundingClientRect().width / cssZoom(element);
-
-export function scrollToTopIfHidden(element: Element | null) {
-  if (!element) return;
-  const margin = Number.parseFloat(getComputedStyle(element).scrollMarginTop) || 0;
-  if (element.getBoundingClientRect().top / cssZoom(element) < margin) {
-    element.scrollIntoView({ block: "start" });
-  }
-}

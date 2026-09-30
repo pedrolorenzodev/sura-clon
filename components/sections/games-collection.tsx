@@ -9,7 +9,7 @@ import { GameActiveFilters, GameFiltersDesktop, GameFiltersSheet } from "@/compo
 import { Pagination } from "@/components/sections/pagination";
 import { SearchField } from "@/components/sections/search-field";
 import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
-import { scrollToTopIfHidden } from "@/lib/css-zoom";
+import { scrollToTopIfHidden } from "@/lib/smooth-scroll";
 import { GAMES_PER_PAGE, gameFacets, gamesCatalog, type GameFacetId, type GameFacetValues } from "@/lib/data/games";
 import { useSettledValue } from "@/lib/use-settled-value";
 import { useUrlState } from "@/lib/use-url-state";
