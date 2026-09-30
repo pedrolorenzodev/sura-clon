@@ -13,3 +13,10 @@ export const markAppReady = () => {
 };
 
 export const isAppReady = () => appReady;
+
+export const TRAVERSE_EVENT = "sura:traverse";
+
+export type TraverseDetail = { back: boolean };
+
+export const dispatchTraverse = (back: boolean) =>
+  window.dispatchEvent(new CustomEvent<TraverseDetail>(TRAVERSE_EVENT, { detail: { back } }));

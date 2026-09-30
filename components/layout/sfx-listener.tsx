@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 import { isSfxSlot, sfxConfig, type SfxSlot } from "@/lib/data/sfx";
-import { prefersReducedMotion } from "@/lib/motion";
+import { prefersReducedMotion, TRAVERSE_EVENT, type TraverseDetail } from "@/lib/motion";
 import { attachSfx, playSfx, toggleSfx } from "@/lib/sfx";
 
 const HOVER_SELECTOR = "[data-sfx-hover]";
@@ -106,6 +106,8 @@ function linkSlot(event: MouseEvent, target: Element): SfxSlot | "silent" | null
   }
   if (destination.origin !== window.location.origin) return "silent";
   if (destination.pathname === window.location.pathname) return null;
+  const declared = anchor.getAttribute("data-sfx");
+  if (declared === "back" || declared === "route") return declared;
   return destination.pathname === "/" ? "back" : "route";
 }
 
@@ -157,6 +159,10 @@ export function SfxListener() {
       if (slot) playClick(slot);
     };
 
+    const onTraverse = (event: Event) => {
+      playClick((event as CustomEvent<TraverseDetail>).detail.back ? "back" : "route");
+    };
+
     const onKeyDown = (event: KeyboardEvent) => {
       lastKeyAt = performance.now();
       if (event.key !== "m" && event.key !== "M") return;
@@ -171,6 +177,7 @@ export function SfxListener() {
     document.addEventListener("focusin", onFocusIn);
     document.addEventListener("click", onClick, { capture: true });
     document.addEventListener("keydown", onKeyDown);
+    window.addEventListener(TRAVERSE_EVENT, onTraverse);
 
     return () => {
       document.removeEventListener("pointermove", onPointerMove, { capture: true });
@@ -179,7 +186,7 @@ export function SfxListener() {
       document.removeEventListener("focusin", onFocusIn);
       document.removeEventListener("click", onClick, { capture: true });
       document.removeEventListener("keydown", onKeyDown);
-      cancelAnimationFrame(routeSwapWait);
+      window.removeEventListener(TRAVERSE_EVENT, onTraverse);
       detach();
     };
   }, []);

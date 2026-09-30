@@ -1,17 +1,79 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { defaultActiveSectionId, homeSectionIds } from "@/lib/data/navigation";
-import { markAppReady } from "@/lib/motion";
+import { dispatchTraverse, markAppReady } from "@/lib/motion";
 import { useSectionSpy } from "@/lib/use-section-spy";
 
 const HOME_PATH = "/";
+const NAV_STACK_KEY = "sura-nav-stack";
+
+type NavEntry = { path: string; y: number };
+type NavStack = { entries: NavEntry[]; index: number };
+
+const navigationType = () =>
+  (performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined)?.type;
+
+function readNavStack(pathname: string): NavStack {
+  try {
+    const stored = JSON.parse(window.sessionStorage.getItem(NAV_STACK_KEY) ?? "") as NavStack;
+    if (stored.entries[stored.index]?.path === pathname) return stored;
+    if (navigationType() === "back_forward") {
+      const paths = stored.entries.map((entry) => entry.path);
+      const at = paths.lastIndexOf(pathname, stored.index);
+      const found = at !== -1 ? at : paths.indexOf(pathname, stored.index);
+      if (found !== -1) return { ...stored, index: found };
+    } else {
+      pushNavEntry(stored, pathname);
+      return stored;
+    }
+  } catch {}
+  return { entries: [{ path: pathname, y: 0 }], index: 0 };
+}
+
+function writeNavStack(stack: NavStack) {
+  try {
+    window.sessionStorage.setItem(NAV_STACK_KEY, JSON.stringify(stack));
+  } catch {}
+}
+
+function rememberScroll(stack: NavStack) {
+  const current = stack.entries[stack.index];
+  if (current) current.y = window.scrollY;
+  writeNavStack(stack);
+}
+
+function pushNavEntry(stack: NavStack, path: string) {
+  stack.entries = [...stack.entries.slice(0, stack.index + 1), { path, y: 0 }];
+  stack.index = stack.entries.length - 1;
+  writeNavStack(stack);
+}
+
+function traverseNavStack(stack: NavStack, to: string) {
+  const { entries, index } = stack;
+  let back: boolean;
+  if (entries[index - 1]?.path === to) {
+    stack.index = index - 1;
+    back = true;
+  } else if (entries[index + 1]?.path === to) {
+    stack.index = index + 1;
+    back = false;
+  } else {
+    const earlier = entries.slice(0, index).map((entry) => entry.path).lastIndexOf(to);
+    back = earlier !== -1;
+    if (back) stack.index = earlier;
+    else pushNavEntry(stack, to);
+  }
+  writeNavStack(stack);
+  return back;
+}
 
 type SectionNavState = {
   activeId: string | null;
   isHome: boolean;
+  canGoBack: boolean;
   goTo: (id: string) => void;
   goBack: () => void;
 };
@@ -29,44 +91,49 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
   const firstPathRef = useRef(pathname);
   const navigatedRef = useRef(false);
   const currentPathRef = useRef(pathname);
-  const previousPathRef = useRef<string | null>(null);
-  const homeScrollRef = useRef(0);
+  const traversedRef = useRef(false);
+  const ownBackRef = useRef(false);
   const restoreScrollRef = useRef<number | null>(null);
+  const stackRef = useRef<NavStack>({ entries: [{ path: pathname, y: 0 }], index: 0 });
+  const [canGoBack, setCanGoBack] = useState(false);
 
   useEffect(markAppReady, []);
 
   useEffect(() => {
+    if (pathname === firstPathRef.current && !navigatedRef.current) stackRef.current = readNavStack(pathname);
     if (pathname !== firstPathRef.current) navigatedRef.current = true;
     if (pathname !== currentPathRef.current) {
-      previousPathRef.current = currentPathRef.current;
       currentPathRef.current = pathname;
+      if (traversedRef.current) traversedRef.current = false;
+      else pushNavEntry(stackRef.current, pathname);
     }
+    setCanGoBack(stackRef.current.index > 0);
   }, [pathname]);
 
   useEffect(() => {
-    if (!isHome) return;
-    const remember = () => {
-      homeScrollRef.current = window.scrollY;
-    };
+    const remember = () => rememberScroll(stackRef.current);
     document.addEventListener("click", remember, true);
     return () => document.removeEventListener("click", remember, true);
-  }, [isHome]);
+  }, []);
 
   useEffect(() => {
     const onPopState = (event: PopStateEvent) => {
       if (!event.state?.__NA) return;
-      const leavingHome = currentPathRef.current === HOME_PATH;
-      const toHome = window.location.pathname === HOME_PATH;
-      if (leavingHome && !toHome) homeScrollRef.current = window.scrollY;
-      if (leavingHome || !toHome) return;
+      const from = currentPathRef.current;
+      const { pathname: to, search, hash } = window.location;
+      if (to === from) return;
 
       event.stopImmediatePropagation();
-      restoreScrollRef.current = homeScrollRef.current;
+      rememberScroll(stackRef.current);
+      const back = traverseNavStack(stackRef.current, to);
+      traversedRef.current = true;
+      if (!ownBackRef.current) dispatchTraverse(back);
+      ownBackRef.current = false;
+      restoreScrollRef.current = stackRef.current.entries[stackRef.current.index]?.y ?? 0;
       const leftAt = window.scrollY;
-      const { pathname, search, hash } = window.location;
       window.setTimeout(() => {
         window.scrollTo({ top: leftAt, behavior: "instant" });
-        router.replace(pathname + search + hash, { scroll: false, transitionTypes: ["nav-back"] });
+        router.replace(to + search + hash, { scroll: false, transitionTypes: back ? ["nav-back"] : [] });
       });
     };
     window.addEventListener("popstate", onPopState, true);
@@ -74,12 +141,18 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
   }, [router]);
 
   const goBack = useCallback(() => {
-    if (navigatedRef.current && previousPathRef.current !== HOME_PATH) {
-      router.back();
+    const { entries, index } = stackRef.current;
+    if (index === 0) {
+      router.push(HOME_PATH, { scroll: false, transitionTypes: ["nav-back"] });
       return;
     }
-    if (previousPathRef.current === HOME_PATH) restoreScrollRef.current = homeScrollRef.current;
-    router.push(HOME_PATH, { scroll: false, transitionTypes: ["nav-back"] });
+    const freshDocument = !navigatedRef.current && navigationType() === "navigate";
+    if (freshDocument) {
+      router.push(entries[index - 1].path, { scroll: false, transitionTypes: ["nav-back"] });
+      return;
+    }
+    ownBackRef.current = true;
+    router.back();
   }, [router]);
 
   const goTo = useCallback(
@@ -97,10 +170,10 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
 
   useLayoutEffect(() => {
     const top = restoreScrollRef.current;
-    if (!isHome || top === null) return;
+    if (top === null) return;
     restoreScrollRef.current = null;
     window.scrollTo({ top, behavior: "instant" });
-  }, [isHome]);
+  }, [pathname]);
 
   useLayoutEffect(() => {
     const id = pendingRef.current;
@@ -118,8 +191,8 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
   }, [isHome, select]);
 
   const value = useMemo(
-    () => ({ activeId: isHome ? activeId : null, isHome, goTo, goBack }),
-    [activeId, isHome, goTo, goBack],
+    () => ({ activeId: isHome ? activeId : null, isHome, canGoBack, goTo, goBack }),
+    [activeId, isHome, canGoBack, goTo, goBack],
   );
 
   return <SectionNavContext.Provider value={value}>{children}</SectionNavContext.Provider>;
