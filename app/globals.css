@@ -2024,6 +2024,8 @@ html:active-view-transition-type(nav-back)::view-transition-image-pair(route-shu
    ============================================================ */
 @custom-variant sound-on (&:where(:root:not([data-sound="off"]) *));
 @custom-variant sound-off (&:where([data-sound="off"] *));
+@custom-variant music-on (&:where(:root:not([data-music="off"]) *));
+@custom-variant music-off (&:where([data-music="off"] *));
 
 :root {
   --sound-morph-duration: 220ms;
@@ -2033,6 +2035,81 @@ html:active-view-transition-type(nav-back)::view-transition-image-pair(route-shu
   --sound-live-stagger: 50ms;
   --sound-wave-off-scale: 0.3;
   --sound-live-dim: 0.25;
+  --music-bar-duration: 900ms;
+  --music-bar-min: 3px;
+  --music-bar-max: 15px;
+  --intro-chip-delay: 400ms;
+  --intro-chip-hold: 7000ms;
+  --intro-chip-fade: 300ms;
+}
+
+@utility music-bars {
+  & > :nth-child(1) {
+    --music-bar-rest: 8px;
+  }
+  & > :nth-child(2) {
+    --music-bar-rest: 14px;
+    --music-bar-lag: -300ms;
+  }
+  & > :nth-child(3) {
+    --music-bar-rest: 10px;
+    --music-bar-lag: -550ms;
+  }
+  & > :nth-child(4) {
+    --music-bar-rest: 6px;
+    --music-bar-lag: -150ms;
+  }
+}
+
+@utility music-bar {
+  width: 3px;
+  height: var(--music-bar-min);
+  border-radius: 1px;
+  background: currentColor;
+  transition: height 250ms var(--ease-reveal);
+
+  :root:not([data-music="off"]) & {
+    height: var(--music-bar-rest);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not([data-music="off"]) [data-playing] & {
+      animation: music-bar var(--music-bar-duration) ease-in-out var(--music-bar-lag, 0ms) infinite alternate;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@keyframes music-bar {
+  from {
+    height: var(--music-bar-min);
+  }
+  to {
+    height: var(--music-bar-max);
+  }
+}
+
+@utility intro-chip {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--intro-chip-fade) var(--ease-reveal),
+    visibility 0s linear var(--intro-chip-fade);
+
+  &[data-shown] {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+    animation: flicker var(--flicker-duration) linear both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    animation: none;
+  }
 }
 
 @utility sound-wave {

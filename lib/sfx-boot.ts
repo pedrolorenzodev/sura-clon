@@ -1,5 +1,7 @@
-import { sfxConfig } from "@/lib/data/sfx";
+import { musicConfig, sfxConfig } from "@/lib/data/sfx";
 
 export const soundBootScript = `(function(){try{
-document.documentElement.setAttribute("data-sound",localStorage.getItem("${sfxConfig.storageKey}")==="off"?"off":"on");
+var d=document.documentElement;
+d.setAttribute("data-sound",localStorage.getItem("${sfxConfig.storageKey}")==="off"?"off":"on");
+d.setAttribute("data-music",localStorage.getItem("${musicConfig.storageKey}")==="off"?"off":"on");
 }catch(e){}})();`;

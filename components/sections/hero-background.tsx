@@ -4,16 +4,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useHeroSlide } from "@/components/sections/hero-slide-context";
 import { hero, type HeroLoop, type HeroLoopSource, type HeroLoopVariant } from "@/lib/data/hero";
-import { endIntro, markIntroStarted, readIntroPhase, revealIntro } from "@/lib/hero-intro";
+import { endIntro, isIntroWithSound, markIntroStarted, readIntroPhase, revealIntro } from "@/lib/hero-intro";
 import { subscribeSlideRequests, warmSlide } from "@/lib/hero-preload";
-import { useIntroPhase } from "@/lib/use-intro-phase";
+import { playIntroSound } from "@/lib/sfx";
+import { useIntroPhase, useIntroRun } from "@/lib/use-intro-phase";
 import { cn } from "@/lib/utils";
 
 type NetworkInformation = { saveData?: boolean };
 type Breakpoint = "mobile" | "desktop" | "desktopHiDpi";
 
 const INTRO_START_TIMEOUT_MS = 1500;
+const INTRO_STALL_GRACE_MS = 1500;
 const SWAP_WAIT_MS = 300;
+const INTRO_CHIP_SELECTOR = "[data-intro-chip]";
 const HI_DPI_MIN_DEVICE_WIDTH = 2200;
 const SKIP_EVENTS = ["pointerdown", "keydown", "wheel", "touchstart"] as const;
 
@@ -73,10 +76,12 @@ function useLoopBreakpoint(eager: boolean, hasHiDpi: boolean) {
 function LoopVideo({
   sources,
   hold,
+  rewind,
   className,
 }: {
   sources: HeroLoopSource[];
   hold: boolean;
+  rewind: boolean;
   className?: string;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -87,6 +92,7 @@ function LoopVideo({
     if (!video) return;
     if (hold) {
       video.pause();
+      if (rewind) video.currentTime = 0;
       return;
     }
 
@@ -98,7 +104,7 @@ function LoopVideo({
     observer.observe(video);
 
     return () => observer.disconnect();
-  }, [hold]);
+  }, [hold, rewind]);
 
   return (
     <video
@@ -141,33 +147,44 @@ function IntroVideo({
     if (!video) return;
 
     let revealTimer: number | undefined;
-    const startTimer = window.setTimeout(endIntro, INTRO_START_TIMEOUT_MS);
+    let stallTimer: number | undefined;
+    const finish = () => endIntro();
+    const startTimer = window.setTimeout(finish, INTRO_START_TIMEOUT_MS);
     const onPlaying = () => {
       window.clearTimeout(startTimer);
       if (readIntroPhase() !== "pending") return;
       markIntroStarted();
       setVisible(true);
       onStarted();
+      if (isIntroWithSound()) playIntroSound(video.currentTime);
       revealTimer = window.setTimeout(
         revealIntro,
         Math.max(0, (revealAt - video.currentTime) * 1000),
       );
+      if (Number.isFinite(video.duration)) {
+        stallTimer = window.setTimeout(
+          finish,
+          Math.max(0, (video.duration - video.currentTime) * 1000) + INTRO_STALL_GRACE_MS,
+        );
+      }
     };
-    const skip = () => {
-      if (readIntroPhase() === "pending") endIntro();
+    const skip = (event: Event) => {
+      if (event.target instanceof Element && event.target.closest(INTRO_CHIP_SELECTOR)) return;
+      if (readIntroPhase() === "pending") endIntro(true);
     };
 
     video.muted = true;
     video.addEventListener("playing", onPlaying, { once: true });
-    video.addEventListener("ended", endIntro);
+    video.addEventListener("ended", finish);
     for (const type of SKIP_EVENTS) window.addEventListener(type, skip, { passive: true });
-    video.play().catch(endIntro);
+    video.play().catch(finish);
 
     return () => {
       window.clearTimeout(startTimer);
       window.clearTimeout(revealTimer);
+      window.clearTimeout(stallTimer);
       video.removeEventListener("playing", onPlaying);
-      video.removeEventListener("ended", endIntro);
+      video.removeEventListener("ended", finish);
       for (const type of SKIP_EVENTS) window.removeEventListener(type, skip);
     };
   }, [revealAt, onStarted]);
@@ -194,6 +211,7 @@ function IntroVideo({
 
 function HeroLoopArt({ loop, active, videoAllowed }: { loop: HeroLoop; active: boolean; videoAllowed: boolean }) {
   const introPhase = useIntroPhase();
+  const introRun = useIntroRun();
   const introActive = Boolean(loop.intro) && introPhase !== null;
   const breakpoint = useLoopBreakpoint(introActive, Boolean(loop.desktopHiDpi));
   const variant =
@@ -243,12 +261,13 @@ function HeroLoopArt({ loop, active, videoAllowed }: { loop: HeroLoop; active: b
           key={`loop-${breakpoint}`}
           sources={variant.sources}
           hold={introActive || !active}
+          rewind={introActive}
           className={videoFit}
         />
       )}
       {introSources && introActive && loop.intro && (
         <IntroVideo
-          key={`intro-${breakpoint}`}
+          key={`intro-${breakpoint}-${introRun}`}
           sources={introSources}
           revealAt={loop.intro.revealAt}
           onStarted={markIntroStarted}

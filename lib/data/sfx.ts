@@ -42,15 +42,50 @@ export type SfxConfig = {
   routeSwapWaitMs: number;
 };
 
+export const musicTrackNames = ["theme", "calm", "intro"] as const;
+
+export type MusicTrack = (typeof musicTrackNames)[number];
+
+export type MusicTrackConfig =
+  | { file: string; kind: "stream" }
+  | { file: string; kind: "buffer"; loop: boolean };
+
+export type MusicBridge = {
+  from: MusicTrack;
+  at: number;
+  into: MusicTrack;
+  offset: number;
+  fadeSeconds: number;
+};
+
+export type MusicConfig = {
+  storageKey: string;
+  volume: number;
+  desktopOnly: boolean;
+  fadeInSeconds: number;
+  fadeOutSeconds: number;
+  themeIntroOffset: number;
+  themeLeadGain: number;
+  bridge: MusicBridge;
+  introTrack: { desktop: MusicTrack; mobile: MusicTrack };
+  introFadeInSeconds: number;
+  introEndFadeSeconds: number;
+  introSkipFadeSeconds: number;
+  duckGain: number;
+  duckAttackSeconds: number;
+  duckReleaseSeconds: number;
+  duckHoldMs: number;
+};
+
 export const sfxSlots: Record<SfxSlot, SfxSlotConfig> = {
   hover: { volume: 0.12, lane: "hover", jitter: 0.04 },
   click: { volume: 0.15, lane: "ui", jitter: 0.03 },
   select: { volume: 0.2, lane: "ui", jitter: 0.02 },
-  deny: { volume: 0.10, lane: "ui", jitter: 0.02 },
+  deny: { volume: 0.1, lane: "ui", jitter: 0.02 },
   route: { volume: 0.25, lane: "route", jitter: 0 },
   back: { volume: 0.26, lane: "route", jitter: 0 },
   claim: { volume: 0.24, lane: "reward", jitter: 0 },
-  type: { volume: 0.2, lane: "type", jitter: 0.05 },
+  type: { volume: 0.07, lane: "type", jitter: 0.05 },
 };
 
 export const sfxConfig: SfxConfig = {
@@ -72,6 +107,31 @@ export const sfxConfig: SfxConfig = {
   keepAliveIdleMs: 300000,
   softHoverGain: 0.6,
   routeSwapWaitMs: 5000,
+};
+
+export const musicTracks: Record<MusicTrack, MusicTrackConfig> = {
+  theme: { file: "bgm-yi", kind: "stream" },
+  calm: { file: "bgm-yi-calm", kind: "buffer", loop: true },
+  intro: { file: "intro", kind: "buffer", loop: false },
+};
+
+export const musicConfig: MusicConfig = {
+  storageKey: "sura-music",
+  volume: 0.15,
+  desktopOnly: true,
+  fadeInSeconds: 2,
+  fadeOutSeconds: 0.8,
+  themeIntroOffset: 3.064,
+  themeLeadGain: 0.84,
+  bridge: { from: "theme", at: 11.52, into: "calm", offset: 10.11, fadeSeconds: 3 },
+  introTrack: { desktop: "theme", mobile: "intro" },
+  introFadeInSeconds: 0.5,
+  introEndFadeSeconds: 1,
+  introSkipFadeSeconds: 0.2,
+  duckGain: 0.4,
+  duckAttackSeconds: 0.05,
+  duckReleaseSeconds: 0.1,
+  duckHoldMs: 640,
 };
 
 export const isSfxSlot = (value: string | null): value is SfxSlot =>

@@ -1,6 +1,7 @@
 import { HeroBackground } from "@/components/sections/hero-background";
 import { HeroContent } from "@/components/sections/hero-content";
 import { HeroSlideProvider } from "@/components/sections/hero-slide-context";
+import { IntroSoundChip } from "@/components/sections/intro-sound-chip";
 
 export function Hero() {
   return (
@@ -12,6 +13,7 @@ export function Hero() {
       <HeroSlideProvider>
         <HeroBackground />
         <HeroContent />
+        <IntroSoundChip />
       </HeroSlideProvider>
     </section>
   );

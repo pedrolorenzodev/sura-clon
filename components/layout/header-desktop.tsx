@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { ClaimButton } from "@/components/layout/claim-button";
+import { MusicToggle } from "@/components/layout/music-toggle";
 import { PointsValue } from "@/components/layout/points-value";
 import { SectionLink } from "@/components/layout/section-link";
 import { SoundToggle } from "@/components/layout/sound-toggle";
@@ -38,6 +39,7 @@ export function HeaderDesktop({ className }: { className?: string }) {
 
       <div className="flex items-center gap-3 rounded-xl bg-surface p-2">
 
+        <MusicToggle />
         <SoundToggle />
         <ClaimButton />
 

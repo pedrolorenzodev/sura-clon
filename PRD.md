@@ -25,6 +25,22 @@
 
 ## 0. Decisiones tomadas sin consulta
 
+### 2026-09-30 · Música de fondo, chip de la intro y paleta LoL
+
+> Implementación de lo elegido en [Intro con sonido](https://claude.ai/artifact/REZFZZ3By4Lh3geUyU6qEd) (usuario, 2026-09-30): intro **C** con el chip 1 s más que la demo, música **M4**, pista **yi-calm** conectada a la intro, **dos botones**, fondo **0,15**, **sin música en mobile**, y la Pieza 4 con Hover 1 · Clic 1 · Selección 3 · Tecleo 1 (más bajo) · Ida 1 · Vuelta 1 · Reclamar 1 · Bloqueado 1. Lo que hubo que resolver solo:
+
+| # | Qué se eligió | Por qué | Qué se descartó |
+|---|---|---|---|
+| 1 | **En mobile el chip sí existe y toca el audio corto de la intro** (`intro.webm`, 38 KB, 3,8 s), que se apaga en 1 s al arrancar el loop | Es la C que eligió el usuario para los dos tamaños; "sin música en mobile" es la música de fondo, no la intro. El tema entero pesa 2,2 MB y se necesitan 3,8 s | Bajar el tema en mobile, o no mostrar el chip en mobile |
+| 2 | **El chip aparece si está prendida la música (desktop) o el sonido (mobile)** | Lo que suena al tocarlo es el tema por el carril de la música; en mobile no hay botón de música y manda el parlante | Pedir los dos toggles prendidos |
+| 3 | **Tecleo a 0,07** (−9 dB respecto de la demo, que estaba nivelada al 0,2) | El usuario lo pidió "mucho más bajo, más sutil" sin dar el número | 0,1, que sigue sonando a tecla de máquina |
+| 4 | **Cualquier click o tecla saca el chip**, salvo Tab y Shift | Es lo que hace la demo M4: el primer gesto ya arrancó la música y el chip queda de más. Tab y Shift se exceptúan para que el chip se pueda alcanzar con teclado | Dejarlo hasta los 7 s siempre |
+| 5 | **Si el usuario saltea la intro con sonido en desktop, el tema no se corta**: sigue y cruza al tramo calmo igual | Es la música de fondo, no el sonido de la intro; cortarla dejaría un silencio y otro arranque | Fundir y volver a arrancar el loop |
+| 6 | **La música arranca con el `pointerdown`, no con el `click`** | Es el mismo gesto que desbloquea el audio; con el click, un arrastre o un click cancelado no la arrancarían. Con el chip, el loop que arranca en el `pointerdown` se cancela antes de sonar (todavía no está decodificado) y el `click` pone el tema | Escuchar el `click` |
+| 7 | **La M apaga y prende los dos** (efectos y música): si alguno está prendido, apaga todo; si no, prende todo | Es lo que decía la propuesta para dos botones | Que la M sea sólo el parlante |
+| 8 | **Movimiento reducido: sin intro ni chip, pero con música** | La música no es movimiento; la propuesta sólo excluía la intro | Silenciar también la música |
+| 9 | **El estado del chip va en un atributo (`data-shown`) y no en una segunda clase** | Tailwind emite `intro-chip-on` antes que `intro-chip` y la base ganaba: el chip se veía pero era `visibility: hidden` y el click caía en la sección. Detalle en notas de implementación | Dos utilities |
+
 ### 2026-09-25 · Sonido e íconos del menú
 
 > Corrida autónoma de la implementación del sonido y de los íconos animados, con el usuario
@@ -691,7 +707,7 @@ preferencia se guarda y no hay Howler.
 | Vuelta al Home | Links al Home desde una ruta interna, flecha de volver | 0,26 (0,55 hasta el 2026-09-26) |
 | Reclamar | El botón | 0,24 — lo más fuerte (0,8 y después 0,42 hasta el 2026-09-26) |
 | Bloqueado | Click en una medalla bloqueada | 0,1 (0,5 hasta el 2026-09-28) |
-| Tecleo | Cada tecla que escribe o borra en un campo de texto (los buscadores de las rutas). No suenan las flechas, Enter, los atajos con Cmd / Ctrl ni la tecla sostenida | 0,2 |
+| Tecleo | Cada tecla que escribe o borra en un campo de texto (los buscadores de las rutas). No suenan las flechas, Enter, los atajos con Cmd / Ctrl ni la tecla sostenida | 0,07 (0,2 hasta el 2026-09-30) |
 
 **Mudos a propósito:** el hover de chips y footer (son filas de links chicos, y ahí el hover se
 vuelve ráfaga), el scroll-spy, los barridos de títulos, la intro, los conteos al scrollear, el botón
@@ -728,6 +744,8 @@ desktop, último en el mobile. El ícono es el parlante de Lucide dibujado inlin
 ondas se retraen y se dibuja una cruz; con cada sonido que sale, las ondas titilan una vez. El
 estado vive en `localStorage` (`sura-sound`) y un script en el `<head>` lo pone en
 `<html data-sound>` antes de pintar, así no hay parpadeo del ícono. Se sincroniza entre pestañas.
+**Desde el 2026-09-30 el parlante es sólo de los efectos**: la música tiene su propio botón a su izquierda
+(ver *Música de fondo*), y la M apaga y prende los dos.
 
 **Antes del primer click no suena nada, y no tiene arreglo.** Los navegadores no dejan sonar audio
 hasta un `pointerdown` o una tecla. Hover, movimiento del mouse y focus no cuentan; en Chrome la
@@ -772,7 +790,22 @@ reciben es casi silencio, y a -80 dBFS la señal no llega a despertarlos (el có
 puede descartar por inaudible). Subirla hasta que los despierte la volvería audible. Queda como
 limitación conocida.
 
-### Música de fondo 👀 propuesta, esperando elección (2026-09-28)
+### Música de fondo ✅ implementada · 👀 esperando aprobación (2026-09-30)
+
+**Cómo quedó** (elecciones del usuario del 2026-09-30 sobre [Intro con sonido](https://claude.ai/artifact/REZFZZ3By4Lh3geUyU6qEd); lo resuelto sin consulta está en § 0):
+
+| | Qué hace |
+|---|---|
+| **Intro C, "La intro te invita"** | La intro arranca muda y sola como siempre. A los 400 ms (`--intro-chip-delay`) aparece el chip **"Escuchar la intro"** (`components/sections/intro-sound-chip.tsx`): arriba a la derecha, debajo del header, con el parpadeo de encendido de las medallas. Tocarlo reinicia la intro desde el principio con sonido (`replayIntroWithSound`, `data-intro-run` sube y el video se vuelve a montar; el loop vuelve a su frame 0 mientras tanto). Si no se toca, se va **7 s** después de que arranca el loop (`--intro-chip-hold`, 1 s más que la demo, pedido del usuario), o con el primer click o tecla en cualquier otra parte. No aparece con el sonido apagado ni si ya hubo un gesto antes de que hidrate |
+| **M4, la música sigue** | En desktop el chip toca **el tema de PROJECT: Yi desde el segundo 3,064** al 0,84 (−1,5 dB) y a los **11,52 s** del tema cruza en 3 s al loop calmo (`bgm-yi-calm`) en su segundo **10,11**, que queda en loop. Si el primer gesto es cualquier otro click o tecla, el loop calmo arranca solo con un fundido de 2 s. En mobile el chip toca el audio corto de la intro y se apaga en 1 s al arrancar el loop; **no hay música de fondo en mobile** (`desktopOnly`, el corte es el de `DESKTOP_MIN_WIDTH`; al cruzarlo la música arranca o se va) |
+| **Dos botones** | El botón de música (`components/layout/music-toggle.tsx`, cuatro barras) va a la izquierda del parlante en el header desktop: barras quietas = prendida esperando el primer click, barras que se mueven = sonando, planas = apagada. Guarda su preferencia (`sura-music`, `<html data-music>` desde el `<head>`) y se sincroniza entre pestañas. El parlante queda para los efectos. **La M apaga y prende los dos** |
+| **Volumen** | Carril propio en el motor: `musicConfig.volume` **0,15** → ducking → volumen maestro. **La persiana baja la música 8 dB** (`duckGain` 0,4) durante los 640 ms del panel y la devuelve en 100 ms: lo dispara el propio sonido de ida o vuelta |
+| **Pausas** | Con la pestaña oculta se suspende el contexto y se pausa el tema (si no, el elemento seguía avanzando en silencio). Con `Save-Data` no se baja nada. El tema es un `<audio>` por `createMediaElementSource` (188 s, va en streaming); el loop calmo y el audio de la intro se decodifican en memoria, así el loop no tiene hueco |
+| **Peso** | `bgm-yi` 2,2 MB (Opus) / 3 MB (AAC), `bgm-yi-calm` 567 / 763 KB, `intro` 38 / 56 KB. Se bajan recién cuando van a sonar, nunca en la carga |
+
+**Verificado** (build de producción, Chromium): chip a los ~400 ms de la intro en 1440 y 390; click en el chip → `data-intro-run=1`, tema desde 3,064 con rampa de 0,5 s al 0,84, interfaz de vuelta con el golpe, cruce al calmo a los 11,52 s del tema y tema pausado 3 s después; click en cualquier otra parte → intro salteada, chip fuera y loop calmo con 2 s de fundido; toggle de música apaga y prende; M apaga y prende los dos; "Ver todo" → persiana con ducking; mobile: chip toca el audio de la intro y se apaga al arrancar el loop, y ningún click arranca música; movimiento reducido: sin intro ni chip, música con el primer click. `npm run verify` limpio. **No se probó a oído en Safari ni Firefox reales**, igual que el resto del sonido.
+
+#### La propuesta (2026-09-28)
 
 El usuario piensa que la intro con sonido sólo tiene sentido si además hay música de fondo, como el launcher del LoL. Se relevaron unos 60 sitios con subagentes (oficiales de juegos, launchers y premiados) y se sumó la música a la misma página de la intro con sonido (regla 20): **[Intro con sonido](https://claude.ai/artifact/REZFZZ3By4Lh3geUyU6qEd)**.
 
@@ -783,7 +816,24 @@ El usuario piensa que la intro con sonido sólo tiene sentido si además hay mú
 - **La intro conectada al tramo calmo** (pedido del usuario, 2026-09-28): la intro no se corta. El tema sigue como en el original y en el segundo **11,52** se cruza en 3 s al loop calmo en su segundo **10,11**, y **todo suena al nivel del tramo calmo**, también los golpes de la intro (usuario, 2026-09-28): la intro ya no va reforzada sobre la música y el tema de Yi suena 1,5 dB más bajo. Medido sin refuerzo, los golpes dan −14,5 LUFS, lo que sigue −19,3 y el tramo calmo −16 de promedio (entre −12 y −23 en ventanas de 3 s), así que con esos 1,5 dB la intro queda en el promedio del tramo y el cruce empata sin tocar el loop. El punto se eligió comparando todos los pares posibles entre los segundos 8 y 24 del tema y el loop, por armonía (cromagrama), timbre (24 bandas) y volumen: da 0,83 de armonía contra 0,57 de mediana y queda arriba del percentil 99. Renderizado, no hay salto de volumen ni silencio.
 - La pista del video fuente (`~/Desktop/hero-yi-original-1280/fuente-yi-1280x800.mp4`) trae el tema entero, 188 s en estéreo. La intro arranca en el segundo 3,064 del tema, así que la intro con sonido y la música pueden ser la misma pieza sin corte.
 
-### Paleta mixta con uisfx ✅ implementada · 👀 en prueba (2026-09-25)
+### Paleta LoL ✅ implementada · 👀 en prueba (2026-09-30)
+
+Elegida por el usuario en la *Pieza 4* de [Intro con sonido](https://claude.ai/artifact/REZFZZ3By4Lh3geUyU6qEd): para cada evento, el sonido CC0 más parecido al del cliente del LoL, salvo la ida y la vuelta, que son los originales de Riot. Reemplaza a la paleta Arcade en los ocho eventos. Los archivos vienen nivelados a los volúmenes de `lib/data/sfx.ts`, así que sólo cambió el del tecleo.
+
+| Evento | Elegida | Qué es | De dónde |
+|---|---|---|---|
+| Hover | 1 | Golpecito metálico sobre una chapa, dos octavas arriba: "tink" cortísimo con parcial en 7 kHz, como el tick de la grilla del LoL | Freesound #191489, Alteration, *Metal Tap* |
+| Clic | 1 | Golpe de triángulo una octava arriba, cortado a ~80 ms: "ping" en 13 kHz que se apaga como el clic genérico | Freesound #13147, looppool, *triangle1.wav* |
+| Selección | 3 | Beep corto de videojuego subido de tono, con la nota del select del LoL | Freesound #140773, qubodup, *Computer Beep SFX* |
+| Tecleo | 1 | Beep de botón de UI recortado a 55 ms, de la familia del clic. **Volumen 0,07**, mucho más bajo que la demo (usuario) | itch.io, Glitch Noises (VZ), *UIBeep_Button 012* |
+| Ida de ruta | 1 · **Riot** | El visor del ranked abriéndose, sin cambios | Cliente del LoL, `sfx-regalia-lobby-visor-open.ogg` (CommunityDragon) |
+| Vuelta al Home | 1 · **Riot** | El visor del ranked cerrándose | Cliente del LoL, `sfx-regalia-lobby-visor-close.ogg` |
+| Reclamar | 1 | Efecto sci-fi subido de tono más el golpe de una puerta sci-fi: destello agudo y cola grave | OpenGameArt *60 CC0 Sci-Fi SFX* `sfx_06b` + Freesound #543404 |
+| Bloqueado | 1 | Explosión grave más puño pesado, filtrados debajo de 200 Hz | Kenney *Sci-fi Sounds* + *Impact Sounds* |
+
+La ida, la vuelta y la música son de Riot: mismo criterio de licencia que el video de Yi (ver deuda). Los archivos de la Pieza 4 y sus métricas siguen en el artifact (`lol-<evento>-<n>`).
+
+### Paleta mixta con uisfx ✅ implementada · 👀 en prueba (2026-09-25) — reemplazada el 2026-09-30
 
 Feedback del equipo: la ida y la vuelta de Libre no gustaron, y se recomendó mirar
 [uisfx](https://uisfx.com/) (CC0, 12 paquetes con los mismos 78 sonidos con nombre de evento). Se
@@ -1139,6 +1189,7 @@ public/assets/<pantalla>/   assets exportados de Figma
 
 | Fecha | Token | Pantalla que lo pidió | Motivo |
 |---|---|---|---|
+| 2026-09-30 | **Música de fondo, chip de la intro y paleta LoL**: `--music-bar-duration` / `-min` / `-max`, `--intro-chip-delay` (400ms) / `-hold` (7000ms) / `-fade` (300ms); utilities `music-bars`, `music-bar`, `intro-chip`; variantes `music-on` / `music-off`; `musicConfig` y `musicTracks` en `lib/data/sfx.ts`; `public/assets/sfx/` cambia los 8 sonidos y suma `bgm-yi`, `bgm-yi-calm` e `intro`; `components/layout/music-toggle.tsx`, `components/sections/intro-sound-chip.tsx`; `hero-intro.ts` suma `replayIntroWithSound` y `data-intro-run`; el tecleo baja a 0,07 | Home · Header · Todas las rutas | Elecciones del usuario sobre *Intro con sonido*. Detalle en § 5, *Música de fondo* y *Paleta LoL*; decisiones en § 0. Todo `offDesign`. Las medidas del ícono del toggle (barras de 3 px, alturas 8/14/10/6) viven en CSS como la geometría del parlante vive en su SVG. |
 | 2026-09-28 | **Paleta Arcade en prueba** (salvo Reclamar, que sigue siendo el de Libre), tecleo en los campos de texto, y se borran el odómetro, el on / off y el clic de las medallas obtenidas (`lib/data/sfx.ts`, `sfx-listener.tsx`, `points-value.tsx`, `public/assets/sfx/`) | Todas las rutas | Pedido del usuario. Flechas de carruseles y del hero, chips y paginador pasan de clic a selección. Detalle en § 5, *Paleta mixta con uisfx*. |
 | 2026-09-28 | `--flip-move-duration` (380ms), `--flip-exit-duration` (180ms), `--flip-enter-delay` (120ms), `--flip-enter-stagger` (40ms) | Eventos · Misiones · Leaderboard · Juegos | La animación al filtrar, opción C de *Filtrado SURA*. Todo `offDesign`. Detalle en § 5, *Feedback de Ema*. |
 | 2026-09-28 | `--color-surface-ended` (#353535) y la card de misión **finalizada** | Misiones | Frame mobile `6008:29709`: el `#222` de la card con un gris `#838383` al 20% encima, resuelto en un color plano. El badge del frame es 4 niveles más claro (#393939) y se unificó al de la card, el mismo criterio que la completada; lleva el mismo `border-b border-r`, en `--color-border-dim`, para medir igual que los otros dos estados. La portada va con `grayscale` en CSS porque es data y cambia por misión (el asset del frame es la portada ya en gris); la moneda sí es el asset del diseño (`public/assets/missions/sp-coin-ended.webp`). Borde de la portada 1px `--color-border-dim`, textos en `--color-muted-foreground`, sin check. Desktop usa la misma card, como pidió el usuario. Medido: 173 × 153,6 en mobile, el alto de la completada. |
@@ -1315,12 +1366,14 @@ public/assets/<pantalla>/   assets exportados de Figma
 | **Un iPad entre 768 y 1099 baja los videos de desktop** | Con el corte en 768 el hero elige las variantes desktop, intro incluida. | Si pesa, elegir la variante por ancho visual además del breakpoint. |
 | **Con auriculares Bluetooth baratos el primer sonido después de un rato puede salir bajo o perderse** | Lo probó el usuario (2026-09-26): con cable funciona bien. El auricular apaga su amplificador con casi silencio y la señal de -80 dBFS no lo despierta (ver § 5, *La salida de audio no se duerme*). | Nada por ahora: subir `keepAliveGain` hasta despertarlos haría la señal audible. Falta además ver si Safari muestra el ícono de audio en la pestaña por esa señal. |
 | **Nada suena antes del primer click o tecla** | Es la política de autoplay de todos los navegadores. Investigado en el código fuente y probado: no hay workaround legítimo para una primera visita (ver § 5, *Sonido*). | Nada. Si vuelve la música de fondo, el *Media Engagement* de Chrome haría que los visitantes frecuentes escuchen desde el primer hover. |
-| **El sonido no se probó en Safari ni Firefox reales** | Sólo en Chrome y en los builds de WebKit y Firefox de Playwright. El respaldo AAC para Safari viejo no se ejercitó. | Probarlo a mano en Safari (macOS e iOS) antes de dar la tanda por cerrada. |
+| **El sonido no se probó en Safari ni Firefox reales** | Sólo en Chrome y en los builds de WebKit y Firefox de Playwright. El respaldo AAC para Safari viejo no se ejercitó. **La música y el chip de la intro (2026-09-30) sólo se probaron en Chromium.** | Probarlo a mano en Safari (macOS e iOS) antes de dar la tanda por cerrada. |
+| **La música de fondo, la ida y la vuelta son de Riot** | El tema de PROJECT: Yi y los dos sonidos del visor del ranked salen del cliente del LoL. La política para fans de Riot no menciona la música y su playlist Creator-Safe es para videos y streams, no para sitios: como música de fondo el riesgo es mayor que el del video. | Mismo criterio que *Assets de Riot en el hero*: mientras se comparta entre conocidos, se acepta. Si se publica, una pista CC0 (las dos de la propuesta, *Pondering the Cosmos* o *Airy*, están en el artifact) y sonidos CC0 para la ida y la vuelta, o sacarlos. |
+| **El chip de la intro se va con cualquier tecla que no sea Tab o Shift** | Quien navega con teclado tiene que llegar al chip con Tab antes de tocar otra tecla; cualquier otra lo saca (y saltea la intro, como siempre). | Entra en la pasada de accesibilidad diferida. |
 | **El "Ver todo" de Sura News no se puede tocar en el centro en mobile** | Bug anterior al sonido: el aire que la lista de cards reserva para la sombra del hover queda encima del botón. Hoy el botón no navega, así que sólo se pierden su hover y su sonido. | `pointer-events-none` en la lista y `pointer-events-auto` en sus ítems, verificando que el carrusel siga scrolleando con el dedo. |
 | **A 320px el nombre del usuario desaparece en las rutas internas** | Lo empujan la flecha de volver y el toggle de sonido (§ 0, punto 15). | Si molesta, achicar los gaps del header mobile. |
 | **La flecha de volver no restaura el scroll entre rutas internas** | Si la pantalla anterior no era el Home, `goBack` sigue haciendo `router.back()`: vuelve con su scroll pero sin persiana. Hoy no hay forma de ir de una ruta interna a otra desde la UI, así que sólo pasa con el historial del navegador. | Nada, salvo que aparezcan links entre rutas internas. |
 | **En Safari (desktop) las dos cards chicas de Sura News no muestran la imagen** | Encontrado el 2026-09-27 por el QA del mobile ancho, anterior a ese cambio: en `news-card-wide.tsx` la caja de la imagen es `aspect-[129/97] self-stretch` y WebKit no deriva el ancho del alto estirado, así que mide 0. Pasa también a 1440. | Darle a la caja un ancho explícito (el que mide en Chromium) o un alto definido para que el `aspect-ratio` tenga de dónde partir. |
-| **Assets de Riot en el hero** | El login screen de PROJECT: Yi es de Riot Games. Su política *Legal Jibber Jabber* lo permite en proyectos de fans gratuitos y no comerciales, **con un aviso visible** de que se usan assets de Riot y que Riot no avala el proyecto. | **Por ahora no aplica** (usuario, 2026-09-25): el proyecto se comparte sólo entre conocidos y no está previsto publicarlo. **Si se publica**, sumar ese aviso antes (el footer es el lugar natural) o sacar el slide. **Para producción no sirve**: licencia de Riot o video propio de diseño. |
+| **Assets de Riot en el hero** | El login screen de PROJECT: Yi es de Riot Games (y desde el 2026-09-30, también su tema como música de fondo y los dos sonidos del visor: ver *La música de fondo, la ida y la vuelta son de Riot*). Su política *Legal Jibber Jabber* lo permite en proyectos de fans gratuitos y no comerciales, **con un aviso visible** de que se usan assets de Riot y que Riot no avala el proyecto. | **Por ahora no aplica** (usuario, 2026-09-25): el proyecto se comparte sólo entre conocidos y no está previsto publicarlo. **Si se publica**, sumar ese aviso antes (el footer es el lugar natural) o sacar el slide. **Para producción no sirve**: licencia de Riot o video propio de diseño. |
 | ~~**El video de Yi es de 1280 × 800**~~ | Era el único tamaño de la fuente. | **Resuelta** (2026-09-25) con Real-ESRGAN 4×: ver *Intro de PROJECT: Yi*. Si aparece un original más grande, reemplaza al escalado. |
 | **En mobile la intro ocupa sólo la franja del hero** | Durante la intro el video se ve en los 524 px del hero y el resto de la pantalla queda en `#202020`. | Esperando el feedback del usuario al verlo en la web. |
 | **El badge "¡Novedad!" cambia de color de texto entre tamaños** | Es el mismo texto sobre el mismo verde: el frame desktop lo escribe en **negro** y el mobile en **`#456215`** (`--color-border-done`), mientras el CTA del mismo banner usa `#354619`. | Se replicaron los tres tal cual. Parece un desliz: unificar, probablemente en `--color-sp-foreground`. |
@@ -1631,6 +1684,7 @@ tercero. Se retoman en la pasada de fixes chicos, con el scope completo.
 
 | Tema | Qué pasó | Cómo se resolvió |
 |---|---|---|
+| **Tailwind ordena las utilities propias por nombre, no por dónde se escriben** | El chip "Escuchar la intro" tenía dos utilities, `intro-chip` (oculto) e `intro-chip-on` (visible). En el CSS compilado `intro-chip-on` salía **antes** que `intro-chip`, así que con las dos clases ganaba la base: el chip se pintaba (opacidad 1 por la animación) pero seguía en `visibility: hidden`, y el click caía en la sección de atrás. | El estado pasa a un atributo del mismo elemento (`&[data-shown]` dentro de `@utility intro-chip`), que gana por especificidad y no por orden. **Dos utilities propias que se pisan no pueden depender del orden: el estado va como atributo anidado en la misma utility.** |
 | **Un `notFound()` desde una página devuelve un HTML vacío** | La primera versión de la 404 era un catch-all `(site)/[...slug]` que llamaba a `notFound()`, para heredar el layout `(site)`. Daba 404, pero el servidor mandaba `<html id="__next_error__">` con el `<body>` vacío: la pantalla la dibujaba el JS, sin JS quedaba en blanco y la función corría en cada pedido. De ahí salían también dos síntomas: la pestaña perdía el título al hidratar y en dev aparecía el aviso *Encountered a script tag* (con el badge “1 Issue”), porque React volvía a renderizar el `<head>` entero con el `<script>` de la intro. | Lo encontró la revisión de código y se reprodujo en una app de Next 16.3.5 mínima: pasa con cualquier `notFound()` llamado desde una página. **La 404 de URLs sin ruta va en `app/not-found.tsx`**, que se renderiza completa en el servidor. Con el cambio desaparecieron los dos síntomas. |
 | **Una línea de 1px en el borde inferior del hero** | Lo vio el usuario (2026-09-27): una línea del color del arte a la altura del carrusel de Eventos, sólo en algunos tamaños. Aparece cuando el borde de la capa del hero cae en una fracción de píxel del dispositivo: en el desktop escalado (768–1099, 1024 × zoom) con densidades 1,25 / 1,5 / 1,75, y en mobile con densidades como 2,625 (Android), donde 540 px dan 1417,5. En esa fila el arte y el scrim opaco que lo tapa se antialiasean cada uno por su lado, así que el scrim cubre sólo una fracción y deja pasar otra del arte. Medido: hasta Δ125 contra el fondo en mobile y Δ55 en el desktop escalado. Con densidad 1 y 2 a 390 y 1440 no pasaba. | `hero-art-clip` recorta 2px del arte en el borde de abajo (y en el de arriba en mobile, que también es un borde interno), donde el scrim ya es opaco: el borde queda con sólo el fondo y el scrim, que son del mismo color. Verificado en Chromium y WebKit: la fila del borde da Δ0 en todos los casos, y la página completa queda idéntica al píxel a 320–1920 con densidades 1, 2 y 3. **Dos capas que se tapan no pueden terminar en el mismo borde fraccionario: la de abajo tiene que terminar antes.** |
 | **El personaje de Squad tapaba el borde de su card debajo de ~1270** | Lo vio el usuario (2026-09-27). La ventana del arte de Squad mide 321 de ancho en desktop y la card, desde que es fluida, baja a 252 (a 1100 de layout). Debajo de ~1270 la ventana se sale por la izquierda, y el recorte era `overflow-x: clip` en el borde **exterior** de la card: el brazo del personaje se pintaba encima del borde izquierdo y de la esquina redondeada de abajo. A 1440 y en mobile no pasaba porque la ventana arranca a 43 y a 25 del borde. | `event-art-clip`: un `clip-path: inset(-50% 0 1px 1px round …)` que recorta 1px adentro a la izquierda y abajo, con el radio interior de la card (7 en mobile, 11 en desktop), y deja libre la cabeza que sobresale arriba. Verificado contra el estado anterior, en Chromium y WebKit: idéntico al píxel a 320–767, 1300, 1440 y 1920; entre 1000 y 1250 sólo cambia la columna del borde izquierdo de la card de Squad y su esquina. **Un recorte que tiene que respetar un borde va por dentro del borde, no en la caja exterior.** |
@@ -1957,7 +2011,11 @@ sola portada.
 `data-sfx="<evento>"` de los elementos, y detecta solo los links a otra ruta para la ida y la vuelta.
 Así ningún componente se volvió cliente por el sonido y cablear un botón nuevo es sumar un
 atributo. El motor (`lib/sfx.ts`) es un módulo sin React, y los volúmenes, carriles y límites son
-data tipada en `lib/data/sfx.ts`. La excepción son los ticks del odómetro, que dependen del
+data tipada en `lib/data/sfx.ts`. **La música es un carril más del mismo motor** (desde el 2026-09-30): un bus
+propio (volumen → ducking → maestro), dos pistas por streaming o decodificadas según `musicTracks`, y la
+preferencia `sura-music`. `hero-intro.ts` importa del motor `settleIntroSound` para apagar el audio corto de la
+intro mobile cuando la intro termina o se saltea; el chip (`intro-sound-chip.tsx`) es el único que llama a
+`replayIntroWithSound`. La excepción son los ticks del odómetro, que dependen del
 tiempo de cada dígito y viven en `points-value.tsx`: suenan sólo desde el contador visible, así el
 header mobile oculto no los duplica.
 
@@ -2084,7 +2142,8 @@ Más:
 | Leaderboard (`/leaderboard`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 26–30 |
 | Juegos (`/games`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 31–34 |
 | Micro-animaciones HUD | ✅ | ✅ | ✅ **Aprobadas el 2026-09-25** — P1 B, P2 C, P3–P9, la tanda 0 y los fixes posteriores |
-| Sonido e íconos del menú | ✅ | ✅ | 👀 Esperando aprobación — bloques 39–41. Propuesta [Sonido SURA](https://claude.ai/artifact/FtyLwp9kX6guF4FCEek39E). Paleta mixta con uisfx en prueba desde el 25 sep: ver *Paleta mixta con uisfx*, § 5 |
+| Sonido e íconos del menú | ✅ | ✅ | 👀 Esperando aprobación — bloques 39–41. Propuesta [Sonido SURA](https://claude.ai/artifact/FtyLwp9kX6guF4FCEek39E). Paleta LoL en prueba desde el 30 sep: ver *Paleta LoL*, § 5 |
+| Música de fondo e intro con sonido | ✅ | ✅ | 👀 Esperando aprobación — bloques 54–55. Propuesta [Intro con sonido](https://claude.ai/artifact/REZFZZ3By4Lh3geUyU6qEd): C + M4, tramo calmo, dos botones, 0,15, sin música en mobile |
 | 404 (`not-found`) | ✅ | ✅ | 👀 Esperando aprobación — bloques 35–38. Sin frames: diseño propio (concepto A de [SURA 404](https://claude.ai/artifact/6G4urUtxnPWsrbxDuLCAyW)) |
 
 **Leyenda:** ⏳ Pendiente · 🚧 En progreso · 👀 Esperando aprobación · ✅ Aprobada · 📦 Commiteada · 🚫 Bloqueada
@@ -2150,6 +2209,8 @@ link**, antes de implementar — así queda registrado aunque el bloque no se te
 | 51 · Detalle de juego | `/games/:id` | — | [`2867:7612`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=2867-7612&m=dev) | [`3168:13133`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=3168-13133&m=dev) | ⏳ Pendiente |
 | 52 · Detalle de evento | `/tournaments/:id` | — | [`412:4384`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-4384&m=dev) Acerca · [`412:18445`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-18445&m=dev) Participantes · [`412:19980`](https://www.figma.com/design/uuh0qonxt0qkmKJku7jSUd/Sura-Gaming-UX-UI--Copy-?node-id=412-19980&m=dev) Ganadores (**diseño viejo**: UX, no UI) | — **sin frame**: se adapta del desktop aprobado | ⏳ Pendiente |
 | 53 · Sura News | `/news` · `/news/:id` | — | — **sin frame**: sale de la propuesta del bloque 47 | — **sin frame** | ⏳ Pendiente |
+| 54 · Música de fondo y chip de la intro | Home · Header · Todas las rutas | `lib/sfx.ts`, `lib/data/sfx.ts`, `lib/sfx-boot.ts`, `lib/hero-intro.ts`, `lib/use-intro-phase.ts`, `components/layout/music-toggle.tsx`, `header-desktop.tsx`, `sfx-listener.tsx`, `components/sections/intro-sound-chip.tsx`, `hero.tsx`, `hero-background.tsx` | — **sin frame**: [Intro con sonido](https://claude.ai/artifact/REZFZZ3By4Lh3geUyU6qEd) (C + M4) | — **sin frame**: mismo artifact | 👀 Esperando aprobación |
+| 55 · Paleta LoL | Todas las rutas | `public/assets/sfx/`, `lib/data/sfx.ts` | — **sin frame**: Pieza 4 del mismo artifact | — **sin frame** | 👀 Esperando aprobación. Reemplaza a la paleta Arcade |
 
 > **Bloque 4 (drawer) sigue bloqueado**: no tiene frame en ningún tamaño. El botón de perfil del header ya es su trigger, inerte.
 >

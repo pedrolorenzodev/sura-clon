@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 import { isSfxSlot, sfxConfig, type SfxSlot } from "@/lib/data/sfx";
 import { prefersReducedMotion } from "@/lib/motion";
-import { attachSfx, playSfx, toggleSfx } from "@/lib/sfx";
+import { attachSfx, playSfx, toggleAllSound } from "@/lib/sfx";
 
 const HOVER_SELECTOR = "[data-sfx-hover]";
 const CLICK_SELECTOR = "[data-sfx]";
@@ -184,7 +184,7 @@ export function SfxListener() {
       if (event.key !== "m" && event.key !== "M") return;
       if (event.repeat || event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
       if (isEditable(event)) return;
-      toggleSfx();
+      toggleAllSound();
     };
 
     document.addEventListener("pointermove", onPointerMove, { passive: true, capture: true });

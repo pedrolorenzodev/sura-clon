@@ -1,22 +1,57 @@
-import { sfxConfig, sfxSlotNames, sfxSlots, type SfxFormat, type SfxLane, type SfxSlot } from "@/lib/data/sfx";
+import {
+  musicConfig,
+  musicTracks,
+  sfxConfig,
+  sfxSlotNames,
+  sfxSlots,
+  type MusicTrack,
+  type SfxFormat,
+  type SfxLane,
+  type SfxSlot,
+} from "@/lib/data/sfx";
+import { DESKTOP_MIN_WIDTH } from "@/lib/desktop-zoom";
 import { prefersReducedMotion } from "@/lib/motion";
 
-export type SfxEvent = "state" | "play";
+export type SfxEvent = "state" | "play" | "music";
 export type SfxPlayOptions = { rate?: number; stack?: boolean; gain?: number; offset?: number };
+export type MusicState = "off" | "armed" | "playing";
 
 type Voice = { source: AudioBufferSourceNode; gain: GainNode; end: number };
 type KeepAlive = { tone: OscillatorNode; level: GainNode };
 type WebkitWindow = Window & { webkitAudioContext?: typeof AudioContext };
+type NetworkInformation = { saveData?: boolean };
+
+type MusicVoice = {
+  track: MusicTrack;
+  gain: GainNode;
+  ready: Promise<boolean>;
+  position: () => number;
+  pause: () => void;
+  resume: () => void;
+  abandon: () => void;
+  stop: () => void;
+};
+type MusicPlayOptions = { offset?: number; fadeIn?: number; fadeOut?: number; level?: number };
+type StreamSource = { element: HTMLAudioElement; node: MediaElementAudioSourceNode; owner: number };
 
 const listeners = new Set<(event: SfxEvent) => void>();
 const encoded = new Map<SfxSlot, Promise<ArrayBuffer | null>>();
 const decoding = new Map<SfxSlot, Promise<AudioBuffer | null>>();
 const decoded = new Map<SfxSlot, AudioBuffer>();
 const lanes = new Map<SfxLane, Voice>();
+const musicBuffers = new Map<MusicTrack, Promise<AudioBuffer | null>>();
+const streams = new Map<MusicTrack, StreamSource>();
 
 let enabled: boolean | null = null;
+let musicEnabled: boolean | null = null;
 let context: AudioContext | null = null;
 let master: GainNode | null = null;
+let musicBus: { level: GainNode; duck: GainNode } | null = null;
+let musicVoice: MusicVoice | null = null;
+let musicIsIntro = false;
+let musicGestured = false;
+let bridgeTimer: ReturnType<typeof setInterval> | undefined;
+let desktopMedia: MediaQueryList | null = null;
 let voices: Voice[] = [];
 let lastHoverAt = Number.NEGATIVE_INFINITY;
 let preloadScheduled = false;
@@ -36,17 +71,17 @@ const spread = () => Math.random() * 2 - 1;
 
 const emit = (event: SfxEvent) => listeners.forEach((listener) => listener(event));
 
-const readStoredPreference = () => {
+const readStoredPreference = (key: string) => {
   try {
-    return localStorage.getItem(sfxConfig.storageKey) !== "off";
+    return localStorage.getItem(key) !== "off";
   } catch {
     return true;
   }
 };
 
-const storePreference = (value: boolean) => {
+const storePreference = (key: string, value: boolean) => {
   try {
-    localStorage.setItem(sfxConfig.storageKey, value ? "on" : "off");
+    localStorage.setItem(key, value ? "on" : "off");
   } catch {}
 };
 
@@ -54,12 +89,28 @@ const reflectPreference = (value: boolean) => {
   document.documentElement.dataset.sound = value ? "on" : "off";
 };
 
+const reflectMusicPreference = (value: boolean) => {
+  document.documentElement.dataset.music = value ? "on" : "off";
+};
+
 export function isSfxEnabled() {
-  if (enabled === null) enabled = inBrowser() ? readStoredPreference() : true;
+  if (enabled === null) enabled = inBrowser() ? readStoredPreference(sfxConfig.storageKey) : true;
   return enabled;
 }
 
+export function isMusicEnabled() {
+  if (musicEnabled === null) {
+    musicEnabled = inBrowser() ? readStoredPreference(musicConfig.storageKey) : true;
+  }
+  return musicEnabled;
+}
+
+const anySoundEnabled = () => isSfxEnabled() || isMusicEnabled();
+
 export const getSfxEnabledSnapshot = isSfxEnabled;
+
+export const getMusicSnapshot = (): MusicState =>
+  !isMusicEnabled() ? "off" : musicVoice ? "playing" : "armed";
 
 export function subscribeSfx(listener: (event: SfxEvent) => void) {
   listeners.add(listener);
@@ -68,10 +119,10 @@ export function subscribeSfx(listener: (event: SfxEvent) => void) {
   };
 }
 
-const sfxUrl = (slot: SfxSlot, format: SfxFormat) => `${sfxConfig.basePath}/${slot}.${format}`;
+const assetUrl = (file: string, format: SfxFormat) => `${sfxConfig.basePath}/${file}.${format}`;
 
-const fetchEncoded = (slot: SfxSlot, format: SfxFormat): Promise<ArrayBuffer | null> =>
-  fetch(sfxUrl(slot, format))
+const fetchEncoded = (file: string, format: SfxFormat): Promise<ArrayBuffer | null> =>
+  fetch(assetUrl(file, format))
     .then((response) => (response.ok ? response.arrayBuffer() : null))
     .catch(() => null);
 
@@ -88,29 +139,30 @@ const decodeData = (audio: AudioContext, data: ArrayBuffer) =>
 const decodeFrom = (audio: AudioContext, data: ArrayBuffer | null) =>
   data ? decodeData(audio, data).catch(() => null) : Promise.resolve(null);
 
+const decodeWithFallback = (audio: AudioContext, file: string, primary: Promise<ArrayBuffer | null>) =>
+  primary
+    .then((data) => decodeFrom(audio, data))
+    .then(
+      (buffer) =>
+        buffer ?? fetchEncoded(file, sfxConfig.fallbackFormat).then((data) => decodeFrom(audio, data)),
+    );
+
 function decodeSlot(slot: SfxSlot): Promise<AudioBuffer | null> {
   const pending = decoding.get(slot);
   if (pending) return pending;
   const audio = context;
   if (!audio) return Promise.resolve(null);
   if (!encoded.has(slot)) encoded.set(slot, fetchEncoded(slot, sfxConfig.primaryFormat));
-  const source = encoded.get(slot)!;
 
-  const job = source
-    .then((data) => decodeFrom(audio, data))
-    .then(
-      (buffer) =>
-        buffer ?? fetchEncoded(slot, sfxConfig.fallbackFormat).then((data) => decodeFrom(audio, data)),
-    )
-    .then((buffer) => {
-      if (buffer) {
-        decoded.set(slot, buffer);
-      } else {
-        decoding.delete(slot);
-        encoded.delete(slot);
-      }
-      return buffer;
-    });
+  const job = decodeWithFallback(audio, slot, encoded.get(slot)!).then((buffer) => {
+    if (buffer) {
+      decoded.set(slot, buffer);
+    } else {
+      decoding.delete(slot);
+      encoded.delete(slot);
+    }
+    return buffer;
+  });
   decoding.set(slot, job);
   return job;
 }
@@ -163,7 +215,7 @@ function watchIdle() {
 }
 
 function startKeepAlive() {
-  if (!context || keepAlive || !isSfxEnabled()) return;
+  if (!context || keepAlive || !anySoundEnabled()) return;
   const tone = context.createOscillator();
   tone.frequency.value = sfxConfig.keepAliveHz;
   const level = context.createGain();
@@ -180,22 +232,27 @@ function onActivity() {
   if (!keepAlive) startKeepAlive();
 }
 
+function createContext() {
+  const AudioContextClass = window.AudioContext ?? (window as WebkitWindow).webkitAudioContext;
+  if (!AudioContextClass) return null;
+  try {
+    return new AudioContextClass({ latencyHint: "interactive" });
+  } catch {
+    try {
+      return new AudioContextClass();
+    } catch {
+      return null;
+    }
+  }
+}
+
 export function unlockSfx() {
-  if (!inBrowser() || !isSfxEnabled()) return;
+  if (!inBrowser() || !anySoundEnabled()) return;
   clearTimeout(suspendTimer);
 
   if (!context) {
-    const AudioContextClass = window.AudioContext ?? (window as WebkitWindow).webkitAudioContext;
-    if (!AudioContextClass) return;
-    try {
-      context = new AudioContextClass({ latencyHint: "interactive" });
-    } catch {
-      try {
-        context = new AudioContextClass();
-      } catch {
-        return;
-      }
-    }
+    context = createContext();
+    if (!context) return;
     master = context.createGain();
     master.gain.value = sfxConfig.masterGain;
     master.connect(context.destination);
@@ -204,6 +261,12 @@ export function unlockSfx() {
 
   resumeContext();
   onActivity();
+}
+
+function unlockFromGesture() {
+  unlockSfx();
+  musicGestured = true;
+  startBackgroundMusic();
 }
 
 function fadeOut(voice: Voice, now: number) {
@@ -258,6 +321,7 @@ function fire(slot: SfxSlot, options: SfxPlayOptions) {
   if (!options.stack) lanes.set(config.lane, voice);
   voices.push(voice);
 
+  if (config.lane === "route") duckMusic();
   emit("play");
   return true;
 }
@@ -291,49 +355,334 @@ function request(requested: SfxSlot, options: SfxPlayOptions) {
 
 export const playSfx = (slot: SfxSlot, options: SfxPlayOptions = {}) => request(slot, options);
 
+function scheduleSuspend() {
+  clearTimeout(suspendTimer);
+  suspendTimer = setTimeout(() => {
+    if (!anySoundEnabled() && context) settle(context.suspend());
+  }, sfxConfig.suspendAfterOffMs);
+}
+
 export function setSfxEnabled(value: boolean) {
   if (!inBrowser() || value === isSfxEnabled()) return;
 
+  enabled = value;
+  storePreference(sfxConfig.storageKey, value);
+  reflectPreference(value);
+  emit("state");
+
   if (value) {
-    enabled = true;
-    storePreference(true);
-    reflectPreference(true);
-    emit("state");
     unlockSfx();
     return;
   }
-
-  enabled = false;
-  storePreference(false);
-  reflectPreference(false);
-  emit("state");
-  stopKeepAlive();
-  clearTimeout(suspendTimer);
-  suspendTimer = setTimeout(() => {
-    if (!isSfxEnabled() && context) settle(context.suspend());
-  }, sfxConfig.suspendAfterOffMs);
+  if (!anySoundEnabled()) {
+    stopKeepAlive();
+    scheduleSuspend();
+  }
 }
 
 export const toggleSfx = () => setSfxEnabled(!isSfxEnabled());
 
+const isDesktopViewport = () => {
+  if (!desktopMedia) desktopMedia = window.matchMedia(`(min-width: ${DESKTOP_MIN_WIDTH}px)`);
+  return desktopMedia.matches;
+};
+
+const savesData = () =>
+  Boolean((navigator as Navigator & { connection?: NetworkInformation }).connection?.saveData);
+
+const musicAllowed = () =>
+  inBrowser() && isMusicEnabled() && !savesData() && (!musicConfig.desktopOnly || isDesktopViewport());
+
+function ensureMusicBus() {
+  if (!context || !master) return null;
+  if (!musicBus) {
+    const level = context.createGain();
+    level.gain.value = musicConfig.volume;
+    level.connect(master);
+    const duck = context.createGain();
+    duck.connect(level);
+    musicBus = { level, duck };
+  }
+  return musicBus;
+}
+
+function loadMusicBuffer(track: MusicTrack) {
+  const audio = context;
+  if (!audio) return Promise.resolve(null);
+  const pending = musicBuffers.get(track);
+  if (pending) return pending;
+  const { file } = musicTracks[track];
+  const job = decodeWithFallback(audio, file, fetchEncoded(file, sfxConfig.primaryFormat)).then((buffer) => {
+    if (!buffer) musicBuffers.delete(track);
+    return buffer;
+  });
+  musicBuffers.set(track, job);
+  return job;
+}
+
+function streamFor(track: MusicTrack): StreamSource {
+  const existing = streams.get(track);
+  if (existing) return existing;
+  const element = new Audio();
+  element.preload = "auto";
+  const playsWebm = element.canPlayType('audio/webm; codecs="opus"') !== "";
+  element.src = assetUrl(musicTracks[track].file, playsWebm ? sfxConfig.primaryFormat : sfxConfig.fallbackFormat);
+  const stream = { element, node: context!.createMediaElementSource(element), owner: 0 };
+  streams.set(track, stream);
+  return stream;
+}
+
+function bufferVoice(track: MusicTrack, offset: number, gain: GainNode, loop: boolean): MusicVoice {
+  const audio = context!;
+  let source: AudioBufferSourceNode | null = null;
+  let abandoned = false;
+  let startedAt = 0;
+  let duration = 0;
+  const ready = loadMusicBuffer(track).then((buffer) => {
+    if (!buffer || abandoned) return false;
+    source = audio.createBufferSource();
+    source.buffer = buffer;
+    source.loop = loop;
+    source.connect(gain);
+    const from = offset % buffer.duration;
+    source.start(0, from);
+    startedAt = audio.currentTime - from;
+    duration = buffer.duration;
+    return true;
+  });
+  return {
+    track,
+    gain,
+    ready,
+    position: () => (source ? (audio.currentTime - startedAt) % duration : offset),
+    pause: noop,
+    resume: noop,
+    abandon: () => {
+      abandoned = true;
+    },
+    stop: () => {
+      abandoned = true;
+      try {
+        source?.stop();
+      } catch {}
+      source?.disconnect();
+      gain.disconnect();
+    },
+  };
+}
+
+function streamVoice(track: MusicTrack, offset: number, gain: GainNode): MusicVoice {
+  const stream = streamFor(track);
+  const { element, node } = stream;
+  const owner = stream.owner + 1;
+  stream.owner = owner;
+  let paused = false;
+  element.pause();
+  node.disconnect();
+  node.connect(gain);
+  const seek = () => {
+    try {
+      element.currentTime = offset;
+    } catch {}
+  };
+  if (element.readyState >= 1) seek();
+  else element.addEventListener("loadedmetadata", seek, { once: true });
+  const play = () => element.play().then(() => true, () => false);
+  return {
+    track,
+    gain,
+    ready: play(),
+    position: () => element.currentTime,
+    pause: () => {
+      paused = true;
+      if (stream.owner === owner) element.pause();
+    },
+    resume: () => {
+      if (paused && stream.owner === owner) settle(play().then(noop));
+      paused = false;
+    },
+    abandon: noop,
+    stop: () => {
+      try {
+        node.disconnect(gain);
+      } catch {}
+      if (stream.owner === owner) element.pause();
+      gain.disconnect();
+    },
+  };
+}
+
+function rampMusic(voice: MusicVoice, to: number, seconds: number) {
+  const audio = context!;
+  const param = voice.gain.gain;
+  const now = audio.currentTime;
+  param.cancelScheduledValues(now);
+  param.setValueAtTime(param.value, now);
+  param.linearRampToValueAtTime(to, now + Math.max(0.02, seconds));
+}
+
+function stopMusic(seconds = musicConfig.fadeOutSeconds, quiet = false) {
+  clearInterval(bridgeTimer);
+  const voice = musicVoice;
+  musicVoice = null;
+  musicIsIntro = false;
+  if (!voice) return;
+  voice.abandon();
+  rampMusic(voice, 0, seconds);
+  setTimeout(voice.stop, seconds * 1000 + 60);
+  if (!quiet) emit("music");
+}
+
+function watchBridge(voice: MusicVoice) {
+  const { bridge } = musicConfig;
+  if (voice.track !== bridge.from) return;
+  clearInterval(bridgeTimer);
+  bridgeTimer = setInterval(() => {
+    if (musicVoice !== voice) {
+      clearInterval(bridgeTimer);
+      return;
+    }
+    if (voice.position() < bridge.at) return;
+    clearInterval(bridgeTimer);
+    playMusic(bridge.into, { offset: bridge.offset, fadeIn: bridge.fadeSeconds, fadeOut: bridge.fadeSeconds });
+  }, 40);
+}
+
+function playMusic(track: MusicTrack, options: MusicPlayOptions = {}) {
+  const bus = ensureMusicBus();
+  if (!context || !bus || document.hidden) return;
+  stopMusic(options.fadeOut ?? musicConfig.fadeOutSeconds, true);
+
+  const gain = context.createGain();
+  gain.gain.value = 0;
+  gain.connect(bus.duck);
+  const config = musicTracks[track];
+  const offset = options.offset ?? 0;
+  const voice =
+    config.kind === "stream" ? streamVoice(track, offset, gain) : bufferVoice(track, offset, gain, config.loop);
+  musicVoice = voice;
+  voice.ready.then((ok) => {
+    if (musicVoice !== voice) return;
+    if (!ok) {
+      stopMusic(0, true);
+      emit("music");
+      return;
+    }
+    rampMusic(voice, options.level ?? 1, options.fadeIn ?? musicConfig.fadeInSeconds);
+  });
+  watchBridge(voice);
+  emit("music");
+}
+
+function startBackgroundMusic() {
+  if (!musicGestured || musicVoice || !musicAllowed()) return;
+  playMusic(musicConfig.bridge.into);
+}
+
+function duckMusic() {
+  if (!context || !musicBus || !musicVoice) return;
+  const param = musicBus.duck.gain;
+  const now = context.currentTime;
+  param.cancelScheduledValues(now);
+  param.setTargetAtTime(musicConfig.duckGain, now, musicConfig.duckAttackSeconds);
+  param.setTargetAtTime(1, now + musicConfig.duckHoldMs / 1000, musicConfig.duckReleaseSeconds);
+}
+
+export function introSoundAllowed() {
+  if (!inBrowser() || savesData()) return false;
+  return isDesktopViewport() ? isMusicEnabled() : isSfxEnabled();
+}
+
+export function playIntroSound(atSeconds: number) {
+  if (!introSoundAllowed()) return;
+  unlockSfx();
+  if (!context) return;
+  const { introTrack, themeIntroOffset, themeLeadGain, introFadeInSeconds } = musicConfig;
+  if (isDesktopViewport()) {
+    playMusic(introTrack.desktop, {
+      offset: themeIntroOffset + atSeconds,
+      fadeIn: introFadeInSeconds,
+      level: themeLeadGain,
+    });
+    musicIsIntro = false;
+    return;
+  }
+  playMusic(introTrack.mobile, { offset: atSeconds, fadeIn: introFadeInSeconds });
+  musicIsIntro = true;
+}
+
+export function settleIntroSound(skipped: boolean) {
+  if (!musicIsIntro) return;
+  stopMusic(skipped ? musicConfig.introSkipFadeSeconds : musicConfig.introEndFadeSeconds);
+}
+
+export function setMusicEnabled(value: boolean) {
+  if (!inBrowser() || value === isMusicEnabled()) return;
+
+  musicEnabled = value;
+  storePreference(musicConfig.storageKey, value);
+  reflectMusicPreference(value);
+
+  if (value) {
+    unlockSfx();
+    startBackgroundMusic();
+    emit("music");
+    return;
+  }
+  stopMusic();
+  emit("music");
+  if (!anySoundEnabled()) {
+    stopKeepAlive();
+    scheduleSuspend();
+  }
+}
+
+export const toggleMusic = () => setMusicEnabled(!isMusicEnabled());
+
+export function toggleAllSound() {
+  const next = !anySoundEnabled();
+  setSfxEnabled(next);
+  setMusicEnabled(next);
+}
+
 function onStorage(event: StorageEvent) {
-  if (event.key !== sfxConfig.storageKey) return;
-  const value = event.newValue !== "off";
-  if (value === isSfxEnabled()) return;
-  enabled = value;
-  reflectPreference(value);
-  emit("state");
-  if (value) onActivity();
+  if (event.key === sfxConfig.storageKey) {
+    const value = event.newValue !== "off";
+    if (value === isSfxEnabled()) return;
+    enabled = value;
+    reflectPreference(value);
+    emit("state");
+  } else if (event.key === musicConfig.storageKey) {
+    const value = event.newValue !== "off";
+    if (value === isMusicEnabled()) return;
+    musicEnabled = value;
+    reflectMusicPreference(value);
+    if (value) startBackgroundMusic();
+    else stopMusic();
+    emit("music");
+  } else {
+    return;
+  }
+  if (anySoundEnabled()) onActivity();
   else stopKeepAlive();
 }
 
 function onVisibilityChange() {
   if (!context) return;
-  if (document.hidden) settle(context.suspend());
-  else if (isSfxEnabled()) {
+  if (document.hidden) {
+    musicVoice?.pause();
+    settle(context.suspend());
+  } else if (anySoundEnabled()) {
     resumeContext();
+    musicVoice?.resume();
     onActivity();
   }
+}
+
+function onViewportChange() {
+  if (!musicConfig.desktopOnly) return;
+  if (isDesktopViewport()) startBackgroundMusic();
+  else if (musicVoice && !musicIsIntro) stopMusic();
 }
 
 export function attachSfx() {
@@ -344,15 +693,18 @@ export function attachSfx() {
     const gestures = ["pointerdown", "keydown", "touchend"] as const;
     const gestureOptions = { capture: true, passive: true };
     const activity = ["pointermove", "wheel", "touchstart"] as const;
-    gestures.forEach((type) => window.addEventListener(type, unlockSfx, gestureOptions));
+    gestures.forEach((type) => window.addEventListener(type, unlockFromGesture, gestureOptions));
     activity.forEach((type) => window.addEventListener(type, onActivity, gestureOptions));
     document.addEventListener("visibilitychange", onVisibilityChange);
     window.addEventListener("storage", onStorage);
+    isDesktopViewport();
+    desktopMedia?.addEventListener("change", onViewportChange);
     detachWindow = () => {
-      gestures.forEach((type) => window.removeEventListener(type, unlockSfx, gestureOptions));
+      gestures.forEach((type) => window.removeEventListener(type, unlockFromGesture, gestureOptions));
       activity.forEach((type) => window.removeEventListener(type, onActivity, gestureOptions));
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("storage", onStorage);
+      desktopMedia?.removeEventListener("change", onViewportChange);
     };
   }
 
