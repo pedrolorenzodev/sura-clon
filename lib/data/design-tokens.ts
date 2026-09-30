@@ -290,6 +290,7 @@ export const gradientTokens: Token[] = [
   { name: "--gradient-podium-bronze-mobile", utility: "bg-podium-bronze-mobile", usage: "Tercer puesto, mobile" },
   { name: "--gradient-badge", utility: "bg-badge", usage: "Fondo de los badges de Torneos" },
   { name: "--gradient-claim", utility: "bg-claim", usage: "Fondo del botón Reclamar" },
+  { name: "--gradient-claim-glow", utility: "bg-claim-glow", usage: "Brillo detrás del cofre de Reclamar" },
   { name: "--gradient-level-segment", utility: "bg-level-segment", usage: "Segmento vacío de la barra de nivel" },
   { name: "--gradient-medal-claimable", utility: "bg-medal-claimable", usage: "Medalla lista para reclamar, en Mi Perfil" },
   { name: "--gradient-profile-banner-tint", utility: "bg-profile-banner-tint", usage: "Tinte violeta del banner de Mi Perfil" },

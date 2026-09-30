@@ -594,8 +594,18 @@
 
   --gradient-event-scrim: linear-gradient(180deg, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 0.8) 90.865%);
   --gradient-event-scrim-strong: linear-gradient(180deg, rgb(0 0 0 / 0) 0%, rgb(0 0 0 / 0.9) 73.077%);
-  --gradient-claim: linear-gradient(90deg, rgb(48 48 48 / 0.4) 0%, rgb(48 48 48 / 0.4) 100%),
-    linear-gradient(90deg, #091900 0%, #091900 100%);
+  --gradient-claim: linear-gradient(
+      170.68deg,
+      --alpha(var(--color-border-done) / 25%) 9.17%,
+      --alpha(var(--color-brand-vivid) / 25%) 56.66%,
+      --alpha(var(--color-border-done) / 25%) 98.52%
+    ),
+    linear-gradient(var(--color-surface-2), var(--color-surface-2));
+  --gradient-claim-glow: radial-gradient(
+    50% 50% at 50% 50%,
+    var(--color-brand-vivid),
+    --alpha(var(--color-brand-vivid) / 0%)
+  );
   --gradient-level-segment: linear-gradient(180deg, rgb(160 229 0 / 0.2), rgb(80 61 11 / 0.1));
   --gradient-medal-claimable: linear-gradient(
       141.3deg,
@@ -1058,6 +1068,10 @@
 
 @utility bg-claim {
   background-image: var(--gradient-claim);
+}
+
+@utility bg-claim-glow {
+  background-image: var(--gradient-claim-glow);
 }
 
 @utility bg-event-scrim {

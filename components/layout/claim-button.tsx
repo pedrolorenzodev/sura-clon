@@ -15,16 +15,21 @@ export function ClaimButton() {
       disabled={claimed}
       data-sfx="claim"
       data-sfx-hover
-      className="group flex cursor-pointer items-center gap-2 rounded-lg bg-claim py-1 pl-3 pr-4 ring-1 ring-inset ring-brand drop-shadow-claim transition-[box-shadow,opacity,translate] duration-200 enabled:hover:shadow-brand-glow enabled:focus-visible:shadow-brand-glow enabled:active:translate-y-px disabled:cursor-default disabled:opacity-50 motion-reduce:transition-none"
+      className="group flex cursor-pointer items-center gap-2 rounded-lg bg-claim py-1 pl-3 pr-4 ring-1 ring-inset ring-brand-vivid drop-shadow-claim transition-[box-shadow,opacity,translate] duration-200 enabled:hover:shadow-brand-glow enabled:focus-visible:shadow-brand-glow enabled:active:translate-y-px disabled:cursor-default disabled:opacity-50 motion-reduce:transition-none"
     >
       <span className="relative size-8 shrink-0">
-        <Image
-          src={dailyClaim.gameIconSrc}
-          alt=""
-          width={36}
-          height={32}
-          className="absolute -left-0.5 top-0.5 h-8 w-9 max-w-none"
-        />
+        <span className="absolute -left-0.5 top-0.5 h-8 w-9">
+          <span className="absolute inset-0 bg-claim-glow" />
+          <span className="absolute inset-0 overflow-hidden">
+            <Image
+              src={dailyClaim.gameIconSrc}
+              alt=""
+              width={128}
+              height={128}
+              className="absolute left-[-11.72%] top-[-20.6%] h-[135.52%] w-[123.3%] max-w-none"
+            />
+          </span>
+        </span>
         <Image
           src={dailyClaim.sparkleSrc}
           alt=""

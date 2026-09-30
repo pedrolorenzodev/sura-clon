@@ -26,6 +26,6 @@ export type DailyClaim = {
 export const dailyClaim: DailyClaim = {
   label: "Reclamar",
   reward: 50,
-  gameIconSrc: "/assets/home/cs2-logo.png",
+  gameIconSrc: "/assets/home/claim-chest.webp",
   sparkleSrc: "/assets/home/sparkling.webp",
 };
