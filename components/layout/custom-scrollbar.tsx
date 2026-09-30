@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 import { cssZoom } from "@/lib/css-zoom";
@@ -11,6 +12,7 @@ const MIN_THUMB = 32;
 type Metrics = { max: number; travel: number };
 
 export function CustomScrollbar() {
+  const isHome = usePathname() === "/";
   const track = useRef<HTMLDivElement>(null);
   const thumb = useRef<HTMLSpanElement>(null);
   const metrics = useRef<Metrics>({ max: 0, travel: 0 });
@@ -85,25 +87,30 @@ export function CustomScrollbar() {
   return (
     <div
       aria-hidden
-      className="intro-veil pointer-events-none fixed right-0 top-header-desktop z-40 hidden h-hero-content-desktop items-center pr-scrollbar-inset desktop:flex"
+      className={cn(
+        "intro-veil pointer-events-none fixed right-0 top-header-desktop z-40 hidden h-hero-content-desktop items-center desktop:flex",
+        isHome ? "pr-scrollbar-inset" : "pr-scrollbar-inset-route",
+      )}
     >
-      <div
-        ref={track}
-        onPointerDown={onTrackDown}
-        className={cn(
-          "group/scrollbar relative h-scrollbar w-4 touch-none opacity-0 transition-opacity duration-200 motion-reduce:transition-none",
-          "data-scrollable:pointer-events-auto data-scrollable:cursor-pointer data-scrollable:opacity-100",
-        )}
-      >
-        <span className="absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2 rounded-pill bg-border-dim/60" />
-        <span
-          ref={thumb}
-          onPointerDown={onThumbDown}
-          onPointerMove={onThumbMove}
-          onPointerUp={onThumbUp}
-          onPointerCancel={onThumbUp}
-          className="absolute left-1/2 top-0 h-(--thumb-h) w-1 -translate-x-1/2 translate-y-(--thumb-y) cursor-grab rounded-pill bg-accent transition-[width] duration-200 group-hover/scrollbar:w-1.5 group-data-dragging/scrollbar:w-1.5 group-data-dragging/scrollbar:cursor-grabbing motion-reduce:transition-none"
-        />
+      <div className="translate-x-0 opacity-100 transition-[opacity,translate] duration-(--scrollbar-show-duration) ease-reveal [:root[data-scrollbar-away]_&]:translate-x-2 [:root[data-scrollbar-away]_&]:opacity-0 [:root[data-scrollbar-away]_&]:duration-(--scrollbar-hide-duration) [:root[data-scrollbar-away]_&]:ease-in motion-reduce:transition-none">
+        <div
+          ref={track}
+          onPointerDown={onTrackDown}
+          className={cn(
+            "group/scrollbar relative h-scrollbar w-4 touch-none opacity-0 transition-opacity duration-(--scrollbar-show-duration) ease-reveal motion-reduce:transition-none",
+            "data-scrollable:pointer-events-auto data-scrollable:cursor-pointer data-scrollable:opacity-100",
+          )}
+        >
+          <span className="absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2 rounded-pill bg-border-dim/60" />
+          <span
+            ref={thumb}
+            onPointerDown={onThumbDown}
+            onPointerMove={onThumbMove}
+            onPointerUp={onThumbUp}
+            onPointerCancel={onThumbUp}
+            className="absolute left-1/2 top-0 h-(--thumb-h) w-1 -translate-x-1/2 translate-y-(--thumb-y) cursor-grab rounded-pill bg-accent transition-[width] duration-200 group-hover/scrollbar:w-1.5 group-data-dragging/scrollbar:w-1.5 group-data-dragging/scrollbar:cursor-grabbing motion-reduce:transition-none"
+          />
+        </div>
       </div>
     </div>
   );

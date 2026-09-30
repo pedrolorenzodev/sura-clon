@@ -5,6 +5,7 @@ import { createContext, useCallback, useContext, useEffect, useLayoutEffect, use
 
 import { defaultActiveSectionId, homeSectionIds } from "@/lib/data/navigation";
 import { dispatchTraverse, markAppReady } from "@/lib/motion";
+import { hideScrollbar, showScrollbarAfterTransition } from "@/lib/scrollbar-visibility";
 import { scrollInstant, scrollToElement } from "@/lib/smooth-scroll";
 import { useSectionSpy } from "@/lib/use-section-spy";
 
@@ -107,6 +108,7 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
     if (pathname !== firstPathRef.current) navigatedRef.current = true;
     if (pathname !== currentPathRef.current) {
       currentPathRef.current = pathname;
+      showScrollbarAfterTransition();
       if (traversedRef.current) traversedRef.current = false;
       else pushNavEntry(stackRef.current, pathname);
     }
@@ -116,8 +118,18 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     const remember = () => rememberScroll(stackRef.current);
+    const hideOnLeave = (event: MouseEvent) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>("a[href]") : null;
+      if (!link || (link.target && link.target !== "_self") || link.hasAttribute("download")) return;
+      if (link.origin === window.location.origin && link.pathname !== window.location.pathname) hideScrollbar();
+    };
     document.addEventListener("click", remember, true);
-    return () => document.removeEventListener("click", remember, true);
+    document.addEventListener("click", hideOnLeave, true);
+    return () => {
+      document.removeEventListener("click", remember, true);
+      document.removeEventListener("click", hideOnLeave, true);
+    };
   }, []);
 
   useEffect(() => {
@@ -128,6 +140,7 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
       if (to === from) return;
 
       event.stopImmediatePropagation();
+      hideScrollbar();
       rememberScroll(stackRef.current);
       const back = traverseNavStack(stackRef.current, to);
       traversedRef.current = true;
@@ -145,6 +158,7 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
   }, [router]);
 
   const goBack = useCallback(() => {
+    hideScrollbar();
     const { entries, index } = stackRef.current;
     if (index === 0) {
       router.push(HOME_PATH, { scroll: false, transitionTypes: ["nav-back"] });
@@ -162,6 +176,7 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
   const goTo = useCallback(
     (id: string) => {
       if (!isHome) {
+        hideScrollbar();
         pendingRef.current = id;
         router.push(HOME_PATH, { scroll: false, transitionTypes: ["nav-back"] });
         return;

@@ -320,6 +320,9 @@
   --spacing-header-mobile: 56px;
   --spacing-scrollbar: 278px;
   --spacing-scrollbar-inset: 20px;
+  --spacing-scrollbar-inset-route: 8px;
+  --scrollbar-hide-duration: 120ms;
+  --scrollbar-show-duration: 500ms;
 
   --spacing-route-edge: 40px;
   --spacing-route-gutter: 16px;
