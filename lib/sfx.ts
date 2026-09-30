@@ -51,6 +51,7 @@ let musicBus: { level: GainNode; duck: GainNode } | null = null;
 let musicVoice: MusicVoice | null = null;
 let musicIsIntro = false;
 let musicGestured = false;
+let autoStartGate: () => boolean = () => true;
 let bridgeTimer: ReturnType<typeof setInterval> | undefined;
 let desktopMedia: MediaQueryList | null = null;
 let voices: Voice[] = [];
@@ -280,6 +281,7 @@ export function unlockSfx() {
     master = context.createGain();
     master.gain.value = sfxConfig.masterGain;
     master.connect(context.destination);
+    context.addEventListener("statechange", startBackgroundMusic);
     startFetching();
   }
 
@@ -370,9 +372,10 @@ function request(requested: SfxSlot, options: SfxPlayOptions) {
   const askedAt = performance.now();
   const resumed = audio.state === "running" ? null : Promise.resolve(audio.resume()).catch(noop);
   Promise.all([decodeSlot(slot), resumed]).then(() => {
-    if (performance.now() - askedAt > sfxConfig.latePlayMs) return;
+    const waited = performance.now() - askedAt;
+    if (waited > sfxConfig.latePlayMs) return;
     if (!isSfxEnabled() || document.hidden || audio.state !== "running") return;
-    fire(slot, options);
+    fire(slot, options.offset === undefined ? options : { ...options, offset: options.offset + waited / 1000 });
   });
   return true;
 }
@@ -598,8 +601,14 @@ function playMusic(track: MusicTrack, options: MusicPlayOptions = {}) {
   emit("music");
 }
 
+export function setMusicAutoStartGate(gate: () => boolean) {
+  autoStartGate = gate;
+}
+
 function startBackgroundMusic() {
-  if (!musicGestured || musicVoice || !musicAllowed()) return;
+  if (musicVoice || !musicAllowed()) return;
+  const browserAllows = context?.state === "running" && autoStartGate();
+  if (!musicGestured && !browserAllows) return;
   playMusic(musicConfig.bridge.into);
 }
 
@@ -758,7 +767,8 @@ export function attachSfx() {
   }
 
   preloadSfx();
-  if (navigator.userActivation?.hasBeenActive) unlockSfx();
+  unlockSfx();
+  startBackgroundMusic();
 
   let attached = true;
   return () => {

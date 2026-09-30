@@ -3,8 +3,9 @@
 import { useEffect } from "react";
 
 import { isSfxSlot, sfxConfig, type SfxSlot } from "@/lib/data/sfx";
-import { LOST_EVENT, prefersReducedMotion, TRAVERSE_EVENT, type TraverseDetail } from "@/lib/motion";
-import { attachSfx, playSfx, toggleAllSound } from "@/lib/sfx";
+import { LOST_EVENT, prefersReducedMotion, TRAVERSE_EVENT, type LostDetail, type TraverseDetail } from "@/lib/motion";
+import { readIntroPhase } from "@/lib/hero-intro";
+import { attachSfx, playSfx, setMusicAutoStartGate, toggleAllSound } from "@/lib/sfx";
 
 const HOVER_SELECTOR = "[data-sfx-hover]";
 const CLICK_SELECTOR = "[data-sfx]";
@@ -95,8 +96,6 @@ function playOnRouteSwap(slot: SfxSlot) {
   routeSwapWait = requestAnimationFrame(check);
 }
 
-// TODO(sfx): poner acá el slot del sonido de la llegada a la 404 cuando exista en lib/data/sfx.ts
-const LOST_SLOT = null as SfxSlot | null;
 
 const playClick = (slot: SfxSlot) => (slot === "route" || slot === "back" ? playOnRouteSwap(slot) : playSfx(slot));
 
@@ -149,6 +148,7 @@ function isTyping(event: KeyboardEvent) {
 
 export function SfxListener() {
   useEffect(() => {
+    setMusicAutoStartGate(() => readIntroPhase() === null);
     const detach = attachSfx();
     let pointer: { x: number; y: number } | null = null;
     let lastKeyAt = -Infinity;
@@ -184,8 +184,9 @@ export function SfxListener() {
       playClick((event as CustomEvent<TraverseDetail>).detail.back ? "back" : "route");
     };
 
-    const onLost = () => {
-      if (LOST_SLOT) playSfx(LOST_SLOT);
+    const onLost = (event: Event) => {
+      const { elapsed } = (event as CustomEvent<LostDetail>).detail;
+      playSfx("lost", { offset: elapsed / 1000 });
     };
 
     const onKeyDown = (event: KeyboardEvent) => {

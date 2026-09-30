@@ -7,6 +7,7 @@ export const sfxSlotNames = [
   "claim",
   "deny",
   "type",
+  "lost",
 ] as const;
 
 export type SfxSlot = (typeof sfxSlotNames)[number];
@@ -88,6 +89,7 @@ export const sfxSlots: Record<SfxSlot, SfxSlotConfig> = {
   deny: { volume: 0.1, lane: "ui", jitter: 0.02 },
   route: { volume: 0.25, lane: "route", jitter: 0 },
   back: { volume: 0.26, lane: "route", jitter: 0 },
+  lost: { volume: 0.25, lane: "route", jitter: 0 },
   claim: { volume: 0.24, lane: "reward", jitter: 0 },
   type: { volume: 0.07, lane: "type", jitter: 0.05 },
 };
