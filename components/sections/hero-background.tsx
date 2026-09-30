@@ -16,9 +16,7 @@ type Breakpoint = "mobile" | "desktop" | "desktopHiDpi";
 const INTRO_START_TIMEOUT_MS = 1500;
 const INTRO_STALL_GRACE_MS = 1500;
 const SWAP_WAIT_MS = 300;
-const INTRO_CHIP_SELECTOR = "[data-intro-chip]";
 const HI_DPI_MIN_DEVICE_WIDTH = 2200;
-const SKIP_EVENTS = ["pointerdown", "keydown", "wheel", "touchstart"] as const;
 
 const posterImage = ({ poster }: HeroLoopVariant, hiDpi?: HeroLoopVariant) =>
   hiDpi
@@ -168,15 +166,10 @@ function IntroVideo({
         );
       }
     };
-    const skip = (event: Event) => {
-      if (event.target instanceof Element && event.target.closest(INTRO_CHIP_SELECTOR)) return;
-      if (readIntroPhase() === "pending") endIntro(true);
-    };
 
     video.muted = true;
     video.addEventListener("playing", onPlaying, { once: true });
     video.addEventListener("ended", finish);
-    for (const type of SKIP_EVENTS) window.addEventListener(type, skip, { passive: true });
     video.play().catch(finish);
 
     return () => {
@@ -185,7 +178,6 @@ function IntroVideo({
       window.clearTimeout(stallTimer);
       video.removeEventListener("playing", onPlaying);
       video.removeEventListener("ended", finish);
-      for (const type of SKIP_EVENTS) window.removeEventListener(type, skip);
     };
   }, [revealAt, onStarted]);
 
