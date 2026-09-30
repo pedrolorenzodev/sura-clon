@@ -51,7 +51,8 @@ let musicBus: { level: GainNode; duck: GainNode } | null = null;
 let musicVoice: MusicVoice | null = null;
 let musicIsIntro = false;
 let musicGestured = false;
-let autoStartGate: () => boolean = () => true;
+let introClock: (() => number) | null = null;
+let introPending: () => boolean = () => false;
 let bridgeTimer: ReturnType<typeof setInterval> | undefined;
 let desktopMedia: MediaQueryList | null = null;
 let voices: Voice[] = [];
@@ -601,14 +602,28 @@ function playMusic(track: MusicTrack, options: MusicPlayOptions = {}) {
   emit("music");
 }
 
-export function setMusicAutoStartGate(gate: () => boolean) {
-  autoStartGate = gate;
+export function setIntroPendingProbe(probe: () => boolean) {
+  introPending = probe;
 }
 
-function startBackgroundMusic() {
-  if (musicVoice || !musicAllowed()) return;
-  const browserAllows = context?.state === "running" && autoStartGate();
-  if (!musicGestured && !browserAllows) return;
+export function setIntroClock(clock: () => number) {
+  introClock = clock;
+}
+
+export const clearIntroClock = (clock: () => number) => {
+  if (introClock === clock) introClock = null;
+};
+
+export const isIntroSoundPlaying = () => introClock !== null && musicVoice !== null;
+
+export function startBackgroundMusic() {
+  if (musicVoice) return;
+  if (!musicGestured && context?.state !== "running") return;
+  if (introClock) {
+    playIntroSound(introClock());
+    return;
+  }
+  if (introPending() || !musicAllowed()) return;
   playMusic(musicConfig.bridge.into);
 }
 

@@ -1,5 +1,5 @@
 import { hero } from "@/lib/data/hero";
-import { settleIntroSound } from "@/lib/sfx";
+import { settleIntroSound, startBackgroundMusic } from "@/lib/sfx";
 
 export type IntroPhase = "pending" | "reveal";
 
@@ -61,10 +61,11 @@ export function revealIntro() {
 }
 
 export function endIntro(skipped = false) {
-  if (withSound) settleIntroSound(skipped);
+  settleIntroSound(skipped);
   withSound = false;
   document.documentElement.removeAttribute(INTRO_ATTRIBUTE);
   history.scrollRestoration = "auto";
+  startBackgroundMusic();
 }
 
 export const isIntroWithSound = () => withSound;

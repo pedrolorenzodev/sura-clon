@@ -6,7 +6,7 @@ import { useHeroSlide } from "@/components/sections/hero-slide-context";
 import { hero, type HeroLoop, type HeroLoopSource, type HeroLoopVariant } from "@/lib/data/hero";
 import { endIntro, isIntroWithSound, markIntroStarted, readIntroPhase, revealIntro } from "@/lib/hero-intro";
 import { subscribeSlideRequests, warmSlide } from "@/lib/hero-preload";
-import { playIntroSound } from "@/lib/sfx";
+import { clearIntroClock, playIntroSound, setIntroClock, startBackgroundMusic } from "@/lib/sfx";
 import { useIntroPhase, useIntroRun } from "@/lib/use-intro-phase";
 import { cn } from "@/lib/utils";
 
@@ -146,7 +146,11 @@ function IntroVideo({
 
     let revealTimer: number | undefined;
     let stallTimer: number | undefined;
-    const finish = () => endIntro();
+    const clock = () => video.currentTime;
+    const finish = () => {
+      clearIntroClock(clock);
+      endIntro();
+    };
     const startTimer = window.setTimeout(finish, INTRO_START_TIMEOUT_MS);
     const onPlaying = () => {
       window.clearTimeout(startTimer);
@@ -154,7 +158,9 @@ function IntroVideo({
       markIntroStarted();
       setVisible(true);
       onStarted();
+      setIntroClock(clock);
       if (isIntroWithSound()) playIntroSound(video.currentTime);
+      else startBackgroundMusic();
       revealTimer = window.setTimeout(
         revealIntro,
         Math.max(0, (revealAt - video.currentTime) * 1000),
@@ -176,6 +182,7 @@ function IntroVideo({
       window.clearTimeout(startTimer);
       window.clearTimeout(revealTimer);
       window.clearTimeout(stallTimer);
+      clearIntroClock(clock);
       video.removeEventListener("playing", onPlaying);
       video.removeEventListener("ended", finish);
     };

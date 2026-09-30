@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { hasHeroIntro, replayIntroWithSound } from "@/lib/hero-intro";
 import { readMs } from "@/lib/motion";
-import { introSoundAllowed, subscribeSfx } from "@/lib/sfx";
+import { introSoundAllowed, isIntroSoundPlaying, subscribeSfx } from "@/lib/sfx";
 import { useIntroPhase, useIntroRun, useIntroStarted } from "@/lib/use-intro-phase";
 
 type ChipState = "hidden" | "shown" | "gone";
@@ -26,7 +26,8 @@ export function IntroSoundChip() {
     if (navigator.userActivation?.hasBeenActive) dismissed.current = true;
 
     const unsubscribe = subscribeSfx((event) => {
-      if (event !== "play" && !introSoundAllowed()) dismiss();
+      if (event === "play") return;
+      if (!introSoundAllowed() || isIntroSoundPlaying()) dismiss();
     });
 
     return () => {
@@ -37,7 +38,7 @@ export function IntroSoundChip() {
   useEffect(() => {
     if (!started || run !== 0 || dismissed.current) return;
     const timer = window.setTimeout(() => {
-      if (!dismissed.current && introSoundAllowed()) setState("shown");
+      if (!dismissed.current && introSoundAllowed() && !isIntroSoundPlaying()) setState("shown");
     }, readMs("--intro-chip-delay"));
     return () => window.clearTimeout(timer);
   }, [started, run]);

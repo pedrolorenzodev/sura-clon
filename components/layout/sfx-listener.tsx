@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { isSfxSlot, sfxConfig, type SfxSlot } from "@/lib/data/sfx";
 import { LOST_EVENT, prefersReducedMotion, TRAVERSE_EVENT, type LostDetail, type TraverseDetail } from "@/lib/motion";
 import { readIntroPhase } from "@/lib/hero-intro";
-import { attachSfx, playSfx, setMusicAutoStartGate, toggleAllSound } from "@/lib/sfx";
+import { attachSfx, playSfx, setIntroPendingProbe, toggleAllSound } from "@/lib/sfx";
 
 const HOVER_SELECTOR = "[data-sfx-hover]";
 const CLICK_SELECTOR = "[data-sfx]";
@@ -148,7 +148,7 @@ function isTyping(event: KeyboardEvent) {
 
 export function SfxListener() {
   useEffect(() => {
-    setMusicAutoStartGate(() => readIntroPhase() === null);
+    setIntroPendingProbe(() => readIntroPhase() !== null);
     const detach = attachSfx();
     let pointer: { x: number; y: number } | null = null;
     let lastKeyAt = -Infinity;
