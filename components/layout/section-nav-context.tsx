@@ -52,6 +52,27 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
     return () => document.removeEventListener("click", remember, true);
   }, [isHome]);
 
+  useEffect(() => {
+    const onPopState = (event: PopStateEvent) => {
+      if (!event.state?.__NA) return;
+      const leavingHome = currentPathRef.current === HOME_PATH;
+      const toHome = window.location.pathname === HOME_PATH;
+      if (leavingHome && !toHome) homeScrollRef.current = window.scrollY;
+      if (leavingHome || !toHome) return;
+
+      event.stopImmediatePropagation();
+      restoreScrollRef.current = homeScrollRef.current;
+      const leftAt = window.scrollY;
+      const { pathname, search, hash } = window.location;
+      window.setTimeout(() => {
+        window.scrollTo({ top: leftAt, behavior: "instant" });
+        router.replace(pathname + search + hash, { scroll: false, transitionTypes: ["nav-back"] });
+      });
+    };
+    window.addEventListener("popstate", onPopState, true);
+    return () => window.removeEventListener("popstate", onPopState, true);
+  }, [router]);
+
   const goBack = useCallback(() => {
     if (navigatedRef.current && previousPathRef.current !== HOME_PATH) {
       router.back();
