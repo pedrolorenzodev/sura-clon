@@ -12,7 +12,7 @@ import { useSectionSpy } from "@/lib/use-section-spy";
 const HOME_PATH = "/";
 const NAV_STACK_KEY = "sura-nav-stack";
 
-type NavEntry = { path: string; y: number };
+type NavEntry = { path: string; y: number; missing?: boolean };
 type NavStack = { entries: NavEntry[]; index: number };
 
 const navigationType = () =>
@@ -53,6 +53,14 @@ function pushNavEntry(stack: NavStack, path: string) {
   writeNavStack(stack);
 }
 
+function backTargetIndex(stack: NavStack, pathname: string) {
+  for (let at = stack.index - 1; at >= 0; at -= 1) {
+    const entry = stack.entries[at];
+    if (!entry.missing && entry.path !== pathname) return at;
+  }
+  return -1;
+}
+
 function traverseNavStack(stack: NavStack, to: string) {
   const { entries, index } = stack;
   let back: boolean;
@@ -79,6 +87,7 @@ type SectionNavState = {
   backPath: string | null;
   goTo: (id: string) => void;
   goBack: () => void;
+  markMissing: () => void;
 };
 
 const SectionNavContext = createContext<SectionNavState | null>(null);
@@ -97,6 +106,7 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
   const traversedRef = useRef(false);
   const ownBackRef = useRef(false);
   const restoreScrollRef = useRef<number | null>(null);
+  const docBaseRef = useRef(0);
   const stackRef = useRef<NavStack>({ entries: [{ path: pathname, y: 0 }], index: 0 });
   const [canGoBack, setCanGoBack] = useState(false);
   const [backPath, setBackPath] = useState<string | null>(null);
@@ -104,7 +114,10 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
   useEffect(markAppReady, []);
 
   useLayoutEffect(() => {
-    if (pathname === firstPathRef.current && !navigatedRef.current) stackRef.current = readNavStack(pathname);
+    if (pathname === firstPathRef.current && !navigatedRef.current) {
+      stackRef.current = readNavStack(pathname);
+      docBaseRef.current = stackRef.current.index;
+    }
     if (pathname !== firstPathRef.current) navigatedRef.current = true;
     if (pathname !== currentPathRef.current) {
       currentPathRef.current = pathname;
@@ -113,7 +126,7 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
       else pushNavEntry(stackRef.current, pathname);
     }
     setCanGoBack(stackRef.current.index > 0);
-    setBackPath(stackRef.current.entries[stackRef.current.index - 1]?.path ?? null);
+    setBackPath(stackRef.current.entries[backTargetIndex(stackRef.current, pathname)]?.path ?? null);
   }, [pathname]);
 
   useEffect(() => {
@@ -159,19 +172,26 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
 
   const goBack = useCallback(() => {
     hideScrollbar();
-    const { entries, index } = stackRef.current;
-    if (index === 0) {
+    const stack = stackRef.current;
+    const target = backTargetIndex(stack, currentPathRef.current);
+    if (target === -1) {
       router.push(HOME_PATH, { scroll: false, transitionTypes: ["nav-back"] });
       return;
     }
-    const freshDocument = !navigatedRef.current && navigationType() === "navigate";
-    if (freshDocument) {
-      router.push(entries[index - 1].path, { scroll: false, transitionTypes: ["nav-back"] });
+    if (target === stack.index - 1 && target >= docBaseRef.current) {
+      ownBackRef.current = true;
+      router.back();
       return;
     }
-    ownBackRef.current = true;
-    router.back();
+    router.push(stack.entries[target].path, { scroll: false, transitionTypes: ["nav-back"] });
   }, [router]);
+
+  const markMissing = useCallback(() => {
+    const entry = stackRef.current.entries[stackRef.current.index];
+    if (!entry) return;
+    entry.missing = true;
+    writeNavStack(stackRef.current);
+  }, []);
 
   const goTo = useCallback(
     (id: string) => {
@@ -212,8 +232,8 @@ export function SectionNavProvider({ children }: { children: React.ReactNode }) 
   }, [isHome, select]);
 
   const value = useMemo(
-    () => ({ activeId: isHome ? activeId : null, isHome, canGoBack, backPath, goTo, goBack }),
-    [activeId, isHome, canGoBack, backPath, goTo, goBack],
+    () => ({ activeId: isHome ? activeId : null, isHome, canGoBack, backPath, goTo, goBack, markMissing }),
+    [activeId, isHome, canGoBack, backPath, goTo, goBack, markMissing],
   );
 
   return <SectionNavContext.Provider value={value}>{children}</SectionNavContext.Provider>;
