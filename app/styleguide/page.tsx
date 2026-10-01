@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { TokenValue } from "@/components/styleguide/token-value";
 import { cn } from "@/lib/utils";
 import {
@@ -271,19 +270,6 @@ export default function StyleguidePage() {
         </ul>
       </Section>
 
-      <Section
-        title="Button"
-        description="El primitive de shadcn con los tokens de SURA. Todavía sin re-estilar: se ajusta cuando el primer bloque necesite un botón."
-      >
-        <div className="flex flex-wrap items-center gap-4">
-          <Button>Default</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="outline">Outline</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="link">Link</Button>
-          <Button variant="destructive">Destructive</Button>
-        </div>
-      </Section>
     </main>
   );
 }
