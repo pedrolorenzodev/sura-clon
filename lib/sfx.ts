@@ -290,10 +290,13 @@ export function unlockSfx() {
   onActivity();
 }
 
-function unlockFromGesture() {
+const MUSIC_TOGGLE_SELECTOR = "[data-music-toggle]";
+
+function unlockFromGesture(event: Event) {
   unlockSfx();
   musicGestured = true;
-  startBackgroundMusic();
+  const onMusicToggle = event.target instanceof Element && event.target.closest(MUSIC_TOGGLE_SELECTOR) !== null;
+  if (!onMusicToggle) startBackgroundMusic();
 }
 
 function fadeOut(voice: Voice, now: number) {

@@ -9,6 +9,7 @@ import {
   getMusicLevelSnapshot,
   getMusicSnapshot,
   setMusicLevel,
+  startBackgroundMusic,
   subscribeSfx,
   toggleMusic,
   type MusicState,
@@ -38,6 +39,7 @@ export function MusicToggle() {
   const [open, setOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const armedAtPress = useRef(false);
 
   const closeToTrigger = () => {
     setOpen(false);
@@ -63,7 +65,19 @@ export function MusicToggle() {
             aria-pressed={state !== "off"}
             data-sfx-hover
             data-playing={state === "playing" || undefined}
-            onClick={toggleMusic}
+            data-music-toggle
+            onPointerDown={() => {
+              armedAtPress.current = getMusicSnapshot() === "armed";
+            }}
+            onClick={() => {
+              const armed = armedAtPress.current || getMusicSnapshot() === "armed";
+              armedAtPress.current = false;
+              if (armed) {
+                startBackgroundMusic();
+                if (getMusicSnapshot() === "playing") return;
+              }
+              toggleMusic();
+            }}
             onFocus={(event) => {
               if (event.currentTarget.matches(":focus-visible")) setOpen(true);
             }}
@@ -71,6 +85,7 @@ export function MusicToggle() {
               if (!contentRef.current?.contains(event.relatedTarget as Node | null)) setOpen(false);
             }}
             onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") armedAtPress.current = getMusicSnapshot() === "armed";
               if (event.key !== "Tab" || event.shiftKey || !open) return;
               const input = contentRef.current?.querySelector("input");
               if (!input) return;

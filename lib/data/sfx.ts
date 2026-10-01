@@ -83,15 +83,15 @@ export type MusicConfig = {
 };
 
 export const sfxSlots: Record<SfxSlot, SfxSlotConfig> = {
-  hover: { volume: 0.12, lane: "hover", jitter: 0.04 },
-  click: { volume: 0.15, lane: "ui", jitter: 0.03 },
-  select: { volume: 0.2, lane: "ui", jitter: 0.02 },
-  deny: { volume: 0.1, lane: "ui", jitter: 0.02 },
-  route: { volume: 0.25, lane: "route", jitter: 0 },
-  back: { volume: 0.26, lane: "route", jitter: 0 },
-  lost: { volume: 0.25, lane: "route", jitter: 0 },
-  claim: { volume: 0.24, lane: "reward", jitter: 0 },
-  type: { volume: 0.07, lane: "type", jitter: 0.05 },
+  hover: { volume: 0.168, lane: "hover", jitter: 0.04 },
+  click: { volume: 0.21, lane: "ui", jitter: 0.03 },
+  select: { volume: 0.28, lane: "ui", jitter: 0.02 },
+  deny: { volume: 0.14, lane: "ui", jitter: 0.02 },
+  route: { volume: 0.1875, lane: "route", jitter: 0 },
+  back: { volume: 0.195, lane: "route", jitter: 0 },
+  lost: { volume: 0.1875, lane: "route", jitter: 0 },
+  claim: { volume: 0.336, lane: "reward", jitter: 0 },
+  type: { volume: 0.098, lane: "type", jitter: 0.05 },
 };
 
 export const sfxConfig: SfxConfig = {

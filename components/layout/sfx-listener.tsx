@@ -96,7 +96,6 @@ function playOnRouteSwap(slot: SfxSlot) {
   routeSwapWait = requestAnimationFrame(check);
 }
 
-
 const playClick = (slot: SfxSlot) => (slot === "route" || slot === "back" ? playOnRouteSwap(slot) : playSfx(slot));
 
 function linkSlot(event: MouseEvent, target: Element): SfxSlot | "silent" | null {
@@ -219,7 +218,6 @@ export function SfxListener() {
       document.removeEventListener("keydown", onKeyDown);
       window.removeEventListener(TRAVERSE_EVENT, onTraverse);
       window.removeEventListener(LOST_EVENT, onLost);
-      cancelAnimationFrame(routeSwapWait);
       detach();
     };
   }, []);
