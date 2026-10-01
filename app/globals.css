@@ -2501,9 +2501,6 @@ html:active-view-transition-type(nav-back)::view-transition-image-pair(route-shu
   --music-bar-duration: 900ms;
   --music-bar-min: 3px;
   --music-bar-max: 15px;
-  --intro-chip-delay: 400ms;
-  --intro-chip-hold: 7000ms;
-  --intro-chip-fade: 300ms;
 }
 
 @utility music-bars {
@@ -2552,26 +2549,6 @@ html:active-view-transition-type(nav-back)::view-transition-image-pair(route-shu
   }
   to {
     height: var(--music-bar-max);
-  }
-}
-
-@utility intro-chip {
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity var(--intro-chip-fade) var(--ease-reveal),
-    visibility 0s linear var(--intro-chip-fade);
-
-  &[data-shown] {
-    opacity: 1;
-    visibility: visible;
-    transition-delay: 0s;
-    animation: flicker var(--flicker-duration) linear both;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-    animation: none;
   }
 }
 

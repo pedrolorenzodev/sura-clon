@@ -617,7 +617,6 @@ export const clearIntroClock = (clock: () => number) => {
   if (introClock === clock) introClock = null;
 };
 
-export const isIntroSoundPlaying = () => introClock !== null && musicVoice !== null;
 
 export function startBackgroundMusic() {
   if (musicVoice) return;
@@ -644,7 +643,7 @@ export function introSoundAllowed() {
   return isDesktopViewport() ? isMusicEnabled() : isSfxEnabled();
 }
 
-export function playIntroSound(atSeconds: number) {
+function playIntroSound(atSeconds: number) {
   if (!introSoundAllowed()) return;
   unlockSfx();
   if (!context) return;

@@ -5,16 +5,11 @@ export type IntroPhase = "pending" | "reveal";
 
 const INTRO_ATTRIBUTE = "data-intro";
 const STARTED_ATTRIBUTE = "data-intro-started";
-const RUN_ATTRIBUTE = "data-intro-run";
 const START_DEADLINE_MS = 2000;
 const FAILSAFE_MS = 7000;
 
 const defaultSlide = hero.slides[hero.activeSlide];
 const hasIntro = defaultSlide.framing === "loop" && Boolean(defaultSlide.loop.intro);
-
-let withSound = false;
-
-export const hasHeroIntro = hasIntro;
 
 export const introBootScript = hasIntro
   ? `(function(){try{
@@ -28,7 +23,7 @@ function t(){if(d.getAttribute("${INTRO_ATTRIBUTE}")==="pending"){if(scrollY)scr
 addEventListener("scroll",t,{passive:true});
 function e(){d.removeAttribute("${INTRO_ATTRIBUTE}");h.scrollRestoration="auto"}
 setTimeout(function(){if(!d.hasAttribute("${STARTED_ATTRIBUTE}"))e()},${START_DEADLINE_MS});
-setTimeout(function(){if(!d.hasAttribute("${RUN_ATTRIBUTE}"))e()},${FAILSAFE_MS});
+setTimeout(e,${FAILSAFE_MS});
 }catch(e){}})();`
   : "";
 
@@ -37,15 +32,11 @@ export function readIntroPhase(): IntroPhase | null {
   return value === "pending" || value === "reveal" ? value : null;
 }
 
-export const readIntroStarted = () => document.documentElement.hasAttribute(STARTED_ATTRIBUTE);
-
-export const readIntroRun = () => Number(document.documentElement.getAttribute(RUN_ATTRIBUTE) ?? 0);
-
 export function subscribeIntroPhase(onChange: () => void) {
   const observer = new MutationObserver(onChange);
   observer.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: [INTRO_ATTRIBUTE, STARTED_ATTRIBUTE, RUN_ATTRIBUTE],
+    attributeFilter: [INTRO_ATTRIBUTE, STARTED_ATTRIBUTE],
   });
   return () => observer.disconnect();
 }
@@ -62,18 +53,7 @@ export function revealIntro() {
 
 export function endIntro(skipped = false) {
   settleIntroSound(skipped);
-  withSound = false;
   document.documentElement.removeAttribute(INTRO_ATTRIBUTE);
   history.scrollRestoration = "auto";
   startBackgroundMusic();
-}
-
-export const isIntroWithSound = () => withSound;
-
-export function replayIntroWithSound() {
-  if (!hasIntro) return;
-  withSound = true;
-  const root = document.documentElement;
-  root.setAttribute(RUN_ATTRIBUTE, String(readIntroRun() + 1));
-  root.setAttribute(INTRO_ATTRIBUTE, "pending");
 }

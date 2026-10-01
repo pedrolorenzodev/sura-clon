@@ -4,10 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useHeroSlide } from "@/components/sections/hero-slide-context";
 import { hero, type HeroLoop, type HeroLoopSource, type HeroLoopVariant } from "@/lib/data/hero";
-import { endIntro, isIntroWithSound, markIntroStarted, readIntroPhase, revealIntro } from "@/lib/hero-intro";
+import { endIntro, markIntroStarted, readIntroPhase, revealIntro } from "@/lib/hero-intro";
 import { subscribeSlideRequests, warmSlide } from "@/lib/hero-preload";
-import { clearIntroClock, playIntroSound, setIntroClock, startBackgroundMusic } from "@/lib/sfx";
-import { useIntroPhase, useIntroRun } from "@/lib/use-intro-phase";
+import { clearIntroClock, setIntroClock, startBackgroundMusic } from "@/lib/sfx";
+import { useIntroPhase } from "@/lib/use-intro-phase";
 import { cn } from "@/lib/utils";
 
 type NetworkInformation = { saveData?: boolean };
@@ -159,8 +159,7 @@ function IntroVideo({
       setVisible(true);
       onStarted();
       setIntroClock(clock);
-      if (isIntroWithSound()) playIntroSound(video.currentTime);
-      else startBackgroundMusic();
+      startBackgroundMusic();
       revealTimer = window.setTimeout(
         revealIntro,
         Math.max(0, (revealAt - video.currentTime) * 1000),
@@ -210,7 +209,6 @@ function IntroVideo({
 
 function HeroLoopArt({ loop, active, videoAllowed }: { loop: HeroLoop; active: boolean; videoAllowed: boolean }) {
   const introPhase = useIntroPhase();
-  const introRun = useIntroRun();
   const introActive = Boolean(loop.intro) && introPhase !== null;
   const breakpoint = useLoopBreakpoint(introActive, Boolean(loop.desktopHiDpi));
   const variant =
@@ -266,7 +264,7 @@ function HeroLoopArt({ loop, active, videoAllowed }: { loop: HeroLoop; active: b
       )}
       {introSources && introActive && loop.intro && (
         <IntroVideo
-          key={`intro-${breakpoint}-${introRun}`}
+          key={`intro-${breakpoint}`}
           sources={introSources}
           revealAt={loop.intro.revealAt}
           onStarted={markIntroStarted}
