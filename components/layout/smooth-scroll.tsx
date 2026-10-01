@@ -7,7 +7,7 @@ import { DESKTOP_MIN_WIDTH } from "@/lib/desktop-zoom";
 import { setSmoothScroll } from "@/lib/smooth-scroll";
 import { useIntroPhase } from "@/lib/use-intro-phase";
 
-const SMOOTH_LERP = 0.18;
+const SMOOTH_LERP = 0.25;
 const OVERLAY_SELECTOR = '[role="dialog"], [role="menu"], [role="listbox"], [data-lenis-prevent]';
 const CAROUSEL_SELECTOR = "[data-carousel]";
 const WHEEL_GESTURE_IDLE_MS = 150;
