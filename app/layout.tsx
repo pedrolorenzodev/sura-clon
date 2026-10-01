@@ -32,7 +32,7 @@ const inter = Inter({
 const description = "Ecosistema gaming de LATAM: torneos, rankings, misiones y noticias.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sura-clon.vercel.app"),
+  metadataBase: new URL("https://sura-demo.com"),
   title: "Sura Gaming",
   description,
   openGraph: {
@@ -54,6 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${monument.variable} ${khInterference.variable} ${inter.variable} h-full antialiased`}
     >

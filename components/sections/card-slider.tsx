@@ -63,6 +63,7 @@ export function CardSlider({
     <div className={cn("relative", className)}>
       <div
         ref={viewport}
+        data-carousel
         onScroll={sync}
         data-at-start={atStart || undefined}
         data-at-end={atEnd || undefined}
@@ -79,7 +80,7 @@ export function CardSlider({
           flush ? "lift-clip-flush" : "lift-clip",
           fade && "slider-fade",
           reveal && "slides-reveal",
-          "no-scrollbar -mx-6 flex overflow-x-auto overscroll-x-none overflow-y-hidden px-6",
+          "no-scrollbar -mx-6 flex snap-x snap-mandatory scroll-px-6 overflow-x-auto overscroll-x-none overflow-y-hidden px-6 *:snap-start *:snap-always",
           viewportClassName,
         )}
       >

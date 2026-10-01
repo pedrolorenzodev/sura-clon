@@ -9,6 +9,22 @@ import { useIntroPhase } from "@/lib/use-intro-phase";
 
 const SMOOTH_LERP = 0.18;
 const OVERLAY_SELECTOR = '[role="dialog"], [role="menu"], [role="listbox"], [data-lenis-prevent]';
+const CAROUSEL_SELECTOR = "[data-carousel]";
+const WHEEL_GESTURE_IDLE_MS = 150;
+
+function horizontalCarouselGesture() {
+  let horizontal = false;
+  let idleUntil = 0;
+  return ({ deltaX, deltaY, event }: { deltaX: number; deltaY: number; event: WheelEvent | TouchEvent }) => {
+    if (!(event instanceof WheelEvent)) return false;
+    if (event.timeStamp > idleUntil) {
+      const overCarousel = event.target instanceof Element && event.target.closest(CAROUSEL_SELECTOR) !== null;
+      horizontal = overCarousel && (event.shiftKey || Math.abs(deltaX) > Math.abs(deltaY));
+    }
+    idleUntil = event.timeStamp + WHEEL_GESTURE_IDLE_MS;
+    return horizontal;
+  };
+}
 
 const isScrollLocked = () =>
   document.documentElement.style.overflow === "hidden" || document.querySelector('[role="dialog"]') !== null;
@@ -33,10 +49,13 @@ export function SmoothScroll() {
 
     const sync = () => {
       if (query.matches && !lenis) {
+        const isHorizontalCarouselGesture = horizontalCarouselGesture();
         lenis = new Lenis({
           lerp: SMOOTH_LERP,
           wheelMultiplier: 1,
           autoRaf: true,
+          virtualScroll: (data) => !isHorizontalCarouselGesture(data),
+          stopInertiaOnNavigate: true,
           prevent: (node) => isScrollLocked() || node.closest(OVERLAY_SELECTOR) !== null,
         });
         setSmoothScroll(lenis);
