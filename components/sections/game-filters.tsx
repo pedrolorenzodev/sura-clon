@@ -142,7 +142,7 @@ export function GameFiltersSheet({
           >
             Limpiar
           </button>
-          <SheetClose render={<BrandCta label={`Ver ${resultsCount} juegos`} className="flex h-12 flex-1" labelClassName="text-sm" />} />
+          <SheetClose render={<BrandCta label={`Ver ${resultsCount} ${resultsCount === 1 ? "juego" : "juegos"}`} className="flex h-12 flex-1" labelClassName="text-sm" />} />
         </div>
       </SheetContent>
     </Sheet>

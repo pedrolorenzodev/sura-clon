@@ -31,7 +31,7 @@ export const tournaments: Tournament[] = [
     id: "contenders-training-center-108",
     game: "PUBG: BATTLEGROUNDS",
     title: "Contenders Training Center #108",
-    date: "Ene 24, 14:00 PM",
+    date: "Ene 24, 14:00",
     prize: "40 USDC",
     badges: [
       { icon: "mode", label: "Battle Royale" },
@@ -48,7 +48,7 @@ export const tournaments: Tournament[] = [
     id: "american-cup",
     game: "Apex Legends",
     title: "American Cup",
-    date: "Abr 30, 14:00 PM",
+    date: "Abr 30, 14:00",
     prize: "40 USDC",
     badges: [
       { icon: "mode", label: "Battle Royale" },
@@ -65,7 +65,7 @@ export const tournaments: Tournament[] = [
     id: "copa-latam-sura",
     game: "Valorant",
     title: "Copa LATAM Sura",
-    date: "Dic 02, 19:00 PM",
+    date: "Dic 02, 19:00",
     prize: "250 USDC",
     badges: [
       { icon: "mode", label: "Eliminación" },
@@ -82,7 +82,7 @@ export const tournaments: Tournament[] = [
     id: "noche-de-duelos",
     game: "Street Fighter 6",
     title: "Noche de Duelos",
-    date: "Dic 05, 21:30 PM",
+    date: "Dic 05, 21:30",
     prize: "20 USDC",
     badges: [
       { icon: "mode", label: "Eliminación" },
@@ -98,7 +98,7 @@ export const tournaments: Tournament[] = [
     id: "clasificatorio-abierto",
     game: "Call of Duty",
     title: "Clasificatorio Abierto",
-    date: "Dic 09, 18:00 PM",
+    date: "Dic 09, 18:00",
     prize: "100 USDC",
     badges: [
       { icon: "mode", label: "Battle Royale" },
@@ -114,7 +114,7 @@ export const tournaments: Tournament[] = [
     id: "contenders-training-center-110",
     game: "Fortnite",
     title: "Contenders Training Center #110",
-    date: "Dic 11, 14:00 PM",
+    date: "Dic 11, 14:00",
     prize: "40 USDC",
     badges: [
       { icon: "mode", label: "Battle Royale" },
@@ -133,7 +133,7 @@ export const tournaments: Tournament[] = [
     id: "final-de-temporada",
     game: "League of Legends",
     title: "Final de Temporada",
-    date: "Dic 14, 20:00 PM",
+    date: "Dic 14, 20:00",
     prize: "500 USDC",
     badges: [
       { icon: "mode", label: "Eliminación" },
@@ -150,7 +150,7 @@ export const tournaments: Tournament[] = [
     id: "torneo-relampago",
     game: "Rocket League",
     title: "Torneo Relámpago",
-    date: "Dic 18, 17:00 PM",
+    date: "Dic 18, 17:00",
     prize: "60 USDC",
     badges: [
       { icon: "mode", label: "Eliminación" },
@@ -166,7 +166,7 @@ export const tournaments: Tournament[] = [
     id: "valorant-champions-tour",
     game: "Valorant",
     title: "Valorant Champions Tour",
-    date: "Nov 28, 20:00 PM",
+    date: "Nov 28, 20:00",
     prize: "50 USDC",
     badges: [
       { icon: "mode", label: "Eliminación" },
@@ -183,7 +183,7 @@ export const tournaments: Tournament[] = [
     id: "fortnite-tournament",
     game: "Fortnite",
     title: "Fortnite Tournament",
-    date: "Nov 28, 20:00 PM",
+    date: "Nov 28, 20:00",
     prize: "5 USDC",
     badges: [
       { icon: "format", label: "1v1" },
@@ -198,7 +198,7 @@ export const tournaments: Tournament[] = [
     id: "liga-ancestral",
     game: "Dota 2",
     title: "Liga Ancestral",
-    date: "Ene 08, 19:00 PM",
+    date: "Ene 08, 19:00",
     prize: "150 USDC",
     badges: [
       { icon: "mode", label: "Liga" },
@@ -215,7 +215,7 @@ export const tournaments: Tournament[] = [
     id: "copa-rivals",
     game: "Marvel Rivals",
     title: "Copa Rivals",
-    date: "Ene 12, 18:00 PM",
+    date: "Ene 12, 18:00",
     prize: "80 USDC",
     badges: [
       { icon: "mode", label: "Eliminación" },
@@ -231,7 +231,7 @@ export const tournaments: Tournament[] = [
     id: "copa-sura-fc",
     game: "EA SPORTS FC 25",
     title: "Copa Sura FC",
-    date: "Ene 15, 20:00 PM",
+    date: "Ene 15, 20:00",
     prize: "60 USDC",
     badges: [
       { icon: "mode", label: "Eliminación" },
@@ -248,7 +248,7 @@ export const tournaments: Tournament[] = [
     id: "overwatch-open",
     game: "Overwatch 2",
     title: "Overwatch Open",
-    date: "Ene 19, 19:30 PM",
+    date: "Ene 19, 19:30",
     prize: "75 USDC",
     badges: [
       { icon: "mode", label: "Eliminación" },
@@ -264,7 +264,7 @@ export const tournaments: Tournament[] = [
     id: "noches-de-asedio",
     game: "Rainbow Six Siege",
     title: "Noches de Asedio",
-    date: "Ene 22, 21:00 PM",
+    date: "Ene 22, 21:00",
     prize: "90 USDC",
     badges: [
       { icon: "mode", label: "Eliminación" },
@@ -280,7 +280,7 @@ export const tournaments: Tournament[] = [
     id: "puno-de-hierro",
     game: "TEKKEN 8",
     title: "Puño de Hierro",
-    date: "Ene 26, 21:30 PM",
+    date: "Ene 26, 21:30",
     prize: "30 USDC",
     badges: [
       { icon: "mode", label: "Eliminación" },

@@ -58,7 +58,7 @@ export const tournamentDescription = (tournament: Tournament) => [
       "Treinta minutos antes del inicio te llega el link de la sala al Discord de Sura.",
       "Los resultados se reportan con una captura de pantalla en el canal del evento.",
       "El premio se acredita en tu billetera dentro de las 48 horas posteriores a la final.",
-      "💡 ¡Aporta energía, invita a tus amigos y ven a crear recuerdos con SURA! ¡Al fin y al cabo, es la noche de los gamers!",
+      "💡 ¡Aporta energía, invita a tus amigos y ven a crear recuerdos con SURA! ¡Al fin y al cabo, el juego es mejor en equipo!",
     ],
   },
   {
@@ -76,7 +76,7 @@ export const tournamentFaqs = [
   {
     question: "¿Cómo me registro?",
     answer:
-      "Si nunca jugaste tenés que ingresar al sitio, desde tu computadora o celular y registrarte. Podés hacerlo con tu cuenta de Google o bien con tus datos personales creando una cuenta en el sitio. Además, deberás definir el nombre de tu equipo de fantasía.",
+      "Si nunca jugaste tenés que ingresar al sitio, desde tu computadora o celular y registrarte. Podés hacerlo con tu cuenta de Google o bien con tus datos personales creando una cuenta en el sitio.",
   },
   {
     question: "¿Cómo sé si me inscribí?",
@@ -93,7 +93,7 @@ export const tournamentFaqs = [
 export function tournamentPrizes(prize: string) {
   const [amount, unit] = prize.split(" ");
   const total = Number(amount);
-  const shares = [1, 0.4, 0.2, 0.1, 0.08, 0.06, 0.04, 0.02, 0, 0];
+  const shares = [0.4, 0.22, 0.13, 0.08, 0.06, 0.05, 0.04, 0.02, 0, 0];
   return shares.map((share, index) => ({
     position: index + 1,
     prize: share ? `${Math.max(1, Math.round(total * share))} ${unit}` : null,

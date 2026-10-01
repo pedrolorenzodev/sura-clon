@@ -289,7 +289,7 @@ export const games: Game[] = gamesCatalog.slice(0, 8);
 
 export const gamesPromo = {
   title: ["Juega y viaja al", "Mundial FIFA 2026"],
-  body: ["Para completar esta misión, debes hacer clic en", "el botón de abajo para visitar la página requerida."],
+  body: ["Jugá las fechas del Mundial, sumá Sura Points", "y ganá un viaje para ver la final en vivo."],
   cta: "Jugar ahora",
   imageSrc: "/assets/home/juegos/banner.webp",
 };
@@ -300,6 +300,6 @@ export const gamesRoutePromo = {
   ...gamesPromo,
   label: "¡Novedad!",
   bodyMobile:
-    "Para completar esta misión, debes hacer clic en el botón de abajo para visitar la página requerida.",
+    "Jugá las fechas del Mundial, sumá Sura Points y ganá un viaje para ver la final en vivo.",
   imageSrcMobile: "/assets/games/banner-mobile.webp",
 };

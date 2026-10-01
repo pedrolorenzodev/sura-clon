@@ -28,7 +28,7 @@ const quote = (text: string): NewsBlock => ({ type: "quote", text });
 export const news: NewsItem[] = [
   {
     id: "elden-ring",
-    title: "Elden Ring: Shadow of the Erdtree Expansion Gets Official Release Dateerint",
+    title: "Elden Ring: Shadow of the Erdtree Expansion Gets Official Release Date",
     imageSrc: "/assets/news/elden-ring.webp",
     readTime: "5 min",
     date: "30/03/25",
