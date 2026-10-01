@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 export function NewsCard({ item, fluid }: { item: NewsItem; fluid?: boolean }) {
   return (
-    <article className={cn("flex h-full", fluid ? "w-full" : "w-44 shrink-0 desktop:w-70")}>
+    <article className={cn("flex h-full", fluid ? "w-full" : "w-44 shrink-0 desktop:w-full")}>
       <CardLink
         href={detailHref("news", item.id)}
         className="group relative flex w-full flex-col gap-3 rounded-xl bg-surface-3 p-3 transition-[translate,box-shadow,background-color,scale] duration-200 ease-reveal hover:-translate-y-0.5 hover:bg-surface-2 hover:shadow-card-hover focus-visible:-translate-y-0.5 focus-visible:bg-surface-2 focus-visible:shadow-card-hover active:scale-98 motion-reduce:transition-none desktop:gap-4 desktop:bg-background desktop:hover:bg-surface-3 desktop:focus-visible:bg-surface-3"

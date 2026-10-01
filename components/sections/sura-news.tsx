@@ -18,8 +18,8 @@ export function SuraNews() {
       <div className="flex flex-col gap-title-gap desktop:hidden">
         <SectionHeader title={newsIntro.title} href="/news" />
         {/* no tocar: lift-room y -mx-6/px-6 son aire para la sombra del hover, no espaciado */}
-        <ul className="lift-room no-scrollbar -mx-6 flex gap-3 overflow-x-auto overscroll-x-none overflow-y-hidden px-6">
-          {news.map((item) => (
+        <ul data-carousel className="lift-room no-scrollbar -mx-6 flex snap-x snap-mandatory scroll-px-6 gap-3 overflow-x-auto overscroll-x-none overflow-y-hidden px-6 *:snap-start *:snap-always">
+          {news.slice(0, 3).map((item) => (
             <li key={item.id} className="flex">
               <NewsCard item={item} />
             </li>
@@ -58,11 +58,11 @@ export function SuraNews() {
           </Link>
         </div>
 
-        <ul className="flex shrink-0 items-stretch gap-3">
-          <li className="flex">
+        <ul className="flex min-w-0 shrink basis-164.25 items-stretch gap-3">
+          <li className="flex min-w-0 flex-[280]">
             <NewsCard item={news[0]} />
           </li>
-          <li className="flex flex-col gap-3">
+          <li className="flex min-w-0 flex-[365] flex-col gap-3">
             <div className="flex-1">
               <NewsCardWide item={news[1]} />
             </div>

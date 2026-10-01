@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 export function NewsCardWide({ item, fluid }: { item: NewsItem; fluid?: boolean }) {
   return (
-    <article className={cn("flex h-full", fluid ? "w-full" : "w-91.25")}>
+    <article className={cn("flex h-full", "w-full")}>
       <CardLink
         href={detailHref("news", item.id)}
         className={cn(
