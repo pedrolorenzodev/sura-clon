@@ -11,34 +11,6 @@ export type LeaderboardEntry = {
   avatarSrc: string;
 };
 
-export const leaderboard: LeaderboardEntry[] = [
-  {
-    id: "desenfrenado",
-    rank: 1,
-    name: "DesenfrenadO_",
-    levelLabel: "Nivel: Leyenda",
-    points: "7.015",
-    avatarSrc: "/assets/home/leaderboard/avatar-1.webp",
-  },
-  {
-    id: "bretasnft",
-    rank: 2,
-    name: "BretasNFT",
-    levelLabel: "Nivel: Guerrero",
-    points: "6.890",
-    avatarSrc: "/assets/home/leaderboard/avatar-2.webp",
-  },
-  {
-    id: "saboomafoo",
-    rank: 3,
-    name: "SabooMafoo",
-    levelLabel: "Nivel: Héroe",
-    points: "6.755",
-    avatarSrc: "/assets/home/leaderboard/avatar-3.png",
-  },
-];
-
-export const podium = leaderboard.slice(0, 3);
 
 export type LevelId = "novato" | "guerrero" | "heroe" | "leyenda";
 
@@ -119,18 +91,21 @@ const AVATARS = [
   "/assets/leaderboard/avatar-10.webp",
 ];
 
-const DESIGN_PLAYERS: Player[] = [
-  { id: "desenfrenado", name: "DesenfrenadO_", avatarSrc: AVATARS[0], level: "leyenda", points: 7015, medals: 30, streak: 3, events: 14 },
-  { id: "bretasnft", name: "BretasNFT", avatarSrc: AVATARS[1], level: "guerrero", points: 6890, medals: 33, streak: 0, events: 12 },
-  { id: "saboomafoo", name: "SabooMafoo", avatarSrc: AVATARS[2], level: "heroe", points: 6755, medals: 32, streak: 0, events: 11 },
-  { id: "gushvz", name: "gushvz", avatarSrc: AVATARS[3], level: "heroe", points: 6685, medals: 29, streak: 1, events: 9 },
-  { id: "lobo-blanco", name: "Lobo Blanco", avatarSrc: AVATARS[4], level: "guerrero", points: 5875, medals: 30, streak: 0, events: 10 },
-  { id: "hardnft", name: "HarDNFT", avatarSrc: AVATARS[5], level: "guerrero", points: 5845, medals: 27, streak: 0, events: 8 },
-  { id: "loscar", name: "Loscar", avatarSrc: AVATARS[6], level: "guerrero", points: 5625, medals: 13, streak: 8, events: 6 },
-  { id: "xynta", name: "Xynta", avatarSrc: AVATARS[7], level: "guerrero", points: 5495, medals: 24, streak: 1, events: 7 },
-  { id: "hitori", name: "Hitori", avatarSrc: AVATARS[8], level: "guerrero", points: 5210, medals: 24, streak: 0, events: 5 },
-  { id: "senhorpopo", name: "SenhorPopo", avatarSrc: AVATARS[9], level: "guerrero", points: 5100, medals: 24, streak: 0, events: 6 },
+const PAISANOS: Player[] = [
+  { id: "gauchopaisano", name: "gauchopaisano", avatarSrc: AVATARS[0], level: "leyenda", points: 7015, medals: 30, streak: 3, events: 14 },
+  { id: "nays1", name: "nays1_", avatarSrc: AVATARS[1], level: "leyenda", points: 6890, medals: 33, streak: 0, events: 12 },
+  { id: "emalorenzo", name: "emalorenzo_", avatarSrc: AVATARS[2], level: "heroe", points: 6755, medals: 32, streak: 0, events: 11 },
+  { id: "seba-ceballos", name: "Seba Ceballos", avatarSrc: AVATARS[3], level: "heroe", points: 6685, medals: 29, streak: 1, events: 9 },
+  { id: "alvaroechazu", name: "AlvaroEchazu", avatarSrc: AVATARS[4], level: "guerrero", points: 5875, medals: 30, streak: 0, events: 10 },
+  { id: "mormonnegro", name: "mormonnegro", avatarSrc: AVATARS[5], level: "guerrero", points: 5845, medals: 27, streak: 0, events: 8 },
+  { id: "sofiferro", name: "SofiFerro", avatarSrc: AVATARS[6], level: "guerrero", points: 5625, medals: 13, streak: 8, events: 6 },
+  { id: "maurohouseless", name: "maurohouseless", avatarSrc: AVATARS[7], level: "guerrero", points: 5495, medals: 24, streak: 1, events: 7 },
+  { id: "ainponce", name: "ainponce", avatarSrc: AVATARS[8], level: "guerrero", points: 5210, medals: 24, streak: 0, events: 5 },
+  { id: "gonzamartinese", name: "gonzamartinese", avatarSrc: AVATARS[9], level: "guerrero", points: 5100, medals: 24, streak: 0, events: 6 },
 ];
+
+const PINNED_LEADER = "gauchopaisano";
+const PINNED_RUNNERS_UP = ["nays1", "emalorenzo"] as const;
 
 const EXTRA_NAMES = [
   "KoibitoSura", "Madness9891", "Gasstiel", "NebulaFox", "PixelPampa", "Zurdo_GG", "LaChilindrina", "VortexAR",
@@ -145,7 +120,7 @@ const random = seeded("sura-leaderboard");
 let nextPoints = 5100;
 
 const PLAYERS: Player[] = [
-  ...DESIGN_PLAYERS,
+  ...PAISANOS,
   ...EXTRA_NAMES.map((name, index) => {
     nextPoints -= 40 + Math.round(random() * 60);
     return {
@@ -252,17 +227,48 @@ const byMetric = (metric: LeaderboardMetric) => {
     b.stats[key] - a.stats[key] || b.stats.points - a.stats.points || a.player.name.localeCompare(b.player.name);
 };
 
+const METRIC_ORDER: LeaderboardMetric[] = ["sura-points", "medallas", "racha", "eventos"];
+
+const RANGE_ORDER: LeaderboardRange[] = ["historico", "mensual", "semanal", "diario"];
+
+function pinnedOrder(metric: LeaderboardMetric, range: LeaderboardRange) {
+  const [first, second] = PINNED_RUNNERS_UP;
+  const swapped = (METRIC_ORDER.indexOf(metric) + RANGE_ORDER.indexOf(range)) % 2 === 1;
+  return [PINNED_LEADER, ...(swapped ? [second, first] : [first, second])];
+}
+
+function liftAbove(stats: PlayerStats, key: keyof PlayerStats, floor: number, step: number, cap: number) {
+  return { ...stats, [key]: Math.min(cap, Math.max(stats[key], floor + step)) };
+}
+
 export function rankStandings(metric: LeaderboardMetric, range: LeaderboardRange) {
-  const ranked = PLAYERS.map((player) => ({ player, stats: statsFor(player, range) })).sort(byMetric(metric));
+  const key = METRIC_KEY[metric];
+  const pinnedIds = pinnedOrder(metric, range);
+  const entries = PLAYERS.map((player) => ({ player, stats: statsFor(player, range) }));
+  const rest = entries.filter(({ player }) => !pinnedIds.includes(player.id)).sort(byMetric(metric));
+  const mine = { player: ME, stats: statsFor(ME, range) };
+
+  const cap = key === "streak" ? STREAK_CAP[range] : Infinity;
+  let floor = Math.max(rest[0]?.stats[key] ?? 0, mine.stats[key]);
+  const pinned = pinnedIds
+    .map((id) => entries.find(({ player }) => player.id === id)!)
+    .reverse()
+    .map((entry) => {
+      const step = key === "points" ? 20 + Math.round(seeded(`${entry.player.id}:${metric}:${range}`)() * 60) : 1;
+      const stats = liftAbove(entry.stats, key, floor, step, cap);
+      floor = stats[key];
+      return { ...entry, stats };
+    })
+    .reverse();
+  const ranked = [...pinned, ...rest];
 
   const standings = ranked.map(({ player, stats }, index) =>
     toStanding(player, stats, metric, String(index + 1).padStart(2, "0"), ranked[index - 1]?.stats, TONES[index]),
   );
 
-  const mine = { player: ME, stats: statsFor(ME, range) };
-  const myIndex = ranked.findIndex((entry) => byMetric(metric)(mine, entry) < 0);
-  const myRank = myIndex === -1 ? ranked.length : myIndex;
-  const me = toStanding(ME, mine.stats, metric, String(myRank + 1), ranked[myRank - 1]?.stats, "me");
+  const restIndex = rest.findIndex((entry) => byMetric(metric)(mine, entry) < 0);
+  const myRank = pinned.length + (restIndex === -1 ? rest.length : restIndex);
+  const me = toStanding(ME, mine.stats, metric, String(myRank + 1).padStart(2, "0"), ranked[myRank - 1]?.stats, "me");
 
   return { standings, me };
 }
@@ -271,14 +277,18 @@ export const STANDINGS_PER_PAGE = 10;
 
 export const standings: Standing[] = rankStandings("sura-points", "historico").standings;
 
-export const leaderboardRows: LeaderboardEntry[] = standings.slice(3, 8).map((entry) => ({
+const toEntry = (entry: Standing): LeaderboardEntry => ({
   id: entry.id,
   rank: Number(entry.rank),
   name: entry.name,
   levelLabel: `Nivel: ${levels[entry.level].label}`,
   points: entry.points,
   avatarSrc: entry.avatarSrc,
-}));
+});
+
+export const podium: LeaderboardEntry[] = standings.slice(0, 3).map(toEntry);
+
+export const leaderboardRows: LeaderboardEntry[] = standings.slice(3, 8).map(toEntry);
 
 export const standingsColumns = [
   "#",
