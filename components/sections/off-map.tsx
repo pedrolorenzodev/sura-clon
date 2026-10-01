@@ -2,8 +2,7 @@
 
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 import { SectionLink } from "@/components/layout/section-link";
 import { useSectionNav } from "@/components/layout/section-nav-context";
@@ -31,6 +30,10 @@ type Aim = {
   onFocus: () => void;
   onBlur: () => void;
 };
+
+const subscribeToNothing = () => () => {};
+const readLocationPath = () => window.location.pathname;
+const readNoPath = () => "";
 
 const readPath = (pathname: string) => {
   try {
@@ -117,7 +120,7 @@ function MapNode({ point, locked, afterRoute, aim }: {
 }
 
 export function OffMap() {
-  const pathname = usePathname();
+  const pathname = useSyncExternalStore(subscribeToNothing, readLocationPath, readNoPath);
   const { goBack, canGoBack } = useSectionNav();
   const [hovered, setHovered] = useState<SpawnPointId | null>(null);
   const [focused, setFocused] = useState<SpawnPointId | null>(null);
