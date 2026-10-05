@@ -32,7 +32,7 @@ const inter = Inter({
 const description = "Ecosistema gaming de LATAM: torneos, rankings, misiones y noticias.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sura-demo.com"),
+  metadataBase: new URL("https://sura.elpepo.dev"),
   title: "Sura Gaming",
   description,
   openGraph: {

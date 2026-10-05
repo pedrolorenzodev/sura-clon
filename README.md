@@ -2,7 +2,7 @@
 
 Clon pixel-perfect de la UI de [SURA Gaming](https://app.suragaming.com), el ecosistema gaming de Sura GG Corp., maquetado desde el rediseño en Figma. Es sólo frontend: la data está hardcodeada en `lib/data/` y la búsqueda, los filtros y la paginación se resuelven en memoria.
 
-Producción: **[sura-demo.com](https://sura-demo.com)**
+Producción: **[sura.elpepo.dev](https://sura.elpepo.dev)**
 
 ## Stack
 
