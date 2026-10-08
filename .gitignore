@@ -42,3 +42,8 @@ next-env.d.ts
 
 # screenshots de verificación visual
 /screenshots/
+
+# regresión visual (las referencias son locales: se regeneran desde un commit aprobado)
+/tests/visual/__snapshots__/
+/test-results/
+/playwright-report/

@@ -1,2 +1,1 @@
 @AGENTS.md
-@PRD.md

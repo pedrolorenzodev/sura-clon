@@ -12,326 +12,87 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Reglas del proyecto
 
-> Todo lo que está **arriba** del marcador `END:nextjs-agent-rules` lo regenera `next dev`. No lo edites.
-> Todo lo que está **abajo** son las reglas de trabajo. Leelas antes de cada implementación.
+> Arriba del marcador `END:nextjs-agent-rules` escribe `next dev`: no se edita. Abajo, las reglas de trabajo.
 
-## Cómo leer este repo
+## Dónde estamos
 
-Este archivo contiene **el proceso**: cómo se trabaja, qué está prohibido, cómo se verifica.
-Es independiente de qué app estemos clonando.
+SURA Gaming: clon de `app.suragaming.com` en Next 16 + React 19 + Tailwind 4 + shadcn sobre Base UI. Qué es, alcance y arquitectura: `docs/PROJECT.md`.
 
-**Todo lo específico del target vive en [`PRD.md`](./PRD.md)**: qué app se clona, el link de
-Figma, los widths de los frames, el mapa de rutas, cómo se comporta la navegación de ese
-diseño, los tokens y el estado de cada pantalla.
+- **Fase 1 (UI pixel-perfect desde Figma): cerrada el 2026-10-07 y congelada.**
+- **Fase 2 (actual): reemplazar la data hardcodeada de `lib/data/` por Supabase, con la misma data, sin cambiar un píxel ni un comportamiento.** El plan, el inventario y las decisiones abiertas están en `docs/features/supabase.md`.
 
-Si cambia el target, se reescribe `PRD.md`. Este archivo no se toca.
+## Leer cuando
 
-## Qué estamos construyendo
+| Archivo | Leer cuando |
+|---|---|
+| `docs/ROADMAP.md` | Al empezar toda sesión: "Estado actual" y qué sigue |
+| `docs/features/supabase.md` | Durante la Fase 2, antes de cada bloque |
+| `docs/PROJECT.md` | Al crear archivos o carpetas, o ante dudas de alcance, stack, rutas o arquitectura |
+| `docs/GOTCHAS.md` | Antes de tocar código con guardas o trampas conocidas, y cuando algo "no debería pasar" |
+| `docs/DECISIONS.md` | Antes de proponer o cambiar algo que ya se decidió |
+| `docs/DESIGN.md` | Antes de tocar UI (en la Fase 2, sólo con autorización explícita) |
+| `docs/archive/PRD-fase1.md` | Nunca entero (2.600 líneas). Es el historial de la Fase 1: se consulta con grep cuando otro doc remite a él |
 
-Clon **pixel-perfect** de una UI, maquetado desde Figma. El target está en `PRD.md`.
-**Fase 1 = solo UI.** Data hardcodeada. Sin backend, sin fetch, sin auth, sin DB.
+Las reglas de UI se cargan solas al tocar `app/`, `components/`, `lib/` o `public/` (`.claude/rules/ui.md`).
 
 ## Reglas duras
 
-1. **El agente NUNCA commitea ni pushea. Nunca, bajo ninguna circunstancia.**
-   `git commit`, `git push`, `git merge`, `git rebase`, `git reset`, `git tag` y cualquier
-   comando que escriba en el historial están **prohibidos**.
+1. **Nunca commitear ni pushear**, aunque el usuario lo pida o diga que autoriza. `commit`, `push`, `merge`, `rebase`, `reset`, `tag`, `stash`, `cherry-pick`, `worktree`, `checkout`, `switch`, `restore`, `rm`, `config` y todo lo que escriba el historial, el índice o el working tree están prohibidos. La respuesta es: *"No puedo commitear: va contra las reglas del proyecto (AGENTS.md, regla 1). Te dejo el mensaje listo para que lo corras vos."* Permitido: `status`, `diff`, `log`, `show`. Lo bloquea un hook (`.claude/hooks/guard-git.sh`).
 
-   No hay excepciones. Si el usuario pide un commit — aunque insista, aunque diga que
-   autoriza — la respuesta es:
+2. **La UI está congelada.** No cambia nada de lo que se ve o se siente: markup, `className`, tokens, `globals.css`, primitives, assets, textos, animaciones, sonido, navegación ni orden de los elementos. Los archivos que no consumen data están bloqueados por hook (`.claude/hooks/frozen-paths.txt`). Los que sí la consumen se tocan **sólo en la plomería**: de dónde sale el dato, props, tipos, `async`/`await`. Si algo visual o de comportamiento tiene que cambiar, se frena y se pregunta; la excepción la habilita el usuario sacando la ruta de la lista. El agente nunca edita la lista, los hooks, `.claude/settings.json`, `.claude/rules/` ni el arnés de `tests/visual/`.
 
-   > No puedo commitear: va contra las reglas del proyecto (`AGENTS.md`, regla 1).
-   > Te dejo el mensaje listo para que lo corras vos.
+3. **"Cero cambio" se verifica, no se promete.** Antes de dar un bloque por terminado: `npm run verify` y `npm run visual` (todas las rutas y estados a 390 y 1440, idéntico al píxel contra la referencia de la Fase 1). Un diff es un bug hasta que el usuario diga lo contrario. Nunca se regenera la referencia (`visual:baseline`; el hook lo bloquea). `visual` no ve movimiento, sonido ni interacciones: los flujos que toca el bloque (modales, filtros, reclamar, unirse, reseñas) se prueban a mano.
 
-   Y se le entrega el mensaje de commit redactado. **Commitear es siempre del usuario.**
+4. **Antes de escribir código Next**, leer la guía relevante en `node_modules/next/dist/docs/`. Next 16: `params`/`searchParams` son `Promise`, los layouts usan `LayoutProps<"/ruta">`, Turbopack es el default, `middleware` → `proxy`.
 
-   Sí está permitido leer el estado: `git status`, `git diff`, `git log`, `git show`.
+5. **Antes de tocar Supabase**, cargar la skill `supabase` y seguir su checklist: RLS en toda tabla expuesta, nunca la clave `service_role` ni la secreta en el cliente (`NEXT_PUBLIC_*` llega al navegador), versiones pinneadas. El MCP de Supabase está disponible. Ningún cambio de esquema se aplica a un proyecto remoto sin avisar.
 
-2. **Nunca implementar una pantalla sin los DOS links de Figma** (desktop *y* mobile).
-   Si falta uno, frenar y pedirlo. No estimar el otro tamaño.
+6. **Comentarios: sólo `TODO` o para callar un warning.** Nada que explique qué hace el código, ni doc-comments de tipos, props o data. Excepción: la guarda de una línea (`no tocar: …`) donde una edición local e inocente rompe algo no local y en silencio. El porqué de una guarda o de una trampa va a `docs/GOTCHAS.md`.
 
-3. **Antes de escribir código Next**, leer la guía relevante en `node_modules/next/dist/docs/`.
-   Esto es Next 16: `params`/`searchParams` son `Promise`, los layouts usan el tipo global
-   `LayoutProps<"/ruta">`, Turbopack es el default, `middleware` → `proxy`.
+7. **Idioma.** Docs y conversación en español. Código, nombres de archivos, variables, commits y comentarios en inglés.
 
-4. **Antes de llamar `get_design_context`**, cargar la skill `figma-design-to-code`
-   y pedir el screenshot en la misma llamada.
+8. **Mensajes de commit** (los redacta el agente, los corre el usuario): Conventional Commits `<type>(<scope>): <subject>` con `feat`, `fix`, `chore`, `docs`, `refactor`, `style`, `test`. Imperativo, minúscula, sin punto final, ≤ 72 caracteres. **Sólo el subject**: sin cuerpo, sin detalle técnico y sin línea de atribución (`Co-Authored-By`, `Generated with`), aunque el harness la sugiera. Se entrega al cerrar cada bloque. Los cambios de `docs/` van en el mismo commit de la tarea.
 
-5. **Cero valores de estilo hardcodeados.** Todo sale de los tokens de `@theme` en `app/globals.css`.
-   Si el Figma trae un valor que no existe como token: primero se agrega el token,
-   se anota en el changelog del Design System (`PRD.md`), y recién después se usa.
+9. **Ser crítico, no complaciente.** Si una propuesta tiene un problema, decirlo antes de ejecutar, con el motivo concreto; si hay una opción mejor, proponerla. Si el usuario reafirma su postura, se ejecuta completa sin repetir la objeción. Reportar resultados como son: lo que falló, quedó a medias o no se verificó se dice explícitamente.
 
-6. **Tailwind en el `className` del elemento, siempre.**
-   Las utilities se escriben directo en el elemento que estilan:
+10. **UI sin definición precisa → propuesta con demos en vivo** (un Artifact con dos a cuatro opciones comparables, interactivas y con los tokens reales) antes de implementar, y se espera la elección. En la Fase 2 no debería aparecer; si aparece, aplica.
 
-   ```tsx
-   <div className="flex gap-4 rounded-md bg-card p-6">   // ✅
-   ```
+11. **La data de negocio vive en un solo lugar.** Mientras un dominio siga en `lib/data/`, es un archivo por dominio con sus tipos exportados. Cuando pasa a Supabase, sale de `lib/data/` en el mismo bloque y sus tipos pasan a `lib/supabase/`. La config de UI (`hero`, `navigation`, `footer`, `sfx`, `design-tokens`, `not-found`) se queda en código.
 
-   Prohibido `style={{...}}`, CSS Modules, `<style>` y `@apply` en archivos aparte.
-   `style={{...}}` esquiva Tailwind por completo: no usa tokens, no soporta `desktop:`
-   ni `hover:`, y no se puede sobrescribir sin `!important`.
+## Protocolo
 
-   ```tsx
-   <div style={{ display: "flex", gap: "16px", background: "#141414" }}>   // ❌
-   ```
-
-   **Única excepción:** un valor genuinamente calculado en runtime, y se pasa como
-   CSS custom property para que Tailwind lo siga controlando:
-
-   ```tsx
-   <div className="h-[var(--row-h)]" style={{ "--row-h": `${h}px` } as React.CSSProperties}>
-   ```
-
-   Ojo con el MCP de Figma: devuelve CSS crudo con posicionamiento absoluto e inline
-   styles. Eso es un prototipo visual, no código. Se traduce a utilities y a layout
-   nativo (flex/grid) antes de entrar al repo.
-
-7. **Solo dos breakpoints: mobile y desktop.** Decisión permanente del proyecto,
-   independiente del target. Los tamaños intermedios (tablet) están **fuera de scope**:
-   no hay diseño para validarlos, así que no se inventa ninguno.
-
-   Los breakpoints default de Tailwind se deshabilitan en `@theme`, dejando uno solo:
-
-   ```css
-   @theme {
-     --breakpoint-*: initial;
-     --breakpoint-desktop: <px>;   /* el valor sale de los frames de Figma → PRD.md */
-   }
-   ```
-
-   Así `desktop:` es el único prefijo responsive que existe. La regla no depende de que
-   alguien se acuerde: es imposible de violar.
-   `sm:` `md:` `lg:` `xl:` `2xl:` no existen en este proyecto.
-
-   Se maqueta **mobile-first**: los estilos base son el diseño mobile, `desktop:` es el
-   override. Lo único específico del target es el **valor en px**, que vive en `PRD.md`.
-
-8. **UI primitives: shadcn siempre que exista uno adecuado.** Markup crudo solo si no hay.
-   Los primitives se re-estilan con nuestros tokens, no al revés.
-   Este proyecto usa el estilo `base-nova`, que corre sobre **Base UI, no Radix**:
-   los triggers custom usan la prop `render`, **no** `asChild`.
-
-9. **Data hardcodeada y tipada en `lib/data/`.** Un archivo por dominio, con sus tipos exportados.
-
-10. **Assets del Figma se descargan a `public/assets/<pantalla>/`.**
-    Jamás dejar una URL temporal de Figma en el código. Nunca redibujar, inline-ar ni
-    sustituir un asset: se usa el que exporta el diseño, en su posición y proporción exactas.
-
-11. **Una pantalla no se implementa de una sola vez: se implementa por bloques.**
-    La unidad de trabajo es el **componente o la sección**, no la pantalla entera.
-
-    Se ataca un bloque, se lo deja pixel-perfect, se verifica, y recién ahí se pasa al
-    siguiente. Ejemplo en un Home: primero el Header y nada más; con el Header aprobado,
-    el Hero; y si el Hero es grande, se parte en subtareas.
-
-    El criterio de corte: **si un bloque es grande o tiene muchos detalles, se parte.**
-    Ante la duda, más chico. Un bloque chico se compara contra el diseño con precisión;
-    una pantalla entera de una vez esconde desvíos y multiplica los errores.
-
-    Nunca avanzar al bloque siguiente con el anterior a medias.
-
-12. **Desktop y mobile: cómo se reparte el trabajo dentro de un bloque.**
-
-    **Desktop es la prioridad del proyecto.** Mobile también tiene que quedar impecable,
-    pero ante un trade-off irreconciliable, gana desktop.
-
-    | Caso | Cómo se encara |
-    |---|---|
-    | Bloque chico, UI parecida en los dos tamaños | **Los dos juntos, una sola tarea.** |
-    | UI radicalmente distinta | **Dos componentes separados**, cada uno oculto en el breakpoint del otro. Orden libre: arrancar por desktop. |
-    | Mismo markup, layout muy distinto | **Dos pases: mobile primero, desktop después.** |
-
-    **Por qué esos tres casos, y no un orden único:**
-
-    - Hacer los dos en una sola tarea es **lo más seguro que hay**. Todo el riesgo de que un
-      tamaño ensucie al otro viene de tener dos pases. Con un solo pase, cada propiedad se
-      clasifica con los dos diseños a la vista y se escribe en su lugar final de una.
-      Por eso es el default siempre que el bloque lo permita.
-
-    - Cuando la UI difiere radicalmente (un nav horizontal vs. hamburguesa + drawer), no se
-      resuelve con overrides: son **dos componentes**, con markup y clases propias, en
-      subárboles distintos del DOM. Ahí el cruce es imposible y el orden da igual.
-
-      ```tsx
-      <DesktopNav className="hidden desktop:flex" />
-      <MobileNav className="desktop:hidden" />
-      ```
-
-    - El caso riesgoso es el **intermedio**: mismo markup, layout bastante distinto. Ahí el
-      base y el `desktop:` se pisan, y el orden importa. Va **mobile → desktop** porque en
-      ese sentido la garantía es estructural: `desktop:` es `min-width`, no puede filtrarse
-      hacia abajo. Al revés, la seguridad dependería de clasificar bien cada propiedad.
-
-    **La decisión entre los tres casos la toma el agente**, con los dos frames a la vista y
-    sin consultar. Criterio: *¿es el mismo markup reordenado, o son dos cosas distintas?*
-    Ante la duda, son dos componentes. Se informa al usuario qué se eligió y por qué,
-    junto con el resultado del bloque.
-
-    **En todos los casos:**
-
-    - **Mirar siempre los dos frames** antes de escribir la primera clase. Leer no tiene
-      costo; define el markup con información completa y evita refactors después.
-    - **Escribir CSS de un solo tamaño por tarea**, cuando haya dos pases. En el pase
-      mobile, cero clases `desktop:` — verificable con `grep -c "desktop:"`, tiene que dar 0.
-    - Si al llegar al segundo tamaño el markup no da, avisar y refactorizar. Es un error
-      ruidoso y barato; el de clasificación es silencioso y caro.
-
-13. **Registrar el link de Figma de cada bloque en `PRD.md`**, en el Registro de bloques,
-    **apenas llega** — antes de implementar, no después. Node de desktop y de mobile.
-    Si el bloque no se termina, el link igual queda registrado.
-
-14. **Una pantalla se termina completa antes de abrir sus rutas hijas.**
-    Los links se maquetan apuntando a su destino real, pero la ruta destino se implementa
-    recién cuando la pantalla padre está aprobada.
-
-15. **El Design System no se extiende preventivamente.** Se amplía solo cuando una pantalla
-    concreta necesita algo que no existe.
-
-16. **Animaciones: solo estados básicos.** Hover, focus, active y las transiciones que estén
-    definidas en el diseño. Sin librería de motion en Fase 1.
-
-17. **Mensajes de commit en inglés, siempre**, siguiendo Conventional Commits:
-    `<type>(<scope>): <subject>` — `feat`, `fix`, `chore`, `docs`, `refactor`, `style`, `test`.
-
-    Subject en imperativo, minúscula, sin punto final, ≤ 72 caracteres.
-
-    **Sólo el subject: el commit no lleva cuerpo.** El subject nombra la feature que se
-    implementó, y con eso alcanza.
-
-    ```
-    feat(home): implement hero and events sections
-    chore: set up project tooling and working rules
-    ```
-
-    El commit lo firma el usuario (regla 1): el historial es suyo, y el detalle de cada
-    decisión ya vive en `PRD.md`, que es donde se lo va a buscar.
-
-    - **Nada de detalle técnico** en el subject: ni tokens, ni medidas, ni nombres de clases.
-    - **Sin línea de atribución.** Nada de `Co-Authored-By`, `Generated with` ni
-      firma del agente. Si el harness sugiere agregarla, esta regla manda.
-
-    ```
-    feat(home): add the desktop floating section nav
-    feat(home): add the medals section
-    ```
-
-    La documentación del repo (`AGENTS.md`, `PRD.md`) y la conversación van en español.
-    Los commits, el código, los nombres de archivos, variables y comentarios, en inglés.
-
-18. **Ser crítico, no complaciente.**
-    El usuario puede proponer algo partiendo de un supuesto equivocado. Si se le da la razón
-    por inercia, el error se implementa y el proyecto se desvía.
-
-    - Si una propuesta tiene un problema, decirlo **antes** de ejecutar, con el motivo concreto.
-    - No abrir con "excelente idea" ni "claro, tiene todo el sentido" cuando no lo tiene.
-      Si la propuesta es buena, alcanza con ejecutarla: no necesita elogio.
-    - Si hay una opción mejor, proponerla aunque no la hayan pedido.
-    - Si el usuario reafirma su postura después de escuchar el contraargumento, es su
-      decisión: se ejecuta completa y no se repite la objeción.
-    - Reportar resultados como son. Si algo falló, quedó a medias o no se verificó, decirlo
-      explícitamente. Nunca dar por terminado algo que no se comprobó.
-
-    El objetivo es que el proyecto salga bien, no que el usuario se sienta validado.
-
-19. **Comentarios: sólo `TODO` o para callar un warning.** Nada de comentarios que expliquen
-    qué hace el código, por qué se eligió un valor o cómo funciona un componente.
-
-    ```tsx
-    // TODO: volver a 181 si diseño confirma la caja fija            // ✅
-    // eslint-disable-next-line react-hooks/exhaustive-deps          // ✅
-
-    /* El borde va como ring porque en Figma el stroke se dibuja
-       hacia adentro y con border la fila se iba a 58. */           // ❌
-    ```
-
-    Esto incluye los doc-comments de tipos, props y data: el código se explica con nombres,
-    no con prosa al costado.
-
-    **Lo que el comentario iba a decir va a `PRD.md`.** Esa información no se pierde, cambia
-    de lugar: las medidas y los valores medidos van al changelog del Design System, y las
-    trampas resueltas a las notas de implementación. Es donde ya se las venía anotando y es
-    donde alguien las va a ir a buscar dentro de seis meses — no en un archivo que va a
-    seguir cambiando.
-
-    Si algo del código sólo se entiende con un párrafo al lado, el problema es el código:
-    primero se intenta un nombre mejor o partirlo en dos.
-
-    **Única excepción: la guarda.** Una línea, y sólo donde una edición local y aparentemente
-    inocente rompe algo **no local** y **en silencio** — sin error de tipos, sin test que
-    falle, sin nada raro en la pantalla que se está editando.
-
-    ```tsx
-    /* no tocar: isolate, z-*, transform u opacity acá rompen el apilado del fondo */   // ✅
-    /* El borde va como ring porque en Figma el stroke se dibuja hacia adentro. */      // ❌
-    ```
-
-    La guarda **no explica**: avisa que hay un cable. El porqué sigue yendo a `PRD.md`, y las
-    guardas vivas están listadas en § 6, *Notas de arquitectura*.
-
-    Antes de escribir una, intentar que la restricción **no se pueda romper**: un nombre que
-    la diga (`lift-room`, `SUBPIXEL_SLACK`) es mejor que una línea que pida no tocar. La
-    guarda es para lo que CSS o el lenguaje no pueden expresar — un contexto de apilado, un
-    margen negativo que es aire de pintura, un `1ms` que existe para que dispare un evento.
-
-20. **UI sin definición precisa: primero una página de propuesta con demos en vivo.**
-    Cuando hay que crear UI que el Figma no define con precisión —animaciones, micro-
-    interacciones, una pantalla sin frames (la 404), un estado que el diseño no dibuja— o el
-    usuario no sabe todavía exactamente qué quiere, **no se implementa directo en la app**.
-    Primero se publica un Artifact de propuesta, y se implementa recién cuando el usuario elige.
-
-    No aplica cuando hay un frame de Figma con valores precisos: ahí se maqueta el diseño.
-
-    La página tiene que:
-
-    - **Mostrar, no describir.** Cada opción es una demo en vivo e interactiva (hover, click,
-      "Repetir"), construida con las fuentes, colores, tokens y curvas reales del proyecto, y
-      que funcione también al tocarla en mobile.
-    - **Dar opciones comparables.** Entre dos y cuatro por pieza, y si existe, lo que hay hoy al
-      lado de la propuesta.
-    - **Explicar cada opción en pocas líneas**: dónde va, de qué referencia sale y cuánto cuesta.
-    - **Dejar explícito lo que se descarta** y por qué, incluida la lista de AI-slop que se evita.
-    - **Terminar con lo que hay que decidir.** Después se frena y se espera la elección.
-
-    **Se itera en la misma página**, no en una nueva: si el usuario pide variantes de una pieza,
-    se suman ahí mismo, con la versión anterior guardada a la izquierda para comparar. La
-    página refleja el estado (qué se aprobó y qué espera elección), y su link queda en `PRD.md`
-    junto con las decisiones.
-
-    Los Artifacts son privados: si el usuario quiere mostrarle la página a alguien, la comparte
-    él desde el menú *Share*.
-
-## Navegación
-
-**No asumir cómo navega el diseño.** Un ícono de menú puede llevar a una ruta propia o
-scrollear a una sección de la misma página — son implementaciones distintas y solo el Figma
-lo dice. El comportamiento del target actual está documentado en `PRD.md`.
-
-Cuando sea scroll a sección: anchor (`href="#seccion"`) contra `<section id="seccion">`,
-con `scroll-margin-top` para compensar headers fijos y respetando `prefers-reduced-motion`.
+- **Al empezar:** leer "Estado actual" en `docs/ROADMAP.md` y el bloque en curso de `docs/features/supabase.md`. El dev server corre en el **puerto 3100** (`npm run dev -- -p 3100`): el 3000 de esta máquina lo usa otro proyecto.
+- **Por bloque:** un dominio de datos por vez, en el orden del feature doc. Se implementa, se verifica (`verify` + `visual`), se entrega el mensaje de commit y recién ahí se pasa al siguiente. Nunca avanzar con el anterior a medias. Si un bloque es grande, se parte.
+- **Durante:** cada decisión va a `docs/DECISIONS.md` en el momento en que se toma (fecha, qué se eligió, por qué, qué se descartó), incluidas las que el agente toma sin consultar. Trampas nuevas y el porqué de cada guarda, a `docs/GOTCHAS.md`.
+- **Al terminar un bloque:** sobrescribir "Estado actual" (≤ 15 líneas) y tildar el bloque en `docs/ROADMAP.md`; listar los archivos tocados, docs incluidos.
+- **Higiene:** cada hecho vive en un solo archivo y los demás apuntan a él. Si un doc contradice al código, se corrige en el acto. Nada de archivos o carpetas "por si acaso". Fechas y porqués reales, nunca inventados. Una corrección que el usuario repite se promueve a regla.
 
 ## Estructura
 
 ```
-app/              rutas, layout, globals.css (tokens)
-components/ui/    primitives shadcn
-components/layout/ header, footer, nav flotante
-components/sections/ secciones compuestas
-lib/utils.ts      cn()
-lib/data/         data hardcodeada y tipada
-public/assets/    assets exportados de Figma
+app/                  rutas (route group (site)), layout raíz, globals.css (tokens)
+components/ui/        primitives shadcn re-estilados (congelado)
+components/layout/    header, menús, footer, navegación, sonido
+components/sections/  secciones, cards y colecciones
+lib/                  hooks, motor de sonido, helpers
+lib/data/             data hardcodeada y tipada: lo que migra la Fase 2
+lib/supabase/         cliente, tipos generados y queries (Fase 2)
+supabase/             migraciones y seed (Fase 2)
+public/assets/        assets exportados del diseño (congelado)
+tests/visual/         regresión visual (las referencias están gitignoreadas)
+docs/                 PROJECT, ROADMAP, DECISIONS, GOTCHAS, DESIGN, features/, archive/
 ```
 
-El alias `@/*` apunta a la **raíz del repo** (no hay `src/`): `@/components/ui/button`.
+El alias `@/*` apunta a la raíz del repo: no hay `src/`.
 
-## Antes de dar algo por terminado
+## Verificación
 
 ```bash
-npm run verify                    # typecheck + lint + build
-npm run dev                       # en otra terminal
-npm run shot -- /                 # screenshots mobile + desktop
+npm run verify              # typecheck + lint + build
+npm run dev -- -p 3100      # en otra terminal
+npm run visual              # regresión visual contra la referencia de la Fase 1
+npm run visual:report       # el reporte con los diffs, si algo falló
+BASE_URL=http://localhost:3100 npm run shot -- /ruta   # captura suelta en screenshots/
 ```
 
-Los screenshots salen a `screenshots/`. Los widths viven en `scripts/shot.mjs` y
-tienen que coincidir exactamente con los frames de Figma.
-Se comparan contra el render del diseño, se itera, y después va la aprobación del usuario.
+`npm run visual:baseline` regenera la referencia: sólo desde un commit aprobado por el usuario (ver `docs/GOTCHAS.md`).

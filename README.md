@@ -1,6 +1,6 @@
 # SURA Gaming — clon
 
-Clon pixel-perfect de la UI de [SURA Gaming](https://app.suragaming.com), el ecosistema gaming de Sura GG Corp., maquetado desde el rediseño en Figma. Es sólo frontend: la data está hardcodeada en `lib/data/` y la búsqueda, los filtros y la paginación se resuelven en memoria.
+Clon pixel-perfect de la UI de [SURA Gaming](https://app.suragaming.com), el ecosistema gaming de Sura GG Corp., maquetado desde el rediseño en Figma. La UI está terminada (Fase 1). La Fase 2 reemplaza la data hardcodeada de `lib/data/` por Supabase sin cambiar la interfaz.
 
 Producción: **[sura.elpepo.dev](https://sura.elpepo.dev)**
 
@@ -18,9 +18,10 @@ Producción: **[sura.elpepo.dev](https://sura.elpepo.dev)**
 
 ```bash
 npm install
-npm run dev       # http://localhost:3000
-npm run verify    # typecheck + lint + build
-npm run shot -- / # capturas mobile (390) y desktop (1440) en screenshots/
+npm run dev -- -p 3100   # http://localhost:3100
+npm run verify           # typecheck + lint + build
+npm run visual           # regresión visual contra la referencia de la Fase 1
+BASE_URL=http://localhost:3100 npm run shot -- /   # capturas 390 y 1440 en screenshots/
 ```
 
 ## Dónde está cada cosa
@@ -33,8 +34,10 @@ components/sections/  secciones y componentes de pantalla
 lib/                  hooks, motor de sonido y helpers
 lib/data/             data tipada, un archivo por dominio
 public/assets/        assets exportados del diseño
+tests/visual/         regresión visual
+docs/                 documentación
 ```
 
-- [`AGENTS.md`](./AGENTS.md): reglas de trabajo del proyecto.
-- [`PRD.md`](./PRD.md): las decisiones de diseño y de implementación, pantalla por pantalla.
+- [`AGENTS.md`](./AGENTS.md): reglas de trabajo para agentes y personas.
+- [`docs/`](./docs): proyecto, roadmap, decisiones, trampas conocidas, sistema de diseño y la feature en curso. El PRD de la Fase 1 quedó archivado en `docs/archive/`.
 - `/styleguide`: referencia visual del design system.

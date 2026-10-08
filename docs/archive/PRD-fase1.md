@@ -1,3 +1,5 @@
+> **ARCHIVO (2026-10-07).** Este es el PRD de la Fase 1 tal como quedó al cerrarla. **No se importa en ninguna sesión y no se lee entero.** Lo vigente se extrajo a `docs/` (PROJECT, DECISIONS, GOTCHAS, DESIGN, ROADMAP); acá quedan las mediciones, el changelog del Design System, el registro de bloques con los nodos de Figma y la historia de cada decisión. Se consulta con grep cuando un doc remite a él. No se edita más.
+
 # PRD — SURA Gaming (clon pixel-perfect)
 
 > Documento vivo. Se actualiza en cada implementación.

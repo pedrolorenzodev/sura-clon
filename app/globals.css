@@ -1091,7 +1091,6 @@
    CARD DE EVENTOS
    ============================================================ */
 
-/* no tocar: el `border-box` del shorthand es lo que lleva el fondo bajo el borde de la card */
 @utility event-art-clip {
   --art-clip-radius: calc(var(--radius-lg) - 1px);
   clip-path: inset(-50% 0 1px 1px round 0 0 0 var(--art-clip-radius));
@@ -1101,6 +1100,7 @@
   }
 }
 
+/* no tocar: el `border-box` del shorthand es lo que lleva el fondo bajo el borde de la card */
 @utility event-surface-gamepad {
   background: url("/assets/home/eventos/card-surface.webp") center / cover no-repeat border-box;
 }
