@@ -21,13 +21,15 @@ Que la data de negocio salga de una base de datos real en vez de constantes en e
 
 Autenticación real · cambios de diseño o de copy · data nueva o corregida (los errores del Figma se replican: ver `ROADMAP.md`) · pasar los assets a Storage (las rutas `/assets/...` siguen como están) · la Fase D de inertes.
 
-## Decisiones abiertas (resolver con el usuario antes del bloque 0)
+## Decisiones (usuario, 2026-10-08)
 
-1. **Provisión.** Proyecto creado con el MCP de Supabase (`create_project`) o integración del Vercel Marketplace (inyecta las env vars en el proyecto de Vercel). Región y plan.
-2. **Dónde se lee.** Recomendado: en el server (la `page.tsx` hace el query y pasa props; el filtrado sigue en memoria en el cliente, como hoy). La alternativa —filtrar en la base desde el cliente— cambia el primer pintado y rompe el criterio de HTML equivalente.
-3. **Qué se guarda.** Recomendado: **materializar** la salida actual, incluidos los derivados con `seeded()` (ver *Riesgos*), en vez de portar el PRNG a SQL. La alternativa —guardar valores crudos y derivar en el server— es más "real" pero cada derivación es una oportunidad de diferir en un píxel.
-4. **Cache.** Mantener el prerender estático (`generateStaticParams` consultando la base en build) y revalidar con `use cache`/`cacheTag` o ISR, o pasar a dinámico. Decidir con la skill `next-best-practices` y la guía de Next 16.
-5. **Escrituras.** Sin auth no hay usuario real. Recomendado: la primera pasada es **sólo lectura** y los stores de sesión quedan como están. Persistir reclamos, inscripciones, perfil y reseñas es otra decisión (anon con RLS de insert, o auth).
+1. **Provisión:** proyecto creado a mano desde el dashboard de Supabase, plan gratis, región `us-east-1` (cerca de Vercel, que es quien consulta). Claves a `.env.local` y a Vercel a mano. Sin stack local: no hay Docker; las migraciones van con la CLI (`npx supabase`) directo al proyecto remoto.
+2. **Dónde se lee:** en el server. La `page.tsx` (o un server component) consulta y pasa props; el filtrado sigue en memoria en el cliente. El navegador nunca habla con Supabase.
+3. **Qué se guarda:** se materializa la salida actual, incluidos los valores de `seeded()`, como columnas comunes. No se porta el PRNG.
+4. **Cache:** estático con revalidación por tiempo (ISR, del orden de 60 s). No hay `cacheComponents` en `next.config.ts`, así que aplica `export const revalidate` (guía: `node_modules/next/dist/docs/01-app/02-guides/incremental-static-regeneration.md`).
+5. **Escrituras:** fuera de la Fase 2. Sólo lectura; los stores de sesión quedan como están.
+
+**Quién hace qué:** los bloques 0 y 1 los escribe el usuario a mano con el agente de guía; el script de seed (volcar `lib/data` a SQL) lo genera el agente. Después del bloque 1 se decide si sigue igual.
 
 ## Inventario
 

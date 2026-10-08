@@ -7,6 +7,11 @@
 **Por qué:** "no tocar archivos de UI" no se puede cumplir: 64 archivos de `app/`, `components/` y `lib/` importan data de negocio. La frontera real es cero cambio visual o de comportamiento.
 **Se descartó:** congelar carpetas enteras; tolerancia de píxeles.
 
+## 2026-10-08 · Cómo se integra Supabase
+**Se eligió:** proyecto creado a mano desde el dashboard (plan gratis, `us-east-1`), sin stack local; lectura en el server con props hacia los client components; materializar la data derivada como columnas; prerender estático con ISR (~60 s); Fase 2 sólo de lectura. Los bloques 0 y 1 los hace el usuario a mano con el agente de guía.
+**Por qué:** es lo que mantiene el HTML del server idéntico (cero cambio), deja las claves fuera del navegador y evita que un cálculo portado difiera en un decimal. El usuario quiere aprender la integración.
+**Se descartó:** Vercel Marketplace (esconde el cableado de las claves), lectura desde el cliente (la página llegaría vacía), portar `seeded()`, render dinámico, persistir acciones del usuario sin auth.
+
 ## 2026-10-08 · Guardas endurecidas tras la auditoría
 **Se eligió:** `site-chrome.tsx` y `header.tsx` salen de la lista de congelados (son padres de composición en el camino de la data: modales y headers). Entran `tests/visual/routes.ts`, `tests/visual/__snapshots__/**`, `.claude/rules/**`, `lib/use-url-state.ts`, `lib/routes.ts` y `lib/collection.ts`. Los hooks bloquean además: carpetas que contienen archivos congelados (`rm -rf components`), formateadores (`--write`, `--fix`), regenerar la referencia (`visual:baseline`, `--update-snapshots`, `-u`), rutas con `./` o `../`, `git` invocado como `\git`, `/usr/bin/git` o dentro de `bash -c`, aliases de git, `checkout`, `switch`, `restore`, `rm`, `mv` y `config`. El hook deja pasar `git stash list` y `show`, pero la regla `deny` `Bash(git stash *)` de `settings.json` los corta igual. `routes.ts` pasa de 70 a 117 rutas y estados.
 **Por qué:** una auditoría independiente encontró que los padres congelados impedían el patrón documentado y que el hook se esquivaba borrando carpetas o regenerando la referencia.

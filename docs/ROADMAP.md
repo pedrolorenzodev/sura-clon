@@ -4,14 +4,15 @@
 
 > Se sobrescribe al terminar cada sesión. Máximo 15 líneas.
 
-**2026-10-08.** La Fase 1 (UI) está cerrada: la UI congelada es la de `f447a97`, y el sistema de docs, los hooks y la regresión visual entran en el commit siguiente. El PRD pasó a `docs/archive/PRD-fase1.md`, `AGENTS.md` quedó corto y las reglas de UI viven en `.claude/rules/ui.md`. Quedaron activos los hooks de `.claude/settings.json` (git y archivos congelados) y `npm run visual`, con la referencia de la Fase 1 capturada en esta máquina (no viaja en git: ver GOTCHAS para rehacerla).
-La Fase 2 no empezó: no hay proyecto de Supabase ni dependencias instaladas.
-**Siguiente paso:** resolver con el usuario las cinco decisiones abiertas de `docs/features/supabase.md` (provisión, dónde se lee, materializar, cache, escrituras) y arrancar por el bloque 0 (infra).
+**2026-10-08.** La Fase 1 está cerrada y congelada (`f447a97`); el sistema de docs, los hooks y `npm run visual` entraron en `afe751c`. La referencia visual vive sólo en esta máquina (ver GOTCHAS para rehacerla).
+Fase 2: las cinco decisiones están tomadas (`docs/features/supabase.md`, *Decisiones*). El usuario hace a mano los bloques 0 y 1 con el agente de guía.
+Bloque 0 hecho: proyecto `sura-clon` en Supabase (`us-east-1`, sin stack local), `@supabase/supabase-js` 2.117.3, CLI `supabase` 2.120.0 como devDependency, `supabase/` inicializado y linkeado, `.env.local` con `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY`, cliente server-only en `lib/supabase/server.ts`. La API responde con la publishable key. Todavía no hay tablas, tipos generados ni variables en Vercel.
+**Siguiente paso:** bloque 1 (Juegos): primera migración (tabla, RLS de lectura), seed generado por el agente, tipos, y cablear `/games`, `/games/:id` y el Home.
 
 ## Ahora
 
 1. **Fase 2 · Supabase**: `docs/features/supabase.md`.
-   - [ ] 0 · Infra
+   - [x] 0 · Infra
    - [ ] 1 · Juegos
    - [ ] 2 · Noticias
    - [ ] 3 · Leaderboard y usuario
