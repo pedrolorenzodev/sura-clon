@@ -26,7 +26,7 @@ Autenticación real · cambios de diseño o de copy · data nueva o corregida (l
 1. **Provisión:** proyecto creado a mano desde el dashboard de Supabase, plan gratis, región `us-east-1` (cerca de Vercel, que es quien consulta). Claves a `.env.local` y a Vercel a mano. Sin stack local: no hay Docker; las migraciones van con la CLI (`npx supabase`) directo al proyecto remoto.
 2. **Dónde se lee:** en el server. La `page.tsx` (o un server component) consulta y pasa props; el filtrado sigue en memoria en el cliente. El navegador nunca habla con Supabase.
 3. **Qué se guarda:** se materializa la salida actual, incluidos los valores de `seeded()`, como columnas comunes. No se porta el PRNG.
-4. **Cache:** estático con revalidación por tiempo (ISR, del orden de 60 s). No hay `cacheComponents` en `next.config.ts`, así que aplica `export const revalidate` (guía: `node_modules/next/dist/docs/01-app/02-guides/incremental-static-regeneration.md`).
+4. **Cache:** estático con revalidación por tiempo (ISR, del orden de 60 s), **salvo el Home, que queda estático sin ISR** (ver GOTCHAS: Vercel lo regenera como `/index` y rompe la intro). No hay `cacheComponents` en `next.config.ts`, así que aplica `export const revalidate` (guía: `node_modules/next/dist/docs/01-app/02-guides/incremental-static-regeneration.md`).
 5. **Escrituras:** fuera de la Fase 2. Sólo lectura; los stores de sesión quedan como están.
 
 **Quién hace qué:** los bloques 0 y 1 los escribe el usuario a mano con el agente de guía; el script de seed (volcar `lib/data` a SQL) lo genera el agente. Después del bloque 1 se decide si sigue igual.

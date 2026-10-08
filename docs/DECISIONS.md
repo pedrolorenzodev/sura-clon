@@ -2,6 +2,11 @@
 
 > Registro de decisiones vigentes, la más nueva arriba. Se agrega en el momento en que se toma, incluidas las que el agente tomó sin consultar. Una decisión revertida no se borra: se marca `Reemplazada por <fecha · título>` y se agrega la nueva. El detalle largo de las anteriores al 2026-10-07 está en `docs/archive/PRD-fase1.md`.
 
+## 2026-10-08 · El Home queda estático, sin ISR
+**Se eligió:** `app/(site)/page.tsx` sin `revalidate`: la data del Home (por ahora, los 8 juegos) se actualiza en cada deploy. Las rutas internas (`/games`) siguen con ISR de 60 s. Ajusta la decisión 4 de *Cómo se integra Supabase*.
+**Por qué:** Vercel regenera el Home como `/index`; el menú se renderiza como ruta interna, la hidratación falla y se pierde la intro (ver GOTCHAS).
+**Se descartó:** aceptar `/index` como Home en `SectionNavProvider` (archivo congelado y parche del síntoma); revalidación on-demand (`revalidatePath`) por ahora.
+
 ## 2026-10-07 · Fase 2 es sólo backend; la UI queda congelada
 **Se eligió:** lista de archivos congelados calculada (todo lo que no consume data de negocio, en `.claude/hooks/frozen-paths.txt`), deny rules en `.claude/settings.json` y `npm run visual` idéntico al píxel contra la referencia de la Fase 1.
 **Por qué:** "no tocar archivos de UI" no se puede cumplir: 64 archivos de `app/`, `components/` y `lib/` importan data de negocio. La frontera real es cero cambio visual o de comportamiento.

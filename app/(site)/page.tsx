@@ -8,8 +8,6 @@ import { Misiones } from "@/components/sections/misiones";
 import { Juegos } from "@/components/sections/juegos";
 import { SuraNews } from "@/components/sections/sura-news";
 
-export const revalidate = 60;
-
 export default function Home() {
   return (
     <>
