@@ -1,9 +1,10 @@
 import { GameBanner } from "@/components/sections/game-banner";
 import { GameCard } from "@/components/sections/game-card";
 import { SectionHeader } from "@/components/sections/section-header";
-import { games } from "@/lib/data/games";
+import { getGames } from "@/lib/supabase/games";
 
-export function Juegos() {
+export async function Juegos() {
+  const games = (await getGames()).slice(0, 8);
   return (
     <section
       id="juegos"

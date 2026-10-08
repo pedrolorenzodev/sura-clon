@@ -10,7 +10,7 @@ import { Pagination } from "@/components/sections/pagination";
 import { SearchField } from "@/components/sections/search-field";
 import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
 import { scrollToTopIfHidden } from "@/lib/smooth-scroll";
-import { GAMES_PER_PAGE, gameFacets, gamesCatalog, type GameFacetId, type GameFacetValues } from "@/lib/data/games";
+import { GAMES_PER_PAGE, gameFacets, type GameFacetId, type GameFacetValues, type Game } from "@/lib/data/games";
 import { useSettledValue } from "@/lib/use-settled-value";
 import { useUrlState } from "@/lib/use-url-state";
 
@@ -26,14 +26,14 @@ const parseFacets = (state: typeof DEFAULTS) =>
     ]),
   ) as GameFacetValues;
 
-export function GamesCollection({ banner }: { banner: React.ReactNode }) {
+export function GamesCollection({ games, banner }: { games: Game[]; banner: React.ReactNode }) {
   const [state, setState] = useUrlState(DEFAULTS);
   const grid = useRef<HTMLUListElement>(null);
 
   const values = parseFacets(state);
   const filtering = gameFacets.some((facet) => values[facet.id].length > 0);
   const query = useSettledValue(state.q, SEARCH_SETTLE_MS);
-  const results = gamesCatalog.filter(
+  const results = games.filter(
     (game) =>
       matchesQuery(query, game.title, ...game.badges) &&
       gameFacets.every((facet) => !values[facet.id].length || values[facet.id].some((id) => game.facets?.[facet.id].includes(id))),
