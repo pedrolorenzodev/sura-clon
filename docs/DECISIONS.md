@@ -2,6 +2,11 @@
 
 > Registro de decisiones vigentes, la más nueva arriba. Se agrega en el momento en que se toma, incluidas las que el agente tomó sin consultar. Una decisión revertida no se borra: se marca `Reemplazada por <fecha · título>` y se agrega la nueva. El detalle largo de las anteriores al 2026-10-07 está en `docs/archive/PRD-fase1.md`.
 
+## 2026-10-09 · El detalle de juego lee de la base con ISR
+**Se eligió:** `/games/[id]` con `revalidate = 60` y `dynamicParams = false`; los ids salen de `getGames()` en el build, más la promo, que sigue en `lib/data` (`promoGame`) hasta el 1e. `getGameDetail` va con `cache()` de React (lo piden `generateMetadata` y la página). Los sugeridos son `neq(id)` + `order(sort_order)` + `limit(7)`, equivalente a "primeros 8 sin el actual, hasta 7", y llegan a `GameBody` por props.
+**Por qué:** mismo criterio que `/games`. `dynamicParams = false` evita el `notFound()` con HTML vacío (ver GOTCHAS). Filtrar en la base trae 7 filas en vez de 24.
+**Se descartó:** detalle estático sin ISR; `dynamicParams = true` para ver juegos nuevos sin build; pedir el catálogo entero y filtrar en JS.
+
 ## 2026-10-08 · El Home queda estático, sin ISR
 **Se eligió:** `app/(site)/page.tsx` sin `revalidate`: la data del Home (por ahora, los 8 juegos) se actualiza en cada deploy. Las rutas internas (`/games`) siguen con ISR de 60 s. Ajusta la decisión 4 de *Cómo se integra Supabase*.
 **Por qué:** Vercel regenera el Home como `/index`; el menú se renderiza como ruta interna, la hidratación falla y se pierde la intro (ver GOTCHAS).

@@ -128,7 +128,7 @@ Uno por commit. Cada uno: implementar, `npm run verify`, `npm run visual` (0 dif
    - [x] 1b · contenido (migración `seed_games`, generada desde `lib/data`)
    - [x] 1c · tipos generados + `getGames()` con mapper a `Game` (`lib/supabase/games.ts`)
    - [x] 1d-1 · Home `Juegos` y `/games` leen de Supabase (`/games` con ISR; el Home sin ISR)
-   - [ ] 1d-2 · detalle `/games/:id` y sugeridos desde la base
+   - [x] 1d-2 · detalle `/games/:id` y sugeridos desde la base (ISR 60 s; la promo sigue en `lib/data`)
    - [ ] 1e · promo `mundial-fifa-2026`, reseñas (pool de 10 + 2 del Figma), red y sociales: segunda tabla y relaciones; después `lib/data/game-detail.ts` y la parte de negocio de `lib/data/games.ts` se borran
 2. **Noticias**: `news` (Home Sura News, `/news`, `/news/:id`).
 3. **Leaderboard y usuario**: `leaderboard` + `medals` + `user` + `profile` (Home Leaderboard y Medallas, `/leaderboard`, modal, `/profile`, header).

@@ -4,7 +4,8 @@ import { CardLink } from "@/components/layout/card-link";
 import { CardSlider } from "@/components/sections/card-slider";
 import { GameAside } from "@/components/sections/game-aside";
 import { GameReviews } from "@/components/sections/game-reviews";
-import { suggestedGames, type GameDetail } from "@/lib/data/game-detail";
+import type { GameDetail } from "@/lib/data/game-detail";
+import type { Game } from "@/lib/data/games";
 import { detailHref } from "@/lib/routes";
 
 const ARROWS = {
@@ -12,7 +13,7 @@ const ARROWS = {
   className: "top-1/2 disabled:text-foreground/50 [&_svg]:stroke-[1.33]",
 };
 
-export function GameBody({ game }: { game: GameDetail }) {
+export function GameBody({ game, suggestions }: { game: GameDetail; suggestions: Game[] }) {
   return (
     <div className="mt-10 flex flex-col px-2 desktop:mt-12 desktop:flex-row desktop:items-start desktop:gap-6 desktop:px-0">
       <div className="flex min-w-0 flex-1 flex-col gap-10 desktop:gap-8">
@@ -53,7 +54,7 @@ export function GameBody({ game }: { game: GameDetail }) {
             flush
             reveal
           >
-            {suggestedGames(game.id).map((suggestion) => (
+            {suggestions.map((suggestion) => (
               <CardLink
                 key={suggestion.id}
                 href={detailHref("games", suggestion.id)}

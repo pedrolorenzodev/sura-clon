@@ -1,6 +1,6 @@
 import { seeded } from "@/lib/collection";
 import type { DetailArt } from "@/lib/data/detail-art";
-import { facetLabel, games, gamesCatalog, gamesPromo, type Game } from "@/lib/data/games";
+import { gamesPromo } from "@/lib/data/games";
 
 
 export type GameDetail = {
@@ -20,7 +20,7 @@ export const PROMO_GAME_ID = "mundial-fifa-2026";
 
 const GALLERY = ["/assets/games/detail/gallery-01.webp", "/assets/games/detail/gallery-02.webp"];
 
-const promoGame: GameDetail = {
+export const promoGame: GameDetail = {
   id: PROMO_GAME_ID,
   title: gamesPromo.title,
   rating: 4.2,
@@ -38,33 +38,6 @@ const promoGame: GameDetail = {
       "left-[-31.36%] top-[-32.43%] aspect-square w-[162.72%] desktop:inset-0 desktop:aspect-auto desktop:size-full desktop:object-[50%_33.25%]",
   },
 };
-
-function detailFromGame(game: Game): GameDetail {
-  const noise = seeded(`${game.id}:detail`);
-
-  return {
-    id: game.id,
-    title: [game.title],
-    rating: Math.round((4.1 + noise() * 0.8) * 10) / 10,
-    reviewsCount: 12 + Math.floor(noise() * 240),
-    tags: [...new Set([...(game.facets?.genero.map((id) => facetLabel("genero", id)) ?? []), ...game.badges])],
-    platforms: game.facets?.plataforma.map((id) => facetLabel("plataforma", id)) ?? [],
-    socials: game.facets?.redes.map((id) => facetLabel("redes", id)) ?? [],
-    about:
-      game.about ??
-      `${game.title} es parte del catálogo de Sura Gaming. Jugalo desde la app, sumá Sura Points con cada partida y competí en los eventos de la comunidad para escalar en el leaderboard.`,
-    gallery: [],
-    art: { desktop: game.heroSrc ?? game.imageSrc, mobile: game.heroSrc ?? game.imageSrc, className: "inset-0 size-full" },
-  };
-}
-
-const details = new Map(
-  [promoGame, ...gamesCatalog.map(detailFromGame)].map((detail) => [detail.id, detail]),
-);
-
-export const gameDetailIds = [...details.keys()];
-
-export const getGameDetail = (id: string) => details.get(id);
 
 export const starFill = (rating: number, index: number) => {
   const filled = Math.ceil(rating * 2) / 2 - index;
@@ -220,5 +193,3 @@ export const gameNetwork = { name: "Solana", logoSrc: "/assets/games/detail/netw
 const FIGMA_SOCIALS = ["Whitepaper", "Twitter", "Discord", "Instagram", "Telegram", "Youtube", "Linkedin", "Medium"];
 
 export const gameSocials = (game: GameDetail) => (game.socials.length ? game.socials : FIGMA_SOCIALS);
-
-export const suggestedGames = (id: string) => games.filter((game) => game.id !== id).slice(0, 7);
