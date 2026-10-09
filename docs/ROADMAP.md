@@ -6,14 +6,16 @@
 
 **2026-10-08.** La Fase 1 está cerrada y congelada (`f447a97`); el sistema de docs, los hooks y `npm run visual` entraron en `afe751c`. La referencia visual vive sólo en esta máquina (ver GOTCHAS para rehacerla).
 Fase 2: las cinco decisiones están tomadas (`docs/features/supabase.md`, *Decisiones*). El usuario hace a mano los bloques 0 y 1 con el agente de guía.
-Bloque 0 hecho: proyecto `sura-clon` en Supabase (`us-east-1`, sin stack local), `@supabase/supabase-js` 2.117.3, CLI `supabase` 2.120.0 como devDependency, `supabase/` inicializado y linkeado, `.env.local` con `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY`, cliente server-only en `lib/supabase/server.ts`. La API responde con la publishable key. Todavía no hay tablas, tipos generados ni variables en Vercel.
-**Siguiente paso:** bloque 1 (Juegos): primera migración (tabla, RLS de lectura), seed generado por el agente, tipos, y cablear `/games`, `/games/:id` y el Home.
+**Modo de trabajo:** el usuario escribe el código y el agente guía paso a paso (concepto corto + snippet mínimo + revisión del diff). El agente sólo genera las migraciones de contenido (leyendo `lib/data`). Al cerrar cada paso, el agente completa `notas/supabase.md` (notas personales del usuario, gitignoreadas; mismo formato).
+Bloque 0 hecho: proyecto `sura-clon` (`us-east-1`, sin stack local), `lib/supabase/server.ts` (cliente server-only, tipado con `Database`), variables en `.env.local` **y en Vercel** (Production y Preview).
+Bloque 1 a medias: tabla `games` con RLS de lectura y sus 24 filas (dos migraciones, 312 campos verificados contra `lib/data`), tipos en `lib/supabase/database.types.ts`, `getGames()` + mapper en `lib/supabase/games.ts`. El Home (`Juegos`, primeros 8) y `/games` (ISR 60 s) ya leen de Supabase, en producción y con `visual` 233/233. **El Home no lleva ISR** (rompe la intro: ver GOTCHAS). Último commit: `3a62683`.
+**Siguiente paso:** 1d-2, el detalle `/games/:id`: `generateStaticParams` desde la base, `GameDetail` armado desde la fila (`rating` y `reviews_count` ya están en la tabla), sugeridos (`games` → primeros 8). La promo `mundial-fifa-2026`, las reseñas, la red y las sociales siguen en `lib/data/game-detail.ts`: van en un paso aparte (segunda tabla, relaciones).
 
 ## Ahora
 
 1. **Fase 2 · Supabase**: `docs/features/supabase.md`.
    - [x] 0 · Infra
-   - [ ] 1 · Juegos
+   - [ ] 1 · Juegos (1a–1d-1 hechos; falta 1d-2 y 1e)
    - [ ] 2 · Noticias
    - [ ] 3 · Leaderboard y usuario
    - [ ] 4 · Torneos

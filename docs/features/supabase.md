@@ -123,7 +123,13 @@ El detalle de cada uno está en `docs/GOTCHAS.md`, sección *Fase 2: datos*. Los
 Uno por commit. Cada uno: implementar, `npm run verify`, `npm run visual` (0 diffs), comparar el HTML del server de sus rutas contra el de antes, probar a mano en el navegador los flujos con interacción del dominio (abrir modales, filtrar, paginar, reclamar, unirse, reseñar: `visual` no los ve), `git diff` leído como plomería, `DECISIONS.md` y "Estado actual" al día, mensaje de commit.
 
 0. **Infra.** Proyecto, env vars (`.env.local`, gitignoreado; en Vercel según la decisión 1), cliente (`@supabase/supabase-js` y, si hace falta, `@supabase/ssr`, versiones pinneadas), `lib/supabase/` (cliente server, tipos generados), `supabase/` (migraciones y `seed.sql` generado desde `lib/data` actual por un script), RLS de lectura pública. Ningún componente cambia todavía.
-1. **Juegos**: `games` + `game-detail` (Home Juegos, banners, `/games`, `/games/:id`).
+1. **Juegos**: `games` + `game-detail` (Home Juegos, banners, `/games`, `/games/:id`). Partido en pasos:
+   - [x] 1a · tabla `games` (migración `create_games`, RLS de lectura, `check` de facetas)
+   - [x] 1b · contenido (migración `seed_games`, generada desde `lib/data`)
+   - [x] 1c · tipos generados + `getGames()` con mapper a `Game` (`lib/supabase/games.ts`)
+   - [x] 1d-1 · Home `Juegos` y `/games` leen de Supabase (`/games` con ISR; el Home sin ISR)
+   - [ ] 1d-2 · detalle `/games/:id` y sugeridos desde la base
+   - [ ] 1e · promo `mundial-fifa-2026`, reseñas (pool de 10 + 2 del Figma), red y sociales: segunda tabla y relaciones; después `lib/data/game-detail.ts` y la parte de negocio de `lib/data/games.ts` se borran
 2. **Noticias**: `news` (Home Sura News, `/news`, `/news/:id`).
 3. **Leaderboard y usuario**: `leaderboard` + `medals` + `user` + `profile` (Home Leaderboard y Medallas, `/leaderboard`, modal, `/profile`, header).
 4. **Torneos**: `tournaments` + `tournament-detail` + `events` (Home Eventos, `/tournaments`, `/tournaments/:id`; participantes dependen del 3).
