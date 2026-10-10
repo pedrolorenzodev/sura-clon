@@ -34,7 +34,7 @@ const toGameDetail = (row: Tables<"games">): GameDetail => ({
 });
 
 export async function getGames(): Promise<Game[]> {
-  const { data, error } = await supabase.from("games").select("*").order("sort_order");
+  const { data, error } = await supabase.from("games").select("*").eq("in_catalog", true).order("sort_order");
   if (error) throw error;
   return data.map(toGame);
 }
@@ -46,7 +46,7 @@ export const getGameDetail = cache(async (id: string): Promise<GameDetail | null
 });
 
 export async function getSuggestedGames(id: string): Promise<Game[]> {
-  const { data, error } = await supabase.from("games").select("*").neq("id", id).order("sort_order").limit(7);
+  const { data, error } = await supabase.from("games").select("*").eq("in_catalog", true).neq("id", id).order("sort_order").limit(7);
   if (error) throw error;
   return data.map(toGame);
 }

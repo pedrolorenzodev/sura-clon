@@ -2,6 +2,12 @@
 
 > Registro de decisiones vigentes, la más nueva arriba. Se agrega en el momento en que se toma, incluidas las que el agente tomó sin consultar. Una decisión revertida no se borra: se marca `Reemplazada por <fecha · título>` y se agrega la nueva. El detalle largo de las anteriores al 2026-10-07 está en `docs/archive/PRD-fase1.md`.
 
+## 2026-10-09 · Modelo del paso 1e (promo, reseñas, red)
+**Se eligió (usuario):** la promo `mundial-fifa-2026` es una fila más de `games`, con `in_catalog = false` y una columna `gallery`; el catálogo, el Home y los sugeridos filtran por `in_catalog`. Lo que es diseño sigue en código atado a `PROMO_GAME_ID`: el título en dos líneas (el copy del banner) y el recorte del arte (`className`). Las reseñas son uno a muchos: `game_reviews` con FK a `games`, 50 filas (24 × 2 materializadas desde el pool más las 2 del Figma), con el texto repetido entre juegos.
+**Se eligió (agente, a confirmar por el usuario):** la red (Solana) no va a la base: es una constante de UI en `game-aside.tsx`, porque el campo "Red" se va a sacar después de la Fase 2 (ver ROADMAP). El fallback de sociales del Figma también queda en `game-aside.tsx` (placeholder de UI). `starFill` es un helper sin data y sale de `lib/data`.
+**Por qué:** toda la data de negocio de la promo y sus reseñas queda en la base con una relación real; una reseña pertenece a un solo juego, que es el modelo que sirve cuando haya escrituras. La red no le interesa al usuario final: modelarla sería invertir en algo que se borra.
+**Se descartó:** la promo como landing en código (deja data de negocio fuera de la base); muchos a muchos con un pool de 12 reseñas (modela un artefacto del mock); tabla `networks` con FK; sacar el campo "Red" ya (cambio visual dentro de la Fase 2).
+
 ## 2026-10-09 · El detalle de juego lee de la base con ISR
 **Se eligió:** `/games/[id]` con `revalidate = 60` y `dynamicParams = false`; los ids salen de `getGames()` en el build, más la promo, que sigue en `lib/data` (`promoGame`) hasta el 1e. `getGameDetail` va con `cache()` de React (lo piden `generateMetadata` y la página). Los sugeridos son `neq(id)` + `order(sort_order)` + `limit(7)`, equivalente a "primeros 8 sin el actual, hasta 7", y llegan a `GameBody` por props.
 **Por qué:** mismo criterio que `/games`. `dynamicParams = false` evita el `notFound()` con HTML vacío (ver GOTCHAS). Filtrar en la base trae 7 filas en vez de 24.

@@ -26,6 +26,7 @@ Bloque 1 a medias: tabla `games` (24 filas, RLS de lectura), tipos generados y `
 ## Próximo
 
 - **Fase D del feedback de Ema** (barrido de lo inerte): "Jugar ahora" del detalle de juego, "Sociales" del detalle de juego y los links, redes y badges del footer. A cada uno: un destino, una acción, o dejar de parecer clickeable. Toca UI: necesita autorización y, si no está definido, propuesta con demos.
+- **Sacar el campo "Red" (Solana) del detalle de juego** (pedido del usuario el 2026-10-09: al usuario final no le dice nada). Es cambio visual: va después de la Fase 2, con referencia nueva aprobada. Hoy es una constante en `game-aside.tsx`.
 - **Probar sonido, música y volumen en Safari (macOS e iOS) y Firefox reales.** Hasta hoy, sólo Chromium y los builds de Playwright; el respaldo AAC para Safari viejo nunca se ejercitó.
 
 ## Después

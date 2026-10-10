@@ -18,10 +18,12 @@ export type Database = {
         Row: {
           about: string
           badges: string[]
+          gallery: string[]
           genres: string[]
           hero_src: string
           id: string
           image_src: string
+          in_catalog: boolean
           platforms: string[]
           rating: number
           reviews_count: number
@@ -33,10 +35,12 @@ export type Database = {
         Insert: {
           about: string
           badges?: string[]
+          gallery?: string[]
           genres?: string[]
           hero_src: string
           id: string
           image_src: string
+          in_catalog?: boolean
           platforms?: string[]
           rating: number
           reviews_count: number
@@ -48,10 +52,12 @@ export type Database = {
         Update: {
           about?: string
           badges?: string[]
+          gallery?: string[]
           genres?: string[]
           hero_src?: string
           id?: string
           image_src?: string
+          in_catalog?: boolean
           platforms?: string[]
           rating?: number
           reviews_count?: number
