@@ -1,7 +1,6 @@
 import { seeded } from "@/lib/collection";
 import type { DetailArt } from "@/lib/data/detail-art";
-import { gamesPromo } from "@/lib/data/games";
-
+import { PROMO_GAME_ID } from "@/lib/data/games";
 
 export type GameDetail = {
   id: string;
@@ -14,29 +13,6 @@ export type GameDetail = {
   about: string;
   gallery: string[];
   art: DetailArt;
-};
-
-export const PROMO_GAME_ID = "mundial-fifa-2026";
-
-const GALLERY = ["/assets/games/detail/gallery-01.webp", "/assets/games/detail/gallery-02.webp"];
-
-export const promoGame: GameDetail = {
-  id: PROMO_GAME_ID,
-  title: gamesPromo.title,
-  rating: 4.2,
-  reviewsCount: 84,
-  tags: ["Mini-Juego", "Fútbol", "Online"],
-  platforms: [],
-  socials: [],
-  about:
-    "Juega al nuevo juego de fútbol Soccer Super Star y disfruta de una experiencia de fútbol real, ultra rápida e inmersiva. ¿Te gustan los arcades de fútbol pero no tienes tiempo de practicar? Los controles de juego del nuevo Soccer Super Star son muy sencillos, diviértete desde el principio.",
-  gallery: [...GALLERY, ...GALLERY],
-  art: {
-    desktop: "/assets/games/detail/hero-fc26.webp",
-    mobile: "/assets/games/banner-mobile.webp",
-    className:
-      "left-[-31.36%] top-[-32.43%] aspect-square w-[162.72%] desktop:inset-0 desktop:aspect-auto desktop:size-full desktop:object-[50%_33.25%]",
-  },
 };
 
 export const starFill = (rating: number, index: number) => {

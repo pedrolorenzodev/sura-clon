@@ -3,8 +3,7 @@ import Link from "next/link";
 
 import { BorderLight } from "@/components/sections/border-light";
 import { ScrambleText } from "@/components/sections/scramble-text";
-import { PROMO_GAME_ID } from "@/lib/data/game-detail";
-import { gamesPromo } from "@/lib/data/games";
+import { gamesPromo, PROMO_GAME_ID } from "@/lib/data/games";
 
 const PROMO_HREF = `/games/${PROMO_GAME_ID}`;
 

@@ -1,3 +1,5 @@
+import type { DetailArt } from "@/lib/data/detail-art";
+
 export const gameFacets = [
   {
     id: "genero",
@@ -302,4 +304,12 @@ export const gamesRoutePromo = {
   bodyMobile:
     "Jugá las fechas del Mundial, sumá Sura Points y ganá un viaje para ver la final en vivo.",
   imageSrcMobile: "/assets/games/banner-mobile.webp",
+};
+
+export const PROMO_GAME_ID = "mundial-fifa-2026";
+
+export const promoArt: DetailArt = {
+  desktop: "/assets/games/detail/hero-fc26.webp",
+  mobile: "/assets/games/banner-mobile.webp",
+  className: "left-[-31.36%] top-[-32.43%] aspect-square w-[162.72%] desktop:inset-0 desktop:aspect-auto desktop:size-full desktop:object-[50%_33.25%]",
 };
