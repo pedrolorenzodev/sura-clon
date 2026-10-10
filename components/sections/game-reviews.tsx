@@ -5,12 +5,12 @@ import { useState } from "react";
 
 import { SelectPill } from "@/components/sections/select-pill";
 import { StarRating } from "@/components/sections/star-rating";
-import { gameReviews, starFill, type GameDetail, type GameReview } from "@/lib/data/game-detail";
+import { starFill, type GameDetail, type GameReview } from "@/lib/data/game-detail";
 import { currentUser } from "@/lib/data/user";
 import { cn } from "@/lib/utils";
 
 export function GameReviews({ game }: { game: GameDetail }) {
-  const [initialReviews] = useState(() => gameReviews(game.id));
+  const [initialReviews] = useState(game.reviews);
   const [reviews, setReviews] = useState(initialReviews);
   const [draft, setDraft] = useState("");
   const [rating, setRating] = useState<number | null>(null);

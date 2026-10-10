@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      game_reviews: {
+        Row: {
+          author: string
+          avatar_src: string
+          game_id: string
+          id: string
+          liked: boolean
+          likes: number
+          rating: number | null
+          sort_order: number
+          text: string
+          time_label: string
+        }
+        Insert: {
+          author: string
+          avatar_src: string
+          game_id: string
+          id: string
+          liked?: boolean
+          likes?: number
+          rating?: number | null
+          sort_order: number
+          text: string
+          time_label: string
+        }
+        Update: {
+          author?: string
+          avatar_src?: string
+          game_id?: string
+          id?: string
+          liked?: boolean
+          likes?: number
+          rating?: number | null
+          sort_order?: number
+          text?: string
+          time_label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_reviews_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       games: {
         Row: {
           about: string

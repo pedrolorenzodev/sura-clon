@@ -1,9 +1,11 @@
 import "server-only";
 import { cache } from "react";
 import { facetLabel, gamesPromo, PROMO_GAME_ID, promoArt, type Game } from "@/lib/data/games";
-import type { GameDetail } from "@/lib/data/game-detail";
+import type { GameDetail, GameReview } from "@/lib/data/game-detail";
 import { supabase } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/supabase/database.types";
+
+type GameDetailRow = Tables<"games"> & { game_reviews: Tables<"game_reviews">[] };
 
 const toGame = (row: Tables<"games">): Game => ({
   id: row.id,
@@ -20,12 +22,24 @@ const toGame = (row: Tables<"games">): Game => ({
   },
 });
 
-const toGameDetail = (row: Tables<"games">): GameDetail => {
+const toGameReview = (row: Tables<"game_reviews">): GameReview => ({
+  id: row.id,
+  author: row.author,
+  avatarSrc: row.avatar_src,
+  time: row.time_label,
+  rating: row.rating,
+  text: row.text,
+  likes: row.likes,
+  liked: row.liked,
+});
+
+const toGameDetail = (row: GameDetailRow): GameDetail => {
   const isPromo = row.id === PROMO_GAME_ID;
   return {
     id: row.id,
     title: isPromo ? gamesPromo.title : [row.title],
     rating: row.rating,
+    reviews: row.game_reviews.map(toGameReview),
     reviewsCount: row.reviews_count,
     tags: [...new Set([...row.genres.map((id) => facetLabel("genero", id)), ...row.badges])],
     platforms: row.platforms.map((id) => facetLabel("plataforma", id)),
@@ -49,7 +63,12 @@ export async function getGames(): Promise<Game[]> {
 }
 
 export const getGameDetail = cache(async (id: string): Promise<GameDetail | null> => {
-  const { data, error } = await supabase.from("games").select("*").eq("id", id).maybeSingle();
+  const { data, error } = await supabase
+    .from("games")
+    .select("*, game_reviews(*)")
+    .eq("id", id)
+    .order("sort_order", { referencedTable: "game_reviews" })
+    .maybeSingle();
   if (error) throw error;
   return data && toGameDetail(data);
 });
