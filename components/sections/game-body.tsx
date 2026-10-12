@@ -4,9 +4,8 @@ import { CardLink } from "@/components/layout/card-link";
 import { CardSlider } from "@/components/sections/card-slider";
 import { GameAside } from "@/components/sections/game-aside";
 import { GameReviews } from "@/components/sections/game-reviews";
-import type { GameDetail } from "@/lib/data/game-detail";
-import type { Game } from "@/lib/data/games";
 import { detailHref } from "@/lib/routes";
+import type { Game, GameDetail } from "@/lib/supabase/games";
 
 const ARROWS = {
   sides: { left: "left-3.5", right: "right-2" },

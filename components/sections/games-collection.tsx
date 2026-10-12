@@ -10,7 +10,8 @@ import { Pagination } from "@/components/sections/pagination";
 import { SearchField } from "@/components/sections/search-field";
 import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
 import { scrollToTopIfHidden } from "@/lib/smooth-scroll";
-import { GAMES_PER_PAGE, gameFacets, type GameFacetId, type GameFacetValues, type Game } from "@/lib/data/games";
+import { GAMES_PER_PAGE, gameFacets, type GameFacetId, type GameFacetValues } from "@/lib/data/games";
+import type { Game } from "@/lib/supabase/games";
 import { useSettledValue } from "@/lib/use-settled-value";
 import { useUrlState } from "@/lib/use-url-state";
 

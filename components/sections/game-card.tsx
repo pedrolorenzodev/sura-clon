@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { CardLink } from "@/components/layout/card-link";
-import type { Game } from "@/lib/data/games";
+import type { Game } from "@/lib/supabase/games";
 import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 

@@ -4,9 +4,9 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { SelectPill } from "@/components/sections/select-pill";
-import { StarRating } from "@/components/sections/star-rating";
-import { starFill, type GameDetail, type GameReview } from "@/lib/data/game-detail";
+import { StarRating, starFill } from "@/components/sections/star-rating";
 import { currentUser } from "@/lib/data/user";
+import type { GameDetail, GameReview } from "@/lib/supabase/games";
 import { cn } from "@/lib/utils";
 
 export function GameReviews({ game }: { game: GameDetail }) {

@@ -3,7 +3,7 @@ import { Fragment } from "react";
 import { BrandCta } from "@/components/sections/brand-cta";
 import { StarRating } from "@/components/sections/star-rating";
 import { TitleSweep } from "@/components/sections/title-sweep";
-import type { GameDetail } from "@/lib/data/game-detail";
+import type { GameDetail } from "@/lib/supabase/games";
 import { cn } from "@/lib/utils";
 
 export function GameHero({ game }: { game: GameDetail }) {

@@ -1,11 +1,47 @@
 import "server-only";
 import { cache } from "react";
-import { facetLabel, gamesPromo, PROMO_GAME_ID, promoArt, type Game } from "@/lib/data/games";
-import type { GameDetail, GameReview } from "@/lib/data/game-detail";
+import type { DetailArt } from "@/lib/data/detail-art";
+import { facetLabel, gamesPromo, PROMO_GAME_ID, promoArt, type GameFacetValues } from "@/lib/data/games";
 import { supabase } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/supabase/database.types";
 
 type GameDetailRow = Tables<"games"> & { game_reviews: Tables<"game_reviews">[] };
+
+export type Game = {
+  id: string;
+  title: string;
+  badges: string[];
+  imageSrc: string;
+  imageClass?: string;
+  heroSrc?: string;
+  about?: string;
+  facets?: GameFacetValues;
+};
+
+export type GameDetail = {
+  id: string;
+  title: string[];
+  rating: number;
+  reviews: GameReview[];
+  reviewsCount: number;
+  tags: string[];
+  platforms: string[];
+  socials: string[];
+  about: string;
+  gallery: string[];
+  art: DetailArt;
+};
+
+export type GameReview = {
+  id: string;
+  author: string;
+  avatarSrc: string;
+  time: string;
+  rating: number | null;
+  text: string;
+  likes: number;
+  liked: boolean;
+};
 
 const toGame = (row: Tables<"games">): Game => ({
   id: row.id,

@@ -1,6 +1,5 @@
 import Image from "next/image";
 
-import { starFill } from "@/lib/data/game-detail";
 import { cn } from "@/lib/utils";
 
 const STAR_ART = {
@@ -19,6 +18,11 @@ const STAR_ART = {
     half: "/assets/games/detail/star-muted-sm.svg",
     empty: "/assets/games/detail/star-muted-sm-empty.svg",
   },
+};
+
+export const starFill = (rating: number, index: number) => {
+  const filled = Math.ceil(rating * 2) / 2 - index;
+  return filled >= 1 ? "full" : filled > 0 ? "half" : "empty";
 };
 
 export function StarRating({

@@ -1,12 +1,14 @@
 import Image from "next/image";
 
 import { communityRules } from "@/lib/data/community-rules";
-import {
-  gameNetwork,
-  gameSocials,
-  type GameDetail,
-} from "@/lib/data/game-detail";
+import type { GameDetail } from "@/lib/supabase/games";
 import { cn } from "@/lib/utils";
+
+const gameNetwork = { name: "Solana", logoSrc: "/assets/games/detail/network-solana.webp" };
+
+const FIGMA_SOCIALS = ["Whitepaper", "Twitter", "Discord", "Instagram", "Telegram", "Youtube", "Linkedin", "Medium"];
+
+const gameSocials = (game: GameDetail) => (game.socials.length ? game.socials : FIGMA_SOCIALS);
 
 export function GameAside({ game }: { game: GameDetail }) {
   return (
