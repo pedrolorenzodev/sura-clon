@@ -136,7 +136,20 @@ Uno por commit. Cada uno: implementar, `npm run verify`, `npm run visual` (0 dif
    - [x] 2c · tipos generados + queries con mapper a `NewsItem` (`lib/supabase/news.ts`)
    - [x] 2d · Home, `/news` y `/news/:id` (con relacionadas) leen de Supabase
    - [x] 2e · `lib/data/news.ts` queda sólo con config de UI (`newsCategories`, `newsIntro`)
-3. **Leaderboard y usuario**: `leaderboard` + `medals` + `user` + `profile` (Home Leaderboard y Medallas, `/leaderboard`, modal, `/profile`, header).
+3. **Leaderboard y usuario**: `leaderboard` + `medals` + `user` + `profile` (Home Leaderboard y Medallas, `/leaderboard`, modal, `/profile`, header). Modelo en `DECISIONS.md` (2026-10-14). Partido en pasos:
+   - [x] 3a · `players` (51 con `ME`: estadísticas históricas, puesto y días en el puesto materializados)
+   - [x] 3b · `medals` (catálogo) + `player_medals` (muchos a muchos, con `claimed`)
+   - [x] 3c · `leaderboard_entries` (16 vistas materializadas, con `position`)
+   - [ ] 3d · tipos generados + queries con mappers (`lib/supabase/`)
+   - [ ] 3e · Home (Leaderboard y Medallas) y `/leaderboard` leen de Supabase
+   - [ ] 3f · modal de jugador, `/profile` y el usuario del header (`currentUser`, reclamo diario)
+   - [ ] 3g · limpieza de `lib/data` (lo que usa `tournament-detail.ts` para los participantes queda hasta el bloque 4)
+   - **Para el 3d en adelante** (lo que ya se sabe):
+     - Las cuatro tablas están cargadas y verificadas contra `lib/data` (51 · 9 · 135 · 816 filas). Los tipos todavía no se regeneraron.
+     - Ranking: la lista de una vista es `eq(metric).eq(period).neq(player_id, MY_PLAYER_ID).order(position)`; tu fila va aparte. `period` en la base es `range` en TypeScript. El formato lo hace el mapper como `toStanding`: `rank` = `position` con dos dígitos, `tone` por índice (oro, plata, bronce; `"me"` para vos), `deficit` contra la fila de arriba (para vos, la de `position - 1`), `withThousands` y `plural` sin `Intl`.
+     - Medallas: la colección de un jugador es el catálogo entero; `locked` = no hay fila en `player_medals`, `sparkle` = tiene la fila y `medals.sparkle`, `reward` = `+${reward_points}`. Las medallas del Home no llevan `reward`; las de `/profile` y el modal sí. Estado de `/profile`: `locked` / `claimed` / `claimable` según `claimed`.
+     - Perfil de jugador (modal): `rank` = `historic_rank`, `daysAtRank` = `days_at_rank`; `nextLevel`, `levelGoal` y `levelProgress` salen de `LEVEL_ORDER` y `LEVEL_GOAL`, que quedan en código.
+     - Abierto para el 3f: el modal lo monta `SiteChrome` (en todas las rutas) y hoy calcula cualquier perfil al hacer click. Pasar los 51 perfiles por props suma peso a cada página; pedirlo al abrir agrega una espera que hoy no existe. Se decide con el usuario. El avatar del header (`currentUser.avatarSrc`, `/assets/home/avatar.png`) no es el de `ME` en el ranking (`avatar-me.png`); `dailyClaim` (etiqueta, +50, íconos) también se decide ahí.
 4. **Torneos**: `tournaments` + `tournament-detail` + `events` (Home Eventos, `/tournaments`, `/tournaments/:id`; participantes dependen del 3).
 5. **Misiones**: `missions` (Home Misiones, `/missions`, modal).
 6. **Lo que queda**: `community-rules`, `detail-art`.
