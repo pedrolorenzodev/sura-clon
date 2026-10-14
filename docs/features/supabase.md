@@ -29,7 +29,7 @@ Autenticación real · cambios de diseño o de copy · data nueva o corregida (l
 4. **Cache:** estático con revalidación por tiempo (ISR, del orden de 60 s), **salvo el Home, que queda estático sin ISR** (ver GOTCHAS: Vercel lo regenera como `/index` y rompe la intro). No hay `cacheComponents` en `next.config.ts`, así que aplica `export const revalidate` (guía: `node_modules/next/dist/docs/01-app/02-guides/incremental-static-regeneration.md`).
 5. **Escrituras:** fuera de la Fase 2. Sólo lectura; los stores de sesión quedan como están.
 
-**Quién hace qué:** los bloques 0 y 1 los escribe el usuario a mano con el agente de guía; el script de seed (volcar `lib/data` a SQL) lo genera el agente. Después del bloque 1 se decide si sigue igual.
+**Quién hace qué:** los bloques 0, 1 y 2 los escribe el usuario a mano con el agente de guía; el script de seed (volcar `lib/data` a SQL) lo genera el agente. Al cerrar cada bloque se decide si sigue igual.
 
 ## Inventario
 
@@ -130,7 +130,12 @@ Uno por commit. Cada uno: implementar, `npm run verify`, `npm run visual` (0 dif
    - [x] 1d-1 · Home `Juegos` y `/games` leen de Supabase (`/games` con ISR; el Home sin ISR)
    - [x] 1d-2 · detalle `/games/:id` y sugeridos desde la base (ISR 60 s; la promo sigue en `lib/data`)
    - [x] 1e · promo `mundial-fifa-2026`, reseñas (pool de 10 + 2 del Figma), red y sociales: segunda tabla y relaciones; después `lib/data/game-detail.ts` y la parte de negocio de `lib/data/games.ts` se borran
-2. **Noticias**: `news` (Home Sura News, `/news`, `/news/:id`).
+2. **Noticias**: `news` (Home Sura News, `/news`, `/news/:id`). Modelo en `DECISIONS.md` (2026-10-12). Partido en pasos:
+   - [x] 2a · tabla `news` (migración `create_news`, RLS de lectura, `body jsonb`, `published_at date`)
+   - [x] 2b · contenido (migración `seed_news`, generada desde `lib/data`)
+   - [x] 2c · tipos generados + queries con mapper a `NewsItem` (`lib/supabase/news.ts`)
+   - [x] 2d · Home, `/news` y `/news/:id` (con relacionadas) leen de Supabase
+   - [ ] 2e · `lib/data/news.ts` queda sólo con config de UI (`newsCategories`, `newsIntro`)
 3. **Leaderboard y usuario**: `leaderboard` + `medals` + `user` + `profile` (Home Leaderboard y Medallas, `/leaderboard`, modal, `/profile`, header).
 4. **Torneos**: `tournaments` + `tournament-detail` + `events` (Home Eventos, `/tournaments`, `/tournaments/:id`; participantes dependen del 3).
 5. **Misiones**: `missions` (Home Misiones, `/missions`, modal).

@@ -4,19 +4,20 @@
 
 > Se sobrescribe al terminar cada sesión. Máximo 15 líneas.
 
-**2026-10-12.** La Fase 1 está cerrada y congelada (`f447a97`); el sistema de docs, los hooks y `npm run visual` entraron en `afe751c`. La referencia visual vive sólo en esta máquina (ver GOTCHAS para rehacerla).
+**2026-10-14.** La Fase 1 está cerrada y congelada (`f447a97`); el sistema de docs, los hooks y `npm run visual` entraron en `afe751c`. La referencia visual vive sólo en esta máquina (ver GOTCHAS para rehacerla).
 Fase 2: las cinco decisiones están tomadas (`docs/features/supabase.md`, *Decisiones*). El usuario hizo a mano los bloques 0 y 1 con el agente de guía.
 **Modo de trabajo:** el usuario escribe el código y el agente guía paso a paso (concepto corto + snippet mínimo + revisión del diff). El agente sólo genera las migraciones de contenido (leyendo `lib/data`). Al cerrar cada paso, el agente completa `notas/supabase.md` (notas personales del usuario, gitignoreadas; mismo formato).
 Bloque 0 hecho: proyecto `sura-clon` (`us-east-1`, sin stack local), `lib/supabase/server.ts` (cliente server-only, tipado con `Database`), variables en `.env.local` **y en Vercel** (Production y Preview).
 Bloque 1 hecho: tablas `games` (24 del catálogo + la promo `mundial-fifa-2026`, con `in_catalog` y `gallery`) y `game_reviews` (50 filas, PK `(game_id, id)`), RLS de lectura en las dos. `lib/supabase/games.ts` tiene las queries y los tipos `Game`, `GameDetail` y `GameReview`. El Home (sin ISR: ver GOTCHAS), `/games` y `/games/:id` (ISR 60 s) leen de Supabase. `lib/data/game-detail.ts` ya no existe y `lib/data/games.ts` quedó sólo con config de UI. `visual` 233/233, detalle y reseñas probados a mano.
-**Siguiente paso:** bloque 2, Noticias. Antes, el usuario decide si lo sigue escribiendo a mano o lo hace el agente.
+Bloque 2 a medias (el usuario sigue a mano): tabla `news` (11 filas, `body jsonb`, `published_at date`) y `lib/supabase/news.ts`. El Home, `/news` y `/news/:id` (ISR 60 s, con relacionadas) leen de Supabase; `visual` 233/233.
+**Siguiente paso:** 2e, `lib/data/news.ts` queda sólo con config de UI y los tipos pasan a `lib/supabase/news.ts`.
 
 ## Ahora
 
 1. **Fase 2 · Supabase**: `docs/features/supabase.md`.
    - [x] 0 · Infra
    - [x] 1 · Juegos
-   - [ ] 2 · Noticias
+   - [ ] 2 · Noticias (2a–2d hechos; falta 2e)
    - [ ] 3 · Leaderboard y usuario
    - [ ] 4 · Torneos
    - [ ] 5 · Misiones

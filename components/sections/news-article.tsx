@@ -5,9 +5,9 @@ import { NewsCategoryBadge } from "@/components/sections/news-category-badge";
 import { NewsMeta } from "@/components/sections/news-meta";
 import { ShareButtons } from "@/components/sections/share-buttons";
 import { TitleSweep } from "@/components/sections/title-sweep";
-import { relatedNews, type NewsBlock, type NewsItem } from "@/lib/data/news";
+import type { NewsBlock, NewsItem } from "@/lib/data/news";
 
-export function NewsArticle({ item }: { item: NewsItem }) {
+export function NewsArticle({ item, relatedNews }: { item: NewsItem; relatedNews: NewsItem[] }) {
   return (
     <div className="relative mx-auto flex w-full max-w-page flex-col">
       <DetailBackLink />
@@ -34,7 +34,7 @@ export function NewsArticle({ item }: { item: NewsItem }) {
           <section className="flex flex-col gap-3">
             <h2 className="font-techno text-base uppercase text-foreground">Relacionadas</h2>
             <ul className="flex flex-col gap-3">
-              {relatedNews(item).map((related) => (
+              {relatedNews.map((related) => (
                 <li key={related.id} className="flex">
                   <NewsCardWide item={related} fluid />
                 </li>

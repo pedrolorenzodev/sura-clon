@@ -4,12 +4,12 @@ import { FlipList } from "@/components/sections/flip-list";
 import { NewsCard } from "@/components/sections/news-card";
 import { NewsFeature } from "@/components/sections/news-feature";
 import { RouteTabs } from "@/components/sections/route-tabs";
-import { news, newsCategories } from "@/lib/data/news";
+import { newsCategories, type NewsItem } from "@/lib/data/news";
 import { useUrlState } from "@/lib/use-url-state";
 
 const DEFAULTS = { categoria: "todas" };
 
-export function NewsCollection() {
+export function NewsCollection({ news }: { news: NewsItem[] }) {
   const [state, setState] = useUrlState(DEFAULTS);
   const category = newsCategories.some((item) => item.id === state.categoria) ? state.categoria : "todas";
   const items = category === "todas" ? news : news.filter((item) => item.category === category);

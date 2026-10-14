@@ -6,9 +6,11 @@ import { NewsCardWide } from "@/components/sections/news-card-wide";
 import { ScrambleText } from "@/components/sections/scramble-text";
 import { SectionHeader } from "@/components/sections/section-header";
 import { TitleSweep } from "@/components/sections/title-sweep";
-import { news, newsIntro } from "@/lib/data/news";
+import { newsIntro } from "@/lib/data/news";
+import { getNews } from "@/lib/supabase/news";
 
-export function SuraNews() {
+export async function SuraNews() {
+  const news = await getNews();
   return (
     <section
       id="sura-news"

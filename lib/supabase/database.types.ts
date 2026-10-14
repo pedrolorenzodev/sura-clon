@@ -115,6 +115,39 @@ export type Database = {
         }
         Relationships: []
       }
+      news: {
+        Row: {
+          body: Json
+          category: string
+          id: string
+          image_src: string
+          published_at: string
+          read_minutes: number
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          body: Json
+          category: string
+          id: string
+          image_src: string
+          published_at: string
+          read_minutes: number
+          sort_order: number
+          title: string
+        }
+        Update: {
+          body?: Json
+          category?: string
+          id?: string
+          image_src?: string
+          published_at?: string
+          read_minutes?: number
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
