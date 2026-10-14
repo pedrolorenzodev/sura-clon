@@ -3,7 +3,7 @@ import Image from "next/image";
 import { CardLink } from "@/components/layout/card-link";
 import { CardBrackets } from "@/components/sections/card-brackets";
 import { NewsMeta } from "@/components/sections/news-meta";
-import type { NewsItem } from "@/lib/data/news";
+import type { NewsItem } from "@/lib/supabase/news";
 import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 

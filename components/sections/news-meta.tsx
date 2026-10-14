@@ -1,4 +1,4 @@
-import type { NewsItem } from "@/lib/data/news";
+import type { NewsItem } from "@/lib/supabase/news";
 
 export function NewsMeta({ item }: { item: NewsItem }) {
   return (

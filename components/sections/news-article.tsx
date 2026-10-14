@@ -5,7 +5,7 @@ import { NewsCategoryBadge } from "@/components/sections/news-category-badge";
 import { NewsMeta } from "@/components/sections/news-meta";
 import { ShareButtons } from "@/components/sections/share-buttons";
 import { TitleSweep } from "@/components/sections/title-sweep";
-import type { NewsBlock, NewsItem } from "@/lib/data/news";
+import type { NewsBlock, NewsItem } from "@/lib/supabase/news";
 
 export function NewsArticle({ item, relatedNews }: { item: NewsItem; relatedNews: NewsItem[] }) {
   return (

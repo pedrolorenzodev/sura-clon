@@ -135,7 +135,7 @@ Uno por commit. Cada uno: implementar, `npm run verify`, `npm run visual` (0 dif
    - [x] 2b · contenido (migración `seed_news`, generada desde `lib/data`)
    - [x] 2c · tipos generados + queries con mapper a `NewsItem` (`lib/supabase/news.ts`)
    - [x] 2d · Home, `/news` y `/news/:id` (con relacionadas) leen de Supabase
-   - [ ] 2e · `lib/data/news.ts` queda sólo con config de UI (`newsCategories`, `newsIntro`)
+   - [x] 2e · `lib/data/news.ts` queda sólo con config de UI (`newsCategories`, `newsIntro`)
 3. **Leaderboard y usuario**: `leaderboard` + `medals` + `user` + `profile` (Home Leaderboard y Medallas, `/leaderboard`, modal, `/profile`, header).
 4. **Torneos**: `tournaments` + `tournament-detail` + `events` (Home Eventos, `/tournaments`, `/tournaments/:id`; participantes dependen del 3).
 5. **Misiones**: `missions` (Home Misiones, `/missions`, modal).

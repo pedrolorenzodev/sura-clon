@@ -2,7 +2,19 @@ import "server-only";
 import { cache } from "react";
 import { supabase } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/supabase/database.types";
-import type { NewsBlock, NewsCategory, NewsItem } from "@/lib/data/news";
+import type { NewsCategory } from "@/lib/data/news";
+
+export type NewsBlock = { type: "p" | "h" | "quote"; text: string };
+
+export type NewsItem = {
+  id: string;
+  title: string;
+  imageSrc: string;
+  readTime: string;
+  date: string;
+  category: NewsCategory;
+  body: NewsBlock[];
+};
 
 const formatDate = (iso: string) => {
   const [year, month, day] = iso.split("-");
@@ -25,7 +37,7 @@ export async function getNews(): Promise<NewsItem[]> {
   return data.map(toNewsItem);
 }
 
-export const getNewsItem = cache(async (id: string): Promise<NewsItem | null> =>{
+export const getNewsItem = cache(async (id: string): Promise<NewsItem | null> => {
   const { data, error } = await supabase.from("news").select("*").eq("id", id).maybeSingle();
   if (error) throw error;
   return data && toNewsItem(data);

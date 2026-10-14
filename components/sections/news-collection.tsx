@@ -4,7 +4,8 @@ import { FlipList } from "@/components/sections/flip-list";
 import { NewsCard } from "@/components/sections/news-card";
 import { NewsFeature } from "@/components/sections/news-feature";
 import { RouteTabs } from "@/components/sections/route-tabs";
-import { newsCategories, type NewsItem } from "@/lib/data/news";
+import { newsCategories } from "@/lib/data/news";
+import type { NewsItem } from "@/lib/supabase/news";
 import { useUrlState } from "@/lib/use-url-state";
 
 const DEFAULTS = { categoria: "todas" };
