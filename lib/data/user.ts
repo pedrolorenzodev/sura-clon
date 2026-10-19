@@ -1,22 +1,4 @@
-export type CurrentUser = {
-  name: string;
-  avatarSrc: string;
-  levelLabel: string;
-  levelBadgeSrc: string;
-  streak: number;
-  points: number;
-};
-
 export const HEADER_LEVEL_BADGE_SRC = "/assets/home/level-1.webp";
-
-export const currentUser: CurrentUser = {
-  name: "Cerdo_Capitalista",
-  avatarSrc: "/assets/home/avatar.png",
-  levelLabel: "Nivel: Novato",
-  levelBadgeSrc: "/assets/home/level-1.webp",
-  streak: 5,
-  points: 473,
-};
 
 export type DailyClaim = {
   label: string;

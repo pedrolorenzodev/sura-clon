@@ -1,8 +1,17 @@
 import "server-only";
 import { cache } from "react";
 import { MY_PLAYER_ID, levels, type LevelId } from "@/lib/data/leaderboard";
-import { HEADER_LEVEL_BADGE_SRC, type CurrentUser } from "@/lib/data/user";
+import { HEADER_LEVEL_BADGE_SRC } from "@/lib/data/user";
 import { supabase } from "@/lib/supabase/server";
+
+export type CurrentUser = {
+  name: string;
+  avatarSrc: string;
+  levelLabel: string;
+  levelBadgeSrc: string;
+  streak: number;
+  points: number;
+};
 
 export const getCurrentUser = cache(async (): Promise<CurrentUser> => {
   const { data, error } = await supabase

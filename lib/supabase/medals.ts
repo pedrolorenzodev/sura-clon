@@ -1,10 +1,32 @@
 import "server-only";
 import { supabase } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/supabase/database.types";
-import type { Medal, MedalArt } from "@/lib/data/medals";
-import type { ProfileMedal } from "@/lib/data/profile";
 
 type MedalRow = Tables<"medals"> & { player_medals: Pick<Tables<"player_medals">, "claimed">[] };
+
+export type MedalArt =
+  | "devocion"
+  | "social"
+  | "first-victory"
+  | "consistencia"
+  | "point-collector"
+  | "sharpshooter"
+  | "event-master"
+  | "influencer"
+  | "ranking";
+
+export type Medal = {
+  id: string;
+  label: string;
+  art: MedalArt;
+  locked: boolean;
+  sparkle: boolean;
+  reward?: string;
+};
+
+export type ProfileMedalState = "claimed" | "claimable" | "locked";
+
+export type ProfileMedal = Medal & { state: ProfileMedalState; reward: string; rewardPoints: number };
 
 const toMedal = (row: MedalRow): Medal => {
   const owned = row.player_medals.length > 0;

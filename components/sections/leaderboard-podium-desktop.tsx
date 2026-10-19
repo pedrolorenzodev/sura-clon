@@ -8,7 +8,7 @@ import {
 import { ValuePill } from "@/components/sections/value-pill";
 import { PodiumSheen } from "@/components/sections/podium-sheen";
 import { PlayerLink } from "@/components/sections/player-link";
-import type { LeaderboardEntry } from "@/lib/data/leaderboard";
+import type { LeaderboardEntry } from "@/lib/supabase/leaderboard";
 import { cn } from "@/lib/utils";
 
 const GRADIENT: Record<PodiumRank, string> = {

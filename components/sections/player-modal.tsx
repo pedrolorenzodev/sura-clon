@@ -10,7 +10,7 @@ import { MedalCard } from "@/components/sections/medal-card";
 import { ShareButtons } from "@/components/sections/share-buttons";
 import { PlayerStats } from "@/components/sections/stat-pill";
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import type { PlayerProfile } from "@/lib/data/leaderboard";
+import type { PlayerProfile } from "@/lib/supabase/leaderboard";
 import { useUrlState } from "@/lib/use-url-state";
 import { cn } from "@/lib/utils";
 

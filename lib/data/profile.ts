@@ -1,20 +1,3 @@
-import { medals, type Medal } from "@/lib/data/medals";
-
-export type ProfileMedalState = "claimed" | "claimable" | "locked";
-
-export type ProfileMedal = Medal & { state: ProfileMedalState; reward: string; rewardPoints: number };
-
-const CLAIMABLE = new Set(["devocion-diaria", "ranking"]);
-
-export const MEDAL_REWARD_POINTS = 100;
-
-export const profileMedals: ProfileMedal[] = medals.map((medal) => ({
-  ...medal,
-  state: medal.locked ? "locked" : CLAIMABLE.has(medal.id) ? "claimable" : "claimed",
-  reward: `+${MEDAL_REWARD_POINTS}`,
-  rewardPoints: MEDAL_REWARD_POINTS,
-}));
-
 export type ProfileFieldInput = "name" | "date" | "country" | "email";
 
 export type ProfileField = {
@@ -32,6 +15,7 @@ export type ProfileField = {
 
 export const PROFILE_FIELD_REWARD = 20;
 
+// TODO: move the account fields to a per-user table with RLS once auth exists
 export const profileFields: ProfileField[] = [
   { id: "avatar", label: "Tu avatar", done: true, showAvatar: true },
   { id: "usuario", label: "Usuario", done: true },

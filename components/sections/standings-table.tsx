@@ -2,7 +2,8 @@ import { EMPTY_RESULTS_KEY } from "@/components/sections/empty-results";
 import { LeaderboardRow } from "@/components/sections/leaderboard-row";
 import { RevealList } from "@/components/sections/reveal-list";
 import { StandingsRow } from "@/components/sections/standings-row";
-import { levels, standingsColumns, type Standing } from "@/lib/data/leaderboard";
+import { levels, standingsColumns } from "@/lib/data/leaderboard";
+import type { Standing } from "@/lib/supabase/leaderboard";
 
 export function StandingsTable({
   entries,

@@ -10,12 +10,9 @@ import {
   type LeaderboardMetric,
   type LeaderboardRange,
   type LevelId,
-  type PlayerProfile,
-  type Standing,
   type StandingTone,
-  type LeaderboardEntry,
 } from "@/lib/data/leaderboard";
-import type { MedalArt } from "@/lib/data/medals";
+import type { Medal, MedalArt } from "@/lib/supabase/medals";
 
 type EntryRow = Tables<"leaderboard_entries"> & {
   players: Pick<Tables<"players">, "name" | "avatar_src" | "level">;
@@ -28,6 +25,48 @@ type PlayerRow = Tables<"players"> & {
 export type LeaderboardView = { standings: Standing[]; me: Standing };
 
 export type LeaderboardViews = Record<LeaderboardMetric, Record<LeaderboardRange, LeaderboardView>>;
+
+export type LeaderboardEntry = {
+  id: string;
+  rank: number;
+  name: string;
+  levelLabel: string;
+  points: string;
+  avatarSrc: string;
+};
+
+export type PlayerProfile = {
+  id: string;
+  name: string;
+  avatarSrc: string;
+  rank: number;
+  daysAtRank: number;
+  points: string;
+  medals: string;
+  streak: string;
+  level: LevelId;
+  nextLevel: LevelId;
+  levelPoints: string;
+  levelGoal: string;
+  levelProgress: number;
+  medalCollection: Medal[];
+  unlockedMedals: number;
+};
+
+export type Standing = {
+  id: string;
+  rank: string;
+  name: string;
+  avatarSrc: string;
+  points: string;
+  medals: string;
+  streak: string;
+  level: LevelId;
+  deficit?: string;
+  deficitInPoints?: boolean;
+  score: string;
+  tone?: StandingTone;
+};
 
 const withThousands = (value: number) => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 

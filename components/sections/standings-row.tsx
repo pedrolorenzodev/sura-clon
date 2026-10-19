@@ -6,7 +6,8 @@ import { LevelIcon } from "@/components/sections/level-icon";
 import { MedalStack } from "@/components/sections/medal-stack";
 import { toneOf } from "@/components/sections/standings-tone";
 import { PlayerLink } from "@/components/sections/player-link";
-import { levels, type Standing } from "@/lib/data/leaderboard";
+import { levels } from "@/lib/data/leaderboard";
+import type { Standing } from "@/lib/supabase/leaderboard";
 import { cn } from "@/lib/utils";
 
 const CELL = "flex min-w-px flex-1 items-center justify-center";

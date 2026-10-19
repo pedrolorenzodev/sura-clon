@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 
-import type { Medal, MedalArt } from "@/lib/data/medals";
+import type { Medal, MedalArt } from "@/lib/supabase/medals";
 import { cn } from "@/lib/utils";
 
 const ART: Record<MedalArt, { src: string; image: string }> = {

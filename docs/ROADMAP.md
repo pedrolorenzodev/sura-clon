@@ -4,14 +4,11 @@
 
 > Se sobrescribe al terminar cada sesión. Máximo 15 líneas.
 
-**2026-10-14.** La Fase 1 está cerrada y congelada (`f447a97`); el sistema de docs, los hooks y `npm run visual` entraron en `afe751c`. La referencia visual vive sólo en esta máquina (ver GOTCHAS para rehacerla).
-Fase 2: las cinco decisiones están tomadas (`docs/features/supabase.md`, *Decisiones*). El usuario hizo a mano los bloques 0, 1 y 2 con el agente de guía.
-**Modo de trabajo:** el usuario escribe el código y el agente guía paso a paso (concepto corto + snippet mínimo + revisión del diff). El agente sólo genera las migraciones de contenido (leyendo `lib/data`). Al cerrar cada paso, el agente completa `notas/supabase.md` (notas personales del usuario, gitignoreadas; mismo formato).
-Bloque 0 hecho: proyecto `sura-clon` (`us-east-1`, sin stack local), `lib/supabase/server.ts` (cliente server-only, tipado con `Database`), variables en `.env.local` **y en Vercel** (Production y Preview).
-Bloque 1 hecho: tablas `games` (24 del catálogo + la promo `mundial-fifa-2026`, con `in_catalog` y `gallery`) y `game_reviews` (50 filas, PK `(game_id, id)`), RLS de lectura en las dos. `lib/supabase/games.ts` tiene las queries y los tipos `Game`, `GameDetail` y `GameReview`. El Home (sin ISR: ver GOTCHAS), `/games` y `/games/:id` (ISR 60 s) leen de Supabase. `lib/data/game-detail.ts` ya no existe y `lib/data/games.ts` quedó sólo con config de UI. `visual` 233/233, detalle y reseñas probados a mano.
-Bloque 2 hecho (el usuario sigue a mano): tabla `news` (11 filas, `body jsonb`, `published_at date`, `read_minutes int`), RLS de lectura. `lib/supabase/news.ts` tiene las queries (relacionadas en dos queries paralelas) y los tipos `NewsItem` y `NewsBlock`. El Home, `/news` y `/news/:id` (ISR 60 s) leen de Supabase; `lib/data/news.ts` quedó sólo con config de UI. `visual` 233/233 y flujos probados a mano.
-Bloque 3 a medias (a mano, "vamos viendo"): tablas `players` (51), `medals` (9) + `player_medals` (135) y `leaderboard_entries` (816, el ranking materializado), con RLS de lectura. `lib/supabase/leaderboard.ts` y `medals.ts`. El Home (Leaderboard y Medallas), `/leaderboard` (ISR 60 s, las 16 vistas por props), el modal de jugador (los 51 perfiles desde `SiteChrome`), `/profile` y el usuario del header (contexto `CurrentUserProvider`) leen de Supabase; `visual` 233/233 e interacciones probadas con Playwright.
-**Siguiente paso:** 3g, limpieza de `lib/data` (lo que usan los participantes de torneos queda hasta el bloque 4). Lo que ya se sabe para el 3d–3f está en `docs/features/supabase.md`, bloque 3.
+**2026-10-19.** La Fase 1 está cerrada y congelada (`f447a97`); el sistema de docs, los hooks y `npm run visual` entraron en `afe751c`. La referencia visual vive sólo en esta máquina (ver GOTCHAS para rehacerla).
+**Modo de trabajo:** el usuario escribe a mano (bloques 0–3) y el agente guía paso a paso (concepto + snippet con antes → después + revisión del diff), genera las migraciones de contenido desde `lib/data` y corre las pruebas de interacción con Playwright (`screenshots/qa/`, gitignoreada). Al cerrar cada paso completa `notas/supabase.md` (notas del usuario, gitignoreadas).
+Bloques 0–3 hechos. En Supabase: `games` + `game_reviews`, `news`, `players`, `medals` + `player_medals` y `leaderboard_entries` (el ranking materializado), todas con RLS de lectura. Las queries y los tipos viven en `lib/supabase/` (`games`, `news`, `leaderboard`, `medals`, `user`). El Home (sin ISR, ver GOTCHAS), `/games`, `/news`, `/leaderboard`, `/profile` y los detalles leen de la base (ISR 60 s). `SiteChrome` pide los 51 perfiles del modal y el usuario actual, que llega a los client components por `CurrentUserProvider`. `visual` 233/233 en cada paso.
+Pendiente del bloque 3 hasta el bloque 4: el generador del ranking sigue en `lib/data/leaderboard.ts` (con un TODO) porque de `standings` y `ME` salen los participantes de torneos.
+**Siguiente paso:** bloque 4, Torneos. Antes, el usuario decide si lo sigue escribiendo a mano.
 
 ## Ahora
 
@@ -19,7 +16,7 @@ Bloque 3 a medias (a mano, "vamos viendo"): tablas `players` (51), `medals` (9) 
    - [x] 0 · Infra
    - [x] 1 · Juegos
    - [x] 2 · Noticias
-   - [ ] 3 · Leaderboard y usuario (3a–3f hechos; falta 3g)
+   - [x] 3 · Leaderboard y usuario
    - [ ] 4 · Torneos
    - [ ] 5 · Misiones
    - [ ] 6 · Lo que queda
@@ -41,6 +38,7 @@ Bloque 3 a medias (a mano, "vamos viendo"): tablas `players` (51), `medals` (9) 
 
 ## Hecho
 
+- 2026-10-19 · Fase 2, bloque 3: leaderboard, medallas, perfiles y usuario desde Supabase.
 - 2026-10-14 · Fase 2, bloque 2: noticias desde Supabase.
 - 2026-10-12 · Fase 2, bloque 1: juegos, promo y reseñas desde Supabase.
 - 2026-10-08 · Sistema de docs nuevo, hooks de guarda y regresión visual.

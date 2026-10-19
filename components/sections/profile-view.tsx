@@ -11,15 +11,15 @@ import { ProfileFields } from "@/components/sections/profile-fields";
 import { RouteTabs } from "@/components/sections/route-tabs";
 import { SegmentedTabs } from "@/components/sections/segmented-tabs";
 import { PlayerStats } from "@/components/sections/stat-pill";
-import type { PlayerProfile } from "@/lib/data/leaderboard";
 import {
   deleteAccount,
   noTrophies,
   profileMobileTabs,
   profileTabs,
   referral,
-  type ProfileMedal,
 } from "@/lib/data/profile";
+import type { PlayerProfile } from "@/lib/supabase/leaderboard";
+import type { ProfileMedal } from "@/lib/supabase/medals";
 import { useCurrentUser } from "@/lib/use-current-user";
 import { claimReward, useDailyClaim } from "@/lib/use-daily-claim";
 import { cn } from "@/lib/utils";

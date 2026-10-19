@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from "react";
 
-import type { CurrentUser } from "@/lib/data/user";
+import type { CurrentUser } from "@/lib/supabase/user";
 
 const CurrentUserContext = createContext<CurrentUser | null>(null);
 

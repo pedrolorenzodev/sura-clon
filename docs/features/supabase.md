@@ -146,7 +146,7 @@ Uno por commit. Cada uno: implementar, `npm run verify`, `npm run visual` (0 dif
      - [x] 3f-1 · `getPlayerProfiles()` + `SiteChrome` async → `PlayerModalProvider` por props
      - [x] 3f-2 · `currentUser` desde tu fila de `players`: 3f-2a `getCurrentUser()` + `Header` async → headers por props; 3f-2b un contexto de cliente (`CurrentUserProvider` en `SiteChrome`) para reseñas, `/profile` y la base de puntos de `useDailyClaim` (el store guarda lo ganado y suma sobre esa base; `PointsValue` no se toca)
      - [x] 3f-3 · `/profile` (perfil y medallas reclamables desde la base; `profileFields` sigue en código)
-   - [ ] 3g · limpieza de `lib/data` (lo que usa `tournament-detail.ts` para los participantes queda hasta el bloque 4)
+   - [x] 3g · limpieza de `lib/data` (lo que usa `tournament-detail.ts` para los participantes queda hasta el bloque 4: el generador de `lib/data/leaderboard.ts`, marcado con un TODO, se borra en el bloque 4)
    - **Para el 3d en adelante** (lo que ya se sabe):
      - Las cuatro tablas están cargadas y verificadas contra `lib/data` (51 · 9 · 135 · 816 filas). Los tipos todavía no se regeneraron.
      - Ranking: la lista de una vista es `eq(metric).eq(period).neq(player_id, MY_PLAYER_ID).order(position)`; tu fila va aparte. `period` en la base es `range` en TypeScript. El formato lo hace el mapper como `toStanding`: `rank` = `position` con dos dígitos, `tone` por índice (oro, plata, bronce; `"me"` para vos), `deficit` contra la fila de arriba (para vos, la de `position - 1`), `withThousands` y `plural` sin `Intl`.

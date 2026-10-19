@@ -1,7 +1,8 @@
 import { rotate, seeded } from "@/lib/collection";
 import type { DetailArt } from "@/lib/data/detail-art";
-import { ME, MY_PLAYER_ID, standings, type Standing } from "@/lib/data/leaderboard";
+import { ME, MY_PLAYER_ID, standings } from "@/lib/data/leaderboard";
 import { tournaments, type Tournament } from "@/lib/data/tournaments";
+import type { Standing } from "@/lib/supabase/leaderboard";
 
 export type TournamentDetail = Tournament & {
   art: DetailArt;

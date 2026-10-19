@@ -1,16 +1,5 @@
 import { seeded } from "@/lib/collection";
-import { PROFILE_MEDALS, type Medal } from "@/lib/data/medals";
-import { currentUser } from "@/lib/data/user";
-
-export type LeaderboardEntry = {
-  id: string;
-  rank: number;
-  name: string;
-  levelLabel: string;
-  points: string;
-  avatarSrc: string;
-};
-
+import type { Standing } from "@/lib/supabase/leaderboard";
 
 export type LevelId = "novato" | "guerrero" | "heroe" | "leyenda";
 
@@ -46,25 +35,11 @@ export const levels: Record<
 
 export type StandingTone = "gold" | "silver" | "bronze" | "me";
 
-export type Standing = {
-  id: string;
-  rank: string;
-  name: string;
-  avatarSrc: string;
-  points: string;
-  medals: string;
-  streak: string;
-  level: LevelId;
-  deficit?: string;
-  deficitInPoints?: boolean;
-  score: string;
-  tone?: StandingTone;
-};
-
 export type LeaderboardMetric = "sura-points" | "medallas" | "racha" | "eventos";
 
 export type LeaderboardRange = "historico" | "mensual" | "semanal" | "diario";
 
+// TODO: drop the generator once the tournament participants come from Supabase (block 4)
 type Player = {
   id: string;
   name: string;
@@ -140,7 +115,7 @@ export const MY_PLAYER_ID = "cerdo-capitalista";
 
 export const ME: Player = {
   id: MY_PLAYER_ID,
-  name: currentUser.name,
+  name: "Cerdo_Capitalista",
   avatarSrc: "/assets/leaderboard/avatar-me.png",
   level: "novato",
   points: 473,
@@ -241,7 +216,7 @@ function liftAbove(stats: PlayerStats, key: keyof PlayerStats, floor: number, st
   return { ...stats, [key]: Math.min(cap, Math.max(stats[key], floor + step)) };
 }
 
-export function rankStandings(metric: LeaderboardMetric, range: LeaderboardRange) {
+function rankStandings(metric: LeaderboardMetric, range: LeaderboardRange) {
   const key = METRIC_KEY[metric];
   const pinnedIds = pinnedOrder(metric, range);
   const entries = PLAYERS.map((player) => ({ player, stats: statsFor(player, range) }));
@@ -277,19 +252,6 @@ export const STANDINGS_PER_PAGE = 10;
 
 export const standings: Standing[] = rankStandings("sura-points", "historico").standings;
 
-const toEntry = (entry: Standing): LeaderboardEntry => ({
-  id: entry.id,
-  rank: Number(entry.rank),
-  name: entry.name,
-  levelLabel: `Nivel: ${levels[entry.level].label}`,
-  points: entry.points,
-  avatarSrc: entry.avatarSrc,
-});
-
-export const podium: LeaderboardEntry[] = standings.slice(0, 3).map(toEntry);
-
-export const leaderboardRows: LeaderboardEntry[] = standings.slice(3, 8).map(toEntry);
-
 export const standingsColumns = [
   "#",
   "Jugador",
@@ -322,64 +284,3 @@ export const medalStack = [
 export const LEVEL_ORDER: LevelId[] = ["novato", "guerrero", "heroe", "leyenda"];
 
 export const LEVEL_GOAL: Record<LevelId, number> = { novato: 1500, guerrero: 10000, heroe: 50000, leyenda: 125000 };
-
-export type PlayerProfile = {
-  id: string;
-  name: string;
-  avatarSrc: string;
-  rank: number;
-  daysAtRank: number;
-  points: string;
-  medals: string;
-  streak: string;
-  level: LevelId;
-  nextLevel: LevelId;
-  levelPoints: string;
-  levelGoal: string;
-  levelProgress: number;
-  medalCollection: Medal[];
-  unlockedMedals: number;
-};
-
-const HISTORIC_RANKING = [...PLAYERS].sort((a, b) => b.points - a.points);
-
-export function playerProfile(id: string): PlayerProfile | undefined {
-  const player = id === ME.id ? ME : PLAYERS.find((candidate) => candidate.id === id);
-  if (!player) return undefined;
-
-  const index = HISTORIC_RANKING.indexOf(player);
-  const rank = index === -1 ? HISTORIC_RANKING.filter((other) => other.points > player.points).length + 1 : index + 1;
-  const noise = seeded(`${player.id}:profile`);
-  const unlockable = PROFILE_MEDALS.filter((medal) => !medal.locked);
-  const unlocked = Math.min(unlockable.length, Math.round((player.medals / 30) * unlockable.length));
-  const unlockedIds = new Set(
-    unlockable
-      .map((medal) => ({ medal, order: noise() }))
-      .sort((a, b) => a.order - b.order)
-      .slice(0, unlocked)
-      .map(({ medal }) => medal.id),
-  );
-  const goal = LEVEL_GOAL[player.level];
-
-  return {
-    id: player.id,
-    name: player.name,
-    avatarSrc: player.avatarSrc,
-    rank,
-    daysAtRank: 1 + Math.floor(noise() * 40),
-    points: withThousands(player.points),
-    medals: String(player.medals),
-    streak: plural(player.streak, "día", "días"),
-    level: player.level,
-    nextLevel: LEVEL_ORDER[Math.min(LEVEL_ORDER.indexOf(player.level) + 1, LEVEL_ORDER.length - 1)],
-    levelPoints: withThousands(player.points),
-    levelGoal: withThousands(goal),
-    levelProgress: Math.min(1, player.points / goal),
-    medalCollection: PROFILE_MEDALS.map((medal) => ({
-      ...medal,
-      locked: !unlockedIds.has(medal.id),
-      sparkle: unlockedIds.has(medal.id) && medal.sparkle,
-    })),
-    unlockedMedals: unlocked,
-  };
-}

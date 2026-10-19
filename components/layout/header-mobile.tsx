@@ -5,7 +5,7 @@ import { BackButton } from "@/components/layout/back-button";
 import { PointsValue } from "@/components/layout/points-value";
 import { SoundToggle } from "@/components/layout/sound-toggle";
 import { UserAvatar } from "@/components/layout/user-avatar";
-import type { CurrentUser } from "@/lib/data/user";
+import type { CurrentUser } from "@/lib/supabase/user";
 import { cn } from "@/lib/utils";
 
 function Counter({
