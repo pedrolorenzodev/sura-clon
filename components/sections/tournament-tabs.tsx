@@ -23,10 +23,8 @@ import {
   PARTICIPANTS_PER_PAGE,
   tournamentDescription,
   tournamentFaqs,
-  tournamentParticipants,
-  tournamentPrizes,
-  type TournamentDetail,
 } from "@/lib/data/tournament-detail";
+import type { TournamentDetail, TournamentPrize } from "@/lib/supabase/tournaments";
 import { useSettledValue } from "@/lib/use-settled-value";
 import { useTournamentJoined } from "@/lib/use-tournament-join";
 import { useUrlState } from "@/lib/use-url-state";
@@ -64,7 +62,7 @@ export function TournamentTabs({ tournament }: { tournament: TournamentDetail })
         {tab === "participantes" && (
           <ParticipantsPanel tournament={tournament} joined={joined} state={state} setState={setState} />
         )}
-        {tab === "ganadores" && <PrizesPanel prize={tournament.prize} />}
+        {tab === "ganadores" && <PrizesPanel prizes={tournament.prizes} />}
       </div>
     </section>
   );
@@ -116,7 +114,7 @@ function ParticipantsPanel({
 }) {
   const list = useRef<HTMLUListElement>(null);
   const query = useSettledValue(state.q, SEARCH_SETTLE_MS);
-  const participants = [...(joined ? [ME_AS_PARTICIPANT] : []), ...tournamentParticipants(tournament)];
+  const participants = [...(joined ? [ME_AS_PARTICIPANT] : []), ...tournament.participants];
   const results = participants.filter((player) => matchesQuery(query, player.name));
   const { pageItems, page, pages } = paginate(results, state.pagina, PARTICIPANTS_PER_PAGE);
 
@@ -214,9 +212,7 @@ const PODIUM = [
   },
 ];
 
-function PrizesPanel({ prize }: { prize: string }) {
-  const prizes = tournamentPrizes(prize);
-
+function PrizesPanel({ prizes }: { prizes: TournamentPrize[] }) {
   return (
     <div className="flex flex-col gap-6">
       <RevealList onMount className="grid gap-4 desktop:grid-cols-3 desktop:gap-4.5">

@@ -153,7 +153,13 @@ Uno por commit. Cada uno: implementar, `npm run verify`, `npm run visual` (0 dif
      - Medallas: la colección de un jugador es el catálogo entero; `locked` = no hay fila en `player_medals`, `sparkle` = tiene la fila y `medals.sparkle`, `reward` = `+${reward_points}`. Las medallas del Home no llevan `reward`; las de `/profile` y el modal sí. Estado de `/profile`: `locked` / `claimed` / `claimable` según `claimed`.
      - Perfil de jugador (modal): `rank` = `historic_rank`, `daysAtRank` = `days_at_rank`; `nextLevel`, `levelGoal` y `levelProgress` salen de `LEVEL_ORDER` y `LEVEL_GOAL`, que quedan en código.
      - Abierto para el 3f: el modal lo monta `SiteChrome` (en todas las rutas) y hoy calcula cualquier perfil al hacer click. Pasar los 51 perfiles por props suma peso a cada página; pedirlo al abrir agrega una espera que hoy no existe. Se decide con el usuario. El avatar del header (`currentUser.avatarSrc`, `/assets/home/avatar.png`) no es el de `ME` en el ranking (`avatar-me.png`); `dailyClaim` (etiqueta, +50, íconos) también se decide ahí.
-4. **Torneos**: `tournaments` + `tournament-detail` + `events` (Home Eventos, `/tournaments`, `/tournaments/:id`; participantes dependen del 3).
+4. **Torneos**: `tournaments` + `tournament-detail` + `events` (Home Eventos, `/tournaments`, `/tournaments/:id`; participantes dependen del 3). Modelo en `DECISIONS.md` (2026-10-19). Partido en pasos:
+   - [x] 4a · `tournaments` (16: fecha real, cuenta de demo, pozo, badges en columnas)
+   - [x] 4b · `tournament_prizes` (160) + `tournament_participants` (muchos a muchos)
+   - [x] 4c · `events` (6 cards del Home, FK a `tournaments`)
+   - [x] 4d · tipos generados + queries con mappers (`lib/supabase/tournaments.ts`)
+   - [x] 4e · Home (Eventos), `/tournaments` y `/tournaments/:id` leen de Supabase
+   - [ ] 4f · limpieza: `tournaments.ts`, `tournament-detail.ts` y `events.ts` quedan con config de UI, y se borra el generador de `lib/data/leaderboard.ts`
 5. **Misiones**: `missions` (Home Misiones, `/missions`, modal).
 6. **Lo que queda**: `community-rules`, `detail-art`.
 7. **Cierre**: `lib/data/` sólo con config de UI, `PROJECT.md` y `ROADMAP.md` al día, este archivo a `DECISIONS.md` y se borra.

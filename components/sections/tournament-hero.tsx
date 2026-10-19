@@ -3,7 +3,7 @@ import Image from "next/image";
 import { JoinPanel } from "@/components/sections/join-panel";
 import { TitleSweep } from "@/components/sections/title-sweep";
 import { TOURNAMENT_BADGE_ICON } from "@/components/sections/tournament-card";
-import type { TournamentDetail } from "@/lib/data/tournament-detail";
+import type { TournamentDetail } from "@/lib/supabase/tournaments";
 
 export function TournamentHero({ tournament }: { tournament: TournamentDetail }) {
   return (

@@ -1,9 +1,10 @@
 import { EventCard } from "@/components/sections/event-card";
 import { CardSlider } from "@/components/sections/card-slider";
 import { SectionHeader } from "@/components/sections/section-header";
-import { events } from "@/lib/data/events";
+import { getEvents } from "@/lib/supabase/tournaments";
 
-export function Eventos() {
+export async function Eventos() {
+  const events = await getEvents();
   return (
     <section
       id="eventos"

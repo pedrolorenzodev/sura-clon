@@ -11,7 +11,8 @@ export type TournamentDetail = Tournament & {
   capacity: number;
 };
 
-const FIGMA_ART_ID = "contenders-training-center-110";
+export const FIGMA_ART_ID = "contenders-training-center-110";
+export const FIGMA_ART_CLASS = "inset-0 size-full desktop:-translate-y-[29.75%]";
 
 function detailFromTournament(tournament: Tournament): TournamentDetail {
   const noise = seeded(`${tournament.id}:detail`);
@@ -27,7 +28,7 @@ function detailFromTournament(tournament: Tournament): TournamentDetail {
     art: {
       desktop: tournament.heroSrc,
       mobile: tournament.heroSrc,
-      className: figmaArt ? "inset-0 size-full desktop:-translate-y-[29.75%]" : "inset-0 size-full",
+      className: figmaArt ? FIGMA_ART_CLASS : "inset-0 size-full",
     },
     startsInSeconds: 3600 + Math.floor(noise() * 11 * 3600),
     joined,

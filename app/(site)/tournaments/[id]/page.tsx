@@ -8,16 +8,18 @@ import { DetailHeroArt } from "@/components/sections/detail-hero-art";
 import { TournamentHero } from "@/components/sections/tournament-hero";
 import { TournamentSponsors } from "@/components/sections/tournament-sponsors";
 import { TournamentTabs } from "@/components/sections/tournament-tabs";
-import { getTournamentDetail, tournamentDetailIds } from "@/lib/data/tournament-detail";
+import { getTournamentDetail, getTournamentIds } from "@/lib/supabase/tournaments";
 
 export const dynamicParams = false;
 
-export function generateStaticParams() {
-  return tournamentDetailIds.map((id) => ({ id }));
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  return (await getTournamentIds()).map((id) => ({ id }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/tournaments/[id]">): Promise<Metadata> {
-  const tournament = getTournamentDetail((await params).id);
+  const tournament = await getTournamentDetail((await params).id);
   return {
     title: `${tournament?.title ?? "Evento"} | Sura Gaming`,
     description: tournament ? `${tournament.game} · ${tournament.date} · ${tournament.prize}` : undefined,
@@ -25,7 +27,7 @@ export async function generateMetadata({ params }: PageProps<"/tournaments/[id]"
 }
 
 export default async function TournamentDetailPage({ params }: PageProps<"/tournaments/[id]">) {
-  const tournament = getTournamentDetail((await params).id);
+  const tournament = await getTournamentDetail((await params).id);
   if (!tournament) notFound();
 
   return (

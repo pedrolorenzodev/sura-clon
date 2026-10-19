@@ -8,7 +8,8 @@
 **Modo de trabajo:** el usuario escribe a mano (bloques 0–3) y el agente guía paso a paso (concepto + snippet con antes → después + revisión del diff), genera las migraciones de contenido desde `lib/data` y corre las pruebas de interacción con Playwright (`screenshots/qa/`, gitignoreada). Al cerrar cada paso completa `notas/supabase.md` (notas del usuario, gitignoreadas).
 Bloques 0–3 hechos. En Supabase: `games` + `game_reviews`, `news`, `players`, `medals` + `player_medals` y `leaderboard_entries` (el ranking materializado), todas con RLS de lectura. Las queries y los tipos viven en `lib/supabase/` (`games`, `news`, `leaderboard`, `medals`, `user`). El Home (sin ISR, ver GOTCHAS), `/games`, `/news`, `/leaderboard`, `/profile` y los detalles leen de la base (ISR 60 s). `SiteChrome` pide los 51 perfiles del modal y el usuario actual, que llega a los client components por `CurrentUserProvider`. `visual` 233/233 en cada paso.
 Pendiente del bloque 3 hasta el bloque 4: el generador del ranking sigue en `lib/data/leaderboard.ts` (con un TODO) porque de `standings` y `ME` salen los participantes de torneos.
-**Siguiente paso:** bloque 4, Torneos. Antes, el usuario decide si lo sigue escribiendo a mano.
+Bloque 4 a medias (a mano): tablas `tournaments` (fecha real `timestamptz`, cuenta regresiva de demo), `tournament_prizes`, `tournament_participants` y `events`, verificadas contra `lib/data`. `lib/supabase/tournaments.ts`; el Home (Eventos), `/tournaments` y `/tournaments/:id` (ISR 60 s) leen de la base; `visual` 233/233 e interacciones probadas.
+**Siguiente paso:** 4f, limpieza de `lib/data` de torneos y borrado del generador del ranking.
 
 ## Ahora
 
@@ -17,7 +18,7 @@ Pendiente del bloque 3 hasta el bloque 4: el generador del ranking sigue en `lib
    - [x] 1 · Juegos
    - [x] 2 · Noticias
    - [x] 3 · Leaderboard y usuario
-   - [ ] 4 · Torneos
+   - [ ] 4 · Torneos (4a–4e hechos; falta 4f)
    - [ ] 5 · Misiones
    - [ ] 6 · Lo que queda
    - [ ] 7 · Cierre

@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      events: {
+        Row: {
+          art: string
+          description: string
+          id: string
+          sort_order: number
+          surface: string
+          tournament_id: string
+        }
+        Insert: {
+          art: string
+          description: string
+          id: string
+          sort_order: number
+          surface: string
+          tournament_id: string
+        }
+        Update: {
+          art?: string
+          description?: string
+          id?: string
+          sort_order?: number
+          surface?: string
+          tournament_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       game_reviews: {
         Row: {
           author: string
@@ -285,6 +320,128 @@ export type Database = {
           name?: string
           points?: number
           streak?: number
+        }
+        Relationships: []
+      }
+      tournament_participants: {
+        Row: {
+          player_id: string
+          position: number
+          tournament_id: string
+        }
+        Insert: {
+          player_id: string
+          position: number
+          tournament_id: string
+        }
+        Update: {
+          player_id?: string
+          position?: number
+          tournament_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_participants_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournament_participants_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournament_prizes: {
+        Row: {
+          amount: number | null
+          position: number
+          tournament_id: string
+        }
+        Insert: {
+          amount?: number | null
+          position: number
+          tournament_id: string
+        }
+        Update: {
+          amount?: number | null
+          position?: number
+          tournament_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_prizes_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournaments: {
+        Row: {
+          about: string
+          banner_src: string
+          capacity: number
+          format: string
+          game: string
+          hero_src: string
+          host: string
+          id: string
+          image_src: string
+          joined: number
+          mode: string | null
+          official: boolean
+          prize_amount: number
+          prize_currency: string
+          sort_order: number
+          starts_at: string
+          starts_in_seconds: number
+          title: string
+        }
+        Insert: {
+          about: string
+          banner_src: string
+          capacity: number
+          format: string
+          game: string
+          hero_src: string
+          host: string
+          id: string
+          image_src: string
+          joined: number
+          mode?: string | null
+          official?: boolean
+          prize_amount: number
+          prize_currency: string
+          sort_order: number
+          starts_at: string
+          starts_in_seconds: number
+          title: string
+        }
+        Update: {
+          about?: string
+          banner_src?: string
+          capacity?: number
+          format?: string
+          game?: string
+          hero_src?: string
+          host?: string
+          id?: string
+          image_src?: string
+          joined?: number
+          mode?: string | null
+          official?: boolean
+          prize_amount?: number
+          prize_currency?: string
+          sort_order?: number
+          starts_at?: string
+          starts_in_seconds?: number
+          title?: string
         }
         Relationships: []
       }

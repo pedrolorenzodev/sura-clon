@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { BrandCta } from "@/components/sections/brand-cta";
-import type { TournamentDetail } from "@/lib/data/tournament-detail";
+import type { TournamentDetail } from "@/lib/supabase/tournaments";
 import { toggleTournamentJoin, useTournamentJoined } from "@/lib/use-tournament-join";
 
 const pad = (value: number) => String(value).padStart(2, "0");

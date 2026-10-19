@@ -9,13 +9,13 @@ import { SearchField } from "@/components/sections/search-field";
 import { TournamentCard } from "@/components/sections/tournament-card";
 import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
 import { scrollToTopIfHidden } from "@/lib/smooth-scroll";
-import { TOURNAMENTS_PER_PAGE, tournaments } from "@/lib/data/tournaments";
+import { TOURNAMENTS_PER_PAGE, type Tournament } from "@/lib/data/tournaments";
 import { useSettledValue } from "@/lib/use-settled-value";
 import { useUrlState } from "@/lib/use-url-state";
 
 const DEFAULTS = { q: "", pagina: "1" };
 
-export function TournamentsCollection() {
+export function TournamentsCollection({ tournaments }: { tournaments: Tournament[] }) {
   const [state, setState] = useUrlState(DEFAULTS);
   const grid = useRef<HTMLUListElement>(null);
 
