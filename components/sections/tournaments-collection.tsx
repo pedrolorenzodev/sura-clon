@@ -9,7 +9,8 @@ import { SearchField } from "@/components/sections/search-field";
 import { TournamentCard } from "@/components/sections/tournament-card";
 import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
 import { scrollToTopIfHidden } from "@/lib/smooth-scroll";
-import { TOURNAMENTS_PER_PAGE, type Tournament } from "@/lib/data/tournaments";
+import { TOURNAMENTS_PER_PAGE } from "@/lib/data/tournaments";
+import type { Tournament } from "@/lib/supabase/tournaments";
 import { useSettledValue } from "@/lib/use-settled-value";
 import { useUrlState } from "@/lib/use-url-state";
 

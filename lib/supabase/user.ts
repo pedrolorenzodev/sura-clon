@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase/server";
 export type CurrentUser = {
   name: string;
   avatarSrc: string;
+  level: LevelId;
   levelLabel: string;
   levelBadgeSrc: string;
   streak: number;
@@ -23,6 +24,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser> => {
   return {
     name: data.name,
     avatarSrc: data.avatar_src,
+    level: data.level as LevelId,
     levelLabel: `Nivel: ${levels[data.level as LevelId].label}`,
     levelBadgeSrc: HEADER_LEVEL_BADGE_SRC,
     streak: data.streak,

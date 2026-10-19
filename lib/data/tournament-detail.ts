@@ -1,46 +1,7 @@
-import { rotate, seeded } from "@/lib/collection";
-import type { DetailArt } from "@/lib/data/detail-art";
-import { ME, MY_PLAYER_ID, standings } from "@/lib/data/leaderboard";
-import { tournaments, type Tournament } from "@/lib/data/tournaments";
-import type { Standing } from "@/lib/supabase/leaderboard";
-
-export type TournamentDetail = Tournament & {
-  art: DetailArt;
-  startsInSeconds: number;
-  joined: number;
-  capacity: number;
-};
+import type { Tournament } from "@/lib/supabase/tournaments";
 
 export const FIGMA_ART_ID = "contenders-training-center-110";
 export const FIGMA_ART_CLASS = "inset-0 size-full desktop:-translate-y-[29.75%]";
-
-function detailFromTournament(tournament: Tournament): TournamentDetail {
-  const noise = seeded(`${tournament.id}:detail`);
-  const players = tournament.badges.find((badge) => badge.icon === "players")?.label ?? "0/0";
-  const [joined, capacity] = players.split("/").map(Number);
-  const figmaArt = tournament.id === FIGMA_ART_ID;
-
-  return {
-    ...tournament,
-    badges: tournament.badges.map((badge) =>
-      badge.icon === "players" ? { ...badge, label: `${capacity} participantes` } : badge,
-    ),
-    art: {
-      desktop: tournament.heroSrc,
-      mobile: tournament.heroSrc,
-      className: figmaArt ? FIGMA_ART_CLASS : "inset-0 size-full",
-    },
-    startsInSeconds: 3600 + Math.floor(noise() * 11 * 3600),
-    joined,
-    capacity,
-  };
-}
-
-const details = new Map(tournaments.map((tournament) => [tournament.id, detailFromTournament(tournament)]));
-
-export const tournamentDetailIds = [...details.keys()];
-
-export const getTournamentDetail = (id: string) => details.get(id);
 
 export const tournamentSponsors = [
   { name: "Oculus", src: "/assets/tournaments/detail/sponsor-oculus.webp", width: 159, height: 48, className: "h-6", dim: true },
@@ -91,33 +52,5 @@ export const tournamentFaqs = [
       "Si el cupo está completo, el botón se desactiva. Podés anotarte en otro evento del mismo juego o escribirnos a help@suragaming.com.",
   },
 ];
-
-export function tournamentPrizes(prize: string) {
-  const [amount, unit] = prize.split(" ");
-  const total = Number(amount);
-  const shares = [0.4, 0.22, 0.13, 0.08, 0.06, 0.05, 0.04, 0.02, 0, 0];
-  return shares.map((share, index) => ({
-    position: index + 1,
-    prize: share ? `${Math.max(1, Math.round(total * share))} ${unit}` : null,
-  }));
-}
-
-export type TournamentParticipant = Pick<Standing, "id" | "name" | "avatarSrc" | "level">;
-
-const OTHER_PLAYERS: TournamentParticipant[] = standings
-  .filter((player) => player.id !== MY_PLAYER_ID)
-  .map(({ id, name, avatarSrc, level }) => ({ id, name, avatarSrc, level }));
-
-export const ME_AS_PARTICIPANT: TournamentParticipant = {
-  id: ME.id,
-  name: ME.name,
-  avatarSrc: ME.avatarSrc,
-  level: ME.level,
-};
-
-export function tournamentParticipants(tournament: TournamentDetail) {
-  const offset = Math.floor(seeded(`${tournament.id}:participants`)() * OTHER_PLAYERS.length);
-  return rotate(OTHER_PLAYERS, offset).slice(0, tournament.joined);
-}
 
 export const PARTICIPANTS_PER_PAGE = 10;

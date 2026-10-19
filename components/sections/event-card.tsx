@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import { CardLink } from "@/components/layout/card-link";
 import { CardBrackets } from "@/components/sections/card-brackets";
-import type { EventCardData } from "@/lib/data/events";
+import type { EventCardData } from "@/lib/supabase/tournaments";
 import { detailHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 

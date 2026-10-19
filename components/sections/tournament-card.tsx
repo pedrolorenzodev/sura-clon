@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import { CardLink } from "@/components/layout/card-link";
 import { CardBrackets } from "@/components/sections/card-brackets";
-import type { Tournament } from "@/lib/data/tournaments";
+import type { Tournament } from "@/lib/supabase/tournaments";
 import { detailHref } from "@/lib/routes";
 
 export const TOURNAMENT_BADGE_ICON = {

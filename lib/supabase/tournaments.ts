@@ -3,10 +3,8 @@ import { cache } from "react";
 import { supabase } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/supabase/database.types";
 import type { DetailArt } from "@/lib/data/detail-art";
-import type { EventCardData } from "@/lib/data/events";
 import type { LevelId } from "@/lib/data/leaderboard";
-import { FIGMA_ART_CLASS, FIGMA_ART_ID, type TournamentParticipant } from "@/lib/data/tournament-detail";
-import type { Tournament, TournamentBadge } from "@/lib/data/tournaments";
+import { FIGMA_ART_CLASS, FIGMA_ART_ID } from "@/lib/data/tournament-detail";
 
 type TournamentRow = Tables<"tournaments">;
 
@@ -22,6 +20,35 @@ type DetailRow = TournamentRow & {
   }[];
 };
 
+export type TournamentBadgeIcon = "mode" | "format" | "players";
+
+export type TournamentBadge = {
+  icon: TournamentBadgeIcon;
+  label: string;
+};
+
+export type Tournament = {
+  id: string;
+  game: string;
+  title: string;
+  date: string;
+  prize: string;
+  badges: TournamentBadge[];
+  host: string;
+  official?: boolean;
+  about: string;
+  imageSrc: string;
+  heroSrc: string;
+  bannerSrc: string;
+};
+
+export type TournamentParticipant = {
+  id: string;
+  name: string;
+  avatarSrc: string;
+  level: LevelId;
+};
+
 export type TournamentPrize = { position: number; prize: string | null };
 
 export type TournamentDetail = Tournament & {
@@ -31,6 +58,14 @@ export type TournamentDetail = Tournament & {
   capacity: number;
   prizes: TournamentPrize[];
   participants: TournamentParticipant[];
+};
+
+export type EventCardData = Pick<TournamentDetail, "title" | "date" | "prize" | "badges"> & {
+  id: string;
+  tournamentId: string;
+  description: string;
+  surface: "gamepad" | "sunset" | "dota" | "valorant" | "fortnite" | "lol";
+  art: "domino" | "squad" | "juggernaut" | "reyna" | "omega" | "yone";
 };
 
 const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];

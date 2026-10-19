@@ -5,11 +5,9 @@
 > Se sobrescribe al terminar cada sesión. Máximo 15 líneas.
 
 **2026-10-19.** La Fase 1 está cerrada y congelada (`f447a97`); el sistema de docs, los hooks y `npm run visual` entraron en `afe751c`. La referencia visual vive sólo en esta máquina (ver GOTCHAS para rehacerla).
-**Modo de trabajo:** el usuario escribe a mano (bloques 0–3) y el agente guía paso a paso (concepto + snippet con antes → después + revisión del diff), genera las migraciones de contenido desde `lib/data` y corre las pruebas de interacción con Playwright (`screenshots/qa/`, gitignoreada). Al cerrar cada paso completa `notas/supabase.md` (notas del usuario, gitignoreadas).
-Bloques 0–3 hechos. En Supabase: `games` + `game_reviews`, `news`, `players`, `medals` + `player_medals` y `leaderboard_entries` (el ranking materializado), todas con RLS de lectura. Las queries y los tipos viven en `lib/supabase/` (`games`, `news`, `leaderboard`, `medals`, `user`). El Home (sin ISR, ver GOTCHAS), `/games`, `/news`, `/leaderboard`, `/profile` y los detalles leen de la base (ISR 60 s). `SiteChrome` pide los 51 perfiles del modal y el usuario actual, que llega a los client components por `CurrentUserProvider`. `visual` 233/233 en cada paso.
-Pendiente del bloque 3 hasta el bloque 4: el generador del ranking sigue en `lib/data/leaderboard.ts` (con un TODO) porque de `standings` y `ME` salen los participantes de torneos.
-Bloque 4 a medias (a mano): tablas `tournaments` (fecha real `timestamptz`, cuenta regresiva de demo), `tournament_prizes`, `tournament_participants` y `events`, verificadas contra `lib/data`. `lib/supabase/tournaments.ts`; el Home (Eventos), `/tournaments` y `/tournaments/:id` (ISR 60 s) leen de la base; `visual` 233/233 e interacciones probadas.
-**Siguiente paso:** 4f, limpieza de `lib/data` de torneos y borrado del generador del ranking.
+**Modo de trabajo:** el usuario escribe a mano (bloques 0–4) y el agente guía paso a paso (concepto + snippet con antes → después + revisión del diff), genera las migraciones de contenido desde `lib/data` y corre las pruebas de interacción con Playwright (`screenshots/qa/`, gitignoreada). Al cerrar cada paso completa `notas/supabase.md` (notas del usuario, gitignoreadas).
+Bloques 0–4 hechos. En Supabase: `games` + `game_reviews`, `news`, `players`, `medals` + `player_medals`, `leaderboard_entries`, `tournaments` + `tournament_prizes` + `tournament_participants` y `events`, todas con RLS de lectura. Queries y tipos en `lib/supabase/` (`games`, `news`, `leaderboard`, `medals`, `user`, `tournaments`). El Home (sin ISR, ver GOTCHAS) y todas las rutas de juegos, noticias, leaderboard, perfil y torneos leen de la base (ISR 60 s). `SiteChrome` pide los perfiles del modal y el usuario actual (`CurrentUserProvider`). Ya no queda RNG en `lib/data`. `visual` 233/233 en cada paso.
+**Siguiente paso:** bloque 5, Misiones. Antes, el usuario decide si lo sigue escribiendo a mano.
 
 ## Ahora
 
@@ -18,7 +16,7 @@ Bloque 4 a medias (a mano): tablas `tournaments` (fecha real `timestamptz`, cuen
    - [x] 1 · Juegos
    - [x] 2 · Noticias
    - [x] 3 · Leaderboard y usuario
-   - [ ] 4 · Torneos (4a–4e hechos; falta 4f)
+   - [x] 4 · Torneos
    - [ ] 5 · Misiones
    - [ ] 6 · Lo que queda
    - [ ] 7 · Cierre
@@ -27,6 +25,7 @@ Bloque 4 a medias (a mano): tablas `tournaments` (fecha real `timestamptz`, cuen
 
 - **Fase D del feedback de Ema** (barrido de lo inerte): "Jugar ahora" del detalle de juego, "Sociales" del detalle de juego y los links, redes y badges del footer. A cada uno: un destino, una acción, o dejar de parecer clickeable. Toca UI: necesita autorización y, si no está definido, propuesta con demos.
 - **Sacar el campo "Red" (Solana) del detalle de juego** (pedido del usuario el 2026-10-09: al usuario final no le dice nada). Es cambio visual: va después de la Fase 2, con referencia nueva aprobada. Hoy es una constante en `game-aside.tsx`.
+- **Cuenta regresiva del detalle de torneo desde `starts_at`** (decidido el 2026-10-19): hoy sigue siendo de demo (`starts_in_seconds`). Cambia lo que se ve (días, meses o negativa): va después de la Fase 2, con referencia nueva aprobada.
 - **Probar sonido, música y volumen en Safari (macOS e iOS) y Firefox reales.** Hasta hoy, sólo Chromium y los builds de Playwright; el respaldo AAC para Safari viejo nunca se ejercitó.
 
 ## Después
@@ -39,6 +38,7 @@ Bloque 4 a medias (a mano): tablas `tournaments` (fecha real `timestamptz`, cuen
 
 ## Hecho
 
+- 2026-10-19 · Fase 2, bloque 4: torneos, premios, participantes y eventos desde Supabase; se borró el generador del ranking.
 - 2026-10-19 · Fase 2, bloque 3: leaderboard, medallas, perfiles y usuario desde Supabase.
 - 2026-10-14 · Fase 2, bloque 2: noticias desde Supabase.
 - 2026-10-12 · Fase 2, bloque 1: juegos, promo y reseñas desde Supabase.

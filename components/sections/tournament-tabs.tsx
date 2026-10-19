@@ -19,13 +19,13 @@ import { SEARCH_SETTLE_MS, matchesQuery, paginate } from "@/lib/collection";
 import { scrollToTopIfHidden } from "@/lib/smooth-scroll";
 import { MY_PLAYER_ID, levels } from "@/lib/data/leaderboard";
 import {
-  ME_AS_PARTICIPANT,
   PARTICIPANTS_PER_PAGE,
   tournamentDescription,
   tournamentFaqs,
 } from "@/lib/data/tournament-detail";
 import type { TournamentDetail, TournamentPrize } from "@/lib/supabase/tournaments";
 import { useSettledValue } from "@/lib/use-settled-value";
+import { useCurrentUser } from "@/lib/use-current-user";
 import { useTournamentJoined } from "@/lib/use-tournament-join";
 import { useUrlState } from "@/lib/use-url-state";
 import { cn } from "@/lib/utils";
@@ -112,9 +112,11 @@ function ParticipantsPanel({
   state: typeof DEFAULTS;
   setState: (patch: Partial<typeof DEFAULTS>) => void;
 }) {
+  const currentUser = useCurrentUser();
+  const me = { id: MY_PLAYER_ID, name: currentUser.name, avatarSrc: currentUser.avatarSrc, level: currentUser.level };
   const list = useRef<HTMLUListElement>(null);
   const query = useSettledValue(state.q, SEARCH_SETTLE_MS);
-  const participants = [...(joined ? [ME_AS_PARTICIPANT] : []), ...tournament.participants];
+  const participants = [...(joined ? [me] : []), ...tournament.participants];
   const results = participants.filter((player) => matchesQuery(query, player.name));
   const { pageItems, page, pages } = paginate(results, state.pagina, PARTICIPANTS_PER_PAGE);
 
