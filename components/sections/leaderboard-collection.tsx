@@ -20,10 +20,10 @@ import {
   leaderboardRanges,
   leaderboardTabs,
   levels,
-  rankStandings,
   type LeaderboardMetric,
   type LeaderboardRange,
 } from "@/lib/data/leaderboard";
+import type { LeaderboardViews } from "@/lib/supabase/leaderboard";
 import { useSettledValue } from "@/lib/use-settled-value";
 import { useUrlState } from "@/lib/use-url-state";
 
@@ -32,7 +32,7 @@ const DEFAULTS = { metrica: "sura-points", rango: "historico", q: "", pagina: "1
 const isMetric = (value: string): value is LeaderboardMetric => leaderboardTabs.some((tab) => tab.id === value);
 const isRange = (value: string): value is LeaderboardRange => leaderboardRanges.some((range) => range.id === value);
 
-export function LeaderboardCollection() {
+export function LeaderboardCollection({ views }: { views: LeaderboardViews }) {
   const [state, setState] = useUrlState(DEFAULTS);
   const table = useRef<HTMLDivElement>(null);
 
@@ -40,7 +40,7 @@ export function LeaderboardCollection() {
   const range = isRange(state.rango) ? state.rango : "historico";
   const iconSrc = LEADERBOARD_METRIC_ICON[metric];
 
-  const { standings, me } = rankStandings(metric, range);
+  const { standings, me } = views[metric][range];
   const podium = standings.slice(0, 3);
   const query = useSettledValue(state.q, SEARCH_SETTLE_MS);
   const results = standings.filter((entry) => matchesQuery(query, entry.name));

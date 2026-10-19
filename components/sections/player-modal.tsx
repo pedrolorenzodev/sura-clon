@@ -10,7 +10,7 @@ import { MedalCard } from "@/components/sections/medal-card";
 import { ShareButtons } from "@/components/sections/share-buttons";
 import { PlayerStats } from "@/components/sections/stat-pill";
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { playerProfile, type PlayerProfile } from "@/lib/data/leaderboard";
+import type { PlayerProfile } from "@/lib/data/leaderboard";
 import { useUrlState } from "@/lib/use-url-state";
 import { cn } from "@/lib/utils";
 
@@ -20,13 +20,19 @@ export const usePlayerModal = () => useContext(PlayerModalContext);
 
 const DEFAULTS = { jugador: "" };
 
-export function PlayerModalProvider({ children }: { children: React.ReactNode }) {
+export function PlayerModalProvider({
+  profiles,
+  children,
+}: {
+  profiles: Record<string, PlayerProfile>;
+  children: React.ReactNode;
+}) {
   const [state, setState] = useUrlState(DEFAULTS);
   const popup = useRef<HTMLDivElement>(null);
   const [shownId, setShownId] = useState(state.jugador);
   if (state.jugador && state.jugador !== shownId) setShownId(state.jugador);
 
-  const profile = useMemo(() => (shownId ? playerProfile(shownId) : undefined), [shownId]);
+  const profile = useMemo(() => (shownId ? profiles[shownId] : undefined), [shownId, profiles]);
   const isOpen = Boolean(state.jugador && profile);
 
   const open = useCallback((id: string) => setState({ jugador: id }), [setState]);

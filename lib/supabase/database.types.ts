@@ -115,6 +115,74 @@ export type Database = {
         }
         Relationships: []
       }
+      leaderboard_entries: {
+        Row: {
+          events: number
+          medal_count: number
+          metric: string
+          period: string
+          player_id: string
+          points: number
+          position: number
+          streak: number
+        }
+        Insert: {
+          events: number
+          medal_count: number
+          metric: string
+          period: string
+          player_id: string
+          points: number
+          position: number
+          streak: number
+        }
+        Update: {
+          events?: number
+          medal_count?: number
+          metric?: string
+          period?: string
+          player_id?: string
+          points?: number
+          position?: number
+          streak?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leaderboard_entries_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medals: {
+        Row: {
+          art: string
+          id: string
+          label: string
+          reward_points: number
+          sort_order: number
+          sparkle: boolean
+        }
+        Insert: {
+          art: string
+          id: string
+          label: string
+          reward_points: number
+          sort_order: number
+          sparkle?: boolean
+        }
+        Update: {
+          art?: string
+          id?: string
+          label?: string
+          reward_points?: number
+          sort_order?: number
+          sparkle?: boolean
+        }
+        Relationships: []
+      }
       news: {
         Row: {
           body: Json
@@ -145,6 +213,78 @@ export type Database = {
           read_minutes?: number
           sort_order?: number
           title?: string
+        }
+        Relationships: []
+      }
+      player_medals: {
+        Row: {
+          claimed: boolean
+          medal_id: string
+          player_id: string
+        }
+        Insert: {
+          claimed?: boolean
+          medal_id: string
+          player_id: string
+        }
+        Update: {
+          claimed?: boolean
+          medal_id?: string
+          player_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_medals_medal_id_fkey"
+            columns: ["medal_id"]
+            isOneToOne: false
+            referencedRelation: "medals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_medals_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      players: {
+        Row: {
+          avatar_src: string
+          days_at_rank: number
+          events: number
+          historic_rank: number
+          id: string
+          level: string
+          medal_count: number
+          name: string
+          points: number
+          streak: number
+        }
+        Insert: {
+          avatar_src: string
+          days_at_rank: number
+          events: number
+          historic_rank: number
+          id: string
+          level: string
+          medal_count: number
+          name: string
+          points: number
+          streak: number
+        }
+        Update: {
+          avatar_src?: string
+          days_at_rank?: number
+          events?: number
+          historic_rank?: number
+          id?: string
+          level?: string
+          medal_count?: number
+          name?: string
+          points?: number
+          streak?: number
         }
         Relationships: []
       }

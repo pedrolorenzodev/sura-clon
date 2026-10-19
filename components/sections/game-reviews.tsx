@@ -5,11 +5,12 @@ import { useState } from "react";
 
 import { SelectPill } from "@/components/sections/select-pill";
 import { StarRating, starFill } from "@/components/sections/star-rating";
-import { currentUser } from "@/lib/data/user";
 import type { GameDetail, GameReview } from "@/lib/supabase/games";
+import { useCurrentUser } from "@/lib/use-current-user";
 import { cn } from "@/lib/utils";
 
 export function GameReviews({ game }: { game: GameDetail }) {
+  const currentUser = useCurrentUser();
   const [initialReviews] = useState(game.reviews);
   const [reviews, setReviews] = useState(initialReviews);
   const [draft, setDraft] = useState("");

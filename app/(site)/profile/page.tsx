@@ -4,13 +4,19 @@ import Image from "next/image";
 import { Header } from "@/components/layout/header";
 import { RouteShell } from "@/components/layout/route-shell";
 import { ProfileView } from "@/components/sections/profile-view";
+import { MY_PLAYER_ID } from "@/lib/data/leaderboard";
+import { getPlayerProfiles } from "@/lib/supabase/leaderboard";
+import { getProfileMedals } from "@/lib/supabase/medals";
 
 export const metadata: Metadata = {
   title: "Mi perfil | Sura Gaming",
   description: "Tu perfil, tus medallas y tus datos en Sura Gaming.",
 };
 
-export default function ProfilePage() {
+export const revalidate = 60;
+
+export default async function ProfilePage() {
+  const [profiles, medals] = await Promise.all([getPlayerProfiles(), getProfileMedals(MY_PLAYER_ID)]);
   return (
     <>
       <Header back />
@@ -31,7 +37,7 @@ export default function ProfilePage() {
           </div>
         }
       >
-        <ProfileView />
+        <ProfileView me={profiles[MY_PLAYER_ID]} profileMedals={medals} />
       </RouteShell>
     </>
   );

@@ -1,9 +1,11 @@
 import { MedalCard } from "@/components/sections/medal-card";
 import { SectionHeader } from "@/components/sections/section-header";
-import { medals } from "@/lib/data/medals";
+import { MY_PLAYER_ID } from "@/lib/data/leaderboard";
+import { getPlayerMedals } from "@/lib/supabase/medals";
 import { cn } from "@/lib/utils";
 
-export function Medallas({ className }: { className?: string }) {
+export async function Medallas({ className }: { className?: string }) {
+  const medals = await getPlayerMedals(MY_PLAYER_ID);
   return (
     <div className={cn("flex flex-col gap-title-gap", className)}>
       <SectionHeader title="Medallas" action={false} />

@@ -4,18 +4,24 @@ import { SectionNavProvider } from "@/components/layout/section-nav-context";
 import { SfxListener } from "@/components/layout/sfx-listener";
 import { MissionModalProvider } from "@/components/sections/mission-modal";
 import { PlayerModalProvider } from "@/components/sections/player-modal";
+import { getPlayerProfiles } from "@/lib/supabase/leaderboard";
+import { getCurrentUser } from "@/lib/supabase/user";
+import { CurrentUserProvider } from "@/lib/use-current-user";
 
-export function SiteChrome({ children }: { children: React.ReactNode }) {
+export async function SiteChrome({ children }: { children: React.ReactNode }) {
+  const [profiles, currentUser] = await Promise.all([getPlayerProfiles(), getCurrentUser()]);
   return (
-    <SectionNavProvider>
-      <SfxListener />
-      <div aria-hidden className="route-shutter" />
-      {/* no tocar: Nav tiene que quedar hermano anterior del footer, que lee su estado con peer/bar */}
-      <Nav />
-      <PlayerModalProvider>
-        <MissionModalProvider>{children}</MissionModalProvider>
-      </PlayerModalProvider>
-      <Footer />
-    </SectionNavProvider>
+    <CurrentUserProvider user={currentUser}>
+      <SectionNavProvider>
+        <SfxListener />
+        <div aria-hidden className="route-shutter" />
+        {/* no tocar: Nav tiene que quedar hermano anterior del footer, que lee su estado con peer/bar */}
+        <Nav />
+        <PlayerModalProvider profiles={profiles}>
+          <MissionModalProvider>{children}</MissionModalProvider>
+        </PlayerModalProvider>
+        <Footer />
+      </SectionNavProvider>
+    </CurrentUserProvider>
   );
 }

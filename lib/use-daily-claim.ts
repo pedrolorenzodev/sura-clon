@@ -2,19 +2,20 @@
 
 import { useSyncExternalStore } from "react";
 
-import { currentUser, dailyClaim } from "@/lib/data/user";
+import { dailyClaim } from "@/lib/data/user";
+import { useCurrentUser } from "@/lib/use-current-user";
 
 type Gain = { id: number; amount: number };
 
 type ClaimState = {
   claimed: boolean;
-  points: number;
+  earned: number;
   gain: Gain | null;
   rewards: readonly string[];
   started: readonly string[];
 };
 
-const initial: ClaimState = { claimed: false, points: currentUser.points, gain: null, rewards: [], started: [] };
+const initial: ClaimState = { claimed: false, earned: 0, gain: null, rewards: [], started: [] };
 let state = initial;
 const listeners = new Set<() => void>();
 
@@ -24,7 +25,7 @@ const subscribe = (listener: () => void) => {
 };
 
 const award = (amount: number, patch: Partial<ClaimState>) => {
-  state = { ...state, ...patch, points: state.points + amount, gain: { id: (state.gain?.id ?? 0) + 1, amount } };
+  state = { ...state, ...patch, earned: state.earned + amount, gain: { id: (state.gain?.id ?? 0) + 1, amount } };
   listeners.forEach((listener) => listener());
 };
 
@@ -44,4 +45,8 @@ export const startTask = (id: string) => {
   listeners.forEach((listener) => listener());
 };
 
-export const useDailyClaim = () => useSyncExternalStore(subscribe, () => state, () => initial);
+export const useDailyClaim = () => {
+  const { points } = useCurrentUser();
+  const claim = useSyncExternalStore(subscribe, () => state, () => initial);
+  return { ...claim, points: points + claim.earned };
+};

@@ -5,7 +5,7 @@ import { BackButton } from "@/components/layout/back-button";
 import { PointsValue } from "@/components/layout/points-value";
 import { SoundToggle } from "@/components/layout/sound-toggle";
 import { UserAvatar } from "@/components/layout/user-avatar";
-import { currentUser } from "@/lib/data/user";
+import type { CurrentUser } from "@/lib/data/user";
 import { cn } from "@/lib/utils";
 
 function Counter({
@@ -34,7 +34,15 @@ function Counter({
   );
 }
 
-export function HeaderMobile({ back, className }: { back?: boolean; className?: string }) {
+export function HeaderMobile({
+  currentUser,
+  back,
+  className,
+}: {
+  currentUser: CurrentUser;
+  back?: boolean;
+  className?: string;
+}) {
   return (
     <div
       className={cn(

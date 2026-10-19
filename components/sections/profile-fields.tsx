@@ -8,9 +8,9 @@ import { UserAvatar } from "@/components/layout/user-avatar";
 import { BrandCta } from "@/components/sections/brand-cta";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { profileCountries, profileFields, type ProfileField } from "@/lib/data/profile";
-import { currentUser } from "@/lib/data/user";
 import { cleanValue, formatBirthDate, validateProfileValue } from "@/lib/profile-validation";
 import { playSfx } from "@/lib/sfx";
+import { useCurrentUser } from "@/lib/use-current-user";
 import { claimReward } from "@/lib/use-daily-claim";
 import { setProfileValue, useProfileValues } from "@/lib/use-profile-fields";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 const fieldRewardId = (field: ProfileField) => `profile:${field.id}`;
 
 export function ProfileFields({ className }: { className?: string }) {
+  const currentUser = useCurrentUser();
   const values = useProfileValues();
   const [editing, setEditing] = useState<string | null>(null);
   const [earned, setEarned] = useState<{ id: string; key: number } | null>(null);
@@ -42,7 +43,7 @@ export function ProfileFields({ className }: { className?: string }) {
   return (
     <ul className={cn("flex flex-col gap-3", className)}>
       {profileFields.map((field) => {
-        const value = values[field.id] ?? field.value;
+        const value = values[field.id] ?? (field.id === "usuario" ? currentUser.name : field.value);
         const done = Boolean(field.done || values[field.id] !== undefined);
 
         return (
@@ -87,6 +88,7 @@ function FieldRow({
   rowRef: (el: HTMLButtonElement | null) => void;
   onEdit: () => void;
 }) {
+  const currentUser = useCurrentUser();
   const editable = Boolean(field.input);
   const text = value ? `${field.label}: ${value}` : field.label;
 

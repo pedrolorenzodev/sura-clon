@@ -7,6 +7,8 @@ export type CurrentUser = {
   points: number;
 };
 
+export const HEADER_LEVEL_BADGE_SRC = "/assets/home/level-1.webp";
+
 export const currentUser: CurrentUser = {
   name: "Cerdo_Capitalista",
   avatarSrc: "/assets/home/avatar.png",

@@ -140,9 +140,12 @@ Uno por commit. Cada uno: implementar, `npm run verify`, `npm run visual` (0 dif
    - [x] 3a · `players` (51 con `ME`: estadísticas históricas, puesto y días en el puesto materializados)
    - [x] 3b · `medals` (catálogo) + `player_medals` (muchos a muchos, con `claimed`)
    - [x] 3c · `leaderboard_entries` (16 vistas materializadas, con `position`)
-   - [ ] 3d · tipos generados + queries con mappers (`lib/supabase/`)
-   - [ ] 3e · Home (Leaderboard y Medallas) y `/leaderboard` leen de Supabase
-   - [ ] 3f · modal de jugador, `/profile` y el usuario del header (`currentUser`, reclamo diario)
+   - [x] 3d · tipos generados + queries con mappers (`lib/supabase/`)
+   - [x] 3e · Home (Leaderboard y Medallas) y `/leaderboard` leen de Supabase
+   - [x] 3f · modal de jugador, `/profile` y el usuario del header (`currentUser`, reclamo diario) — decidido el 2026-10-15 (DECISIONS). Partido en:
+     - [x] 3f-1 · `getPlayerProfiles()` + `SiteChrome` async → `PlayerModalProvider` por props
+     - [x] 3f-2 · `currentUser` desde tu fila de `players`: 3f-2a `getCurrentUser()` + `Header` async → headers por props; 3f-2b un contexto de cliente (`CurrentUserProvider` en `SiteChrome`) para reseñas, `/profile` y la base de puntos de `useDailyClaim` (el store guarda lo ganado y suma sobre esa base; `PointsValue` no se toca)
+     - [x] 3f-3 · `/profile` (perfil y medallas reclamables desde la base; `profileFields` sigue en código)
    - [ ] 3g · limpieza de `lib/data` (lo que usa `tournament-detail.ts` para los participantes queda hasta el bloque 4)
    - **Para el 3d en adelante** (lo que ya se sabe):
      - Las cuatro tablas están cargadas y verificadas contra `lib/data` (51 · 9 · 135 · 816 filas). Los tipos todavía no se regeneraron.

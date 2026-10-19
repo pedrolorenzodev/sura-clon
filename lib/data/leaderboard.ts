@@ -319,9 +319,9 @@ export const medalStack = [
   "/assets/leaderboard/medal-mini-3.webp",
 ];
 
-const LEVEL_ORDER: LevelId[] = ["novato", "guerrero", "heroe", "leyenda"];
+export const LEVEL_ORDER: LevelId[] = ["novato", "guerrero", "heroe", "leyenda"];
 
-const LEVEL_GOAL: Record<LevelId, number> = { novato: 1500, guerrero: 10000, heroe: 50000, leyenda: 125000 };
+export const LEVEL_GOAL: Record<LevelId, number> = { novato: 1500, guerrero: 10000, heroe: 50000, leyenda: 125000 };
 
 export type PlayerProfile = {
   id: string;

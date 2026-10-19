@@ -11,29 +11,26 @@ import { ProfileFields } from "@/components/sections/profile-fields";
 import { RouteTabs } from "@/components/sections/route-tabs";
 import { SegmentedTabs } from "@/components/sections/segmented-tabs";
 import { PlayerStats } from "@/components/sections/stat-pill";
-import { MY_PLAYER_ID, playerProfile } from "@/lib/data/leaderboard";
+import type { PlayerProfile } from "@/lib/data/leaderboard";
 import {
   deleteAccount,
   noTrophies,
-  profileMedals,
   profileMobileTabs,
   profileTabs,
   referral,
   type ProfileMedal,
 } from "@/lib/data/profile";
-import { currentUser } from "@/lib/data/user";
+import { useCurrentUser } from "@/lib/use-current-user";
 import { claimReward, useDailyClaim } from "@/lib/use-daily-claim";
 import { cn } from "@/lib/utils";
-
-const ME = playerProfile(MY_PLAYER_ID)!;
-const LEVEL_GOAL = Number(ME.levelGoal.replace(/\./g, ""));
 
 const withThousands = (value: number) => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 const medalRewardId = (medal: ProfileMedal) => `medal:${medal.id}`;
 
-export function ProfileView() {
+export function ProfileView({ me, profileMedals }: { me: PlayerProfile; profileMedals: ProfileMedal[] }) {
   const { points, rewards } = useDailyClaim();
+  const levelGoal = Number(me.levelGoal.replace(/\./g, ""));
   const [tab, setTab] = useState("medallas");
   const [mobileTab, setMobileTab] = useState("perfil");
 
@@ -42,7 +39,7 @@ export function ProfileView() {
   );
   const obtained = medals.filter((medal) => medal.state !== "locked").length;
   const pointsLabel = withThousands(points);
-  const progress = Math.min(1, points / LEVEL_GOAL);
+  const progress = Math.min(1, points / levelGoal);
 
   const tabs = profileTabs.map((item) =>
     item.id === "medallas"
@@ -60,13 +57,13 @@ export function ProfileView() {
 
   const summary = (
     <div className="flex flex-col gap-4">
-      <UserSummary points={pointsLabel} />
+      <UserSummary me={me} points={pointsLabel} />
       <LevelPanel
         variant="profile"
-        level={ME.level}
-        nextLevel={ME.nextLevel}
+        level={me.level}
+        nextLevel={me.nextLevel}
         points={pointsLabel}
-        goal={ME.levelGoal}
+        goal={me.levelGoal}
         progress={progress}
         segments={{ mobile: 20, desktop: 18 }}
         className="rounded-lg bg-surface-deep px-3.5 py-4"
@@ -90,7 +87,7 @@ export function ProfileView() {
           <div className="flex flex-col gap-4">
             <section className="flex flex-col gap-3 rounded-xl bg-surface-deep p-3">
               {summary}
-              <ReferButton />
+              <ReferButton me={me} />
             </section>
             <ProfileFields className="rounded-2xl bg-surface-deep p-4" />
           </div>
@@ -114,7 +111,7 @@ export function ProfileView() {
         {mobileTab === "referidos" && (
           <section className="flex flex-col gap-4 rounded-xl bg-surface-deep p-4">
             <p className="text-sm text-muted-foreground">{referral.copy}</p>
-            <ReferButton />
+            <ReferButton me={me} />
           </section>
         )}
       </div>
@@ -122,13 +119,14 @@ export function ProfileView() {
   );
 }
 
-function UserSummary({ points }: { points: string }) {
+function UserSummary({ me, points }: { me: PlayerProfile; points: string }) {
+  const currentUser = useCurrentUser();
   return (
     <div className="flex items-center gap-4">
       <UserAvatar src={currentUser.avatarSrc} size={82} ringClassName="border-2 border-border" className="size-20.5" />
       <div className="flex min-w-0 flex-1 flex-col gap-3 pt-4.5">
         <h2 className="truncate font-techno text-player-name uppercase text-foreground">{currentUser.name}</h2>
-        <PlayerStats points={points} medals={ME.medals} streak={ME.streak} className="flex flex-wrap items-center gap-2.5 desktop:gap-3" />
+        <PlayerStats points={points} medals={me.medals} streak={me.streak} className="flex flex-wrap items-center gap-2.5 desktop:gap-3" />
       </div>
     </div>
   );
@@ -162,11 +160,11 @@ function MedalShelf({
   );
 }
 
-function ReferButton() {
+function ReferButton({ me }: { me: PlayerProfile }) {
   const [copied, setCopied] = useState(false);
 
   const share = async () => {
-    const url = `${window.location.origin}/?ref=${MY_PLAYER_ID}`;
+    const url = `${window.location.origin}/?ref=${me.id}`;
     if (navigator.share) {
       await navigator.share({ title: referral.shareText, url }).catch(() => {});
       return;

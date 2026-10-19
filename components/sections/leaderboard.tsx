@@ -4,9 +4,10 @@ import { LeaderboardRow } from "@/components/sections/leaderboard-row";
 import { Medallas } from "@/components/sections/medallas";
 import { RevealList } from "@/components/sections/reveal-list";
 import { SectionHeader } from "@/components/sections/section-header";
-import { leaderboardRows, podium } from "@/lib/data/leaderboard";
+import { getLeaderboardPreview } from "@/lib/supabase/leaderboard";
 
-export function Leaderboard() {
+export async function Leaderboard() {
+  const { podium, rows: leaderboardRows } = await getLeaderboardPreview();
   return (
     <section
       id="leaderboard"
@@ -19,7 +20,7 @@ export function Leaderboard() {
             <SectionHeader title="Leaderboard" href="/leaderboard" />
 
             <div className="flex flex-col gap-6 desktop:flex-1 desktop:gap-3">
-              <LeaderboardPodiumDesktop className="hidden desktop:flex" />
+              <LeaderboardPodiumDesktop entries={podium} className="hidden desktop:flex" />
               <LeaderboardPodiumMobile entries={podium} className="desktop:hidden" />
 
               <RevealList className="flex flex-col gap-2 desktop:flex-1">

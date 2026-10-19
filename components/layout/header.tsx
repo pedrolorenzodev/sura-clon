@@ -1,12 +1,14 @@
 import { HeaderDesktop } from "@/components/layout/header-desktop";
 import { HeaderMobile } from "@/components/layout/header-mobile";
 import { HeaderShell } from "@/components/layout/header-shell";
+import { getCurrentUser } from "@/lib/supabase/user";
 
-export function Header({ solid, back }: { solid?: boolean; back?: boolean }) {
+export async function Header({ solid, back }: { solid?: boolean; back?: boolean }) {
+  const currentUser = await getCurrentUser();
   return (
     <HeaderShell solid={solid}>
-      <HeaderMobile back={back} className="flex desktop:hidden" />
-      <HeaderDesktop className="hidden desktop:flex" />
+      <HeaderMobile currentUser={currentUser} back={back} className="flex desktop:hidden" />
+      <HeaderDesktop currentUser={currentUser} className="hidden desktop:flex" />
     </HeaderShell>
   );
 }

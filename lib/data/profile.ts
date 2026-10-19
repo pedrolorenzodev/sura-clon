@@ -1,5 +1,4 @@
 import { medals, type Medal } from "@/lib/data/medals";
-import { currentUser } from "@/lib/data/user";
 
 export type ProfileMedalState = "claimed" | "claimable" | "locked";
 
@@ -35,7 +34,7 @@ export const PROFILE_FIELD_REWARD = 20;
 
 export const profileFields: ProfileField[] = [
   { id: "avatar", label: "Tu avatar", done: true, showAvatar: true },
-  { id: "usuario", label: "Usuario", value: currentUser.name, done: true },
+  { id: "usuario", label: "Usuario", done: true },
   { id: "nombre", label: "Nombre", rewardPoints: PROFILE_FIELD_REWARD, input: "name", placeholder: "Tu nombre", autoComplete: "given-name" },
   { id: "apellido", label: "Apellido", rewardPoints: PROFILE_FIELD_REWARD, input: "name", placeholder: "Tu apellido", autoComplete: "family-name" },
   { id: "nacimiento", label: "Fecha de nacimiento", rewardPoints: PROFILE_FIELD_REWARD, input: "date", placeholder: "dd/mm/aaaa", autoComplete: "bday" },

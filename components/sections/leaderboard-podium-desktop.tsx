@@ -8,7 +8,7 @@ import {
 import { ValuePill } from "@/components/sections/value-pill";
 import { PodiumSheen } from "@/components/sections/podium-sheen";
 import { PlayerLink } from "@/components/sections/player-link";
-import { podium } from "@/lib/data/leaderboard";
+import type { LeaderboardEntry } from "@/lib/data/leaderboard";
 import { cn } from "@/lib/utils";
 
 const GRADIENT: Record<PodiumRank, string> = {
@@ -18,13 +18,15 @@ const GRADIENT: Record<PodiumRank, string> = {
 };
 
 export function LeaderboardPodiumDesktop({
+  entries,
   className,
 }: {
+  entries: LeaderboardEntry[];
   className?: string;
 }) {
   return (
     <ul className={cn("flex gap-3", className)}>
-      {podium.map((entry) => {
+      {entries.map((entry) => {
         const rank = entry.rank as PodiumRank;
         const style = PODIUM_STYLE[rank];
 

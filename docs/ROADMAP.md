@@ -10,8 +10,8 @@ Fase 2: las cinco decisiones están tomadas (`docs/features/supabase.md`, *Decis
 Bloque 0 hecho: proyecto `sura-clon` (`us-east-1`, sin stack local), `lib/supabase/server.ts` (cliente server-only, tipado con `Database`), variables en `.env.local` **y en Vercel** (Production y Preview).
 Bloque 1 hecho: tablas `games` (24 del catálogo + la promo `mundial-fifa-2026`, con `in_catalog` y `gallery`) y `game_reviews` (50 filas, PK `(game_id, id)`), RLS de lectura en las dos. `lib/supabase/games.ts` tiene las queries y los tipos `Game`, `GameDetail` y `GameReview`. El Home (sin ISR: ver GOTCHAS), `/games` y `/games/:id` (ISR 60 s) leen de Supabase. `lib/data/game-detail.ts` ya no existe y `lib/data/games.ts` quedó sólo con config de UI. `visual` 233/233, detalle y reseñas probados a mano.
 Bloque 2 hecho (el usuario sigue a mano): tabla `news` (11 filas, `body jsonb`, `published_at date`, `read_minutes int`), RLS de lectura. `lib/supabase/news.ts` tiene las queries (relacionadas en dos queries paralelas) y los tipos `NewsItem` y `NewsBlock`. El Home, `/news` y `/news/:id` (ISR 60 s) leen de Supabase; `lib/data/news.ts` quedó sólo con config de UI. `visual` 233/233 y flujos probados a mano.
-Bloque 3 a medias (a mano, "vamos viendo"): tablas `players` (51), `medals` (9) + `player_medals` (135) y `leaderboard_entries` (816, el ranking materializado), con RLS de lectura y verificadas contra `lib/data`. Ninguna página las lee todavía.
-**Siguiente paso:** 3d, tipos generados y queries con mappers. Lo que ya se sabe para el 3d–3f está en `docs/features/supabase.md`, bloque 3.
+Bloque 3 a medias (a mano, "vamos viendo"): tablas `players` (51), `medals` (9) + `player_medals` (135) y `leaderboard_entries` (816, el ranking materializado), con RLS de lectura. `lib/supabase/leaderboard.ts` y `medals.ts`. El Home (Leaderboard y Medallas), `/leaderboard` (ISR 60 s, las 16 vistas por props), el modal de jugador (los 51 perfiles desde `SiteChrome`), `/profile` y el usuario del header (contexto `CurrentUserProvider`) leen de Supabase; `visual` 233/233 e interacciones probadas con Playwright.
+**Siguiente paso:** 3g, limpieza de `lib/data` (lo que usan los participantes de torneos queda hasta el bloque 4). Lo que ya se sabe para el 3d–3f está en `docs/features/supabase.md`, bloque 3.
 
 ## Ahora
 
@@ -19,7 +19,7 @@ Bloque 3 a medias (a mano, "vamos viendo"): tablas `players` (51), `medals` (9) 
    - [x] 0 · Infra
    - [x] 1 · Juegos
    - [x] 2 · Noticias
-   - [ ] 3 · Leaderboard y usuario (3a–3c hechos)
+   - [ ] 3 · Leaderboard y usuario (3a–3f hechos; falta 3g)
    - [ ] 4 · Torneos
    - [ ] 5 · Misiones
    - [ ] 6 · Lo que queda

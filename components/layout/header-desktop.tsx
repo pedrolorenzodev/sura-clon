@@ -7,7 +7,7 @@ import { PointsValue } from "@/components/layout/points-value";
 import { SectionLink } from "@/components/layout/section-link";
 import { SoundToggle } from "@/components/layout/sound-toggle";
 import { UserAvatar } from "@/components/layout/user-avatar";
-import { currentUser } from "@/lib/data/user";
+import type { CurrentUser } from "@/lib/data/user";
 import { cn } from "@/lib/utils";
 
 function Counter({ iconSrc, value }: { iconSrc: string; value: React.ReactNode }) {
@@ -23,7 +23,7 @@ function Counter({ iconSrc, value }: { iconSrc: string; value: React.ReactNode }
   );
 }
 
-export function HeaderDesktop({ className }: { className?: string }) {
+export function HeaderDesktop({ currentUser, className }: { currentUser: CurrentUser; className?: string }) {
   return (
     <div className={cn("items-center justify-between px-10 py-6", className)}>
 
