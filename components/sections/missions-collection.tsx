@@ -14,16 +14,16 @@ import { scrollToTopIfHidden } from "@/lib/smooth-scroll";
 import {
   MISSION_FILTER_STATUS,
   MISSIONS_PER_PAGE,
-  allMissions,
   missionFilters,
   missionTabs,
+  type Mission,
 } from "@/lib/data/missions";
 import { useDailyClaim } from "@/lib/use-daily-claim";
 import { useUrlState } from "@/lib/use-url-state";
 
 const DEFAULTS = { categoria: "todas", estado: "disponibles", pagina: "1" };
 
-export function MissionsCollection({ featured }: { featured: React.ReactNode }) {
+export function MissionsCollection({ allMissions, featured }: { allMissions: Mission[]; featured: React.ReactNode }) {
   const [state, setState] = useUrlState(DEFAULTS);
   const grid = useRef<HTMLUListElement>(null);
 

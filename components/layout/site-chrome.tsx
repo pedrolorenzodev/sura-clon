@@ -5,11 +5,12 @@ import { SfxListener } from "@/components/layout/sfx-listener";
 import { MissionModalProvider } from "@/components/sections/mission-modal";
 import { PlayerModalProvider } from "@/components/sections/player-modal";
 import { getPlayerProfiles } from "@/lib/supabase/leaderboard";
+import { getMissionDetails } from "@/lib/supabase/missions";
 import { getCurrentUser } from "@/lib/supabase/user";
 import { CurrentUserProvider } from "@/lib/use-current-user";
 
 export async function SiteChrome({ children }: { children: React.ReactNode }) {
-  const [profiles, currentUser] = await Promise.all([getPlayerProfiles(), getCurrentUser()]);
+  const [profiles, currentUser, missions] = await Promise.all([getPlayerProfiles(), getCurrentUser(), getMissionDetails()]);
   return (
     <CurrentUserProvider user={currentUser}>
       <SectionNavProvider>
@@ -18,7 +19,7 @@ export async function SiteChrome({ children }: { children: React.ReactNode }) {
         {/* no tocar: Nav tiene que quedar hermano anterior del footer, que lee su estado con peer/bar */}
         <Nav />
         <PlayerModalProvider profiles={profiles}>
-          <MissionModalProvider>{children}</MissionModalProvider>
+          <MissionModalProvider missions={missions}>{children}</MissionModalProvider>
         </PlayerModalProvider>
         <Footer />
       </SectionNavProvider>

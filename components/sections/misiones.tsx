@@ -1,9 +1,10 @@
 import { CardSlider } from "@/components/sections/card-slider";
 import { MissionCard } from "@/components/sections/mission-card";
 import { SectionHeader } from "@/components/sections/section-header";
-import { missions } from "@/lib/data/missions";
+import { getHomeMissions } from "@/lib/supabase/missions";
 
-export function Misiones() {
+export async function Misiones() {
+  const missions = await getHomeMissions();
   return (
     <section
       id="misiones"

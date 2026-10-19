@@ -5,14 +5,8 @@ import Image from "next/image";
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import {
-  missionById,
-  missionCopy,
-  missionSteps,
-  rewardPoints,
-  type Mission,
-  type MissionStatus,
-} from "@/lib/data/missions";
+import { missionCopy, type Mission, type MissionStatus } from "@/lib/data/missions";
+import type { MissionDetail } from "@/lib/supabase/missions";
 import { claimReward, startTask, useDailyClaim } from "@/lib/use-daily-claim";
 import { useUrlState } from "@/lib/use-url-state";
 import { cn } from "@/lib/utils";
@@ -28,13 +22,19 @@ export function useMissionStatus(mission: Mission): MissionStatus | undefined {
   return rewards.includes(missionRewardId(mission.id)) ? "completed" : mission.status;
 }
 
-export function MissionModalProvider({ children }: { children: React.ReactNode }) {
+export function MissionModalProvider({
+  missions,
+  children,
+}: {
+  missions: Record<string, MissionDetail>;
+  children: React.ReactNode;
+}) {
   const [state, setState] = useUrlState(DEFAULTS);
   const popup = useRef<HTMLDivElement>(null);
   const [shownId, setShownId] = useState(state.mision);
   if (state.mision && state.mision !== shownId) setShownId(state.mision);
 
-  const mission = shownId ? missionById.get(shownId) : undefined;
+  const mission = shownId ? missions[shownId] : undefined;
   const isOpen = Boolean(state.mision && mission);
 
   const open = useCallback((id: string) => setState({ mision: id }), [setState]);
@@ -84,7 +84,7 @@ export function MissionLink({
   );
 }
 
-function MissionSheet({ mission }: { mission: Mission }) {
+function MissionSheet({ mission }: { mission: MissionDetail }) {
   const { started } = useDailyClaim();
   const status = useMissionStatus(mission);
   const isStarted = started.includes(missionRewardId(mission.id));
@@ -132,7 +132,7 @@ function MissionSheet({ mission }: { mission: Mission }) {
         <div className="flex w-full flex-1 flex-col gap-3 px-2 desktop:pb-3">
           <h3 className="font-techno text-title-sm uppercase text-foreground">{missionCopy.stepsTitle}</h3>
           <ol className="flex list-decimal flex-col gap-4.5 ps-4.5 text-xs leading-4.5 text-muted-foreground">
-            {missionSteps(mission).map((step) => (
+            {mission.steps.map((step) => (
               <li key={step}>{step}</li>
             ))}
           </ol>
@@ -146,7 +146,7 @@ function MissionSheet({ mission }: { mission: Mission }) {
 
 const CTA = "flex h-11.5 w-full items-center justify-center gap-2 rounded-pill px-4.5 pt-0.5 font-techno text-base uppercase desktop:w-mission-box";
 
-function MissionCta({ mission, status, started }: { mission: Mission; status?: MissionStatus; started: boolean }) {
+function MissionCta({ mission, status, started }: { mission: MissionDetail; status?: MissionStatus; started: boolean }) {
   if (status === "completed" || status === "ended") {
     return (
       <span className={cn(CTA, "bg-surface-2 text-muted-foreground")} aria-disabled>
@@ -156,7 +156,7 @@ function MissionCta({ mission, status, started }: { mission: Mission; status?: M
     );
   }
 
-  const claim = () => claimReward(missionRewardId(mission.id), rewardPoints(mission));
+  const claim = () => claimReward(missionRewardId(mission.id), mission.rewardPoints);
 
   return (
     <button

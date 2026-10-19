@@ -160,7 +160,12 @@ Uno por commit. Cada uno: implementar, `npm run verify`, `npm run visual` (0 dif
    - [x] 4d · tipos generados + queries con mappers (`lib/supabase/tournaments.ts`)
    - [x] 4e · Home (Eventos), `/tournaments` y `/tournaments/:id` leen de Supabase
    - [x] 4f · limpieza: `tournaments.ts`, `tournament-detail.ts` y `events.ts` quedan con config de UI, y se borra el generador de `lib/data/leaderboard.ts`
-5. **Misiones**: `missions` (Home Misiones, `/missions`, modal).
+5. **Misiones**: `missions` (Home Misiones, `/missions`, modal). Modelo en `DECISIONS.md` (2026-10-19). Partido en pasos:
+   - [x] 5a · `missions` (38: destacadas, Home y colección en una tabla; `ended`, `reward_points`)
+   - [x] 5b · `mission_steps` (152) + `player_missions` (tus completadas)
+   - [x] 5c · tipos generados + queries con mappers (`lib/supabase/missions.ts`)
+   - [x] 5d · Home (Misiones), `/missions` y el modal (por props desde `SiteChrome`) leen de Supabase
+   - [ ] 5e · limpieza: `lib/data/missions.ts` queda con pestañas, filtros, `MISSIONS_PER_PAGE` y `missionCopy`
 6. **Lo que queda**: `community-rules`, `detail-art`.
 7. **Cierre**: `lib/data/` sólo con config de UI, `PROJECT.md` y `ROADMAP.md` al día, este archivo a `DECISIONS.md` y se borra. Pendiente para el cierre: `seeded` y `rotate` de `lib/collection.ts` quedaron sin uso desde el bloque 4 (el archivo está congelado: decide el usuario si se limpian).
 

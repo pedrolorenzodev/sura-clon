@@ -218,6 +218,74 @@ export type Database = {
         }
         Relationships: []
       }
+      mission_steps: {
+        Row: {
+          mission_id: string
+          position: number
+          text: string
+        }
+        Insert: {
+          mission_id: string
+          position: number
+          text: string
+        }
+        Update: {
+          mission_id?: string
+          position?: number
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mission_steps_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      missions: {
+        Row: {
+          category: string
+          description: string
+          ended: boolean
+          featured: boolean
+          highlighted: boolean
+          home_position: number | null
+          id: string
+          image_src: string
+          reward_points: number
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          category: string
+          description: string
+          ended?: boolean
+          featured?: boolean
+          highlighted?: boolean
+          home_position?: number | null
+          id: string
+          image_src: string
+          reward_points: number
+          sort_order: number
+          title: string
+        }
+        Update: {
+          category?: string
+          description?: string
+          ended?: boolean
+          featured?: boolean
+          highlighted?: boolean
+          home_position?: number | null
+          id?: string
+          image_src?: string
+          reward_points?: number
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
       news: {
         Row: {
           body: Json
@@ -277,6 +345,36 @@ export type Database = {
           },
           {
             foreignKeyName: "player_medals_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      player_missions: {
+        Row: {
+          mission_id: string
+          player_id: string
+        }
+        Insert: {
+          mission_id: string
+          player_id: string
+        }
+        Update: {
+          mission_id?: string
+          player_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_missions_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "missions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_missions_player_id_fkey"
             columns: ["player_id"]
             isOneToOne: false
             referencedRelation: "players"
