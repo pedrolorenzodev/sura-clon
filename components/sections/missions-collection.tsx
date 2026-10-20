@@ -16,8 +16,8 @@ import {
   MISSIONS_PER_PAGE,
   missionFilters,
   missionTabs,
-  type Mission,
 } from "@/lib/data/missions";
+import type { Mission } from "@/lib/supabase/missions";
 import { useDailyClaim } from "@/lib/use-daily-claim";
 import { useUrlState } from "@/lib/use-url-state";
 

@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import { CardBrackets } from "@/components/sections/card-brackets";
 import { MissionLink } from "@/components/sections/mission-modal";
-import type { Mission } from "@/lib/data/missions";
+import type { Mission } from "@/lib/supabase/missions";
 import { cn } from "@/lib/utils";
 
 export function MissionFeatureCard({ mission }: { mission: Mission }) {

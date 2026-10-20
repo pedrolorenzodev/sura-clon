@@ -1,9 +1,23 @@
 import "server-only";
 import { cache } from "react";
 import { MY_PLAYER_ID } from "@/lib/data/leaderboard";
-import type { Mission, MissionCategory } from "@/lib/data/missions";
 import { supabase } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/supabase/database.types";
+
+export type Mission = {
+  id: string;
+  title: string;
+  description: string;
+  reward: string;
+  imageSrc: string;
+  status?: MissionStatus;
+  category?: MissionCategory;
+  highlighted?: boolean;
+};
+
+export type MissionStatus = "available" | "completed" | "ended";
+
+export type MissionCategory = "sociales" | "sura" | "eventos";
 
 type MissionRow = Tables<"missions"> & {
   mission_steps: Pick<Tables<"mission_steps">, "position" | "text">[];

@@ -5,8 +5,8 @@ import Image from "next/image";
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { missionCopy, type Mission, type MissionStatus } from "@/lib/data/missions";
-import type { MissionDetail } from "@/lib/supabase/missions";
+import { missionCopy } from "@/lib/data/missions";
+import type { Mission, MissionDetail, MissionStatus } from "@/lib/supabase/missions";
 import { claimReward, startTask, useDailyClaim } from "@/lib/use-daily-claim";
 import { useUrlState } from "@/lib/use-url-state";
 import { cn } from "@/lib/utils";
