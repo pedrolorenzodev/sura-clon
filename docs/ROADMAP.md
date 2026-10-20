@@ -5,10 +5,9 @@
 > Se sobrescribe al terminar cada sesión. Máximo 15 líneas.
 
 **2026-10-19.** La Fase 1 está cerrada y congelada (`f447a97`); el sistema de docs, los hooks y `npm run visual` entraron en `afe751c`. La referencia visual vive sólo en esta máquina (ver GOTCHAS para rehacerla).
-**Modo de trabajo:** el usuario escribe a mano (bloques 0–4) y el agente guía paso a paso (concepto + snippet con antes → después + revisión del diff), genera las migraciones de contenido desde `lib/data` y corre las pruebas de interacción con Playwright (`screenshots/qa/`, gitignoreada). Al cerrar cada paso completa `notas/supabase.md` (notas del usuario, gitignoreadas).
-Bloques 0–4 hechos. En Supabase: `games` + `game_reviews`, `news`, `players`, `medals` + `player_medals`, `leaderboard_entries`, `tournaments` + `tournament_prizes` + `tournament_participants` y `events`, todas con RLS de lectura. Queries y tipos en `lib/supabase/` (`games`, `news`, `leaderboard`, `medals`, `user`, `tournaments`). El Home (sin ISR, ver GOTCHAS) y todas las rutas de juegos, noticias, leaderboard, perfil y torneos leen de la base (ISR 60 s). `SiteChrome` pide los perfiles del modal y el usuario actual (`CurrentUserProvider`). Ya no queda RNG en `lib/data`. `visual` 233/233 en cada paso.
-Bloque 5 a medias (a mano): `missions` (38), `mission_steps` (152) y `player_missions` (tus 9 completadas); el Home, `/missions` y el modal leen de la base. `visual` 233/233 e interacciones probadas.
-**Siguiente paso:** 5e, `lib/data/missions.ts` queda con pestañas, filtros y textos.
+**Modo de trabajo:** el usuario escribe a mano (bloques 0–5) y el agente guía paso a paso (concepto + snippet con antes → después + revisión del diff), genera las migraciones de contenido desde `lib/data` y corre las pruebas de interacción con Playwright (`screenshots/qa/`, gitignoreada). Al cerrar cada paso completa `notas/supabase.md` (notas del usuario, gitignoreadas).
+Bloques 0–5 hechos. En Supabase: `games` + `game_reviews`, `news`, `players`, `medals` + `player_medals`, `leaderboard_entries`, `tournaments` + `tournament_prizes` + `tournament_participants`, `events`, `missions` + `mission_steps` + `player_missions`, todas con RLS de lectura. Queries y tipos en `lib/supabase/` (`games`, `news`, `leaderboard`, `medals`, `user`, `tournaments`, `missions`). Todas las rutas con data de negocio leen de la base (ISR 60 s; el Home sin ISR, ver GOTCHAS). `SiteChrome` pide los perfiles, el usuario actual y las misiones para los dos modales. `visual` 233/233 en cada paso.
+**Siguiente paso:** bloque 6, lo que queda (`community-rules`, `detail-art`). Antes, el usuario decide si lo sigue escribiendo a mano.
 
 ## Ahora
 
@@ -18,7 +17,7 @@ Bloque 5 a medias (a mano): `missions` (38), `mission_steps` (152) y `player_mis
    - [x] 2 · Noticias
    - [x] 3 · Leaderboard y usuario
    - [x] 4 · Torneos
-   - [ ] 5 · Misiones (5a–5d hechos; falta 5e)
+   - [x] 5 · Misiones
    - [ ] 6 · Lo que queda
    - [ ] 7 · Cierre
 
@@ -39,6 +38,7 @@ Bloque 5 a medias (a mano): `missions` (38), `mission_steps` (152) y `player_mis
 
 ## Hecho
 
+- 2026-10-19 · Fase 2, bloque 5: misiones, pasos y progreso desde Supabase.
 - 2026-10-19 · Fase 2, bloque 4: torneos, premios, participantes y eventos desde Supabase; se borró el generador del ranking.
 - 2026-10-19 · Fase 2, bloque 3: leaderboard, medallas, perfiles y usuario desde Supabase.
 - 2026-10-14 · Fase 2, bloque 2: noticias desde Supabase.
